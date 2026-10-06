@@ -445,7 +445,7 @@
       <section class="seccion vidrio tablero-caja">
         <div class="tablero-barra">
           <h3>Todos los proyectos</h3>
-          <div class="vistas"><span class="vista activa" data-v="kanban">▥ Kanban</span><span class="vista" data-v="linea">≡ Línea de tiempo</span><span class="vista" data-v="calendario">▦ Calendario</span></div>
+          <div class="vistas"><span class="vista activa" data-v="kanban">▥ Kanban</span><span class="vista" data-v="calendario">▦ Calendario</span></div>
           <div class="acciones">
             <input id="buscar" class="buscar" placeholder="⌕  Buscar…" />
             <select id="filtro" class="filtro"><option value="">Todos</option></select>
@@ -453,8 +453,7 @@
           </div>
         </div>
         <div class="tablero" id="tablero"></div>
-        <div id="linea" hidden></div>
-        <div id="calendario" hidden></div>
+                <div id="calendario" hidden></div>
       </section>
     </main>
     <!-- Columna lateral -->
@@ -634,8 +633,7 @@
     kListos.textContent = proyectos.filter((p) => p.estado === "listo").length;
     kPend.textContent = total - hechas;
 
-    for (const v of ["tablero", "linea", "calendario"]) document.getElementById(v).hidden = true;
-    if (vistaActual === "linea") return pintarLinea(visibles);
+    for (const v of ["tablero", "calendario"]) document.getElementById(v).hidden = true;
     if (vistaActual === "calendario") return pintarCalendario(visibles);
     const tablero = document.getElementById("tablero");
     tablero.hidden = false;
@@ -710,62 +708,6 @@
   });
   const dia = (f) => new Date(f.slice(0, 10) + "T00:00");
   const NOMBRE_ESTADO = { sin_empezar: "Sin empezar", en_curso: "En curso", listo: "Listo", vencido: "Vencido" };
-
-  // ===== Línea de tiempo: ventana de 2 semanas con barras de inicio a fecha límite =====
-  const DIAS_VENTANA = 14;
-  const lunesDe = (d) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
-  const semanaISO = (d) => { const x = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const n = x.getUTCDay() || 7; x.setUTCDate(x.getUTCDate() + 4 - n); const y0 = new Date(Date.UTC(x.getUTCFullYear(), 0, 1)); return Math.ceil(((x - y0) / 864e5 + 1) / 7); };
-  let ltInicio = lunesDe(new Date());
-  function pintarLinea(lista) {
-    const cont = document.getElementById("linea");
-    cont.hidden = false;
-    const dias = [...Array(DIAS_VENTANA)].map((_, i) => { const d = new Date(ltInicio); d.setDate(d.getDate() + i); return d; });
-    const fin = dias[DIAS_VENTANA - 1];
-    const nombreMes = (d) => mayus(d.toLocaleDateString("es", { month: "long" }));
-    const mesTxt = dias[0].getMonth() === fin.getMonth() ? nombreMes(dias[0]) : `${nombreMes(dias[0])} – ${nombreMes(fin)}`;
-    const cols = `grid-template-columns: repeat(${DIAS_VENTANA}, minmax(0, 1fr))`;
-
-    let cab = "";
-    for (const d of dias) {
-      const iso = isoDe(d), n = lista.filter((p) => p.fecha === iso).length;
-      cab += `<div class="lt-dia ${iso === HOY ? "hoy" : ""} ${d.getDay() % 6 === 0 ? "finde" : ""}">
-        <span class="lt-dn">${mayus(d.toLocaleDateString("es", { weekday: "short" }).replace(".", ""))}${n ? `<b class="lt-badge" title="${n} proyecto(s) vencen este día">${n}</b>` : ""}</span>
-        <span class="lt-num">${d.getDate()}</span></div>`;
-    }
-
-    let filas = "";
-    for (const p of lista) {
-      const ini = dia(p.created_at), fi = p.fecha ? dia(p.fecha) : null;
-      let barra;
-      if (!fi) barra = `<div class="lt-aviso">Sin fecha límite</div>`;
-      else if (fi < dias[0]) barra = `<div class="lt-aviso">‹ Venció el ${fmt(p.fecha)}</div>`;
-      else if (ini > fin) barra = `<div class="lt-aviso der">Empieza después ›</div>`;
-      else {
-        const desde = Math.max(0, Math.round((ini - dias[0]) / 864e5));
-        const hasta = Math.min(DIAS_VENTANA - 1, Math.round((fi - dias[0]) / 864e5));
-        const sigue = fi > fin;
-        barra = `<div class="lt-barra a-${p.estado} ${sigue ? "sigue" : ""}" style="grid-column:${desde + 1} / ${hasta + 2}" title="${esc(p.nombre)} · vence ${fmt(p.fecha)}">${esc(p.nombre)}${sigue ? " ›" : ""}</div>`;
-      }
-      filas += `<div class="lt-fila"><div class="lt-nombre"><b>${esc(p.nombre)}</b><small>${ETIQUETA[p.estado]} · ${p.hechas}/${p.total} tareas</small></div>
-        <div class="lt-pista" style="${cols}">${dias.map((d, k) => `<i class="${isoDe(d) === HOY ? "hoy" : ""}" style="grid-column:${k + 1}"></i>`).join("")}${barra}</div></div>`;
-    }
-    if (!lista.length) filas = `<div class="vacia">No hay proyectos que mostrar</div>`;
-
-    cont.innerHTML = `
-      <div class="lt-top">
-        <div class="lt-titulo">${mesTxt} <span>${fin.getFullYear()}</span></div>
-        <div class="lt-nav"><button class="cal-btn" id="ltHoy">Hoy</button>
-          <div class="lt-rango"><button id="ltPrev" title="Semana anterior">‹</button><span>S${semanaISO(dias[0])} – S${semanaISO(fin)}</span><button id="ltNext" title="Semana siguiente">›</button></div></div>
-        <div></div>
-      </div>
-      <div class="lt-cuadro">
-        <div class="lt-fila lt-cab"><div class="lt-nombre"></div><div class="lt-dias" style="${cols}">${cab}</div></div>
-        ${filas}
-      </div>`;
-    ltPrev.onclick = () => { ltInicio.setDate(ltInicio.getDate() - 7); pintar(); };
-    ltNext.onclick = () => { ltInicio.setDate(ltInicio.getDate() + 7); pintar(); };
-    ltHoy.onclick = () => { ltInicio = lunesDe(new Date()); pintar(); };
-  }
 
   // ===== Calendario: solo los días del mes; al elegir un día se ven sus proyectos al costado =====
   let mesCal = new Date(); mesCal.setDate(1);
