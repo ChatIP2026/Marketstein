@@ -193,7 +193,7 @@
   .buscar { width: 150px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
   .filtro { padding-top: 0 !important; padding-bottom: 0 !important; }
   .nuevo-btn { white-space: nowrap; display: flex; align-items: center; padding-top: 0 !important; padding-bottom: 0 !important; }
-  @media (max-width: 1250px) {
+  @media (max-width: 1500px) {
     .tablero-barra { flex-wrap: wrap !important; }
     .acciones { width: 100%; margin-left: 0 !important; }
     .buscar { flex: 1; width: auto !important; min-width: 0; }
@@ -224,6 +224,12 @@
   .cal-vacio { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--tenue); font-size: .82rem; text-align: center; padding: 30px 0; }
   .cal-vacio svg { width: 40px; height: 40px; color: rgba(159,178,232,.5); }
   @media (max-width: 1000px) { .cal-layout { grid-template-columns: 1fr; } }
+  .principal { min-width: 0; }
+  #listaTareas .item { cursor: pointer; align-items: flex-start; }
+  #listaTareas .item .caja { margin-top: 2px; }
+  #listaTareas .item.hecha .caja { background: #2ee6b0; border-color: #2ee6b0; }
+  #listaTareas .item.hecha .t-texto { text-decoration: line-through; color: var(--tenue); }
+  #listaTareas { max-height: 260px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
@@ -306,12 +312,8 @@
     <!-- Columna lateral -->
     <aside class="lateral vidrio">
       <div>
-        <div class="tit"><h3 style="color:var(--texto)">Tareas <span class="chip">5</span></h3><span>＋ ⋯</span></div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 1</div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 2<div class="punto-rojo">1</div></div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 3</div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 4</div>
-        <div class="item"><div class="caja"></div><div>Tarea de ejemplo 5<span class="sub">Detalle de la tarea</span></div></div>
+        <div class="tit"><h3 style="color:var(--texto)">Tareas <span class="chip" id="nTareas">0</span></h3></div>
+        <div id="listaTareas"></div>
       </div>
       <hr />
       <div>
@@ -349,15 +351,32 @@
   const HOY = new Date().toISOString().slice(0, 10);
   const COLORES = { Ariana: "#f4a6c1", Carlos: "#9fd3f0", Pierina: "#c3b5f7", Hilary: "#f7d38b" };
   const mapaP = new Map(), mapaT = new Map();
-  const COPIA_PROYECTOS = [{"id": 1, "nombre": "PODCAST", "estado": "sin_empezar", "prioridad": "media", "encargados": ["Pierina", "Carlos", "Hilary"], "fecha_limite": null, "created_at": "2026-10-06T16:27:47.588971+00:00"}, {"id": 2, "nombre": "MAILING", "estado": "sin_empezar", "prioridad": "media", "encargados": [], "fecha_limite": null, "created_at": "2026-10-06T16:27:55.618877+00:00"}, {"id": 3, "nombre": "programa de puntos", "estado": "sin_empezar", "prioridad": "media", "encargados": ["Ariana"], "fecha_limite": null, "created_at": "2026-10-06T16:29:11.698363+00:00"}, {"id": 4, "nombre": "Diseño", "estado": "en_curso", "prioridad": "alta", "encargados": ["Ariana"], "fecha_limite": "2026-10-23", "created_at": "2026-10-06T16:29:28.305491+00:00"}, {"id": 5, "nombre": "ia para legal", "estado": "sin_empezar", "prioridad": "media", "encargados": [], "fecha_limite": "2026-10-27", "created_at": "2026-10-06T16:31:29.879376+00:00"}];
-  const COPIA_TAREAS = [{"id": 1, "proyecto_id": 4, "texto": "Flyer/video halloween", "hecha": false, "created_at": "2026-10-06T16:29:45.326742+00:00"}];
+  const COPIA_PROYECTOS = [{"id": 1, "nombre": "PODCAST", "estado": "listo", "prioridad": "media", "encargados": ["Pierina", "Carlos", "Hilary"], "fecha_limite": null, "created_at": "2026-10-06T16:27:47.588971+00:00"}, {"id": 2, "nombre": "MAILING", "estado": "listo", "prioridad": "media", "encargados": [], "fecha_limite": null, "created_at": "2026-10-06T16:27:55.618877+00:00"}, {"id": 3, "nombre": "programa de puntos", "estado": "sin_empezar", "prioridad": "media", "encargados": ["Ariana"], "fecha_limite": null, "created_at": "2026-10-06T16:29:11.698363+00:00"}, {"id": 4, "nombre": "Diseño", "estado": "en_curso", "prioridad": "alta", "encargados": ["Ariana"], "fecha_limite": "2026-10-23", "created_at": "2026-10-06T16:29:28.305491+00:00"}, {"id": 5, "nombre": "ia para legal", "estado": "sin_empezar", "prioridad": "media", "encargados": [], "fecha_limite": "2026-10-27", "created_at": "2026-10-06T16:31:29.879376+00:00"}];
+  const COPIA_TAREAS = [{"id": 1, "proyecto_id": 4, "texto": "Flyer/video halloween", "hecha": false, "created_at": "2026-10-06T16:29:45.326742+00:00"}, {"id": 5, "proyecto_id": 2, "texto": "a", "hecha": true, "created_at": "2026-10-06T19:07:02.691042+00:00"}];
   COPIA_PROYECTOS.forEach((x) => mapaP.set(x.id, x));
   COPIA_TAREAS.forEach((x) => mapaT.set(x.id, x));
   let proyectos = [];
   const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // Junta proyectos con el conteo de sus tareas
+  // Lista de tareas de la columna derecha (pendientes primero)
+  function pintarTareas() {
+    const cont = document.getElementById("listaTareas");
+    const lista = [...mapaT.values()].sort((a, b) => a.hecha - b.hecha || a.created_at.localeCompare(b.created_at));
+    nTareas.textContent = lista.filter((t) => !t.hecha).length;
+    cont.innerHTML = lista.length ? "" : `<div class="vacia">No hay tareas todavía</div>`;
+    for (const t of lista) {
+      const pr = mapaP.get(t.proyecto_id);
+      const it = document.createElement("div");
+      it.className = "item" + (t.hecha ? " hecha" : "");
+      it.innerHTML = `<div class="caja"></div><div><span class="t-texto">${esc(t.texto)}</span><span class="sub">${pr ? esc(pr.nombre) : ""}</span></div>`;
+      it.onclick = () => { t.hecha = !t.hecha; armar(); }; // solo en esta vista previa
+      cont.append(it);
+    }
+  }
+
   function armar() {
+    pintarTareas();
     const tareas = [...mapaT.values()];
     proyectos = [...mapaP.values()].sort((a, b) => a.created_at.localeCompare(b.created_at)).map((p) => {
       const suyas = tareas.filter((t) => t.proyecto_id === p.id);
