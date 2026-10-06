@@ -378,6 +378,9 @@
   .cargando .ficha:nth-child(n+4) .anillo-prog { animation-delay: .36s; }
   @keyframes llenar { from { stroke-dashoffset: var(--lleno); } to { stroke-dashoffset: var(--fin); } }
   @media (prefers-reduced-motion: reduce) { .cargando .anillo-prog { animation: none; } }
+  /* Barra de progreso del detalle siempre en verde */
+  .detalle .fx-barra i { background: linear-gradient(90deg, rgba(46,230,176,.55), #2ee6b0) !important; box-shadow: 0 0 10px rgba(46,230,176,.5) !important; transition: width .4s ease; }
+  .detalle .det-prog b { color: #2ee6b0 !important; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
