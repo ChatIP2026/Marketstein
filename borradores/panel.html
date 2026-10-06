@@ -230,6 +230,21 @@
   #listaTareas .item.hecha .caja { background: #2ee6b0; border-color: #2ee6b0; }
   #listaTareas .item.hecha .t-texto { text-decoration: line-through; color: var(--tenue); }
   #listaTareas { max-height: 260px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
+  /* ===== Pulido de UX ===== */
+  :root { --tenue: #9aa0b2; }
+  /* Menos cajas dentro de cajas: las columnas ya no llevan recuadro propio */
+  .columna { background: transparent !important; border: 0 !important; padding: 0 !important; }
+  .columna.encima .col-lista { outline: 2px dashed rgba(141,124,245,.6); outline-offset: 4px; border-radius: 14px; }
+  .columna h4 { margin: 0 2px 12px !important; }
+  .tablero { gap: 18px !important; }
+  /* Tarjetas: respuesta al pasar el ratón y foco visible con teclado */
+  .ficha { transition: transform .15s ease, box-shadow .15s ease; }
+  .ficha:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,.35), 0 0 24px rgba(var(--tinte), .12); }
+  .ficha:focus-visible, .cal-dia:focus-visible, .vista:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #8d7cf5; outline-offset: 2px; }
+  .fx-pct.apagado { color: var(--tenue); text-shadow: none; font-size: 1.3rem; }
+  .vacia { border: 1px dashed var(--borde); border-radius: 14px; padding: 28px 10px !important; }
+  /* Pestañas y menú con estado activo más claro */
+  .vista:hover:not(.activa), nav a:hover:not(.activo) { color: var(--texto); }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
@@ -436,6 +451,8 @@
         const f = document.createElement("div");
         f.className = "ficha a-" + c.id;
         f.draggable = true;
+        f.tabIndex = 0;
+        f.title = "Arrastra para cambiar de estado";
         const nombres = p.encargados.length ? p.encargados.join(", ") : "Sin encargado";
         const fechaTxt = p.fecha ? `${vencido(p) ? "Venció" : "Vence"} ${fmt(p.fecha)}` : "Sin fecha";
         f.innerHTML = `
@@ -447,7 +464,7 @@
             <div class="fx-quien"><b>${nombres}</b>
               <small><span class="prio-txt ${p.prioridad}">Prioridad ${p.prioridad}</span> • <span class="${vencido(p) ? "rojo-txt" : ""}">${fechaTxt}</span></small></div>
           </div>
-          <div class="fx-medio"><span class="fx-chip">Progreso · ${p.hechas}/${p.total} tareas</span><span class="fx-pct">${pct}%</span></div>
+          <div class="fx-medio"><span class="fx-chip">${p.total ? `Progreso · ${p.hechas}/${p.total} tareas` : "Aún sin tareas"}</span><span class="fx-pct ${p.total ? "" : "apagado"}">${p.total ? pct + "%" : "—"}</span></div>
           <div class="fx-barra"><i style="width:${pct}%"></i></div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
         caja.append(f);
