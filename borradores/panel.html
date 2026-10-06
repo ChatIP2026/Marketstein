@@ -33,8 +33,8 @@
   }
   /* Barra superior */
   .barra { display: flex; align-items: center; gap: 16px; padding: 10px 14px; margin-bottom: 14px; }
-  .logo { width: 42px; height: 42px; flex: none; display: block; filter: drop-shadow(0 4px 12px rgba(159,178,232,.3)); }
-  .logo .ojos { transform-origin: 27px 44px; animation: parpadeo 5s infinite; }
+  .logo { width: 40px; height: 45px; flex: none; display: block; filter: drop-shadow(0 4px 12px rgba(159,178,232,.3)); }
+  .logo .ojos { transform-origin: 30px 49px; animation: parpadeo 5s infinite; }
   @keyframes parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
   nav { flex: 1; display: flex; justify-content: center; gap: 4px; }
   nav a { color: var(--tenue); text-decoration: none; font-size: .92rem; padding: 7px 14px; border-radius: 9px; }
@@ -321,20 +321,20 @@
 <body>
 <div class="app">
   <header class="barra vidrio">
-    <svg class="logo" viewBox="0 0 64 64" role="img" aria-label="Inicio">
-      <g stroke="#0b0c10" stroke-width="2.6" stroke-linejoin="round" fill="#eef1fa">
-        <!-- orejas -->
-        <path d="M11 6.5c.4-1.4 1.8-2.1 3.1-1.6L26 9.8c.8.3 1.4 1 1.6 1.8l4 13.6-11.4 2.8L11.6 9.6c-.6-1-.8-2-.6-3.1Z"/>
-        <path d="M37.5 10.6c0-1.6 1.6-2.6 3-1.9 1 .5 1.9 1.4 2.4 2.5l3.3 8.4c.3.7.4 1.4.4 2.2V39l-9.1-6.3Z"/>
-        <!-- cabeza -->
-        <path d="M10 36.5c0-3 1.7-5.7 4.4-7.1l11.8-5.9c2.6-1.3 5.6-1.3 8.2 0l10.4 5.2c2.7 1.4 4.4 4.1 4.4 7.1v9.5c0 3-1.7 5.7-4.4 7.1l-10.4 5.2c-2.6 1.3-5.6 1.3-8.2 0L14.4 52.4C11.7 51 10 48.3 10 45.3Z"/>
+    <svg class="logo" viewBox="0 0 64 72" role="img" aria-label="Inicio">
+      <defs><clipPath id="logoCaja"><rect x="0" y="8" width="64" height="64" rx="16"/></clipPath></defs>
+      <rect x="0" y="8" width="64" height="64" rx="16" fill="#c9d3ee"/>
+      <!-- orejas: asoman por encima del recuadro -->
+      <g fill="#0b0c10">
+        <path d="M15 4.2c.4-1.6 2.1-2.4 3.6-1.8l10 4.2c.9.4 1.6 1.2 1.9 2.1l4.2 15.2-11 3-8.2-19.6c-.5-1-.7-2-.5-3.1Z"/>
+        <path d="M39 7.5c0-1.8 1.8-2.9 3.3-2.1 1.1.6 2 1.6 2.5 2.8l3 8.4c.3.8.4 1.6.4 2.4V34l-9.2-5.4Z"/>
       </g>
-      <!-- cara -->
-      <g class="ojos" fill="none" stroke="#0b0c10" stroke-width="2.4" stroke-linecap="round">
-        <path d="M17 44.5c1.4-2.6 4.4-2.6 5.8 0"/>
-        <path d="M30 44.5c1.6-2.9 5-2.9 6.6 0"/>
+      <!-- cabeza dentro del recuadro -->
+      <path d="M12 44c0-3.2 1.8-6.1 4.6-7.6l11.6-5.8c2.4-1.2 5.2-1.2 7.6 0l11.6 5.8c2.8 1.5 4.6 4.4 4.6 7.6v14c0 3.2-1.8 6.1-4.6 7.6L36 72H28l-11.4-6.4C13.8 64.1 12 61.2 12 58Z" fill="#0b0c10" clip-path="url(#logoCaja)"/>
+      <g class="ojos" fill="none" stroke="#c9d3ee" stroke-width="2.6" stroke-linecap="round">
+        <path d="M20 50c1.5-2.8 4.7-2.8 6.2 0"/><path d="M33.6 50c1.6-3 5.2-3 6.8 0"/>
       </g>
-      <path d="M25.4 49.2v3.8M23.5 51.1h3.8" stroke="#8d7cf5" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M29.6 55.6v4M27.6 57.6h4" stroke="#8d7cf5" stroke-width="2.4" stroke-linecap="round"/>
     </svg>
     <nav>
       <a class="activo">Inicio</a><a>Análisis</a><a>Proyectos</a><a>Equipo</a><a>Mensajes</a><a>Ajustes</a>
