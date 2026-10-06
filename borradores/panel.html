@@ -93,7 +93,7 @@
   .kpi-ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; color: var(--c);
     background: color-mix(in srgb, var(--c) 18%, transparent); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); font-weight: 700; }
   .kpi-num { font-size: 1.35rem; font-weight: 600; }
-  .kpi-txt { font-size: .78rem; color: var(--tenue); }
+  .kpi-txt { font-size: .76rem; color: var(--tenue); white-space: nowrap; }
   .tablero-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 14px; }
   .vistas { display: flex; gap: 2px; background: rgba(255,255,255,.04); border: 1px solid var(--borde); border-radius: 9px; padding: 3px; }
   .vista { font-size: .78rem; color: var(--tenue); padding: 4px 10px; border-radius: 7px; cursor: pointer; }
@@ -102,7 +102,7 @@
   .buscar, .filtro { background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--texto); border-radius: 9px; padding: 7px 10px; font: inherit; font-size: .82rem; }
   .buscar { width: 170px; } .filtro option { background: #1c1f28; }
   .nuevo-btn { background: linear-gradient(180deg, #8d7cf5, #6c5ce7); color: #fff; border: 0; border-radius: 9px; padding: 7px 14px; font: inherit; font-size: .82rem; cursor: pointer; }
-  .tablero { display: grid; grid-template-columns: repeat(4, minmax(200px, 1fr)); gap: 12px; overflow-x: auto; }
+  .tablero { display: grid; grid-template-columns: repeat(3, minmax(200px, 1fr)); gap: 12px; overflow-x: auto; }
   .columna { background: rgba(0,0,0,.22); border: 1px solid var(--borde); border-radius: 14px; padding: 10px; min-height: 260px; transition: background .15s; }
   .columna.encima { background: rgba(159,178,232,.08); border-color: var(--azul); }
   .columna h4 { margin: 2px 4px 10px; font-size: .88rem; font-weight: 600; display: flex; gap: 8px; align-items: center; }
@@ -121,7 +121,7 @@
   .ficha-pie { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 10px; color: var(--tenue); font-size: .74rem; }
   .avatares { display: flex; } .avatares span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: .6rem; font-weight: 700; color: #111; margin-right: -6px; border: 2px solid #262a36; }
   .vacia { color: var(--tenue); font-size: .78rem; text-align: center; padding: 20px 0; }
-  @media (max-width: 860px) { .kpis { grid-template-columns: repeat(2, 1fr); } .tablero { grid-template-columns: repeat(4, 240px); } .acciones { margin-left: 0; } }
+  @media (max-width: 860px) { .kpis { grid-template-columns: repeat(2, 1fr); } .tablero { grid-template-columns: repeat(3, 240px); } .acciones { margin-left: 0; } }
 
   [hidden] { display: none !important; }
   /* Etiquetas de estado */
@@ -134,10 +134,19 @@
   /* Línea de color a la izquierda de cada tarjeta, como en las alertas */
   .ficha { position: relative; padding-left: 18px !important; }
   .ficha::before { content: ""; position: absolute; left: 8px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: var(--acento); box-shadow: 0 0 10px var(--acento); }
-  .ficha.a-listo { --acento: #2ee6b0; background: linear-gradient(100deg, rgba(46,230,176,.07), rgba(34,37,48,.7) 40%); }
-  .ficha.a-en_curso { --acento: #ffd45c; background: linear-gradient(100deg, rgba(255,212,92,.07), rgba(34,37,48,.7) 40%); }
-  .ficha.a-vencido { --acento: #ff5c8a; background: linear-gradient(100deg, rgba(255,92,138,.09), rgba(34,37,48,.7) 40%); }
-  .ficha.a-sin_empezar { --acento: #7d8396; }
+  /* Todo el recuadro se tiñe del color de su línea, como en las alertas */
+  .a-listo, .t-listo { --acento: #2ee6b0; --tinte: 46, 230, 176; }
+  .a-en_curso, .t-en_curso { --acento: #ffd45c; --tinte: 255, 200, 70; }
+  .a-sin_empezar, .t-sin_empezar { --acento: #9aa1b4; --tinte: 154, 161, 180; }
+  .ficha, .kpi {
+    background: linear-gradient(115deg, rgba(var(--tinte), .16) 0%, rgba(var(--tinte), .05) 55%, rgba(20, 22, 30, .85) 100%) !important;
+    border: 1px solid rgba(var(--tinte), .28) !important; border-radius: 14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 0 24px rgba(var(--tinte), .06);
+  }
+  .kpi { position: relative; padding-left: 22px !important; }
+  .kpi::before { content: ""; position: absolute; left: 10px; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--acento); box-shadow: 0 0 10px var(--acento); }
+  .kpi .kpi-ico { --c: var(--acento); }
+  .kpi-ico svg { width: 20px; height: 20px; }
   /* Solo 2 proyectos a la vista por columna; el resto con la rueda del ratón */
   .col-lista { max-height: 330px; overflow-y: auto; padding-right: 4px; margin-right: -4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
   .col-lista::-webkit-scrollbar { width: 6px; } .col-lista::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 6px; }
@@ -190,13 +199,12 @@
 
     <!-- Contenido principal -->
     <main class="principal">
-      <div class="encabezado"><h2>Resumen general</h2></div>
 
       <div class="kpis">
-        <div class="kpi vidrio"><div class="kpi-ico" style="--c:#3fb67a">↗</div><div><div class="kpi-num" id="kTasa">0%</div><div class="kpi-txt">Tareas completadas</div></div></div>
-        <div class="kpi vidrio"><div class="kpi-ico" style="--c:#9fb2e8">▣</div><div><div class="kpi-num" id="kActivos">0</div><div class="kpi-txt">Proyectos activos</div></div></div>
-        <div class="kpi vidrio"><div class="kpi-ico" style="--c:#7c6cf0">✓</div><div><div class="kpi-num" id="kListos">0</div><div class="kpi-txt">Proyectos listos</div></div></div>
-        <div class="kpi vidrio"><div class="kpi-ico" style="--c:#e5484d">!</div><div><div class="kpi-num" id="kVencidos">0</div><div class="kpi-txt">Proyectos vencidos</div></div></div>
+        <div class="kpi t-en_curso"><div class="kpi-ico" data-ico="en_curso"></div><div><div class="kpi-num" id="kActivos">0</div><div class="kpi-txt">Proyectos activos</div></div></div>
+        <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div><div class="kpi-num" id="kTareasOk">0</div><div class="kpi-txt">Tareas completadas</div></div></div>
+        <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div><div class="kpi-num" id="kListos">0</div><div class="kpi-txt">Proyectos completados</div></div></div>
+        <div class="kpi t-sin_empezar"><div class="kpi-ico" data-ico="sin_empezar"></div><div><div class="kpi-num" id="kPend">0</div><div class="kpi-txt">Tareas pendientes</div></div></div>
       </div>
 
       <section class="seccion vidrio tablero-caja">
@@ -283,15 +291,15 @@
     sin_empezar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"><circle cx="12" cy="12" r="9"/></svg>',
   };
   const ETIQUETA = { sin_empezar: "Sin empezar", en_curso: "En curso", listo: "Listo", vencido: "Vencido" };
+  document.querySelectorAll("[data-ico]").forEach((d) => (d.innerHTML = ICONOS[d.dataset.ico]));
   const pill = (e) => `<span class="estado-pill e-${e}">${ICONOS[e]}${ETIQUETA[e]}</span>`;
   const COLUMNAS = [
     { id: "sin_empezar", titulo: "Sin empezar" },
     { id: "en_curso", titulo: "En curso" },
     { id: "listo", titulo: "Listo" },
-    { id: "vencido", titulo: "Vencidos" },
   ];
   const vencido = (p) => p.fecha && p.fecha < HOY && p.estado !== "listo";
-  const columnaDe = (p) => (vencido(p) ? "vencido" : p.estado);
+  const columnaDe = (p) => p.estado;
   const fmt = (f) => new Date(f + "T00:00").toLocaleDateString("es", { day: "numeric", month: "short" });
   const filtroSel = document.getElementById("filtro");
   Object.keys(COLORES).forEach((n) => filtroSel.append(new Option(n, n)));
@@ -303,10 +311,10 @@
 
     // Indicadores
     const total = proyectos.reduce((a, p) => a + p.total, 0), hechas = proyectos.reduce((a, p) => a + p.hechas, 0);
-    kTasa.textContent = (total ? Math.round((hechas / total) * 100) : 0) + "%";
     kActivos.textContent = proyectos.filter((p) => p.estado !== "listo").length;
+    kTareasOk.textContent = hechas;
     kListos.textContent = proyectos.filter((p) => p.estado === "listo").length;
-    kVencidos.textContent = proyectos.filter(vencido).length;
+    kPend.textContent = total - hechas;
 
     for (const v of ["tablero", "linea", "calendario"]) document.getElementById(v).hidden = true;
     if (vistaActual === "linea") return pintarLinea(visibles);
@@ -345,8 +353,7 @@
       col.ondragleave = () => col.classList.remove("encima");
       col.ondrop = (e) => {
         const p = proyectos.find((x) => x.id == e.dataTransfer.getData("id"));
-        if (c.id === "vencido") { pintar(); return; } // los vencidos se calculan por fecha
-        mapaP.get(p.id).estado = c.id; // solo en esta vista previa
+                mapaP.get(p.id).estado = c.id; // solo en esta vista previa
         armar();
       };
       tablero.append(col);
@@ -390,7 +397,7 @@
 
     let html = `<div class="lt"><div class="lt-fila lt-cab"><div class="lt-nombre"><small>PROYECTO</small></div><div class="lt-pista">${meses}</div></div>`;
     for (const p of lista) {
-      const est = vencido(p) ? "vencido" : p.estado;
+      const est = p.estado;
       let barra;
       if (p.fecha) {
         const a = pos(dia(p.created_at)), b = pos(new Date(dia(p.fecha).getTime() + 864e5));
@@ -399,7 +406,7 @@
       html += `<div class="lt-fila"><div class="lt-nombre">${esc(p.nombre)}<small>${NOMBRE_ESTADO[est]} · ${p.hechas}/${p.total} tareas</small></div><div class="lt-pista">${hoy}${barra}</div></div>`;
     }
     if (!lista.length) html += `<div class="vacia">No hay proyectos que mostrar</div>`;
-    html += `</div><div class="leyenda"><span><i style="background:#8a90a2"></i>Sin empezar</span><span><i style="background:#ffd45c"></i>En curso</span><span><i style="background:#2ee6b0"></i>Listo</span><span><i style="background:#ff8fcf"></i>Vencido</span><span><i style="background:var(--rojo);width:2px"></i>Hoy</span></div>`;
+    html += `</div><div class="leyenda"><span><i style="background:#8a90a2"></i>Sin empezar</span><span><i style="background:#ffd45c"></i>En curso</span><span><i style="background:#2ee6b0"></i>Listo</span><span><i style="background:var(--rojo);width:2px"></i>Hoy</span></div>`;
     cont.innerHTML = html;
   }
 
