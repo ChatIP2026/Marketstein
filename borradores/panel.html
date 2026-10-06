@@ -105,7 +105,7 @@
     <aside class="lateral vidrio">
       <div>
         <div class="tit"><h3 style="color:var(--texto)">Tareas <span class="chip">5</span></h3><span>＋ ⋯</span></div>
-        <div class="item sel"><div class="caja"></div>Tarea de ejemplo 1</div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 1</div>
         <div class="item"><div class="caja"></div>Tarea de ejemplo 2<div class="punto-rojo">1</div></div>
         <div class="item"><div class="caja"></div>Tarea de ejemplo 3</div>
         <div class="item"><div class="caja"></div>Tarea de ejemplo 4</div>
@@ -198,5 +198,17 @@
     </main>
   </div>
 </div>
+<script>
+  // Interacción de prueba (sin base de datos)
+  document.querySelectorAll("nav a").forEach(a => a.onclick = () => {
+    document.querySelectorAll("nav a").forEach(x => x.classList.remove("activo")); a.classList.add("activo");
+  });
+  document.querySelectorAll(".item, .pendiente").forEach(i => { i.style.cursor = "pointer"; i.onclick = () => i.classList.toggle("sel"); });
+</script>
+<style>
+  .item.sel > div:not(.caja):not(.punto-rojo), .item.sel { }
+  .pendiente.sel .caja, .item.sel .caja { background: var(--azul); border-color: var(--azul); }
+  nav a { cursor: pointer; }
+</style>
 </body>
 </html>
