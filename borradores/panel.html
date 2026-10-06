@@ -359,6 +359,17 @@
   .lt-aviso { grid-row: 1; grid-column: 1 / -1; font-size: .74rem; color: var(--tenue); padding-left: 8px; z-index: 1; }
   .lt-aviso.der { text-align: right; padding-right: 8px; }
   @media (max-width: 900px) { .lt-top { grid-template-columns: 1fr; } .lt-num { font-size: .8rem; } .lt-dn { font-size: .6rem; } }
+  /* Carga del equipo */
+  .carga { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; margin-top: 4px; border-radius: 10px; border: 1px solid transparent; }
+  .carga:hover { background: rgba(255,255,255,.04); }
+  .carga.activa { background: rgba(141,124,245,.12); border-color: rgba(141,124,245,.45); }
+  .carga-av { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .72rem; font-weight: 700; color: #141620; flex: none; }
+  .carga-info { flex: 1; min-width: 0; }
+  .carga-fila { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+  .carga-fila b { font-size: .86rem; } .carga-fila small { font-size: .72rem; color: var(--tenue); white-space: nowrap; }
+  .carga-barra { height: 4px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden; }
+  .carga-barra i { display: block; height: 100%; border-radius: 4px; opacity: .85; transition: width .3s; }
+  .lateral { overflow-y: auto; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -459,13 +470,18 @@
     <!-- Columna lateral -->
     <aside class="lateral vidrio">
       <div>
-        <div class="tit"><h3 style="color:var(--texto)">Tareas <span class="chip" id="nTareas">0</span></h3></div>
-        <div id="listaTareas"></div>
+        <div class="tit"><h3 style="color:var(--texto)">Vence pronto <span class="chip" id="nPronto">0</span></h3></div>
+        <div id="listaPronto"></div>
       </div>
       <hr />
       <div>
-        <div class="tit"><h3 style="color:var(--texto)">Vence pronto <span class="chip" id="nPronto">0</span></h3></div>
-        <div id="listaPronto"></div>
+        <div class="tit"><h3 style="color:var(--texto)">Carga del equipo</h3></div>
+        <div id="listaCarga"></div>
+      </div>
+      <hr />
+      <div>
+        <div class="tit"><h3 style="color:var(--texto)">Tareas pendientes <span class="chip" id="nTareas">0</span></h3></div>
+        <div id="listaTareas"></div>
       </div>
     </aside>
   </div>
@@ -497,18 +513,50 @@
 
   // Junta proyectos con el conteo de sus tareas
   // Lista de tareas de la columna derecha (pendientes primero)
+  // Días que faltan para una fecha (negativo = ya pasó)
+  const diasHasta = (f) => Math.round((new Date(f + "T00:00") - new Date(HOY + "T00:00")) / 864e5);
+  const textoPlazo = (d) => (d < 0 ? `venció hace ${-d} día${d === -1 ? "" : "s"}` : d === 0 ? "vence hoy" : d === 1 ? "vence mañana" : `vence en ${d} días`);
+
+  // Tareas pendientes: solo las no hechas, primero las de proyectos que vencen antes
   function pintarTareas() {
     const cont = document.getElementById("listaTareas");
-    const lista = [...mapaT.values()].sort((a, b) => a.hecha - b.hecha || a.created_at.localeCompare(b.created_at));
-    nTareas.textContent = lista.filter((t) => !t.hecha).length;
-    cont.innerHTML = lista.length ? "" : `<div class="vacia">No hay tareas todavía</div>`;
+    const fechaDe = (t) => mapaP.get(t.proyecto_id)?.fecha_limite || "9999";
+    const lista = [...mapaT.values()].filter((t) => !t.hecha).sort((a, b) => fechaDe(a).localeCompare(fechaDe(b)) || a.created_at.localeCompare(b.created_at));
+    nTareas.textContent = lista.length;
+    cont.innerHTML = lista.length ? "" : `<div class="pronto-ok">No hay tareas pendientes.</div>`;
     for (const t of lista) {
       const pr = mapaP.get(t.proyecto_id);
+      const plazo = pr?.fecha_limite ? diasHasta(pr.fecha_limite) : null;
       const it = document.createElement("div");
-      it.className = "item" + (t.hecha ? " hecha" : "");
-      it.innerHTML = `<div class="caja"></div><div><span class="t-texto">${esc(t.texto)}</span><span class="sub">${pr ? esc(pr.nombre) : ""}</span></div>`;
-      it.onclick = () => { t.hecha = !t.hecha; armar(); }; // solo en esta vista previa
+      it.className = "item";
+      it.title = "Marcar como hecha";
+      it.innerHTML = `<div class="caja"></div><div><span class="t-texto">${esc(t.texto)}</span>
+        <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` · <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>`;
+      it.onclick = () => { t.hecha = true; armar(); }; // solo en esta vista previa
       cont.append(it);
+    }
+  }
+
+  // Carga del equipo: proyectos activos y tareas pendientes por persona
+  function pintarCarga() {
+    const cont = document.getElementById("listaCarga");
+    const tareas = [...mapaT.values()];
+    const filas = Object.keys(COLORES).map((n) => {
+      const suyos = [...mapaP.values()].filter((p) => p.encargados.includes(n) && p.estado !== "listo");
+      const ids = new Set(suyos.map((p) => p.id));
+      return { n, activos: suyos.length, pend: tareas.filter((t) => ids.has(t.proyecto_id) && !t.hecha).length };
+    });
+    const max = Math.max(1, ...filas.map((f) => f.activos));
+    cont.innerHTML = "";
+    for (const f of filas) {
+      const b = document.createElement("button");
+      b.className = "carga" + (filtroSel.value === f.n ? " activa" : "");
+      b.title = filtroSel.value === f.n ? "Quitar filtro" : `Ver solo los proyectos de ${f.n}`;
+      b.innerHTML = `<i class="carga-av" style="background:${COLORES[f.n]}">${f.n[0]}</i>
+        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small>${f.activos} proy. · ${f.pend} pend.</small></div>
+        <div class="carga-barra"><i style="width:${(f.activos / max) * 100}%;background:${COLORES[f.n]}"></i></div></div>`;
+      b.onclick = () => { filtroSel.value = filtroSel.value === f.n ? "" : f.n; pintar(); };
+      cont.append(b);
     }
   }
 
@@ -578,8 +626,8 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarProyecto(); });
 
   function armar() {
-    pintarTareas();
     pintarPronto();
+    pintarTareas();
     if (abiertoId !== null) pintarDetalle();
     const tareas = [...mapaT.values()];
     proyectos = [...mapaP.values()].sort((a, b) => a.created_at.localeCompare(b.created_at)).map((p) => {
@@ -622,6 +670,7 @@
   addEventListener("resize", () => vistaActual === "kanban" && ajustarAltoColumnas());
 
   function pintar() {
+    pintarCarga();
     const q = document.getElementById("buscar").value.toLowerCase();
     const quien = filtroSel.value;
     const visibles = proyectos.filter((p) => p.nombre.toLowerCase().includes(q) && (!quien || p.encargados.includes(quien)));
