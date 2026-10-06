@@ -371,6 +371,13 @@
   .carga-barra i { display: block; height: 100%; border-radius: 4px; opacity: .85; transition: width .3s; }
   .lateral { overflow-y: auto; }
   .chip-ejemplo { font-size: .66rem; font-weight: 600; color: #f5c06a; background: rgba(245,158,11,.12); border: 1px dashed rgba(245,158,11,.45); border-radius: 6px; padding: 2px 7px; margin-left: 8px; vertical-align: middle; }
+  /* Los anillos se llenan al cargar el panel */
+  .cargando .anillo-prog { animation: llenar 1.1s cubic-bezier(.2,.8,.2,1) both; }
+  .cargando .ficha:nth-child(2) .anillo-prog { animation-delay: .12s; }
+  .cargando .ficha:nth-child(3) .anillo-prog { animation-delay: .24s; }
+  .cargando .ficha:nth-child(n+4) .anillo-prog { animation-delay: .36s; }
+  @keyframes llenar { from { stroke-dashoffset: var(--lleno); } to { stroke-dashoffset: var(--fin); } }
+  @media (prefers-reduced-motion: reduce) { .cargando .anillo-prog { animation: none; } }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -695,6 +702,7 @@
   }
   addEventListener("resize", () => vistaActual === "kanban" && ajustarAltoColumnas());
 
+  let animarAnillos = true;
   function pintar() {
     pintarCarga();
     const q = document.getElementById("buscar").value.toLowerCase();
@@ -744,7 +752,7 @@
           </div>
           <div class="cx-meta">
             <span title="Tareas hechas"><i class="cx-caja"></i>${p.hechas}/${p.total}</span>
-            <span title="Progreso"><svg width="15" height="15" viewBox="0 0 14 14"><circle cx="7" cy="7" r="${r}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle cx="7" cy="7" r="${r}" fill="none" stroke="var(--acento)" stroke-width="2" stroke-dasharray="${cir}" stroke-dashoffset="${cir * (1 - pct / 100)}" transform="rotate(-90 7 7)" stroke-linecap="round"/></svg>${pct}%</span>
+            <span title="Progreso"><svg width="15" height="15" viewBox="0 0 14 14"><circle cx="7" cy="7" r="${r}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2"/><circle class="anillo-prog" cx="7" cy="7" r="${r}" fill="none" stroke="var(--acento)" stroke-width="2" stroke-dasharray="${cir}" style="--lleno:${cir}; --fin:${cir * (1 - pct / 100)}; stroke-dashoffset:${cir * (1 - pct / 100)}" transform="rotate(-90 7 7)" stroke-linecap="${pct ? "round" : "butt"}"/></svg>${pct}%</span>
             <span class="cx-fecha ${vencido(p) ? "rojo-txt" : ""}" title="${p.fecha ? "Vence el " + fmt(p.fecha) : "Sin fecha límite"}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${p.fecha ? plazo : "—"}</span>
           </div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
@@ -762,6 +770,7 @@
       tablero.append(col);
     }
     ajustarAltoColumnas();
+    if (animarAnillos) { tablero.classList.add("cargando"); animarAnillos = false; setTimeout(() => tablero.classList.remove("cargando"), 1600); }
   }
   document.getElementById("buscar").oninput = pintar;
   filtroSel.onchange = pintar;
@@ -779,6 +788,7 @@
     document.querySelectorAll(".vista").forEach((x) => x.classList.remove("activa"));
     v.classList.add("activa");
     vistaActual = v.dataset.v;
+    if (vistaActual === "kanban") animarAnillos = true;
     pintar();
   });
   const dia = (f) => new Date(f.slice(0, 10) + "T00:00");
