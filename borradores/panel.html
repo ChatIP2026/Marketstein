@@ -160,9 +160,29 @@
   .kpi .kpi-ico { --c: var(--acento); }
   .kpi-ico svg { width: 20px; height: 20px; }
   /* Solo 2 proyectos a la vista por columna; el resto con la rueda del ratón */
-  .col-lista { max-height: 330px; overflow-y: auto; padding-right: 4px; margin-right: -4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
+  .col-lista { max-height: 372px; overflow-y: auto; padding-right: 4px; margin-right: -4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
   .col-lista::-webkit-scrollbar { width: 6px; } .col-lista::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 6px; }
   .columna { min-height: 0 !important; }
+  /* Tarjeta de proyecto estilo "lead card" */
+  .ficha { padding: 14px 14px 14px 20px !important; }
+  .fx-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+  .fx-titulo { font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; line-height: 1.3; }
+  .fx-persona { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .fx-avatares { display: flex; flex: none; }
+  .fx-avatares span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: .68rem; font-weight: 700; color: #141620;
+    margin-right: -10px; border: 2px solid rgba(255,255,255,.25); box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  .fx-avatares span:last-child { margin-right: 0; }
+  .fx-avatares .nadie { background: rgba(255,255,255,.08); color: var(--tenue); border-style: dashed; }
+  .fx-quien { min-width: 0; }
+  .fx-quien b { display: block; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fx-quien small { display: block; font-size: .72rem; color: var(--tenue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prio-txt { text-transform: none; } .prio-txt.alta { color: #ff8a8e; } .prio-txt.media { color: #f5c06a; } .prio-txt.baja { color: #6ee0a7; }
+  .rojo-txt { color: #ff8a8e; }
+  .fx-medio { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
+  .fx-chip { font-size: .68rem; color: var(--tenue); background: rgba(255,255,255,.07); border: 1px solid var(--borde); border-radius: 6px; padding: 3px 7px; }
+  .fx-pct { font-size: 1.7rem; font-weight: 700; line-height: 1; color: var(--acento); text-shadow: 0 0 18px rgba(var(--tinte), .35); }
+  .fx-barra { height: 9px; border-radius: 9px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .fx-barra i { display: block; height: 100%; min-width: 4px; border-radius: 9px; background: linear-gradient(90deg, rgba(var(--tinte), .55), var(--acento)); box-shadow: 0 0 10px rgba(var(--tinte), .5); }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
@@ -356,15 +376,19 @@
         const f = document.createElement("div");
         f.className = "ficha a-" + c.id;
         f.draggable = true;
+        const nombres = p.encargados.length ? p.encargados.join(", ") : "Sin encargado";
+        const fechaTxt = p.fecha ? `${vencido(p) ? "Venció" : "Vence"} ${fmt(p.fecha)}` : "Sin fecha";
         f.innerHTML = `
-          <div class="ficha-top">${pill(c.id)}<span class="prio ${p.prioridad}">${p.prioridad[0].toUpperCase() + p.prioridad.slice(1)}</span></div>
-          <div class="ficha-nombre">${esc(p.nombre)}</div>
-          <div class="barra-prog"><i style="width:${pct}%"></i></div>
-          ${p.fecha ? `<span class="fecha ${vencido(p) ? "vencida" : ""}">◷ ${vencido(p) ? "Venció el" : "Vence:"} ${fmt(p.fecha)}</span>` : `<span class="fecha">◷ Sin fecha</span>`}
-          <div class="ficha-pie">
-            <div class="avatares">${p.encargados.map((n) => `<span title="${n}" style="background:${COLORES[n]}">${n[0]}</span>`).join("")}</div>
-            <span>☑ ${p.hechas}/${p.total} tareas · ${pct}%</span>
-          </div>`;
+          <div class="fx-cab"><span class="fx-titulo">${esc(p.nombre)}</span>${pill(c.id)}</div>
+          <div class="fx-persona">
+            <div class="fx-avatares">${p.encargados.length
+              ? p.encargados.map((n) => `<span title="${n}" style="background:${COLORES[n]}">${n.slice(0, 2).toUpperCase()}</span>`).join("")
+              : `<span class="nadie">?</span>`}</div>
+            <div class="fx-quien"><b>${nombres}</b>
+              <small><span class="prio-txt ${p.prioridad}">Prioridad ${p.prioridad}</span> • <span class="${vencido(p) ? "rojo-txt" : ""}">${fechaTxt}</span></small></div>
+          </div>
+          <div class="fx-medio"><span class="fx-chip">Progreso · ${p.hechas}/${p.total} tareas</span><span class="fx-pct">${pct}%</span></div>
+          <div class="fx-barra"><i style="width:${pct}%"></i></div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
         caja.append(f);
       }
