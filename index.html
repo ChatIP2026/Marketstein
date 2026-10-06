@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tareas compartidas</title>
+  <style>
+    :root {
+      --bg: #f6f7f9; --card: #fff; --text: #1f2328; --muted: #6b7280;
+      --line: #e5e7eb; --accent: #2563eb; --danger: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    main { max-width: 560px; margin: 48px auto; padding: 0 16px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; }
+    .estado { font-size: .85rem; color: var(--muted); margin-bottom: 20px; }
+    .estado span { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; margin-right: 6px; }
+    .estado.ok span { background: #16a34a; }
+    form { display: flex; gap: 8px; margin-bottom: 16px; }
+    input[type=text] {
+      flex: 1; padding: 10px 12px; font-size: 1rem;
+      border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+    }
+    input[type=text]:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    button {
+      padding: 10px 16px; font-size: 1rem; border: 0; border-radius: 8px;
+      background: var(--accent); color: #fff; cursor: pointer;
+    }
+    ul { list-style: none; margin: 0; padding: 0; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+    li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    li:last-child { border-bottom: 0; }
+    li input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; }
+    .texto { flex: 1; cursor: text; word-break: break-word; }
+    li.hecha .texto { text-decoration: line-through; color: var(--muted); }
+    li input.editar { padding: 6px 8px; }
+    .borrar { background: none; color: var(--muted); padding: 4px 8px; font-size: 1.1rem; }
+    .borrar:hover { color: var(--danger); }
+    .vacio { padding: 24px; text-align: center; color: var(--muted); }
+    .ayuda { font-size: .8rem; color: var(--muted); margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Tareas compartidas</h1>
+    <div class="estado" id="estado"><span></span>Conectando…</div>
+
+    <form id="formulario">
+      <input type="text" id="nueva" placeholder="Nueva tarea…" autocomplete="off" required />
+      <button type="submit">Agregar</button>
+    </form>
+
+    <ul id="lista"><li class="vacio">Cargando…</li></ul>
+    <p class="ayuda">Doble clic sobre una tarea para editarla. Enter guarda, Esc cancela.</p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ===== PEGA AQUÍ TUS DATOS DE SUPABASE =====
+    const SUPABASE_URL = "PEGA_AQUI_TU_PROJECT_URL";
+    const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_KEY";
+    // ===========================================
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const lista = document.getElementById("lista");
+    const estado = document.getElementById("estado");
+    let tareas = new Map(); // id -> tarea
+    let editandoId = null;
+
+    function pintar() {
+      if (editandoId !== null) return; // no interrumpir a quien está editando
+      lista.innerHTML = "";
+      const ordenadas = [...tareas.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
+      if (ordenadas.length === 0) {
+        lista.innerHTML = '<li class="vacio">No hay tareas todavía.</li>';
+        return;
+      }
+      for (const t of ordenadas) {
+        const li = document.createElement("li");
+        if (t.hecha) li.className = "hecha";
+
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.checked = t.hecha;
+        check.onchange = () => db.from("tareas").update({ hecha: check.checked }).eq("id", t.id).then(revisar);
+
+        const texto = document.createElement("span");
+        texto.className = "texto";
+        texto.textContent = t.texto;
+        texto.ondblclick = () => editar(li, texto, t);
+
+        const borrar = document.createElement("button");
+        borrar.className = "borrar";
+        borrar.title = "Borrar";
+        borrar.textContent = "✕";
+        borrar.onclick = () => db.from("tareas").delete().eq("id", t.id).then(revisar);
+
+        li.append(check, texto, borrar);
+        lista.append(li);
+      }
+    }
+
+    function editar(li, texto, t) {
+      editandoId = t.id;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "editar";
+      input.value = t.texto;
+      texto.replaceWith(input);
+      input.focus();
+      input.select();
+
+      let terminado = false;
+      const terminar = (guardar) => {
+        if (terminado) return;
+        terminado = true;
+        editandoId = null;
+        const nuevo = input.value.trim();
+        if (guardar && nuevo && nuevo !== t.texto) {
+          db.from("tareas").update({ texto: nuevo }).eq("id", t.id).then(revisar);
+        }
+        pintar();
+      };
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") terminar(true);
+        if (e.key === "Escape") terminar(false);
+      };
+      input.onblur = () => terminar(true);
+    }
+
+    function revisar({ error }) {
+      if (error) alert("Error: " + error.message);
+    }
+
+    document.getElementById("formulario").onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById("nueva");
+      const texto = input.value.trim();
+      if (!texto) return;
+      input.value = "";
+      revisar(await db.from("tareas").insert({ texto }));
+    };
+
+    async function iniciar() {
+      // 1) Escuchar cambios en tiempo real
+      db.channel("tareas-cambios")
+        .on("postgres_changes", { event: "*", schema: "public", table: "tareas" }, (cambio) => {
+          if (cambio.eventType === "DELETE") tareas.delete(cambio.old.id);
+          else tareas.set(cambio.new.id, cambio.new);
+          pintar();
+        })
+        .subscribe((s) => {
+          const ok = s === "SUBSCRIBED";
+          estado.className = "estado" + (ok ? " ok" : "");
+          estado.lastChild.textContent = ok ? "En vivo" : "Reconectando…";
+          if (ok) cargar(); // recargar al (re)conectar para no perder cambios
+        });
+    }
+
+    async function cargar() {
+      const { data, error } = await db.from("tareas").select("*");
+      if (error) { lista.innerHTML = '<li class="vacio">Error: ' + error.message + "</li>"; return; }
+      tareas = new Map(data.map((t) => [t.id, t]));
+      pintar();
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>
