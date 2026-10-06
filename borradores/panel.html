@@ -198,6 +198,32 @@
     .acciones { width: 100%; margin-left: 0 !important; }
     .buscar { flex: 1; width: auto !important; min-width: 0; }
   }
+  /* Calendario nuevo */
+  .cal-layout { display: grid; grid-template-columns: 1fr 240px; gap: 22px; }
+  .cal-cab { display: flex !important; justify-content: space-between; align-items: center; margin-bottom: 14px !important; }
+  .cal-cab b { font-size: 1.1rem !important; }
+  .cal-nav { display: flex; gap: 6px; }
+  .cal-nav .cal-btn { height: 32px; min-width: 32px; display: grid; place-items: center; }
+  .cal { gap: 8px !important; }
+  .cal-dia-nom { padding-bottom: 6px !important; }
+  .cal-dia { min-height: 0 !important; aspect-ratio: 1 / .82; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    padding: 0 !important; font: inherit; font-size: .85rem !important; color: var(--texto); cursor: pointer;
+    background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.015)) !important; border: 1px solid var(--borde) !important; border-radius: 12px !important; transition: border-color .15s, background .15s; }
+  .cal-dia:hover { border-color: rgba(159,178,232,.4) !important; }
+  .cal-dia.hoy span { color: var(--azul); font-weight: 700; }
+  .cal-dia.hoy { box-shadow: none !important; }
+  .cal-dia.sel { background: linear-gradient(145deg, rgba(141,124,245,.35), rgba(108,92,231,.15)) !important; border-color: #8d7cf5 !important; box-shadow: 0 0 18px rgba(141,124,245,.25) !important; }
+  .cal-puntos { display: flex; gap: 3px; height: 6px; }
+  .cal-puntos i { width: 6px; height: 6px; border-radius: 50%; }
+  .cp-sin_empezar { background: #9aa1b4; } .cp-en_curso { background: #ffd45c; } .cp-listo { background: #2ee6b0; }
+  .cal-lado h4 { margin: 4px 0 14px; font-size: .95rem; }
+  .cal-item { position: relative; padding: 12px 12px 12px 18px; border-radius: 12px; margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; justify-content: space-between;
+    background: linear-gradient(115deg, rgba(var(--tinte), .16), rgba(20,22,30,.85)); border: 1px solid rgba(var(--tinte), .28); }
+  .cal-item::before { content: ""; position: absolute; left: 8px; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--acento); }
+  .cal-item b { font-size: .86rem; } .cal-item small { width: 100%; color: var(--tenue); font-size: .72rem; }
+  .cal-vacio { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--tenue); font-size: .82rem; text-align: center; padding: 30px 0; }
+  .cal-vacio svg { width: 40px; height: 40px; color: rgba(159,178,232,.5); }
+  @media (max-width: 1000px) { .cal-layout { grid-template-columns: 1fr; } }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
@@ -469,29 +495,50 @@
     cont.innerHTML = html;
   }
 
-  // ===== Calendario: cada proyecto aparece el día de su fecha límite =====
+  // ===== Calendario: solo los días del mes; al elegir un día se ven sus proyectos al costado =====
   let mesCal = new Date(); mesCal.setDate(1);
+  let diaSel = HOY;
+  const isoDe = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const mayus = (t) => t[0].toUpperCase() + t.slice(1);
   function pintarCalendario(lista) {
     const cont = document.getElementById("calendario");
     cont.hidden = false;
     const y = mesCal.getFullYear(), m = mesCal.getMonth();
-    const primero = new Date(y, m, 1), desfase = (primero.getDay() + 6) % 7; // semana empieza en lunes
-    const inicio = new Date(y, m, 1 - desfase);
-    let html = `<div class="cal-cab"><button class="cal-btn" id="calPrev">‹</button><b>${(t => t[0].toUpperCase() + t.slice(1))(primero.toLocaleDateString("es", { month: "long", year: "numeric" }))}</b><button class="cal-btn" id="calNext">›</button><button class="cal-btn" id="calHoy">Hoy</button></div><div class="cal">`;
-    for (const n of ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]) html += `<div class="cal-dia-nom">${n}</div>`;
-    for (let i = 0; i < 42; i++) {
-      const d = new Date(inicio); d.setDate(inicio.getDate() + i);
-      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-      const evs = lista.filter((p) => p.fecha === iso)
-        .map((p) => `<div class="cal-ev ${p.prioridad} ${p.estado === "listo" ? "hecho" : ""}" title="${esc(p.nombre)} · ${p.encargados.join(", ") || "sin encargado"}">${esc(p.nombre)}</div>`).join("");
-      html += `<div class="cal-dia ${d.getMonth() !== m ? "fuera" : ""} ${iso === HOY ? "hoy" : ""}"><div class="cal-num">${d.getDate()}</div>${evs}</div>`;
+    const dias = new Date(y, m + 1, 0).getDate();
+    const desfase = (new Date(y, m, 1).getDay() + 6) % 7; // semana empieza en lunes
+
+    let rejilla = "";
+    for (const n of ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]) rejilla += `<div class="cal-dia-nom">${n}</div>`;
+    for (let i = 0; i < desfase; i++) rejilla += `<div></div>`;
+    for (let d = 1; d <= dias; d++) {
+      const iso = isoDe(new Date(y, m, d));
+      const suyos = lista.filter((p) => p.fecha === iso);
+      const puntos = suyos.slice(0, 3).map((p) => `<i class="cp-${p.estado}"></i>`).join("");
+      rejilla += `<button class="cal-dia ${iso === HOY ? "hoy" : ""} ${iso === diaSel ? "sel" : ""} ${suyos.length ? "con" : ""}" data-iso="${iso}">
+        <span>${d}</span><div class="cal-puntos">${puntos}</div></button>`;
     }
+
+    const delDia = lista.filter((p) => p.fecha === diaSel);
+    const fechaSel = new Date(diaSel + "T00:00").toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" });
+    const lateral = delDia.length
+      ? delDia.map((p) => `<div class="cal-item a-${p.estado}"><b>${esc(p.nombre)}</b>${pill(p.estado)}
+          <small>${p.encargados.join(", ") || "Sin encargado"} · Prioridad ${p.prioridad}</small></div>`).join("")
+      : `<div class="cal-vacio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Sin proyectos que venzan este día</div>`;
+
     const sinFecha = lista.filter((p) => !p.fecha).length;
-    html += `</div>${sinFecha ? `<div class="nota">${sinFecha} proyecto(s) sin fecha límite no aparecen en el calendario.</div>` : ""}`;
-    cont.innerHTML = html;
+    cont.innerHTML = `<div class="cal-layout">
+      <div>
+        <div class="cal-cab"><b>${mayus(new Date(y, m, 1).toLocaleDateString("es", { month: "long", year: "numeric" }))}</b>
+          <div class="cal-nav"><button class="cal-btn" id="calHoy">Hoy</button><button class="cal-btn" id="calPrev">‹</button><button class="cal-btn" id="calNext">›</button></div></div>
+        <div class="cal">${rejilla}</div>
+        ${sinFecha ? `<div class="nota">${sinFecha} proyecto(s) sin fecha límite no aparecen en el calendario.</div>` : ""}
+      </div>
+      <aside class="cal-lado"><h4>${mayus(fechaSel)}</h4>${lateral}</aside>
+    </div>`;
+    cont.querySelectorAll(".cal-dia").forEach((b) => (b.onclick = () => { diaSel = b.dataset.iso; pintar(); }));
     calPrev.onclick = () => { mesCal.setMonth(mesCal.getMonth() - 1); pintar(); };
     calNext.onclick = () => { mesCal.setMonth(mesCal.getMonth() + 1); pintar(); };
-    calHoy.onclick = () => { mesCal = new Date(); mesCal.setDate(1); pintar(); };
+    calHoy.onclick = () => { mesCal = new Date(); mesCal.setDate(1); diaSel = HOY; pintar(); };
   }
   armar();
 </script>
