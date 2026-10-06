@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Panel de control</title>
+<style>
+  :root {
+    --fondo: #07080c; --vidrio: rgba(28, 31, 40, .72); --vidrio-2: rgba(40, 44, 56, .55);
+    --borde: rgba(255, 255, 255, .09); --texto: #e8eaf0; --tenue: #8a90a2;
+    --azul: #9fb2e8; --azul-fuerte: #6f86d6; --rojo: #e5484d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--texto);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(900px 600px at 55% 35%, rgba(70, 120, 220, .35), transparent 70%),
+      radial-gradient(700px 500px at 45% 95%, rgba(90, 70, 200, .30), transparent 70%),
+      var(--fondo);
+    padding: 32px 16px;
+  }
+  .app {
+    max-width: 1180px; margin: 0 auto; padding: 14px;
+    background: rgba(14, 16, 22, .82); border: 1px solid var(--borde); border-radius: 22px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
+    backdrop-filter: blur(18px);
+  }
+  .vidrio {
+    background: linear-gradient(180deg, var(--vidrio-2), var(--vidrio));
+    border: 1px solid var(--borde); border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  /* Barra superior */
+  .barra { display: flex; align-items: center; gap: 16px; padding: 10px 14px; margin-bottom: 14px; }
+  .logo { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, #d9dde8, #6b7183); }
+  nav { flex: 1; display: flex; justify-content: center; gap: 4px; }
+  nav a { color: var(--tenue); text-decoration: none; font-size: .92rem; padding: 7px 14px; border-radius: 9px; }
+  nav a.activo { color: var(--texto); background: rgba(255,255,255,.08); box-shadow: inset 0 -2px 0 var(--azul); }
+  .campana { position: relative; color: var(--tenue); font-size: 1.1rem; }
+  .campana b { position: absolute; top: -4px; right: -5px; width: 9px; height: 9px; border-radius: 50%; background: var(--rojo); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: .75rem; font-weight: 600; background: #3a4258; border: 1px solid var(--borde); }
+
+  /* Distribución */
+  .rejilla { display: grid; grid-template-columns: 260px 1fr; gap: 14px; }
+  .lateral { padding: 16px; display: flex; flex-direction: column; gap: 18px; }
+  .lateral h3, .seccion h3 { margin: 0; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .chip { font-size: .7rem; color: var(--tenue); background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; }
+  .tit { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: var(--tenue); }
+  .item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; font-size: .88rem; }
+  .item.sel { background: rgba(255,255,255,.07); border: 1px solid var(--borde); }
+  .caja { width: 15px; height: 15px; border: 1.5px solid #5b6275; border-radius: 4px; flex: none; }
+  .item.sel .caja { border-color: var(--azul); background: rgba(159,178,232,.2); }
+  .punto-rojo { margin-left: auto; width: 16px; height: 16px; border-radius: 50%; background: var(--rojo); font-size: .65rem; display: grid; place-items: center; }
+  .sub { display: block; font-size: .72rem; color: var(--tenue); }
+  hr { border: 0; border-top: 1px solid var(--borde); margin: 0; }
+  .actividad { display: flex; gap: 10px; align-items: center; font-size: .86rem; margin-top: 10px; }
+  .ico { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.07); display: grid; place-items: center; font-size: .8rem; flex: none; }
+  .accesos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .acceso { aspect-ratio: 1 / 1.1; display: grid; place-items: center; align-content: center; gap: 6px; font-size: .74rem; border-radius: 14px; }
+  .acceso span { font-size: 1.2rem; }
+
+  .principal { display: flex; flex-direction: column; gap: 14px; }
+  .encabezado { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px 0; }
+  .encabezado h2 { margin: 0; font-size: 1.35rem; font-weight: 600; }
+  .boton { color: var(--texto); background: rgba(255,255,255,.05); border: 1px solid var(--borde); border-radius: 10px; padding: 7px 14px; font-size: .85rem; }
+  .tarjetas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .tarjeta { padding: 14px 16px; min-height: 150px; display: flex; flex-direction: column; }
+  .tarjeta .tit { margin: 0; font-size: .82rem; }
+  .cifra { font-size: 1.6rem; font-weight: 600; margin: 4px 0 6px; }
+  .tarjeta svg { margin-top: auto; }
+  .ejes { display: flex; justify-content: space-between; font-size: .62rem; color: var(--tenue); margin-top: 4px; }
+  .anillo { display: grid; place-items: center; margin-top: auto; }
+
+  .seccion { padding: 16px; }
+  .fases { display: flex; gap: 4px; margin: 14px 0 8px; }
+  .fases i { flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,.1); }
+  .fases i.ok { background: var(--azul); }
+  .fases-nombres { display: flex; justify-content: space-between; font-size: .72rem; color: var(--tenue); }
+  .selector { font-size: .78rem; color: var(--tenue); border: 1px solid var(--borde); border-radius: 8px; padding: 4px 10px; }
+  .inferior { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; }
+  .pendiente { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 12px; margin-top: 10px; background: rgba(255,255,255,.03); font-size: .88rem; }
+  .pendiente .check { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; background: var(--azul-fuerte); display: grid; place-items: center; font-size: .65rem; }
+  .pendiente .info { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--tenue); display: grid; place-items: center; font-size: .65rem; color: var(--tenue); }
+
+  @media (max-width: 860px) {
+    .rejilla, .inferior, .tarjetas { grid-template-columns: 1fr; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="barra vidrio">
+    <div class="logo"></div>
+    <nav>
+      <a class="activo">Inicio</a><a>Análisis</a><a>Proyectos</a><a>Equipo</a><a>Mensajes</a><a>Ajustes</a>
+    </nav>
+    <div class="campana"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><b></b></div>
+    <div class="avatar">EQ</div>
+  </header>
+
+  <div class="rejilla">
+    <!-- Columna lateral -->
+    <aside class="lateral vidrio">
+      <div>
+        <div class="tit"><h3 style="color:var(--texto)">Tareas <span class="chip">5</span></h3><span>＋ ⋯</span></div>
+        <div class="item sel"><div class="caja"></div>Tarea de ejemplo 1</div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 2<div class="punto-rojo">1</div></div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 3</div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 4</div>
+        <div class="item"><div class="caja"></div><div>Tarea de ejemplo 5<span class="sub">Detalle de la tarea</span></div></div>
+      </div>
+      <hr />
+      <div>
+        <h3>Actividad reciente</h3>
+        <div class="actividad"><div class="ico">▦</div><div>Actividad de ejemplo<span class="sub">hace 30 minutos</span></div></div>
+        <div class="actividad"><div class="ico">◷</div><div>Actividad de ejemplo<span class="sub">hace 2 horas</span></div></div>
+      </div>
+      <hr />
+      <div>
+        <h3>Accesos rápidos</h3>
+        <div class="accesos">
+          <div class="acceso vidrio"><span>📅</span>Calendario</div>
+          <div class="acceso vidrio"><span>📄</span>Docs</div>
+          <div class="acceso vidrio"><span>💬</span>Chat</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="principal">
+      <div class="encabezado"><h2>Resumen general</h2><span class="boton">＋ Nuevo proyecto</span></div>
+
+      <div class="tarjetas">
+        <div class="tarjeta vidrio">
+          <div class="tit">Indicador 1 <span>⋮</span></div>
+          <div class="cifra">12</div>
+          <svg viewBox="0 0 200 60" height="60">
+            <defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#9fb2e8" stop-opacity=".35"/><stop offset="1" stop-color="#9fb2e8" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 50 C20 40 35 32 55 38 S90 26 110 34 S140 10 155 22 S185 18 200 8 V60 H0Z" fill="url(#g1)"/>
+            <path d="M0 50 C20 40 35 32 55 38 S90 26 110 34 S140 10 155 22 S185 18 200 8" fill="none" stroke="#9fb2e8" stroke-width="2"/>
+          </svg>
+          <div class="ejes"><span>Ene</span><span>Mar</span><span>May</span><span>Jul</span><span>Sep</span><span>Nov</span></div>
+        </div>
+        <div class="tarjeta vidrio">
+          <div class="tit">Indicador 2 <span>⋮</span></div>
+          <div class="cifra">$74.5K</div>
+          <svg viewBox="0 0 200 60" height="60">
+            <g fill="#9fb2e8">
+              <rect x="10" y="34" width="14" height="26" rx="3"/><rect x="42" y="22" width="14" height="38" rx="3"/>
+              <rect x="74" y="36" width="14" height="24" rx="3"/><rect x="106" y="12" width="14" height="48" rx="3"/>
+              <rect x="138" y="28" width="14" height="32" rx="3"/><rect x="170" y="6" width="14" height="54" rx="3" fill="#4a5064"/>
+            </g>
+          </svg>
+          <div class="ejes"><span>Ene</span><span>Mar</span><span>May</span><span>Jul</span><span>Sep</span><span>Nov</span></div>
+        </div>
+        <div class="tarjeta vidrio">
+          <div class="tit">Indicador 3 <span>⋮</span></div>
+          <div class="cifra">94%</div>
+          <div class="anillo">
+            <svg width="92" height="92" viewBox="0 0 92 92">
+              <circle cx="46" cy="46" r="38" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/>
+              <circle cx="46" cy="46" r="38" fill="none" stroke="#9fb2e8" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="238.8" stroke-dashoffset="14.3" transform="rotate(-90 46 46)"/>
+              <text x="46" y="51" text-anchor="middle" fill="#e8eaf0" font-size="15" font-weight="600">94%</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <section class="seccion vidrio">
+        <div class="tit" style="margin:0"><h3 style="color:var(--texto)">Hitos del proyecto</h3><span class="selector">Línea de tiempo ⌄</span></div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px">
+          <div>Proyecto de ejemplo – Fase 3<span class="sub">75 % completado</span></div><div style="color:var(--tenue)">75%</div>
+        </div>
+        <div class="fases"><i class="ok"></i><i class="ok"></i><i class="ok"></i><i></i></div>
+        <div class="fases-nombres"><span>Fase 1</span><span>Fase 2</span><span>Fase 3</span><span>Fase 4</span></div>
+      </section>
+
+      <div class="inferior">
+        <section class="seccion vidrio">
+          <h3>Actividad semanal</h3>
+          <svg viewBox="0 0 400 150" width="100%" style="margin-top:10px">
+            <g stroke="rgba(255,255,255,.07)"><line x1="0" x2="400" y1="20" y2="20"/><line x1="0" x2="400" y1="55" y2="55"/><line x1="0" x2="400" y1="90" y2="90"/><line x1="0" x2="400" y1="125" y2="125"/></g>
+            <defs><linearGradient id="g2" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#9fb2e8" stop-opacity=".3"/><stop offset="1" stop-color="#9fb2e8" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 125 C30 100 50 90 70 98 S110 105 130 85 S170 60 195 80 S240 50 265 55 S310 70 330 60 S370 30 400 15 V150 H0Z" fill="url(#g2)"/>
+            <path d="M0 125 C30 100 50 90 70 98 S110 105 130 85 S170 60 195 80 S240 50 265 55 S310 70 330 60 S370 30 400 15" fill="none" stroke="#9fb2e8" stroke-width="2"/>
+          </svg>
+          <div class="ejes"><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span></div>
+        </section>
+        <section class="seccion vidrio">
+          <div class="tit" style="margin:0"><h3 style="color:var(--texto)">Pendientes</h3><span>⋯</span></div>
+          <div class="pendiente"><div class="caja"></div><div>Pendiente de ejemplo<span class="sub">Detalle</span></div><div class="check">✓</div></div>
+          <div class="pendiente"><div class="caja"></div><div>Pendiente de ejemplo<span class="sub">Detalle</span></div><div class="info">i</div></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
