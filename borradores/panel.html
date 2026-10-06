@@ -307,7 +307,9 @@
   .cx-prio.media { color: #f5c06a; background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.35); }
   .cx-prio.baja { color: #8fb4ff; background: rgba(90,140,255,.1); border-color: rgba(90,140,255,.35); }
   .cx-meta { display: flex; gap: 14px; align-items: center; font-size: .74rem; color: var(--tenue); }
-  .cx-meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .cx-meta span { display: inline-flex; align-items: center; gap: 6px; line-height: 1; height: 16px; }
+  .cx-meta svg { display: block; flex: none; }
+  .cx-caja { width: 12px; height: 12px; border: 1.5px solid currentColor; border-radius: 3px; flex: none; opacity: .9; }
   .cx-meta .cx-fecha { margin-left: auto; }
   /* Todo más grande */
   html { font-size: 17.5px; }
@@ -636,9 +638,9 @@
             <span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span>
           </div>
           <div class="cx-meta">
-            <span title="Tareas hechas">☐ ${p.hechas}/${p.total}</span>
-            <span title="Progreso"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="${r}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle cx="7" cy="7" r="${r}" fill="none" stroke="var(--acento)" stroke-width="2" stroke-dasharray="${cir}" stroke-dashoffset="${cir * (1 - pct / 100)}" transform="rotate(-90 7 7)" stroke-linecap="round"/></svg>${pct}%</span>
-            <span class="cx-fecha ${vencido(p) ? "rojo-txt" : ""}" title="${p.fecha ? "Vence el " + fmt(p.fecha) : "Sin fecha límite"}">◷ ${p.fecha ? plazo : "—"}</span>
+            <span title="Tareas hechas"><i class="cx-caja"></i>${p.hechas}/${p.total}</span>
+            <span title="Progreso"><svg width="15" height="15" viewBox="0 0 14 14"><circle cx="7" cy="7" r="${r}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle cx="7" cy="7" r="${r}" fill="none" stroke="var(--acento)" stroke-width="2" stroke-dasharray="${cir}" stroke-dashoffset="${cir * (1 - pct / 100)}" transform="rotate(-90 7 7)" stroke-linecap="round"/></svg>${pct}%</span>
+            <span class="cx-fecha ${vencido(p) ? "rojo-txt" : ""}" title="${p.fecha ? "Vence el " + fmt(p.fecha) : "Sin fecha límite"}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${p.fecha ? plazo : "—"}</span>
           </div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
         f.onclick = () => abrirProyecto(p.id);
