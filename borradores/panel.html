@@ -33,8 +33,9 @@
   }
   /* Barra superior */
   .barra { display: flex; align-items: center; gap: 16px; padding: 10px 14px; margin-bottom: 14px; }
-  .boton-neo.logo-caja { width: 60px; height: 60px; border-radius: 16px; flex: none; }
-  .logo-caja .logo { width: 44px !important; height: 44px !important; }
+  .boton-neo.logo-caja { width: 56px; height: 56px; flex: none; background: none; border: 0; box-shadow: none; }
+  .boton-neo.logo-caja:active { box-shadow: none; }
+  .logo-caja .logo { width: 52px !important; height: 52px !important; filter: drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
   .logo { width: 44px; height: 44px; flex: none; display: block; }
   .logo .ojos { transform-origin: 32px 51px; animation: parpadeo 5s infinite; }
   @keyframes parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
