@@ -201,15 +201,17 @@
   .pendiente.sel .caja, .item.sel .caja { background: var(--azul); border-color: var(--azul); }
   nav a { cursor: pointer; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ===== Conexión a Supabase (mismos datos que la página de proyectos) =====
-  const db = supabase.createClient("https://aqjmdlrafjjzdrqnogid.supabase.co", "sb_publishable_EYSGo1Od8olfwv79ItxRzg_WDLfk1zf");
+  // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
+  // nada de lo que hagas aquí se guarda ni afecta a la página real.
   const HOY = new Date().toISOString().slice(0, 10);
   const COLORES = { Ariana: "#f4a6c1", Carlos: "#9fd3f0", Pierina: "#c3b5f7", Hilary: "#f7d38b" };
   const mapaP = new Map(), mapaT = new Map();
+  const COPIA_PROYECTOS = [{"id": 1, "nombre": "PODCAST", "estado": "sin_empezar", "prioridad": "media", "encargados": ["Pierina", "Carlos", "Hilary"], "fecha_limite": null, "created_at": "2026-10-06T16:27:47.588971+00:00"}, {"id": 2, "nombre": "MAILING", "estado": "sin_empezar", "prioridad": "media", "encargados": [], "fecha_limite": null, "created_at": "2026-10-06T16:27:55.618877+00:00"}, {"id": 3, "nombre": "programa de puntos", "estado": "sin_empezar", "prioridad": "media", "encargados": ["Ariana"], "fecha_limite": null, "created_at": "2026-10-06T16:29:11.698363+00:00"}, {"id": 4, "nombre": "Diseño", "estado": "en_curso", "prioridad": "alta", "encargados": ["Ariana"], "fecha_limite": "2026-10-23", "created_at": "2026-10-06T16:29:28.305491+00:00"}, {"id": 5, "nombre": "ia para legal", "estado": "sin_empezar", "prioridad": "media", "encargados": [], "fecha_limite": "2026-10-27", "created_at": "2026-10-06T16:31:29.879376+00:00"}];
+  const COPIA_TAREAS = [{"id": 1, "proyecto_id": 4, "texto": "Flyer/video halloween", "hecha": false, "created_at": "2026-10-06T16:29:45.326742+00:00"}];
+  COPIA_PROYECTOS.forEach((x) => mapaP.set(x.id, x));
+  COPIA_TAREAS.forEach((x) => mapaT.set(x.id, x));
   let proyectos = [];
-  const revisar = ({ error }) => { if (error) alert("Error: " + error.message); };
   const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // Junta proyectos con el conteo de sus tareas
@@ -275,7 +277,8 @@
       col.ondrop = (e) => {
         const p = proyectos.find((x) => x.id == e.dataTransfer.getData("id"));
         if (c.id === "vencido") { pintar(); return; } // los vencidos se calculan por fecha
-        if (p.estado !== c.id) db.from("proyectos").update({ estado: c.id }).eq("id", p.id).then(revisar);
+        mapaP.get(p.id).estado = c.id; // solo en esta vista previa
+        armar();
       };
       tablero.append(col);
     }
@@ -284,25 +287,12 @@
   filtroSel.onchange = pintar;
   document.getElementById("nuevoBtn").onclick = () => {
     const nombre = prompt("Nombre del nuevo proyecto:");
-    if (nombre && nombre.trim()) db.from("proyectos").insert({ nombre: nombre.trim() }).then(revisar);
+    if (nombre && nombre.trim()) {
+      mapaP.set(Date.now(), { id: Date.now(), nombre: nombre.trim(), estado: "sin_empezar", prioridad: "media", encargados: [], fecha_limite: null, created_at: new Date().toISOString() });
+      armar();
+    }
   };
-
-  async function cargar() {
-    const [p, t] = await Promise.all([db.from("proyectos").select("*"), db.from("tareas").select("*")]);
-    if (p.error || t.error) return revisar({ error: p.error || t.error });
-    mapaP.clear(); p.data.forEach((x) => mapaP.set(x.id, x));
-    mapaT.clear(); t.data.forEach((x) => mapaT.set(x.id, x));
-    armar();
-  }
-  const alCambiar = (mapa) => (c) => {
-    if (c.eventType === "DELETE") mapa.delete(c.old.id); else mapa.set(c.new.id, c.new);
-    armar();
-  };
-  db.channel("panel")
-    .on("postgres_changes", { event: "*", schema: "public", table: "proyectos" }, alCambiar(mapaP))
-    .on("postgres_changes", { event: "*", schema: "public", table: "tareas" }, alCambiar(mapaT))
-    .subscribe((estado) => { if (estado === "SUBSCRIBED") cargar(); });
-  pintar();
+  armar();
 </script>
 </body>
 </html>
