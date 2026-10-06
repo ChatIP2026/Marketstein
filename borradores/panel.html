@@ -122,6 +122,38 @@
   .avatares { display: flex; } .avatares span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: .6rem; font-weight: 700; color: #111; margin-right: -6px; border: 2px solid #262a36; }
   .vacia { color: var(--tenue); font-size: .78rem; text-align: center; padding: 20px 0; }
   @media (max-width: 860px) { .kpis { grid-template-columns: repeat(2, 1fr); } .tablero { grid-template-columns: repeat(4, 240px); } .acciones { margin-left: 0; } }
+
+  [hidden] { display: none !important; }
+  /* Línea de tiempo */
+  .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
+  .lt-fila { display: grid; grid-template-columns: 190px 1fr; min-width: 760px; border-bottom: 1px solid var(--borde); }
+  .lt-fila:last-child { border-bottom: 0; }
+  .lt-nombre { padding: 12px 14px; font-size: .84rem; border-right: 1px solid var(--borde); display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  .lt-nombre small { color: var(--tenue); font-size: .7rem; }
+  .lt-pista { position: relative; height: 52px; }
+  .lt-cab .lt-pista { height: 34px; }
+  .lt-mes { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--borde); font-size: .7rem; color: var(--tenue); padding: 9px 6px; }
+  .lt-hoy { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--rojo); opacity: .7; }
+  .lt-barra { position: absolute; top: 14px; height: 24px; border-radius: 7px; font-size: .7rem; display: flex; align-items: center; padding: 0 8px; white-space: nowrap; overflow: hidden; color: #10121a; font-weight: 600; }
+  .lt-barra.sin_empezar { background: #8a90a2; } .lt-barra.en_curso { background: #8d7cf5; } .lt-barra.listo { background: #5fd49a; } .lt-barra.vencido { background: #ff8a8e; }
+  .lt-sin { position: absolute; top: 18px; left: 10px; font-size: .74rem; color: var(--tenue); }
+  .leyenda { display: flex; gap: 14px; flex-wrap: wrap; font-size: .74rem; color: var(--tenue); margin-top: 10px; }
+  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  /* Calendario */
+  .cal-cab { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .cal-cab b { font-size: .95rem; min-width: 150px; }
+  .cal-btn { font-size: .85rem !important; background: rgba(255,255,255,.05); border: 1px solid var(--borde); color: var(--texto); border-radius: 8px; padding: 4px 10px; cursor: pointer; font: inherit; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .cal-dia-nom { font-size: .7rem; color: var(--tenue); text-align: center; padding-bottom: 2px; }
+  .cal-dia { min-height: 92px; border: 1px solid var(--borde); border-radius: 10px; background: rgba(0,0,0,.22); padding: 6px; font-size: .72rem; }
+  .cal-dia.fuera { opacity: .35; }
+  .cal-dia.hoy { border-color: var(--azul); box-shadow: inset 0 0 0 1px var(--azul); }
+  .cal-num { color: var(--tenue); margin-bottom: 4px; }
+  .cal-dia.hoy .cal-num { color: var(--azul); font-weight: 700; }
+  .cal-ev { border-radius: 6px; padding: 3px 6px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .cal-ev.alta { background: rgba(229,72,77,.22); color: #ff9da0; } .cal-ev.media { background: rgba(245,158,11,.2); color: #f5c06a; } .cal-ev.baja { background: rgba(63,182,122,.2); color: #6ee0a7; }
+  .cal-ev.hecho { text-decoration: line-through; opacity: .6; }
+  .nota { font-size: .74rem; color: var(--tenue); margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -177,7 +209,7 @@
       <section class="seccion vidrio tablero-caja">
         <div class="tablero-barra">
           <h3>Todos los proyectos ⌄</h3>
-          <div class="vistas"><span class="vista activa">▥ Kanban</span><span class="vista">≡ Línea de tiempo</span><span class="vista">▦ Calendario</span></div>
+          <div class="vistas"><span class="vista activa" data-v="kanban">▥ Kanban</span><span class="vista" data-v="linea">≡ Línea de tiempo</span><span class="vista" data-v="calendario">▦ Calendario</span></div>
           <div class="acciones">
             <input id="buscar" class="buscar" placeholder="⌕  Buscar…" />
             <select id="filtro" class="filtro"><option value="">Todos</option></select>
@@ -185,6 +217,8 @@
           </div>
         </div>
         <div class="tablero" id="tablero"></div>
+        <div id="linea" hidden></div>
+        <div id="calendario" hidden></div>
       </section>
     </main>
   </div>
@@ -247,7 +281,11 @@
     kListos.textContent = proyectos.filter((p) => p.estado === "listo").length;
     kVencidos.textContent = proyectos.filter(vencido).length;
 
+    for (const v of ["tablero", "linea", "calendario"]) document.getElementById(v).hidden = true;
+    if (vistaActual === "linea") return pintarLinea(visibles);
+    if (vistaActual === "calendario") return pintarCalendario(visibles);
     const tablero = document.getElementById("tablero");
+    tablero.hidden = false;
     tablero.innerHTML = "";
     for (const c of COLUMNAS) {
       const lista = visibles.filter((p) => columnaDe(p) === c.id);
@@ -292,6 +330,72 @@
       armar();
     }
   };
+
+  // ===== Cambiar de vista =====
+  let vistaActual = "kanban";
+  document.querySelectorAll(".vista").forEach((v) => v.onclick = () => {
+    document.querySelectorAll(".vista").forEach((x) => x.classList.remove("activa"));
+    v.classList.add("activa");
+    vistaActual = v.dataset.v;
+    pintar();
+  });
+  const dia = (f) => new Date(f.slice(0, 10) + "T00:00");
+  const NOMBRE_ESTADO = { sin_empezar: "Sin empezar", en_curso: "En curso", listo: "Listo", vencido: "Vencido" };
+
+  // ===== Línea de tiempo: cada proyecto va desde que se creó hasta su fecha límite =====
+  function pintarLinea(lista) {
+    const cont = document.getElementById("linea");
+    cont.hidden = false;
+    const conFecha = lista.filter((p) => p.fecha);
+    const fechas = [new Date(), ...lista.map((p) => dia(p.created_at)), ...conFecha.map((p) => dia(p.fecha))];
+    const ini = new Date(Math.min(...fechas)); ini.setDate(1);
+    const fin = new Date(Math.max(...fechas)); fin.setMonth(fin.getMonth() + 1, 1);
+    const largo = fin - ini, pos = (d) => ((d - ini) / largo) * 100;
+
+    let meses = "";
+    for (let m = new Date(ini); m < fin; m.setMonth(m.getMonth() + 1))
+      meses += `<div class="lt-mes" style="left:${pos(m)}%">${m.toLocaleDateString("es", { month: "long", year: "numeric" })}</div>`;
+    const hoy = `<div class="lt-hoy" style="left:${pos(new Date())}%" title="Hoy"></div>`;
+
+    let html = `<div class="lt"><div class="lt-fila lt-cab"><div class="lt-nombre"><small>PROYECTO</small></div><div class="lt-pista">${meses}</div></div>`;
+    for (const p of lista) {
+      const est = vencido(p) ? "vencido" : p.estado;
+      let barra;
+      if (p.fecha) {
+        const a = pos(dia(p.created_at)), b = pos(new Date(dia(p.fecha).getTime() + 864e5));
+        barra = `<div class="lt-barra ${est}" style="left:${a}%;width:${Math.max(b - a, 1.5)}%" title="${esc(p.nombre)}">${esc(p.nombre)}</div>`;
+      } else barra = `<div class="lt-sin">Sin fecha límite</div>`;
+      html += `<div class="lt-fila"><div class="lt-nombre">${esc(p.nombre)}<small>${NOMBRE_ESTADO[est]} · ${p.hechas}/${p.total} tareas</small></div><div class="lt-pista">${hoy}${barra}</div></div>`;
+    }
+    if (!lista.length) html += `<div class="vacia">No hay proyectos que mostrar</div>`;
+    html += `</div><div class="leyenda"><span><i style="background:#8a90a2"></i>Sin empezar</span><span><i style="background:#8d7cf5"></i>En curso</span><span><i style="background:#5fd49a"></i>Listo</span><span><i style="background:#ff8a8e"></i>Vencido</span><span><i style="background:var(--rojo);width:2px"></i>Hoy</span></div>`;
+    cont.innerHTML = html;
+  }
+
+  // ===== Calendario: cada proyecto aparece el día de su fecha límite =====
+  let mesCal = new Date(); mesCal.setDate(1);
+  function pintarCalendario(lista) {
+    const cont = document.getElementById("calendario");
+    cont.hidden = false;
+    const y = mesCal.getFullYear(), m = mesCal.getMonth();
+    const primero = new Date(y, m, 1), desfase = (primero.getDay() + 6) % 7; // semana empieza en lunes
+    const inicio = new Date(y, m, 1 - desfase);
+    let html = `<div class="cal-cab"><button class="cal-btn" id="calPrev">‹</button><b>${(t => t[0].toUpperCase() + t.slice(1))(primero.toLocaleDateString("es", { month: "long", year: "numeric" }))}</b><button class="cal-btn" id="calNext">›</button><button class="cal-btn" id="calHoy">Hoy</button></div><div class="cal">`;
+    for (const n of ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]) html += `<div class="cal-dia-nom">${n}</div>`;
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(inicio); d.setDate(inicio.getDate() + i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      const evs = lista.filter((p) => p.fecha === iso)
+        .map((p) => `<div class="cal-ev ${p.prioridad} ${p.estado === "listo" ? "hecho" : ""}" title="${esc(p.nombre)} · ${p.encargados.join(", ") || "sin encargado"}">${esc(p.nombre)}</div>`).join("");
+      html += `<div class="cal-dia ${d.getMonth() !== m ? "fuera" : ""} ${iso === HOY ? "hoy" : ""}"><div class="cal-num">${d.getDate()}</div>${evs}</div>`;
+    }
+    const sinFecha = lista.filter((p) => !p.fecha).length;
+    html += `</div>${sinFecha ? `<div class="nota">${sinFecha} proyecto(s) sin fecha límite no aparecen en el calendario.</div>` : ""}`;
+    cont.innerHTML = html;
+    calPrev.onclick = () => { mesCal.setMonth(mesCal.getMonth() - 1); pintar(); };
+    calNext.onclick = () => { mesCal.setMonth(mesCal.getMonth() + 1); pintar(); };
+    calHoy.onclick = () => { mesCal = new Date(); mesCal.setDate(1); pintar(); };
+  }
   armar();
 </script>
 </body>
