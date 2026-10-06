@@ -752,7 +752,7 @@
           </div>
           <div class="cx-meta">
             <span title="Tareas hechas"><i class="cx-caja"></i>${p.hechas}/${p.total}</span>
-            <span title="Progreso"><svg width="15" height="15" viewBox="0 0 14 14"><circle cx="7" cy="7" r="${r}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2"/><circle class="anillo-prog" cx="7" cy="7" r="${r}" fill="none" stroke="var(--acento)" stroke-width="2" stroke-dasharray="${cir}" style="--lleno:${cir}; --fin:${cir * (1 - pct / 100)}; stroke-dashoffset:${cir * (1 - pct / 100)}" transform="rotate(-90 7 7)" stroke-linecap="${pct ? "round" : "butt"}"/></svg>${pct}%</span>
+            <span title="Progreso"><svg width="15" height="15" viewBox="0 0 14 14"><circle cx="7" cy="7" r="${r}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2"/><circle class="anillo-prog" cx="7" cy="7" r="${r}" fill="none" stroke="#2ee6b0" stroke-width="2" stroke-dasharray="${cir}" style="--lleno:${cir}; --fin:${cir * (1 - pct / 100)}; stroke-dashoffset:${cir * (1 - pct / 100)}" transform="rotate(-90 7 7)" stroke-linecap="${pct ? "round" : "butt"}"/></svg>${pct}%</span>
             <span class="cx-fecha ${vencido(p) ? "rojo-txt" : ""}" title="${p.fecha ? "Vence el " + fmt(p.fecha) : "Sin fecha límite"}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${p.fecha ? plazo : "—"}</span>
           </div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
