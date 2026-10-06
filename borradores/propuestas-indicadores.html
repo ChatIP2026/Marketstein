@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Propuestas de indicadores</title>
+<style>
+  :root { --texto: #e8eaf0; --tenue: #9aa0b2; --borde: rgba(255,255,255,.09); }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; padding: 28px 16px 40px; color: var(--texto); font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(900px 500px at 50% 0%, rgba(70,120,220,.25), transparent 70%), #07080c; }
+  main { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 1.2rem; margin: 0 0 4px; }
+  .intro { color: var(--tenue); font-size: .88rem; margin: 0 0 26px; }
+  h2 { font-size: 1rem; margin: 30px 0 4px; display: flex; gap: 10px; align-items: center; }
+  h2 span { background: #8d7cf5; color: #fff; border-radius: 8px; padding: 2px 9px; font-size: .85rem; }
+  .desc { color: var(--tenue); font-size: .84rem; margin: 0 0 12px; }
+  .fila { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 760px) { .fila { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Colores por tipo (los mismos de ahora) */
+  .listo { --acento: #2ee6b0; --tinte: 46, 230, 176; }
+  .curso { --acento: #ffd45c; --tinte: 255, 200, 70; }
+  .gris  { --acento: #9aa1b4; --tinte: 154, 161, 180; }
+  .kpi { position: relative; border-radius: 14px; padding: 14px 16px 14px 22px; min-width: 0;
+    background: linear-gradient(115deg, rgba(var(--tinte), .16) 0%, rgba(var(--tinte), .05) 55%, rgba(20,22,30,.85) 100%);
+    border: 1px solid rgba(var(--tinte), .28); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
+  .kpi::before { content: ""; position: absolute; left: 10px; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--acento); box-shadow: 0 0 10px var(--acento); }
+  .ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; color: var(--acento);
+    background: rgba(var(--tinte), .15); border: 1px solid rgba(var(--tinte), .35); }
+  .ico svg { width: 18px; height: 18px; }
+  .num { font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .eti { color: var(--tenue); font-size: .8rem; }
+
+  /* A: etiqueta arriba, número grande abajo, icono a la derecha */
+  .a .kpi { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .a .eti { display: block; margin-bottom: 10px; }
+  .a .num { font-size: 2rem; }
+
+  /* B: todo en una línea: icono + etiqueta a la izquierda, número a la derecha */
+  .b .kpi { display: flex; align-items: center; gap: 10px; padding-top: 18px; padding-bottom: 18px; }
+  .b .eti { flex: 1; font-size: .86rem; color: var(--texto); }
+  .b .num { font-size: 1.6rem; color: var(--acento); }
+
+  /* C: etiqueta arriba, número con contexto y barra de avance */
+  .c .cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .c .num { font-size: 1.7rem; }
+  .c .de { color: var(--tenue); font-size: .85rem; font-weight: 500; margin-left: 4px; }
+  .c .barra { height: 5px; border-radius: 5px; background: rgba(255,255,255,.08); margin-top: 10px; overflow: hidden; }
+  .c .barra i { display: block; height: 100%; border-radius: 5px; background: var(--acento); box-shadow: 0 0 8px var(--acento); }
+  .c .ico { width: 28px; height: 28px; border-radius: 8px; } .c .ico svg { width: 15px; height: 15px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Propuestas para los indicadores de arriba</h1>
+  <p class="intro">Las tres usan tus datos actuales, los mismos colores, iconos y la línea de color. Solo cambia la forma de ordenar el número y el texto.</p>
+
+  <h2><span>A</span> Texto arriba, número grande abajo</h2>
+  <p class="desc">Se lee primero qué es y luego cuánto. El icono pasa a la esquina derecha. Es la forma más habitual en paneles.</p>
+  <div class="fila a">
+    <div class="kpi listo"><div><span class="eti">Proyectos completados</span><div class="num">2</div></div><div class="ico" data-i="listo"></div></div>
+    <div class="kpi curso"><div><span class="eti">Proyectos activos</span><div class="num">3</div></div><div class="ico" data-i="curso"></div></div>
+    <div class="kpi listo"><div><span class="eti">Tareas completadas</span><div class="num">1</div></div><div class="ico" data-i="listo"></div></div>
+    <div class="kpi gris"><div><span class="eti">Tareas pendientes</span><div class="num">1</div></div><div class="ico" data-i="gris"></div></div>
+  </div>
+
+  <h2><span>B</span> Todo en una sola línea</h2>
+  <p class="desc">Icono y texto a la izquierda, número a la derecha y en su color. Ocupa menos alto y deja más espacio al tablero.</p>
+  <div class="fila b">
+    <div class="kpi listo"><div class="ico" data-i="listo"></div><span class="eti">Proyectos completados</span><span class="num">2</span></div>
+    <div class="kpi curso"><div class="ico" data-i="curso"></div><span class="eti">Proyectos activos</span><span class="num">3</span></div>
+    <div class="kpi listo"><div class="ico" data-i="listo"></div><span class="eti">Tareas completadas</span><span class="num">1</span></div>
+    <div class="kpi gris"><div class="ico" data-i="gris"></div><span class="eti">Tareas pendientes</span><span class="num">1</span></div>
+  </div>
+
+  <h2><span>C</span> Número con contexto y barra</h2>
+  <p class="desc">Además del número, dice “de cuántos” y muestra una barrita de avance. Da más información de un vistazo (por ejemplo, 2 de 5 proyectos ya están listos).</p>
+  <div class="fila c">
+    <div class="kpi listo"><div class="cab"><span class="eti">Proyectos completados</span><div class="ico" data-i="listo"></div></div><span class="num">2</span><span class="de">de 5</span><div class="barra"><i style="width:40%"></i></div></div>
+    <div class="kpi curso"><div class="cab"><span class="eti">Proyectos activos</span><div class="ico" data-i="curso"></div></div><span class="num">3</span><span class="de">de 5</span><div class="barra"><i style="width:60%"></i></div></div>
+    <div class="kpi listo"><div class="cab"><span class="eti">Tareas completadas</span><div class="ico" data-i="listo"></div></div><span class="num">1</span><span class="de">de 2</span><div class="barra"><i style="width:50%"></i></div></div>
+    <div class="kpi gris"><div class="cab"><span class="eti">Tareas pendientes</span><div class="ico" data-i="gris"></div></div><span class="num">1</span><span class="de">de 2</span><div class="barra"><i style="width:50%"></i></div></div>
+  </div>
+</main>
+<script>
+  const ICONOS = {
+    listo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/></svg>',
+    curso: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1"/></svg>',
+    gris: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"><circle cx="12" cy="12" r="9"/></svg>',
+  };
+  document.querySelectorAll("[data-i]").forEach((d) => (d.innerHTML = ICONOS[d.dataset.i]));
+</script>
+</body>
+</html>
