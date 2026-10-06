@@ -503,6 +503,10 @@
   // nada de lo que hagas aquí se guarda ni afecta a la página real.
   const HOY = new Date().toISOString().slice(0, 10);
   const COLORES = { Ariana: "#f4a6c1", Carlos: "#9fd3f0", Pierina: "#c3b5f7", Hilary: "#f7d38b" };
+  // Fotos del equipo (quien no tiene foto muestra su inicial sobre su color)
+  const FOTOS = { Carlos: "fotos/carlos.jpg", Hilary: "fotos/hilary.jpg" };
+  const fondoAv = (n) => FOTOS[n] ? `background:${COLORES[n]} url(${FOTOS[n]}) center/cover` : `background:${COLORES[n]}`;
+  const letraAv = (n) => (FOTOS[n] ? "" : n[0]);
   const mapaP = new Map(), mapaT = new Map();
   const COPIA_PROYECTOS = [{"id": 1, "nombre": "PODCAST", "estado": "listo", "prioridad": "media", "encargados": ["Pierina", "Carlos", "Hilary"], "fecha_limite": null, "created_at": "2026-10-06T16:27:47.588971+00:00"}, {"id": 2, "nombre": "MAILING", "estado": "listo", "prioridad": "media", "encargados": [], "fecha_limite": null, "created_at": "2026-10-06T16:27:55.618877+00:00"}, {"id": 3, "nombre": "programa de puntos", "estado": "sin_empezar", "prioridad": "media", "encargados": ["Ariana"], "fecha_limite": null, "created_at": "2026-10-06T16:29:11.698363+00:00"}, {"id": 4, "nombre": "Diseño", "estado": "en_curso", "prioridad": "alta", "encargados": ["Ariana"], "fecha_limite": "2026-10-23", "created_at": "2026-10-06T16:29:28.305491+00:00"}, {"id": 5, "nombre": "ia para legal", "estado": "sin_empezar", "prioridad": "media", "encargados": [], "fecha_limite": "2026-10-27", "created_at": "2026-10-06T16:31:29.879376+00:00"}];
   const COPIA_TAREAS = [{"id": 1, "proyecto_id": 4, "texto": "Flyer/video halloween", "hecha": false, "created_at": "2026-10-06T16:29:45.326742+00:00"}, {"id": 5, "proyecto_id": 2, "texto": "a", "hecha": true, "created_at": "2026-10-06T19:07:02.691042+00:00"}];
@@ -552,7 +556,7 @@
       const b = document.createElement("button");
       b.className = "carga" + (filtroSel.value === f.n ? " activa" : "");
       b.title = filtroSel.value === f.n ? "Quitar filtro" : `Ver solo los proyectos de ${f.n}`;
-      b.innerHTML = `<i class="carga-av" style="background:${COLORES[f.n]}">${f.n[0]}</i>
+      b.innerHTML = `<i class="carga-av" style="${fondoAv(f.n)}">${letraAv(f.n)}</i>
         <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small>${f.activos} proy. · ${f.pend} pend.</small></div>
         <div class="carga-barra"><i style="width:${(f.activos / max) * 100}%;background:${COLORES[f.n]}"></i></div></div>`;
       b.onclick = () => { filtroSel.value = filtroSel.value === f.n ? "" : f.n; pintar(); };
@@ -593,7 +597,7 @@
     d.innerHTML = `
       <div class="det-cab"><div>${pill(p.estado)}<h2>${esc(p.nombre)}</h2></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <dl class="det-datos">
-        <dt>Encargados</dt><dd>${p.encargados.length ? p.encargados.map((n) => `<span class="det-persona"><i style="background:${COLORES[n]}">${n[0]}</i>${n}</span>`).join("") : "Sin encargado"}</dd>
+        <dt>Encargados</dt><dd>${p.encargados.length ? p.encargados.map((n) => `<span class="det-persona"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span>`).join("") : "Sin encargado"}</dd>
         <dt>Prioridad</dt><dd><span class="prio-txt ${p.prioridad}">${mayus(p.prioridad)}</span></dd>
         <dt>Fecha límite</dt><dd>${p.fecha_limite ? fmt(p.fecha_limite) : "Sin fecha"}</dd>
       </dl>
@@ -712,7 +716,7 @@
           <div class="cx-titulo">${esc(p.nombre)}</div>
           <div class="cx-etiquetas">
             ${p.encargados.length
-              ? `<span class="cx-persona"><span class="cx-avs">${p.encargados.map((n) => `<i style="background:${COLORES[n]}">${n[0]}</i>`).join("")}</span>${p.encargados.length === 1 ? p.encargados[0] : p.encargados.length + " personas"}</span>`
+              ? `<span class="cx-persona"><span class="cx-avs">${p.encargados.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("")}</span>${p.encargados.length === 1 ? p.encargados[0] : p.encargados.length + " personas"}</span>`
               : `<span class="cx-persona vacio">Sin encargado</span>`}
             <span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span>
           </div>
