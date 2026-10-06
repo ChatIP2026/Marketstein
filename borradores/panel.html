@@ -183,6 +183,21 @@
   .fx-pct { font-size: 1.7rem; font-weight: 700; line-height: 1; color: var(--acento); text-shadow: 0 0 18px rgba(var(--tinte), .35); }
   .fx-barra { height: 9px; border-radius: 9px; background: rgba(255,255,255,.07); overflow: hidden; }
   .fx-barra i { display: block; height: 100%; min-width: 4px; border-radius: 9px; background: linear-gradient(90deg, rgba(var(--tinte), .55), var(--acento)); box-shadow: 0 0 10px rgba(var(--tinte), .5); }
+  /* Barra del tablero: todo en una sola fila y con la misma altura */
+  .tablero-barra { flex-wrap: nowrap !important; gap: 10px !important; }
+  .tablero-barra h3 { white-space: nowrap; font-size: .95rem; margin: 0; display: flex; align-items: center; height: 34px; }
+  .vistas, .buscar, .filtro, .nuevo-btn { height: 34px; box-sizing: border-box; }
+  .vistas { align-items: center; flex: none; }
+  .vista { white-space: nowrap; height: 26px; display: flex; align-items: center; }
+  .acciones { flex-wrap: nowrap !important; align-items: center; }
+  .buscar { width: 150px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+  .filtro { padding-top: 0 !important; padding-bottom: 0 !important; }
+  .nuevo-btn { white-space: nowrap; display: flex; align-items: center; padding-top: 0 !important; padding-bottom: 0 !important; }
+  @media (max-width: 1250px) {
+    .tablero-barra { flex-wrap: wrap !important; }
+    .acciones { width: 100%; margin-left: 0 !important; }
+    .buscar { flex: 1; width: auto !important; min-width: 0; }
+  }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
