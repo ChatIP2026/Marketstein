@@ -165,7 +165,7 @@
   .kpi .kpi-ico { --c: var(--acento); }
   .kpi-ico svg { width: 20px; height: 20px; }
   /* Solo 2 proyectos a la vista por columna; el resto con la rueda del ratón */
-  .col-lista { max-height: 322px; overflow-y: auto; padding-right: 4px; margin-right: -4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
+  .col-lista { max-height: 236px; overflow-y: auto; padding-right: 4px; margin-right: -4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
   .col-lista::-webkit-scrollbar { width: 6px; } .col-lista::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 6px; }
   .columna { min-height: 0 !important; }
   /* Tarjeta de proyecto estilo "lead card" */
@@ -293,6 +293,22 @@
   .kpi .kpi-txt { flex: 1; min-width: 0; color: var(--texto); font-size: .86rem; white-space: normal; line-height: 1.25; }
   .kpi .kpi-num { font-size: 1.6rem; font-weight: 700; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
   .kpi .kpi-ico { width: 34px; height: 34px; }
+  /* Tarjeta compacta: el nombre del proyecto es lo principal */
+  .ficha { padding: 14px 14px 12px 20px !important; }
+  .cx-titulo { font-size: 1.02rem; font-weight: 700; line-height: 1.3; margin-bottom: 10px; color: #fff; word-break: break-word; }
+  .cx-etiquetas { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px; }
+  .cx-persona { display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; padding: 3px 9px 3px 3px; border-radius: 999px;
+    background: rgba(255,255,255,.06); border: 1px solid var(--borde); max-width: 100%; }
+  .cx-persona.vacio { padding: 3px 9px; color: var(--tenue); border-style: dashed; }
+  .cx-avs { display: flex; } .cx-avs i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .58rem; font-weight: 700; color: #141620; margin-right: -5px; border: 1.5px solid #20232c; }
+  .cx-avs i:last-child { margin-right: 0; }
+  .cx-prio { font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid; }
+  .cx-prio.alta { color: #ff9da0; background: rgba(229,72,77,.12); border-color: rgba(229,72,77,.4); }
+  .cx-prio.media { color: #f5c06a; background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.35); }
+  .cx-prio.baja { color: #8fb4ff; background: rgba(90,140,255,.1); border-color: rgba(90,140,255,.35); }
+  .cx-meta { display: flex; gap: 14px; align-items: center; font-size: .74rem; color: var(--tenue); }
+  .cx-meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .cx-meta .cx-fecha { margin-left: auto; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -579,17 +595,22 @@
         f.title = "Clic para abrir · arrastra para cambiar de estado";
         const nombres = p.encargados.length ? p.encargados.join(", ") : "Sin encargado";
         const fechaTxt = p.fecha ? `${vencido(p) ? "Venció" : "Vence"} ${fmt(p.fecha)}` : "Sin fecha";
+        const diasF = p.fecha ? Math.round((new Date(p.fecha + "T00:00") - new Date(HOY + "T00:00")) / 864e5) : null;
+        const plazo = diasF === null ? "" : diasF < 0 ? `hace ${-diasF}d` : diasF === 0 ? "hoy" : `${diasF}d`;
+        const r = 5.5, cir = 2 * Math.PI * r;
         f.innerHTML = `
-          <div class="fx-cab"><span class="fx-titulo">${esc(p.nombre)}</span></div>
-          <div class="fx-persona">
-            <div class="fx-avatares">${p.encargados.length
-              ? p.encargados.map((n) => `<span title="${n}" style="background:${COLORES[n]}">${n.slice(0, 2).toUpperCase()}</span>`).join("")
-              : `<span class="nadie">?</span>`}</div>
-            <div class="fx-quien"><b>${nombres}</b>
-              <small><span class="prio-txt ${p.prioridad}">Prioridad ${p.prioridad}</span> • <span class="${vencido(p) ? "rojo-txt" : ""}">${fechaTxt}</span></small></div>
+          <div class="cx-titulo">${esc(p.nombre)}</div>
+          <div class="cx-etiquetas">
+            ${p.encargados.length
+              ? `<span class="cx-persona"><span class="cx-avs">${p.encargados.map((n) => `<i style="background:${COLORES[n]}">${n[0]}</i>`).join("")}</span>${p.encargados.length === 1 ? p.encargados[0] : p.encargados.length + " personas"}</span>`
+              : `<span class="cx-persona vacio">Sin encargado</span>`}
+            <span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span>
           </div>
-          <div class="fx-medio"><span class="fx-chip">${p.total ? `Progreso · ${p.hechas}/${p.total} tareas` : "Aún sin tareas"}</span><span class="fx-pct ${p.total ? "" : "apagado"}">${p.total ? pct + "%" : "—"}</span></div>
-          <div class="fx-barra"><i style="width:${pct}%"></i></div>`;
+          <div class="cx-meta">
+            <span title="Tareas hechas">☐ ${p.hechas}/${p.total}</span>
+            <span title="Progreso"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="${r}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle cx="7" cy="7" r="${r}" fill="none" stroke="var(--acento)" stroke-width="2" stroke-dasharray="${cir}" stroke-dashoffset="${cir * (1 - pct / 100)}" transform="rotate(-90 7 7)" stroke-linecap="round"/></svg>${pct}%</span>
+            <span class="cx-fecha ${vencido(p) ? "rojo-txt" : ""}" title="${p.fecha ? "Vence el " + fmt(p.fecha) : "Sin fecha límite"}">◷ ${p.fecha ? plazo : "—"}</span>
+          </div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
         f.onclick = () => abrirProyecto(p.id);
         f.onkeydown = (e) => { if (e.key === "Enter") abrirProyecto(p.id); };
