@@ -114,7 +114,7 @@
   .buscar, .filtro { background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--texto); border-radius: 9px; padding: 7px 10px; font: inherit; font-size: .82rem; }
   .buscar { width: 170px; } .filtro option { background: #1c1f28; }
   .nuevo-btn { background: linear-gradient(180deg, #8d7cf5, #6c5ce7); color: #fff; border: 0; border-radius: 9px; padding: 7px 14px; font: inherit; font-size: .82rem; cursor: pointer; }
-  .tablero { display: grid; grid-template-columns: repeat(3, minmax(200px, 1fr)); gap: 12px; overflow-x: auto; }
+  .tablero { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
   .columna { background: rgba(0,0,0,.22); border: 1px solid var(--borde); border-radius: 14px; padding: 10px; min-height: 260px; transition: background .15s; }
   .columna.encima { background: rgba(159,178,232,.08); border-color: var(--azul); }
   .columna h4 { margin: 2px 4px 10px; font-size: .88rem; font-weight: 600; display: flex; gap: 8px; align-items: center; }
@@ -133,7 +133,7 @@
   .ficha-pie { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 10px; color: var(--tenue); font-size: .74rem; }
   .avatares { display: flex; } .avatares span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: .6rem; font-weight: 700; color: #111; margin-right: -6px; border: 2px solid #262a36; }
   .vacia { color: var(--tenue); font-size: .78rem; text-align: center; padding: 20px 0; }
-  @media (max-width: 860px) { .kpis { grid-template-columns: repeat(2, 1fr); } .tablero { grid-template-columns: repeat(3, 240px); } .acciones { margin-left: 0; } }
+  @media (max-width: 860px) { .kpis { grid-template-columns: repeat(2, 1fr); } .tablero { grid-template-columns: 1fr; } .acciones { margin-left: 0; } }
 
   [hidden] { display: none !important; }
   /* Etiquetas de estado */
@@ -245,10 +245,48 @@
   .vacia { border: 1px dashed var(--borde); border-radius: 14px; padding: 28px 10px !important; }
   /* Pestañas y menú con estado activo más claro */
   .vista:hover:not(.activa), nav a:hover:not(.activo) { color: var(--texto); }
+  /* Sin desplazamiento horizontal: todo encaja en el ancho disponible */
+  html, body { overflow-x: hidden; }
+  .app, .rejilla, .principal, .tablero-caja, .columna, .ficha { min-width: 0; }
+  .fx-titulo { text-transform: none !important; letter-spacing: 0 !important; font-size: .95rem !important; font-weight: 700 !important; }
+  .ficha { cursor: pointer; }
+  /* Vencen pronto */
+  .pronto { all: unset; box-sizing: border-box; cursor: pointer; display: block; width: 100%; position: relative; padding: 10px 12px 10px 18px; margin-top: 8px; border-radius: 12px;
+    background: linear-gradient(115deg, rgba(var(--tinte), .14), rgba(20,22,30,.85)); border: 1px solid rgba(var(--tinte), .25); }
+  .pronto::before { content: ""; position: absolute; left: 8px; top: 9px; bottom: 9px; width: 3px; border-radius: 3px; background: var(--acento); }
+  .pronto b { display: block; font-size: .86rem; }
+  .pronto small { font-size: .72rem; color: var(--tenue); }
+  .pronto.urgente small { color: #ff9da0; font-weight: 600; }
+  .pronto:hover { filter: brightness(1.12); }
+  .pronto-ok { font-size: .8rem; color: var(--tenue); padding: 8px 0; }
+  /* Panel de detalle */
+  .velo { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
+  .detalle { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); z-index: 21; padding: 22px; overflow-y: auto;
+    background: linear-gradient(160deg, rgba(var(--tinte), .12), rgba(18,20,27,0) 45%), #12141b; border-left: 1px solid rgba(var(--tinte), .3);
+    box-shadow: -20px 0 60px rgba(0,0,0,.5); transform: translateX(105%); transition: transform .25s ease; }
+  body.con-detalle .velo { opacity: 1; pointer-events: auto; }
+  body.con-detalle .detalle { transform: none; }
+  .det-cab { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+  .det-cab h2 { margin: 10px 0 0; font-size: 1.3rem; }
+  .det-cerrar { background: rgba(255,255,255,.06); border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; width: 34px; height: 34px; cursor: pointer; flex: none; }
+  .det-datos { display: grid; grid-template-columns: 110px 1fr; gap: 10px 12px; margin: 22px 0; font-size: .86rem; }
+  .det-datos dt { color: var(--tenue); } .det-datos dd { margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .det-persona { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.06); border-radius: 999px; padding: 2px 9px 2px 2px; }
+  .det-persona i { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .62rem; font-weight: 700; color: #141620; }
+  .det-prog { display: flex; justify-content: space-between; align-items: baseline; font-size: .82rem; color: var(--tenue); margin-bottom: 8px; }
+  .det-prog b { font-size: 1.5rem; color: var(--acento); }
+  .det-sub { font-size: .95rem; margin: 24px 0 6px; }
+  .det-tareas .item { cursor: pointer; }
+  .det-tareas .item.hecha .caja { background: #2ee6b0; border-color: #2ee6b0; }
+  .det-tareas .item.hecha .t-texto { text-decoration: line-through; color: var(--tenue); }
+  .det-nueva { display: flex; gap: 8px; margin-top: 10px; }
+  .det-nueva input { flex: 1; min-width: 0; background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--texto); border-radius: 9px; padding: 9px 10px; font: inherit; font-size: .85rem; }
+  .det-nueva button { background: linear-gradient(180deg, #8d7cf5, #6c5ce7); color: #fff; border: 0; border-radius: 9px; padding: 0 14px; font: inherit; font-size: .85rem; cursor: pointer; }
+  .det-nota { font-size: .72rem; color: var(--tenue); margin-top: 18px; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
-  .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
-  .lt-fila { display: grid; grid-template-columns: 190px 1fr; min-width: 760px; border-bottom: 1px solid var(--borde); }
+  .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
+  .lt-fila { display: grid; grid-template-columns: minmax(110px, 190px) 1fr; border-bottom: 1px solid var(--borde); }
   .lt-fila:last-child { border-bottom: 0; }
   .lt-nombre { padding: 12px 14px; font-size: .84rem; border-right: 1px solid var(--borde); display: flex; flex-direction: column; justify-content: center; gap: 2px; }
   .lt-nombre small { color: var(--tenue); font-size: .7rem; }
@@ -332,18 +370,8 @@
       </div>
       <hr />
       <div>
-        <h3>Actividad reciente</h3>
-        <div class="actividad"><div class="ico">▦</div><div>Actividad de ejemplo<span class="sub">hace 30 minutos</span></div></div>
-        <div class="actividad"><div class="ico">◷</div><div>Actividad de ejemplo<span class="sub">hace 2 horas</span></div></div>
-      </div>
-      <hr />
-      <div>
-        <h3>Accesos rápidos</h3>
-        <div class="accesos">
-          <div class="acceso vidrio"><span>📅</span>Calendario</div>
-          <div class="acceso vidrio"><span>📄</span>Docs</div>
-          <div class="acceso vidrio"><span>💬</span>Chat</div>
-        </div>
+        <div class="tit"><h3 style="color:var(--texto)">Vencen pronto <span class="chip" id="nPronto">0</span></h3></div>
+        <div id="listaPronto"></div>
       </div>
     </aside>
   </div>
@@ -390,8 +418,75 @@
     }
   }
 
+  // Vencen pronto: proyectos sin terminar que vencen en los próximos 7 días (o ya vencieron)
+  function pintarPronto() {
+    const limite = new Date(); limite.setDate(limite.getDate() + 7);
+    const lim = isoDe(limite);
+    const lista = [...mapaP.values()].filter((p) => p.fecha_limite && p.estado !== "listo" && p.fecha_limite <= lim)
+      .sort((a, b) => a.fecha_limite.localeCompare(b.fecha_limite));
+    nPronto.textContent = lista.length;
+    listaPronto.innerHTML = lista.length ? "" : `<div class="pronto-ok">Nada vence en los próximos 7 días.</div>`;
+    for (const p of lista) {
+      const dias = Math.round((new Date(p.fecha_limite + "T00:00") - new Date(HOY + "T00:00")) / 864e5);
+      const cuando = dias < 0 ? `Venció hace ${-dias} día${dias === -1 ? "" : "s"}` : dias === 0 ? "Vence hoy" : dias === 1 ? "Vence mañana" : `Vence en ${dias} días`;
+      const it = document.createElement("button");
+      it.className = "pronto a-" + p.estado + (dias <= 1 ? " urgente" : "");
+      it.innerHTML = `<b>${esc(p.nombre)}</b><small>${cuando} · ${fmt(p.fecha_limite)}</small>`;
+      it.onclick = () => abrirProyecto(p.id);
+      listaPronto.append(it);
+    }
+  }
+
+  // Panel lateral con el detalle del proyecto
+  let abiertoId = null;
+  function abrirProyecto(id) { abiertoId = id; pintarDetalle(); document.body.classList.add("con-detalle"); }
+  function cerrarProyecto() { abiertoId = null; document.body.classList.remove("con-detalle"); }
+  function pintarDetalle() {
+    const p = mapaP.get(abiertoId);
+    if (!p) return cerrarProyecto();
+    const tareas = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
+    const hechas = tareas.filter((t) => t.hecha).length, pct = tareas.length ? Math.round((hechas / tareas.length) * 100) : 0;
+    const d = document.getElementById("detalle");
+    d.className = "detalle a-" + p.estado;
+    d.innerHTML = `
+      <div class="det-cab"><div>${pill(p.estado)}<h2>${esc(p.nombre)}</h2></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      <dl class="det-datos">
+        <dt>Encargados</dt><dd>${p.encargados.length ? p.encargados.map((n) => `<span class="det-persona"><i style="background:${COLORES[n]}">${n[0]}</i>${n}</span>`).join("") : "Sin encargado"}</dd>
+        <dt>Prioridad</dt><dd><span class="prio-txt ${p.prioridad}">${mayus(p.prioridad)}</span></dd>
+        <dt>Fecha límite</dt><dd>${p.fecha_limite ? fmt(p.fecha_limite) : "Sin fecha"}</dd>
+      </dl>
+      <div class="det-prog"><span>${tareas.length ? `${hechas} de ${tareas.length} tareas hechas` : "Aún sin tareas"}</span><b>${tareas.length ? pct + "%" : ""}</b></div>
+      <div class="fx-barra"><i style="width:${pct}%"></i></div>
+      <h3 class="det-sub">Tareas</h3>
+      <div class="det-tareas"></div>
+      <form class="det-nueva"><input placeholder="Añadir una tarea y pulsar Enter" /><button>Añadir</button></form>
+      <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
+    const lista = d.querySelector(".det-tareas");
+    if (!tareas.length) lista.innerHTML = `<div class="pronto-ok">Este proyecto todavía no tiene tareas.</div>`;
+    for (const t of tareas) {
+      const it = document.createElement("div");
+      it.className = "item" + (t.hecha ? " hecha" : "");
+      it.innerHTML = `<div class="caja"></div><span class="t-texto">${esc(t.texto)}</span>`;
+      it.onclick = () => { t.hecha = !t.hecha; armar(); };
+      lista.append(it);
+    }
+    d.querySelector(".det-cerrar").onclick = cerrarProyecto;
+    d.querySelector(".det-nueva").onsubmit = (e) => {
+      e.preventDefault();
+      const v = e.target.querySelector("input").value.trim();
+      if (!v) return;
+      const id = Date.now();
+      mapaT.set(id, { id, proyecto_id: p.id, texto: v, hecha: false, created_at: new Date().toISOString() });
+      armar();
+      document.querySelector("#detalle .det-nueva input").focus();
+    };
+  }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarProyecto(); });
+
   function armar() {
     pintarTareas();
+    pintarPronto();
+    if (abiertoId !== null) pintarDetalle();
     const tareas = [...mapaT.values()];
     proyectos = [...mapaP.values()].sort((a, b) => a.created_at.localeCompare(b.created_at)).map((p) => {
       const suyas = tareas.filter((t) => t.proyecto_id === p.id);
@@ -452,11 +547,11 @@
         f.className = "ficha a-" + c.id;
         f.draggable = true;
         f.tabIndex = 0;
-        f.title = "Arrastra para cambiar de estado";
+        f.title = "Clic para abrir · arrastra para cambiar de estado";
         const nombres = p.encargados.length ? p.encargados.join(", ") : "Sin encargado";
         const fechaTxt = p.fecha ? `${vencido(p) ? "Venció" : "Vence"} ${fmt(p.fecha)}` : "Sin fecha";
         f.innerHTML = `
-          <div class="fx-cab"><span class="fx-titulo">${esc(p.nombre)}</span>${pill(c.id)}</div>
+          <div class="fx-cab"><span class="fx-titulo">${esc(p.nombre)}</span></div>
           <div class="fx-persona">
             <div class="fx-avatares">${p.encargados.length
               ? p.encargados.map((n) => `<span title="${n}" style="background:${COLORES[n]}">${n.slice(0, 2).toUpperCase()}</span>`).join("")
@@ -467,6 +562,8 @@
           <div class="fx-medio"><span class="fx-chip">${p.total ? `Progreso · ${p.hechas}/${p.total} tareas` : "Aún sin tareas"}</span><span class="fx-pct ${p.total ? "" : "apagado"}">${p.total ? pct + "%" : "—"}</span></div>
           <div class="fx-barra"><i style="width:${pct}%"></i></div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
+        f.onclick = () => abrirProyecto(p.id);
+        f.onkeydown = (e) => { if (e.key === "Enter") abrirProyecto(p.id); };
         caja.append(f);
       }
       if (lista.length > 2) col.insertAdjacentHTML("beforeend", `<div class="mas">↕ Desliza para ver ${lista.length - 2} más</div>`);
@@ -578,5 +675,7 @@
   }
   armar();
 </script>
+<div class="velo" onclick="cerrarProyecto()"></div>
+<aside id="detalle" class="detalle" aria-label="Detalle del proyecto"></aside>
 </body>
 </html>
