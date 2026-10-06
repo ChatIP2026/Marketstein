@@ -381,6 +381,12 @@
   /* Barra de progreso del detalle siempre en verde */
   .detalle .fx-barra i { background: linear-gradient(90deg, rgba(46,230,176,.55), #2ee6b0) !important; box-shadow: 0 0 10px rgba(46,230,176,.5) !important; transition: width .4s ease; }
   .detalle .det-prog b { color: #2ee6b0 !important; }
+  /* Aviso flotante cuando un proyecto cambia de estado solo */
+  .aviso { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-radius: 12px; background: #1b1e27; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    font-size: .88rem; animation: entrarAviso .25s ease; transition: opacity .4s, transform .4s; }
+  .aviso.fuera { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  @keyframes entrarAviso { from { opacity: 0; transform: translateX(-50%) translateY(10px); } }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -553,6 +559,30 @@
   const diasHasta = (f) => Math.round((new Date(f + "T00:00") - new Date(HOY + "T00:00")) / 864e5);
   const textoPlazo = (d) => (d < 0 ? `venció hace ${-d} día${d === -1 ? "" : "s"}` : d === 0 ? "vence hoy" : d === 1 ? "vence mañana" : `vence en ${d} días`);
 
+  // El estado del proyecto se actualiza solo según sus tareas:
+  //  todas hechas → Listo · alguna hecha → En curso · se desmarca una de un proyecto Listo → En curso
+  function ajustarEstado(pid) {
+    const p = mapaP.get(pid);
+    if (!p) return;
+    const ts = [...mapaT.values()].filter((t) => t.proyecto_id === pid);
+    const hechas = ts.filter((t) => t.hecha).length;
+    let nuevo = p.estado;
+    if (ts.length && hechas === ts.length) nuevo = "listo";
+    else if (p.estado === "listo" || (hechas > 0 && p.estado === "sin_empezar")) nuevo = "en_curso";
+    if (nuevo !== p.estado) {
+      p.estado = nuevo;
+      avisar(`${pill(nuevo)} <b>${esc(p.nombre)}</b> pasó a ${ETIQUETA[nuevo]}`);
+    }
+  }
+  function avisar(html) {
+    const a = document.createElement("div");
+    a.className = "aviso";
+    a.innerHTML = html;
+    document.body.append(a);
+    setTimeout(() => a.classList.add("fuera"), 2600);
+    setTimeout(() => a.remove(), 3000);
+  }
+
   // Tareas pendientes: solo las no hechas, primero las de proyectos que vencen antes
   function pintarTareas() {
     const cont = document.getElementById("listaTareas");
@@ -568,7 +598,7 @@
       it.title = "Marcar como hecha";
       it.innerHTML = `<div class="caja"></div><div><span class="t-texto">${esc(t.texto)}</span>
         <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` · <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>`;
-      it.onclick = () => { t.hecha = true; armar(); }; // solo en esta vista previa
+      it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); }; // solo en esta vista previa
       cont.append(it);
     }
   }
@@ -645,7 +675,7 @@
       const it = document.createElement("div");
       it.className = "item" + (t.hecha ? " hecha" : "");
       it.innerHTML = `<div class="caja"></div><span class="t-texto">${esc(t.texto)}</span>`;
-      it.onclick = () => { t.hecha = !t.hecha; armar(); };
+      it.onclick = () => { t.hecha = !t.hecha; ajustarEstado(t.proyecto_id); armar(); };
       lista.append(it);
     }
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
@@ -655,6 +685,7 @@
       if (!v) return;
       const id = Date.now();
       mapaT.set(id, { id, proyecto_id: p.id, texto: v, hecha: false, created_at: new Date().toISOString() });
+      ajustarEstado(p.id);
       armar();
       document.querySelector("#detalle .det-nueva input").focus();
     };
