@@ -370,6 +370,7 @@
   .carga-barra { height: 4px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden; }
   .carga-barra i { display: block; height: 100%; border-radius: 4px; opacity: .85; transition: width .3s; }
   .lateral { overflow-y: auto; }
+  .chip-ejemplo { font-size: .66rem; font-weight: 600; color: #f5c06a; background: rgba(245,158,11,.12); border: 1px dashed rgba(245,158,11,.45); border-radius: 6px; padding: 2px 7px; margin-left: 8px; vertical-align: middle; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -455,7 +456,7 @@
 
       <section class="seccion vidrio tablero-caja">
         <div class="tablero-barra">
-          <h3>Todos los proyectos</h3>
+          <h3>Todos los proyectos <span class="chip-ejemplo" title="Fechas cercanas y 6 tareas por proyecto añadidas solo para probar">Datos de ejemplo</span></h3>
           <div class="vistas"><span class="vista activa" data-v="kanban">▥ Por estado</span><span class="vista" data-v="calendario">▦ Calendario</span></div>
           <div class="acciones">
             <input id="buscar" class="buscar" placeholder="⌕  Buscar…" />
@@ -504,7 +505,7 @@
   const HOY = new Date().toISOString().slice(0, 10);
   const COLORES = { Ariana: "#f4a6c1", Carlos: "#9fd3f0", Pierina: "#c3b5f7", Hilary: "#f7d38b" };
   // Fotos del equipo (quien no tiene foto muestra su inicial sobre su color)
-  const FOTOS = { Carlos: "fotos/carlos.jpg", Hilary: "fotos/hilary.jpg" };
+  const FOTOS = {}; // ej.: { Carlos: "fotos/carlos.jpg" }
   const fondoAv = (n) => FOTOS[n] ? `background:${COLORES[n]} url(${FOTOS[n]}) center/cover` : `background:${COLORES[n]}`;
   const letraAv = (n) => (FOTOS[n] ? "" : n[0]);
   const mapaP = new Map(), mapaT = new Map();
@@ -512,6 +513,27 @@
   const COPIA_TAREAS = [{"id": 1, "proyecto_id": 4, "texto": "Flyer/video halloween", "hecha": false, "created_at": "2026-10-06T16:29:45.326742+00:00"}, {"id": 5, "proyecto_id": 2, "texto": "a", "hecha": true, "created_at": "2026-10-06T19:07:02.691042+00:00"}];
   COPIA_PROYECTOS.forEach((x) => mapaP.set(x.id, x));
   COPIA_TAREAS.forEach((x) => mapaT.set(x.id, x));
+  // ===== DATOS DE EJEMPLO (solo para ver cómo se comporta el panel) =====
+  // Pone fechas cercanas a 3 proyectos para llenar "Vence pronto" y añade 6 tareas a cada proyecto.
+  const EJEMPLO = true;
+  if (EJEMPLO) {
+    const enDias = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+    const fechas = { "programa de puntos": 1, "ia para legal": 3, "Diseño": 6 };
+    for (const p of mapaP.values()) if (p.nombre in fechas) p.fecha_limite = enDias(fechas[p.nombre]);
+    const TAREAS_EJEMPLO = {
+      "PODCAST": ["Definir temas de la temporada", "Invitar a los primeros 3 invitados", "Grabar episodio piloto", "Editar audio del piloto", "Diseñar portada del podcast", "Publicar en Spotify"],
+      "MAILING": ["Limpiar base de contactos", "Redactar correo de bienvenida", "Diseñar plantilla", "Configurar envío automático", "Prueba A/B del asunto", "Revisar métricas del primer envío"],
+      "programa de puntos": ["Definir reglas de acumulación", "Elegir premios", "Calcular costos", "Diseñar tarjeta de socio", "Crear landing del programa", "Capacitar al equipo de ventas"],
+      "Diseño": ["Bocetos del flyer", "Paleta de colores halloween", "Guion del video", "Grabar video", "Edición final", "Publicar en redes"],
+      "ia para legal": ["Investigar herramientas de IA legal", "Comparar precios", "Reunión con el área legal", "Prueba con 5 contratos", "Informe de resultados", "Presentar propuesta final"],
+    };
+    let id = 1000;
+    for (const p of mapaP.values()) {
+      const lista = TAREAS_EJEMPLO[p.nombre] || [];
+      const hechas = p.estado === "listo" ? lista.length : p.estado === "en_curso" ? 3 : p.nombre === "programa de puntos" ? 1 : 0;
+      lista.forEach((texto, k) => mapaT.set(++id, { id, proyecto_id: p.id, texto, hecha: k < hechas, created_at: `2026-10-06T10:0${k}:00Z` }));
+    }
+  }
   let proyectos = [];
   const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
