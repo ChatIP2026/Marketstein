@@ -288,6 +288,11 @@
   .det-nueva input { flex: 1; min-width: 0; background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--texto); border-radius: 9px; padding: 9px 10px; font: inherit; font-size: .85rem; }
   .det-nueva button { background: linear-gradient(180deg, #8d7cf5, #6c5ce7); color: #fff; border: 0; border-radius: 9px; padding: 0 14px; font: inherit; font-size: .85rem; cursor: pointer; }
   .det-nota { font-size: .72rem; color: var(--tenue); margin-top: 18px; }
+  /* Indicadores: icono y texto a la izquierda, número blanco a la derecha */
+  .kpi { padding-top: 18px !important; padding-bottom: 18px !important; gap: 10px !important; }
+  .kpi .kpi-txt { flex: 1; min-width: 0; color: var(--texto); font-size: .86rem; white-space: normal; line-height: 1.25; }
+  .kpi .kpi-num { font-size: 1.6rem; font-weight: 700; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+  .kpi .kpi-ico { width: 34px; height: 34px; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -365,10 +370,10 @@
     <main class="principal">
 
       <div class="kpis">
-        <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div><div class="kpi-num" id="kListos">0</div><div class="kpi-txt">Proyectos completados</div></div></div>
-        <div class="kpi t-en_curso"><div class="kpi-ico" data-ico="en_curso"></div><div><div class="kpi-num" id="kActivos">0</div><div class="kpi-txt">Proyectos activos</div></div></div>
-        <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div><div class="kpi-num" id="kTareasOk">0</div><div class="kpi-txt">Tareas completadas</div></div></div>
-        <div class="kpi t-sin_empezar"><div class="kpi-ico" data-ico="sin_empezar"></div><div><div class="kpi-num" id="kPend">0</div><div class="kpi-txt">Tareas pendientes</div></div></div>
+        <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div class="kpi-txt">Proyectos completados</div><div class="kpi-num" id="kListos">0</div></div>
+        <div class="kpi t-en_curso"><div class="kpi-ico" data-ico="en_curso"></div><div class="kpi-txt">Proyectos activos</div><div class="kpi-num" id="kActivos">0</div></div>
+        <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div class="kpi-txt">Tareas completadas</div><div class="kpi-num" id="kTareasOk">0</div></div>
+        <div class="kpi t-sin_empezar"><div class="kpi-ico" data-ico="sin_empezar"></div><div class="kpi-txt">Tareas pendientes</div><div class="kpi-num" id="kPend">0</div></div>
       </div>
 
       <section class="seccion vidrio tablero-caja">
