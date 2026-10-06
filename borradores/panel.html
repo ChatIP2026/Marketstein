@@ -42,7 +42,7 @@
   .avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: .75rem; font-weight: 600; background: #3a4258; border: 1px solid var(--borde); }
 
   /* Distribución */
-  .rejilla { display: grid; grid-template-columns: 260px 1fr; gap: 14px; }
+  .rejilla { display: grid; grid-template-columns: 1fr 260px; gap: 14px; }
   .lateral { padding: 16px; display: flex; flex-direction: column; gap: 18px; }
   .lateral h3, .seccion h3 { margin: 0; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
   .chip { font-size: .7rem; color: var(--tenue); background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; }
@@ -124,6 +124,25 @@
   @media (max-width: 860px) { .kpis { grid-template-columns: repeat(2, 1fr); } .tablero { grid-template-columns: repeat(4, 240px); } .acciones { margin-left: 0; } }
 
   [hidden] { display: none !important; }
+  /* Etiquetas de estado */
+  .estado-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px 3px 6px; border-radius: 999px; font-size: .7rem; font-weight: 600; border: 1px solid; white-space: nowrap; }
+  .estado-pill svg { width: 13px; height: 13px; flex: none; }
+  .e-listo { color: #2ee6b0; background: #03211a; border-color: #0f4d3b; }
+  .e-en_curso { color: #ffd45c; background: #241904; border-color: #4d3a0f; }
+  .e-vencido { color: #ffb3e0; background: #3a0e27; border-color: #6e1d48; }
+  .e-sin_empezar { color: #b4bac8; background: #1f222a; border-color: #3a3e4a; }
+  /* Línea de color a la izquierda de cada tarjeta, como en las alertas */
+  .ficha { position: relative; padding-left: 18px !important; }
+  .ficha::before { content: ""; position: absolute; left: 8px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: var(--acento); box-shadow: 0 0 10px var(--acento); }
+  .ficha.a-listo { --acento: #2ee6b0; background: linear-gradient(100deg, rgba(46,230,176,.07), rgba(34,37,48,.7) 40%); }
+  .ficha.a-en_curso { --acento: #ffd45c; background: linear-gradient(100deg, rgba(255,212,92,.07), rgba(34,37,48,.7) 40%); }
+  .ficha.a-vencido { --acento: #ff5c8a; background: linear-gradient(100deg, rgba(255,92,138,.09), rgba(34,37,48,.7) 40%); }
+  .ficha.a-sin_empezar { --acento: #7d8396; }
+  /* Solo 2 proyectos a la vista por columna; el resto con la rueda del ratón */
+  .col-lista { max-height: 330px; overflow-y: auto; padding-right: 4px; margin-right: -4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
+  .col-lista::-webkit-scrollbar { width: 6px; } .col-lista::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 6px; }
+  .columna { min-height: 0 !important; }
+  .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow-x: auto; }
   .lt-fila { display: grid; grid-template-columns: 190px 1fr; min-width: 760px; border-bottom: 1px solid var(--borde); }
@@ -135,7 +154,7 @@
   .lt-mes { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--borde); font-size: .7rem; color: var(--tenue); padding: 9px 6px; }
   .lt-hoy { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--rojo); opacity: .7; }
   .lt-barra { position: absolute; top: 14px; height: 24px; border-radius: 7px; font-size: .7rem; display: flex; align-items: center; padding: 0 8px; white-space: nowrap; overflow: hidden; color: #10121a; font-weight: 600; }
-  .lt-barra.sin_empezar { background: #8a90a2; } .lt-barra.en_curso { background: #8d7cf5; } .lt-barra.listo { background: #5fd49a; } .lt-barra.vencido { background: #ff8a8e; }
+  .lt-barra.sin_empezar { background: #8a90a2; } .lt-barra.en_curso { background: #ffd45c; } .lt-barra.listo { background: #2ee6b0; } .lt-barra.vencido { background: #ff8fcf; }
   .lt-sin { position: absolute; top: 18px; left: 10px; font-size: .74rem; color: var(--tenue); }
   .leyenda { display: flex; gap: 14px; flex-wrap: wrap; font-size: .74rem; color: var(--tenue); margin-top: 10px; }
   .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
@@ -168,32 +187,6 @@
   </header>
 
   <div class="rejilla">
-    <!-- Columna lateral -->
-    <aside class="lateral vidrio">
-      <div>
-        <div class="tit"><h3 style="color:var(--texto)">Tareas <span class="chip">5</span></h3><span>＋ ⋯</span></div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 1</div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 2<div class="punto-rojo">1</div></div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 3</div>
-        <div class="item"><div class="caja"></div>Tarea de ejemplo 4</div>
-        <div class="item"><div class="caja"></div><div>Tarea de ejemplo 5<span class="sub">Detalle de la tarea</span></div></div>
-      </div>
-      <hr />
-      <div>
-        <h3>Actividad reciente</h3>
-        <div class="actividad"><div class="ico">▦</div><div>Actividad de ejemplo<span class="sub">hace 30 minutos</span></div></div>
-        <div class="actividad"><div class="ico">◷</div><div>Actividad de ejemplo<span class="sub">hace 2 horas</span></div></div>
-      </div>
-      <hr />
-      <div>
-        <h3>Accesos rápidos</h3>
-        <div class="accesos">
-          <div class="acceso vidrio"><span>📅</span>Calendario</div>
-          <div class="acceso vidrio"><span>📄</span>Docs</div>
-          <div class="acceso vidrio"><span>💬</span>Chat</div>
-        </div>
-      </div>
-    </aside>
 
     <!-- Contenido principal -->
     <main class="principal">
@@ -221,6 +214,32 @@
         <div id="calendario" hidden></div>
       </section>
     </main>
+    <!-- Columna lateral -->
+    <aside class="lateral vidrio">
+      <div>
+        <div class="tit"><h3 style="color:var(--texto)">Tareas <span class="chip">5</span></h3><span>＋ ⋯</span></div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 1</div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 2<div class="punto-rojo">1</div></div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 3</div>
+        <div class="item"><div class="caja"></div>Tarea de ejemplo 4</div>
+        <div class="item"><div class="caja"></div><div>Tarea de ejemplo 5<span class="sub">Detalle de la tarea</span></div></div>
+      </div>
+      <hr />
+      <div>
+        <h3>Actividad reciente</h3>
+        <div class="actividad"><div class="ico">▦</div><div>Actividad de ejemplo<span class="sub">hace 30 minutos</span></div></div>
+        <div class="actividad"><div class="ico">◷</div><div>Actividad de ejemplo<span class="sub">hace 2 horas</span></div></div>
+      </div>
+      <hr />
+      <div>
+        <h3>Accesos rápidos</h3>
+        <div class="accesos">
+          <div class="acceso vidrio"><span>📅</span>Calendario</div>
+          <div class="acceso vidrio"><span>📄</span>Docs</div>
+          <div class="acceso vidrio"><span>💬</span>Chat</div>
+        </div>
+      </div>
+    </aside>
   </div>
 </div>
 <script>
@@ -257,6 +276,14 @@
     });
     pintar();
   }
+  const ICONOS = {
+    listo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/></svg>',
+    en_curso: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1"/></svg>',
+    vencido: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg>',
+    sin_empezar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"><circle cx="12" cy="12" r="9"/></svg>',
+  };
+  const ETIQUETA = { sin_empezar: "Sin empezar", en_curso: "En curso", listo: "Listo", vencido: "Vencido" };
+  const pill = (e) => `<span class="estado-pill e-${e}">${ICONOS[e]}${ETIQUETA[e]}</span>`;
   const COLUMNAS = [
     { id: "sin_empezar", titulo: "Sin empezar" },
     { id: "en_curso", titulo: "En curso" },
@@ -291,15 +318,18 @@
       const lista = visibles.filter((p) => columnaDe(p) === c.id);
       const col = document.createElement("div");
       col.className = "columna";
-      col.innerHTML = `<h4>${c.titulo} <span class="chip ${c.id === "vencido" ? "rojo" : ""}">${lista.length}</span></h4>`;
-      if (!lista.length) col.innerHTML += `<div class="vacia">Arrastra un proyecto aquí</div>`;
+      col.innerHTML = `<h4>${pill(c.id)} <span class="chip">${lista.length}</span></h4>`;
+      const caja = document.createElement("div");
+      caja.className = "col-lista";
+      col.append(caja);
+      if (!lista.length) caja.innerHTML = `<div class="vacia">Arrastra un proyecto aquí</div>`;
       for (const p of lista) {
         const pct = p.total ? Math.round((p.hechas / p.total) * 100) : 0;
         const f = document.createElement("div");
-        f.className = "ficha" + (c.id === "en_curso" ? " borde-curso" : c.id === "vencido" ? " borde-vencido" : "");
+        f.className = "ficha a-" + c.id;
         f.draggable = true;
         f.innerHTML = `
-          <div class="ficha-top"><span>▣ Proyecto</span><span class="prio ${p.prioridad}">${p.prioridad[0].toUpperCase() + p.prioridad.slice(1)}</span></div>
+          <div class="ficha-top">${pill(c.id)}<span class="prio ${p.prioridad}">${p.prioridad[0].toUpperCase() + p.prioridad.slice(1)}</span></div>
           <div class="ficha-nombre">${esc(p.nombre)}</div>
           <div class="barra-prog"><i style="width:${pct}%"></i></div>
           ${p.fecha ? `<span class="fecha ${vencido(p) ? "vencida" : ""}">◷ ${vencido(p) ? "Venció el" : "Vence:"} ${fmt(p.fecha)}</span>` : `<span class="fecha">◷ Sin fecha</span>`}
@@ -308,8 +338,9 @@
             <span>☑ ${p.hechas}/${p.total} tareas · ${pct}%</span>
           </div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
-        col.append(f);
+        caja.append(f);
       }
+      if (lista.length > 2) col.insertAdjacentHTML("beforeend", `<div class="mas">↕ Desliza para ver ${lista.length - 2} más</div>`);
       col.ondragover = (e) => { e.preventDefault(); col.classList.add("encima"); };
       col.ondragleave = () => col.classList.remove("encima");
       col.ondrop = (e) => {
@@ -368,7 +399,7 @@
       html += `<div class="lt-fila"><div class="lt-nombre">${esc(p.nombre)}<small>${NOMBRE_ESTADO[est]} · ${p.hechas}/${p.total} tareas</small></div><div class="lt-pista">${hoy}${barra}</div></div>`;
     }
     if (!lista.length) html += `<div class="vacia">No hay proyectos que mostrar</div>`;
-    html += `</div><div class="leyenda"><span><i style="background:#8a90a2"></i>Sin empezar</span><span><i style="background:#8d7cf5"></i>En curso</span><span><i style="background:#5fd49a"></i>Listo</span><span><i style="background:#ff8a8e"></i>Vencido</span><span><i style="background:var(--rojo);width:2px"></i>Hoy</span></div>`;
+    html += `</div><div class="leyenda"><span><i style="background:#8a90a2"></i>Sin empezar</span><span><i style="background:#ffd45c"></i>En curso</span><span><i style="background:#2ee6b0"></i>Listo</span><span><i style="background:#ff8fcf"></i>Vencido</span><span><i style="background:var(--rojo);width:2px"></i>Hoy</span></div>`;
     cont.innerHTML = html;
   }
 
