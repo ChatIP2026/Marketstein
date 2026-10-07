@@ -610,6 +610,10 @@
   .carpeta-azul.c-listo { background: linear-gradient(180deg, #7ff0cc, #22c99a); box-shadow: 0 10px 20px rgba(34,201,154,.35); }
   .carpeta-azul.c-listo::before { background: #3fd8aa; }
   .bc { position: relative; padding-bottom: 18px !important; }
+  /* Tinte muy sutil según la etapa */
+  .bc.a-sin_empezar, .bc.a-en_curso, .bc.a-listo {
+    background: radial-gradient(120% 90% at 0% 0%, rgba(var(--tinte), .09), transparent 60%), linear-gradient(180deg, #2a2b2f, #1f2024);
+    border-color: rgba(var(--tinte), .16); }
   .bc-info { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding-right: 58px; }
   .bc-info b { font-size: 1.02rem; line-height: 1.25; }
   .bc-anillo { display: inline-flex; align-items: center; gap: 7px; font-size: .84rem; font-weight: 600; color: #6ee0a7; }
@@ -624,10 +628,10 @@
   .burbujas { align-items: start; }
   .bc-yo span { white-space: nowrap; }
   .bc-flecha { all: unset; box-sizing: border-box; cursor: pointer; position: absolute; right: 16px; bottom: 16px;
-    width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: #6c5ce7;
-    background: linear-gradient(180deg, #ffffff, #eceafd); box-shadow: 0 6px 18px rgba(108,92,231,.35), inset 0 -2px 0 rgba(108,92,231,.12); transition: transform .15s, box-shadow .15s; }
+    width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: #ffffff;
+    background: linear-gradient(180deg, #5b4bd1, #3d3199); box-shadow: 0 6px 18px rgba(61,49,153,.5), inset 0 1px 0 rgba(255,255,255,.18); transition: transform .15s, box-shadow .15s; }
   .bc-flecha svg { width: 22px; height: 22px; }
-  .bc-flecha:hover { transform: translateX(3px); box-shadow: 0 8px 24px rgba(108,92,231,.5); }
+  .bc-flecha:hover { transform: translateX(3px); box-shadow: 0 8px 24px rgba(61,49,153,.7); filter: brightness(1.1); }
   .bc-flecha:focus-visible { outline: 2px solid #8d7cf5; outline-offset: 3px; }
   .bc-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
   .bc-ir { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-size: .95rem; padding-left: 6px; }
@@ -1419,7 +1423,7 @@
     const msg = p.estado === "listo" ? "¡Proyecto terminado! Todas las tareas están listas 🎉"
       : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto ⏰" : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
       : "No tienes nada pendiente aquí por ahora.";
-    return `<article class="bc" data-id="${p.id}">
+    return `<article class="bc a-${p.estado}" data-id="${p.id}">
       ${p.solicitado_por ? `<div class="bc-yo" title="Ticket aceptado"><span>Solicitado por</span>${av(p.solicitado_por.nombre)}<b>${esc(p.solicitado_por.nombre)}</b><small>${esc(p.solicitado_por.area)}</small></div>` : ""}
       <div class="bc-ev">
         <p class="bc-msg"><img class="bc-conejo" src="${CONEJO}" alt="Rabbit" />${resumenTarjeta(p, ts)}</p>
