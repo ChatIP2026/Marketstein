@@ -425,6 +425,38 @@
   .mn-pie .nuevo-btn { height: 38px; padding: 0 18px; }
   .mn-pie .cal-btn { height: 38px; padding: 0 16px; }
   @media (max-width: 520px) { .mn-doble { grid-template-columns: 1fr; } }
+  /* Detalle editable */
+  .det-titulo { flex: 1; min-width: 0; }
+  .det-nombre { display: block; width: 100%; box-sizing: border-box; margin-top: 10px; font: inherit; font-size: 1.3rem; font-weight: 700; color: #fff;
+    background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 4px 6px; margin-left: -7px; }
+  .det-nombre:hover { border-color: var(--borde); } .det-nombre:focus { outline: none; border-color: #8d7cf5; background: rgba(255,255,255,.04); }
+  .det-personas { gap: 6px !important; }
+  .det-persona { cursor: pointer; font: inherit; font-size: .8rem; color: var(--tenue); border: 1px solid var(--borde) !important; opacity: .7; }
+  .det-persona.activa { color: var(--texto); opacity: 1; background: rgba(141,124,245,.18) !important; border-color: #8d7cf5 !important; }
+  .det-prios button { all: unset; cursor: pointer; border-radius: 999px; opacity: .5; border: 1px solid transparent; }
+  .det-prios button.activa { opacity: 1; border-color: rgba(255,255,255,.35); }
+  .det-prios .mn-prio { font-size: .76rem !important; padding: 4px 12px !important; }
+  .det-fecha { background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--texto); border-radius: 8px; padding: 5px 8px; font: inherit; font-size: .84rem; color-scheme: dark; }
+  .det-link { all: unset; cursor: pointer; font-size: .76rem; color: var(--tenue); text-decoration: underline; margin-left: 8px; align-self: center; }
+  .det-sub small { font-weight: 400; font-size: .72rem; color: var(--tenue); margin-left: 6px; }
+  .det-item { gap: 8px; align-items: center !important; }
+  .det-item .t-texto { flex: 1; min-width: 0; cursor: text; }
+  .det-item .caja { cursor: pointer; }
+  .det-asig { background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--tenue); border-radius: 7px; font: inherit; font-size: .72rem; padding: 3px 4px; max-width: 98px; color-scheme: dark; }
+  .av-mini { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-style: normal; font-size: .62rem; font-weight: 700; color: #141620; flex: none; }
+  .av-mini.vacio { background: transparent; border: 1px dashed var(--tenue); color: var(--tenue); }
+  .det-x { all: unset; cursor: pointer; color: var(--tenue); padding: 2px 4px; opacity: 0; transition: opacity .15s; }
+  .det-item:hover .det-x, .det-x:focus-visible { opacity: 1; } .det-x:hover { color: #ff9da0; }
+  .det-renombrar { flex: 1; min-width: 0; background: rgba(255,255,255,.06); border: 1px solid #8d7cf5; color: var(--texto); border-radius: 7px; padding: 4px 8px; font: inherit; font-size: .9rem; }
+  .det-peligro { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--borde); }
+  .det-borrar { all: unset; cursor: pointer; font-size: .82rem; color: #ff9da0; padding: 7px 12px; border-radius: 9px; border: 1px solid rgba(229,72,77,.35); }
+  .det-borrar:hover { background: rgba(229,72,77,.12); }
+  .det-peligro.confirmar { display: flex; flex-direction: column; gap: 10px; font-size: .86rem; padding: 14px; border: 1px solid rgba(229,72,77,.4); border-radius: 12px; background: rgba(229,72,77,.08); }
+  .det-peligro.confirmar div { display: flex; gap: 8px; justify-content: flex-end; }
+  .det-si { all: unset; cursor: pointer; background: #e5484d; color: #fff; font-size: .84rem; font-weight: 600; padding: 7px 14px; border-radius: 9px; }
+  #listaTareas .item { align-items: center !important; }
+  .aviso-deshacer { all: unset; cursor: pointer; margin-left: 6px; color: #b3a7ff; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+  .aviso-deshacer:hover { background: rgba(141,124,245,.18); }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -608,7 +640,7 @@
     for (const p of mapaP.values()) {
       const lista = TAREAS_EJEMPLO[p.nombre] || [];
       const hechas = p.estado === "listo" ? lista.length : p.estado === "en_curso" ? 3 : p.nombre === "programa de puntos" ? 1 : 0;
-      lista.forEach((texto, k) => mapaT.set(++id, { id, proyecto_id: p.id, texto, hecha: k < hechas, created_at: `2026-10-06T10:0${k}:00Z` }));
+      lista.forEach((texto, k) => mapaT.set(++id, { id, proyecto_id: p.id, texto, hecha: k < hechas, encargado: p.encargados.length ? p.encargados[k % p.encargados.length] : null, created_at: `2026-10-06T10:0${k}:00Z` }));
     }
   }
   let proyectos = [];
@@ -635,13 +667,16 @@
       avisar(`${pill(nuevo)} <b>${esc(p.nombre)}</b> pasó a ${ETIQUETA[nuevo]}`);
     }
   }
-  function avisar(html) {
+  function avisar(html, deshacer) {
+    document.querySelectorAll(".aviso").forEach((x) => x.remove());
     const a = document.createElement("div");
     a.className = "aviso";
-    a.innerHTML = html;
+    a.innerHTML = html + (deshacer ? ` <button type="button" class="aviso-deshacer">Deshacer</button>` : "");
+    if (deshacer) a.querySelector("button").onclick = () => { deshacer(); a.remove(); };
     document.body.append(a);
-    setTimeout(() => a.classList.add("fuera"), 2600);
-    setTimeout(() => a.remove(), 3000);
+    const dura = deshacer ? 6000 : 2600;
+    setTimeout(() => a.classList.add("fuera"), dura);
+    setTimeout(() => a.remove(), dura + 400);
   }
 
   // Tareas pendientes: solo las no hechas, primero las de proyectos que vencen antes
@@ -657,8 +692,8 @@
       const it = document.createElement("div");
       it.className = "item";
       it.title = "Marcar como hecha";
-      it.innerHTML = `<div class="caja"></div><div><span class="t-texto">${esc(t.texto)}</span>
-        <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` · <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>`;
+      it.innerHTML = `<div class="caja"></div><div style="flex:1;min-width:0"><span class="t-texto">${esc(t.texto)}</span>
+        <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` · <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>${t.encargado ? avMini(t.encargado) : ""}`;
       it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); }; // solo en esta vista previa
       cont.append(it);
     }
@@ -671,7 +706,7 @@
     const filas = Object.keys(COLORES).map((n) => {
       const suyos = [...mapaP.values()].filter((p) => p.encargados.includes(n) && p.estado !== "listo");
       const ids = new Set(suyos.map((p) => p.id));
-      return { n, activos: suyos.length, pend: tareas.filter((t) => ids.has(t.proyecto_id) && !t.hecha).length };
+      return { n, activos: suyos.length, pend: tareas.filter((t) => t.encargado === n && !t.hecha && mapaP.has(t.proyecto_id)).length };
     });
     const max = Math.max(1, ...filas.map((f) => f.activos));
     cont.innerHTML = "";
@@ -680,7 +715,7 @@
       b.className = "carga" + (filtroSel.value === f.n ? " activa" : "");
       b.title = filtroSel.value === f.n ? "Quitar filtro" : `Ver solo los proyectos de ${f.n}`;
       b.innerHTML = `<i class="carga-av" style="${fondoAv(f.n)}">${letraAv(f.n)}</i>
-        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small>${f.activos} proy. · ${f.pend} pend.</small></div>
+        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small title="Proyectos activos · tareas pendientes asignadas a esta persona">${f.activos} proy. · ${f.pend} tareas</small></div>
         <div class="carga-barra"><i style="width:${(f.activos / max) * 100}%;background:${COLORES[f.n]}"></i></div></div>`;
       b.onclick = () => { filtroSel.value = filtroSel.value === f.n ? "" : f.n; pintar(); };
       cont.append(b);
@@ -710,6 +745,8 @@
   let abiertoId = null;
   function abrirProyecto(id) { abiertoId = id; pintarDetalle(); document.body.classList.add("con-detalle"); }
   function cerrarProyecto() { abiertoId = null; document.body.classList.remove("con-detalle"); }
+  // ===== Detalle del proyecto: se puede editar todo, borrar y asignar tareas =====
+  const avMini = (n) => `<i class="av-mini" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
   function pintarDetalle() {
     const p = mapaP.get(abiertoId);
     if (!p) return cerrarProyecto();
@@ -718,25 +755,62 @@
     const d = document.getElementById("detalle");
     d.className = "detalle a-" + p.estado;
     d.innerHTML = `
-      <div class="det-cab"><div>${pill(p.estado)}<h2>${esc(p.nombre)}</h2></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<input class="det-nombre" value="${esc(p.nombre)}" maxlength="200" title="Haz clic para editar el nombre" /></div>
+        <button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <dl class="det-datos">
-        <dt>Encargados</dt><dd>${p.encargados.length ? p.encargados.map((n) => `<span class="det-persona"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span>`).join("") : "Sin encargado"}</dd>
-        <dt>Prioridad</dt><dd><span class="prio-txt ${p.prioridad}">${mayus(p.prioridad)}</span></dd>
-        <dt>Fecha límite</dt><dd>${p.fecha_limite ? fmt(p.fecha_limite) : "Sin fecha"}</dd>
+        <dt>Encargados</dt><dd class="det-personas">${Object.keys(COLORES).map((n) => `<button type="button" class="det-persona ${p.encargados.includes(n) ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</dd>
+        <dt>Prioridad</dt><dd class="det-prios">${["alta", "media", "baja"].map((x) => `<button type="button" class="mn-prio ${x} ${p.prioridad === x ? "activa" : ""}" data-v="${x}">${mayus(x)}</button>`).join("")}</dd>
+        <dt>Fecha límite</dt><dd><input type="date" class="det-fecha" value="${p.fecha_limite || ""}" />${p.fecha_limite ? `<button type="button" class="det-link det-sinfecha">Quitar</button>` : ""}</dd>
       </dl>
       <div class="det-prog"><span>${tareas.length ? `${hechas} de ${tareas.length} tareas hechas` : "Aún sin tareas"}</span><b>${tareas.length ? pct + "%" : ""}</b></div>
       <div class="fx-barra"><i style="width:${pct}%"></i></div>
-      <h3 class="det-sub">Tareas</h3>
+      <h3 class="det-sub">Tareas <small>doble clic para renombrar</small></h3>
       <div class="det-tareas"></div>
       <form class="det-nueva"><input placeholder="Añadir una tarea y pulsar Enter" /><button>Añadir</button></form>
+      <div class="det-peligro"><button type="button" class="det-borrar">Eliminar proyecto</button></div>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
+
+    // Datos del proyecto
+    const nom = d.querySelector(".det-nombre");
+    const guardarNombre = () => { const v = nom.value.trim(); if (v && v !== p.nombre) { p.nombre = v; armar(); } else nom.value = p.nombre; };
+    nom.onblur = guardarNombre;
+    nom.onkeydown = (e) => { if (e.key === "Enter") nom.blur(); if (e.key === "Escape") { nom.value = p.nombre; e.stopPropagation(); nom.blur(); } };
+    d.querySelectorAll(".det-persona").forEach((b) => (b.onclick = () => {
+      const n = b.dataset.n;
+      p.encargados = p.encargados.includes(n) ? p.encargados.filter((x) => x !== n) : [...p.encargados, n];
+      armar();
+    }));
+    d.querySelectorAll(".det-prios button").forEach((b) => (b.onclick = () => { p.prioridad = b.dataset.v; armar(); }));
+    d.querySelector(".det-fecha").onchange = (e) => { p.fecha_limite = e.target.value || null; armar(); };
+    d.querySelector(".det-sinfecha")?.addEventListener("click", () => { p.fecha_limite = null; armar(); });
+
+    // Tareas
     const lista = d.querySelector(".det-tareas");
     if (!tareas.length) lista.innerHTML = `<div class="pronto-ok">Este proyecto todavía no tiene tareas.</div>`;
     for (const t of tareas) {
       const it = document.createElement("div");
-      it.className = "item" + (t.hecha ? " hecha" : "");
-      it.innerHTML = `<div class="caja"></div><span class="t-texto">${esc(t.texto)}</span>`;
-      it.onclick = () => { t.hecha = !t.hecha; ajustarEstado(t.proyecto_id); armar(); };
+      it.className = "item det-item" + (t.hecha ? " hecha" : "");
+      it.innerHTML = `<div class="caja" title="Marcar como hecha"></div><span class="t-texto">${esc(t.texto)}</span>
+        <select class="det-asig" title="Responsable de la tarea"><option value="">Sin asignar</option>${Object.keys(COLORES).map((n) => `<option ${t.encargado === n ? "selected" : ""}>${n}</option>`).join("")}</select>
+        ${t.encargado ? avMini(t.encargado) : `<i class="av-mini vacio" title="Sin asignar">?</i>`}
+        <button type="button" class="det-x" title="Eliminar tarea">✕</button>`;
+      it.querySelector(".caja").onclick = () => { t.hecha = !t.hecha; ajustarEstado(t.proyecto_id); armar(); };
+      const txt = it.querySelector(".t-texto");
+      txt.ondblclick = (e) => {
+        e.preventDefault();
+        const inp = document.createElement("input");
+        inp.className = "det-renombrar"; inp.value = t.texto;
+        txt.replaceWith(inp); inp.focus(); inp.select();
+        let listo = false;
+        const fin = (guardar) => { if (listo) return; listo = true; const v = inp.value.trim(); if (guardar && v) t.texto = v; armar(); };
+        inp.onkeydown = (ev) => { if (ev.key === "Enter") fin(true); if (ev.key === "Escape") { ev.stopPropagation(); fin(false); } };
+        inp.onblur = () => fin(true);
+      };
+      it.querySelector(".det-asig").onchange = (e) => { t.encargado = e.target.value || null; armar(); };
+      it.querySelector(".det-x").onclick = () => {
+        mapaT.delete(t.id); ajustarEstado(p.id); armar();
+        avisar(`Tarea <b>${esc(t.texto)}</b> eliminada`, () => { mapaT.set(t.id, t); ajustarEstado(p.id); armar(); });
+      };
       lista.append(it);
     }
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
@@ -745,10 +819,24 @@
       const v = e.target.querySelector("input").value.trim();
       if (!v) return;
       const id = Date.now();
-      mapaT.set(id, { id, proyecto_id: p.id, texto: v, hecha: false, created_at: new Date().toISOString() });
+      mapaT.set(id, { id, proyecto_id: p.id, texto: v, hecha: false, encargado: p.encargados.length === 1 ? p.encargados[0] : null, created_at: new Date().toISOString() });
       ajustarEstado(p.id);
       armar();
       document.querySelector("#detalle .det-nueva input").focus();
+    };
+
+    // Eliminar proyecto (con confirmación y opción de deshacer)
+    const zona = d.querySelector(".det-peligro");
+    zona.querySelector(".det-borrar").onclick = () => {
+      zona.innerHTML = `<span>¿Eliminar <b>${esc(p.nombre)}</b> y sus ${tareas.length} tareas?</span>
+        <div><button type="button" class="cal-btn det-no">Cancelar</button><button type="button" class="det-si">Sí, eliminar</button></div>`;
+      zona.classList.add("confirmar");
+      zona.querySelector(".det-no").onclick = pintarDetalle;
+      zona.querySelector(".det-si").onclick = () => {
+        mapaP.delete(p.id); tareas.forEach((t) => mapaT.delete(t.id));
+        cerrarProyecto(); armar();
+        avisar(`Proyecto <b>${esc(p.nombre)}</b> eliminado`, () => { mapaP.set(p.id, p); tareas.forEach((t) => mapaT.set(t.id, t)); armar(); });
+      };
     };
   }
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarProyecto(); });
@@ -921,7 +1009,7 @@
       fecha_limite: fNuevo.fecha.value || null,
       created_at: new Date().toISOString(),
     });
-    tareasNuevas.forEach((texto, k) => mapaT.set(id + k + 1, { id: id + k + 1, proyecto_id: id, texto, hecha: false, created_at: new Date(Date.now() + k).toISOString() }));
+    tareasNuevas.forEach((texto, k) => mapaT.set(id + k + 1, { id: id + k + 1, proyecto_id: id, texto, hecha: false, encargado: mapaP.get(id).encargados.length === 1 ? mapaP.get(id).encargados[0] : null, created_at: new Date(Date.now() + k).toISOString() }));
     cerrarNuevo();
     armar();
     avisar(`${pill(mapaP.get(id).estado)} Proyecto <b>${esc(nombre)}</b> creado`);
