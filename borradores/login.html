@@ -307,7 +307,7 @@
     document.getElementById("vistaRegistro").hidden = vistaActual !== "registro";
     document.getElementById("vistaOlvido").hidden = vistaActual !== "olvido";
     if (vistaActual === "olvido") { const o = document.getElementById("oCorreo"); o.value = correo.value.trim(); document.getElementById("mensajeO").textContent = ""; setTimeout(() => o.focus(), 50); }
-    vistaActual === "registro" ? gesto("feliz", "registro") : vistaActual === "olvido" ? gesto("mirando", "Tranquilo, pasa a todos 😉") : normal();
+    vistaActual === "registro" ? gesto("feliz", "registro") : vistaActual === "olvido" ? gesto("mirando", "Tranquilo, le puede pasar a cualquiera 😉") : normal();
     setTimeout(() => conejo.setAttribute("class", "conejo idle"), 700);
   }));
 
@@ -370,7 +370,7 @@
   }));
 
   // Recuperar contraseña (simulado)
-  document.getElementById("oCorreo").addEventListener("focus", () => gesto("mirando", "Tranquilo, pasa a todos 😉"));
+  document.getElementById("oCorreo").addEventListener("focus", () => gesto("mirando", "Tranquilo, le puede pasar a cualquiera 😉"));
   document.getElementById("formOlvido").onsubmit = (e) => {
     e.preventDefault();
     const m = document.getElementById("mensajeO"), v = document.getElementById("oCorreo").value.trim();
