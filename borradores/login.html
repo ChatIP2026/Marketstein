@@ -32,10 +32,19 @@
     border-right: 1px solid var(--borde);
   }
   .conejo { width: 290px; height: 290px; overflow: visible; filter: drop-shadow(0 18px 30px rgba(0,0,0,.5)); transition: transform .3s; }
+  /* Globo de diálogo tipo cómic, con su piquito apuntando al conejo */
   .globo {
-    min-height: 40px; padding: 9px 16px; border-radius: 14px; font-size: .92rem; text-align: center; max-width: 260px;
-    background: rgba(255,255,255,.06); border: 1px solid var(--borde); transition: opacity .2s;
+    position: relative; min-height: 40px; padding: 10px 18px; border-radius: 16px; font-size: .92rem; text-align: center; max-width: 280px;
+    background: #242632; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 8px 24px rgba(0,0,0,.3); transition: opacity .2s; margin-top: 6px;
   }
+  .globo::before {
+    content: ""; position: absolute; top: -8px; left: 50%; width: 14px; height: 14px; transform: translateX(-50%) rotate(45deg);
+    background: #242632; border-left: 1px solid rgba(255,255,255,.14); border-top: 1px solid rgba(255,255,255,.14); border-top-left-radius: 3px;
+  }
+  .titulo-ai { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+  .titulo-ai b { font-size: 1.5rem; font-weight: 800; letter-spacing: .14em;
+    background: linear-gradient(90deg, #fff, #b3a7ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .titulo-ai span { font-size: .8rem; letter-spacing: .18em; text-transform: uppercase; color: var(--tenue); }
   .marca { position: absolute; left: 24px; top: 20px; font-weight: 700; letter-spacing: .02em; color: var(--tenue); font-size: .85rem; }
 
   /* Flotando todo el tiempo */
@@ -112,6 +121,7 @@
   <main class="tarjeta">
     <!-- Izquierda: el conejo hace gestos según lo que hagas -->
     <section class="lado-conejo" aria-hidden="true">
+      <div class="titulo-ai"><b>RABBIT AI</b><span>Asistente de marketing</span></div>
       <div class="flota">
       <svg class="conejo idle" id="conejo" viewBox="12 6 50 60">
         <g fill="#ffffff" stroke="#000" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
@@ -194,7 +204,7 @@
     clearInterval(rotacion);
     let i = 0;
     cambiarTexto(lista[0]);
-    rotacion = setInterval(() => { i = (i + 1) % lista.length; cambiarTexto(lista[i]); }, 3500);
+    rotacion = setInterval(() => { i = (i + 1) % lista.length; cambiarTexto(lista[i]); }, 6500);
   }
   function cambiarTexto(t) {
     globo.style.opacity = 0;
