@@ -532,6 +532,40 @@
   .carpeta::before { content: ""; position: absolute; left: 0; top: -6px; width: 22px; height: 10px; border-radius: 5px 5px 0 0; background: #b5b9c5; }
   @media (max-width: 900px) { .ent { grid-template-columns: 1fr; } }
   /* Mi entorno: tarjetas estilo chat */
+  .ent-barra { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+  .ent-barra .ent-filtros { margin-bottom: 0 !important; }
+  .ent-modo { display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid var(--borde); }
+  .ent-modo span { width: 1px; height: 20px; background: var(--borde); margin: 0 3px; }
+  .ent-modo button { all: unset; cursor: pointer; width: 36px; height: 32px; border-radius: 9px; display: grid; place-items: center; color: var(--tenue); }
+  .ent-modo button svg { width: 19px; height: 19px; }
+  .ent-modo button:hover { color: var(--texto); }
+  .ent-modo button.activa { color: #fff; background: rgba(141,124,245,.25); }
+  /* Calendario de Mi entorno */
+  .ec { display: grid; grid-template-columns: 1fr 360px; gap: 22px; }
+  .ec-cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; } .ec-cab b { font-size: 1.15rem; }
+  .ec-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+  .ec-nom { font-size: .74rem; color: var(--tenue); text-align: center; padding-bottom: 4px; }
+  .ec-dia { min-height: 104px; padding: 7px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--borde); cursor: pointer; display: flex; flex-direction: column; gap: 4px; min-width: 0; transition: border-color .15s; }
+  .ec-dia:hover { border-color: rgba(159,178,232,.4); }
+  .ec-dia.vacio { background: none; border: 0; cursor: default; }
+  .ec-dia.pasado .ec-num { opacity: .45; }
+  .ec-dia.hoy .ec-num { background: #8d7cf5; color: #fff; }
+  .ec-dia.sel { border-color: #8d7cf5; box-shadow: inset 0 0 0 1px #8d7cf5; background: rgba(141,124,245,.08); }
+  .ec-num { align-self: flex-start; font-size: .8rem; font-weight: 600; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+  .ec-ev { all: unset; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 600; padding: 3px 6px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ec-ev i { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+  .ec-ev.e-sin_empezar { background: rgba(154,161,180,.16); color: #c9cdd8; } .ec-ev.e-sin_empezar i { background: #9aa1b4; }
+  .ec-ev.e-en_curso { background: rgba(255,200,70,.16); color: #ffe08a; } .ec-ev.e-en_curso i { background: #ffd45c; }
+  .ec-ev.e-listo { background: rgba(46,230,176,.14); color: #7ff0cc; text-decoration: line-through; } .ec-ev.e-listo i { background: #2ee6b0; }
+  .ec-mas { font-size: .68rem; color: var(--tenue); padding-left: 4px; }
+  .ec-lado { padding: 18px; border-radius: 18px; background: rgba(0,0,0,.2); border: 1px solid var(--borde); align-self: start; }
+  .ec-lado h4 { margin: 0 0 12px; font-size: .95rem; } .ec-sub { margin-top: 22px !important; padding-top: 16px; border-top: 1px solid var(--borde); }
+  .ec-item { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; border-radius: 12px; background: rgba(255,255,255,.04); margin-bottom: 8px; }
+  .ec-item:hover { background: rgba(255,255,255,.08); }
+  .ec-item-txt { flex: 1; min-width: 0; } .ec-item-txt b { display: block; font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ec-item-txt small { font-size: .72rem; color: var(--tenue); }
+  .carpeta-azul.chica { width: 34px; height: 26px; border-radius: 6px; } .carpeta-azul.chica::before { top: -5px; width: 15px; height: 8px; } .carpeta-azul.chica::after { left: 4px; right: 4px; top: 3px; height: 5px; }
+  .ec-prox .bc-f { font-size: .76rem; display: block; margin-bottom: 4px; }
+  @media (max-width: 1000px) { .ec { grid-template-columns: 1fr; } .ec-dia { min-height: 70px; } .ec-ev { font-size: 0; padding: 4px; } }
   .ent-filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
   .ent-filtros button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; font-size: .86rem;
     color: var(--tenue); background: rgba(255,255,255,.04); border: 1px solid var(--borde); transition: background .15s, color .15s; }
@@ -1266,7 +1300,54 @@
   document.querySelector(".logo-caja").onclick = () => irA("inicio");
 
   // ===== Mi entorno: mis proyectos + línea de tiempo de cada uno =====
-  let filtroEnt = "todos";
+  let filtroEnt = "todos", modoEnt = "carpetas", mesEnt = new Date(), diaEnt = HOY;
+  mesEnt.setDate(1);
+  function enlazarEntorno(cont) {
+    cont.querySelectorAll("[data-fe]").forEach((b) => (b.onclick = () => { filtroEnt = b.dataset.fe; pintarMis(); }));
+    cont.querySelectorAll("[data-modo]").forEach((b) => (b.onclick = () => { modoEnt = b.dataset.modo; pintarMis(); }));
+    cont.querySelectorAll("[data-pid]").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); abrirProyecto(+b.dataset.pid); }));
+    cont.querySelectorAll(".ec-dia[data-iso]").forEach((b) => (b.onclick = () => { diaEnt = b.dataset.iso; pintarMis(); }));
+    const nav = (n) => { mesEnt.setMonth(mesEnt.getMonth() + n); pintarMis(); };
+    cont.querySelector("#ecPrev")?.addEventListener("click", () => nav(-1));
+    cont.querySelector("#ecNext")?.addEventListener("click", () => nav(1));
+    cont.querySelector("#ecHoy")?.addEventListener("click", () => { mesEnt = new Date(); mesEnt.setDate(1); diaEnt = HOY; pintarMis(); });
+  }
+  // Calendario detallado de Mi entorno
+  function calendarioEntorno(lista) {
+    const y = mesEnt.getFullYear(), m = mesEnt.getMonth();
+    const dias = new Date(y, m + 1, 0).getDate(), desfase = (new Date(y, m, 1).getDay() + 6) % 7;
+    const tsDe = (p) => [...mapaT.values()].filter((t) => t.proyecto_id === p.id);
+    let celdas = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((n) => `<div class="ec-nom">${n}</div>`).join("");
+    for (let i = 0; i < desfase; i++) celdas += `<div class="ec-dia vacio"></div>`;
+    for (let d = 1; d <= dias; d++) {
+      const iso = isoDe(new Date(y, m, d)), ps = lista.filter((p) => p.fecha_limite === iso);
+      celdas += `<div class="ec-dia ${iso === HOY ? "hoy" : ""} ${iso === diaEnt ? "sel" : ""} ${iso < HOY ? "pasado" : ""}" data-iso="${iso}">
+        <span class="ec-num">${d}</span>
+        ${ps.slice(0, 3).map((p) => `<button class="ec-ev e-${p.estado}" data-pid="${p.id}" title="${esc(p.nombre)}"><i></i>${esc(p.nombre)}</button>`).join("")}
+        ${ps.length > 3 ? `<span class="ec-mas">+${ps.length - 3} más</span>` : ""}</div>`;
+    }
+    // Panel lateral: día elegido + próximos vencimientos
+    const delDia = lista.filter((p) => p.fecha_limite === diaEnt);
+    const prox = lista.filter((p) => p.fecha_limite && p.fecha_limite >= HOY && p.estado !== "listo").sort((a, b) => a.fecha_limite.localeCompare(b.fecha_limite)).slice(0, 4);
+    const fila = (p) => { const ts = tsDe(p), pend = ts.filter((t) => !t.hecha).length, mias = ts.filter((t) => !t.hecha && t.encargado === yo).length;
+      return `<button class="ec-item e-${p.estado}" data-pid="${p.id}"><span class="carpeta-azul c-${p.estado} chica"></span><span class="ec-item-txt"><b>${esc(p.nombre)}</b>
+        <small>${pend}/${ts.length} pendientes${mias ? ` · ${mias} tuya${mias === 1 ? "" : "s"}` : ""}${p.solicitado_por ? ` · pedido por ${esc(p.solicitado_por.nombre)}` : ""}</small></span>${anilloMini(ts.length ? Math.round((ts.length - pend) / ts.length * 100) : 0)}</button>`; };
+    const sinFecha = lista.filter((p) => !p.fecha_limite).length;
+    const titDia = mayus(new Date(diaEnt + "T00:00").toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" }));
+    return `<div class="ec">
+      <div class="ec-main">
+        <div class="ec-cab"><b>${mayus(new Date(y, m, 1).toLocaleDateString("es", { month: "long", year: "numeric" }))}</b>
+          <div class="cal-nav"><button class="cal-btn" id="ecHoy">Hoy</button><button class="cal-btn" id="ecPrev">‹</button><button class="cal-btn" id="ecNext">›</button></div></div>
+        <div class="ec-grid">${celdas}</div>
+        <div class="leyenda"><span><i style="background:#9aa1b4"></i>Sin empezar</span><span><i style="background:#ffd45c"></i>En curso</span><span><i style="background:#2ee6b0"></i>Listo</span>${sinFecha ? `<span>· ${sinFecha} proyecto(s) sin fecha no aparecen</span>` : ""}</div>
+      </div>
+      <aside class="ec-lado">
+        <h4>${titDia}</h4>
+        ${delDia.length ? delDia.map(fila).join("") : `<div class="pronto-ok">Nada vence este día.</div>`}
+        <h4 class="ec-sub">Próximos vencimientos</h4>
+        ${prox.length ? prox.map((p) => { const d = diasHasta(p.fecha_limite); return `<div class="ec-prox"><span class="bc-f ${d <= 5 ? "urgente" : d <= 14 ? "proxima" : "lejos"}">${d <= 5 ? "⏰ " : ""}${d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(p.fecha_limite)}</span>${fila(p)}</div>`; }).join("") : `<div class="pronto-ok">No hay vencimientos próximos.</div>`}
+      </aside></div>`;
+  }
   let entornoSel = null, filtroMis = "pendientes";
   const hace = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 6e4); return m < 1 ? "ahora" : m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.round(m / 60)} h` : `hace ${Math.round(m / 1440)} d`; };
   const av = (n, cls = "") => `<i class="av ${cls}" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
@@ -1285,10 +1366,21 @@
     // Filtros y divisiones por estado
     const ORDEN = ["en_curso", "sin_empezar", "listo"];
     const cuenta = (e) => lista.filter((p) => p.estado === e).length;
-    html += `<div class="ent-filtros">
+    html += `<div class="ent-barra"><div class="ent-filtros">
       <button data-fe="todos" class="${filtroEnt === "todos" ? "activa" : ""}">Todos <span>${lista.length}</span></button>
       ${ORDEN.map((e) => `<button data-fe="${e}" class="f-${e} ${filtroEnt === e ? "activa" : ""}">${ICONOS[e]}${ETIQUETA[e]} <span>${cuenta(e)}</span></button>`).join("")}
-    </div>`;
+    </div>
+    <div class="ent-modo">
+      <button data-modo="carpetas" class="${modoEnt === "carpetas" ? "activa" : ""}" title="Ver como carpetas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4l2 2h7A2.5 2.5 0 0 1 21 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/></svg></button>
+      <span></span>
+      <button data-modo="calendario" class="${modoEnt === "calendario" ? "activa" : ""}" title="Ver en calendario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>
+    </div></div>`;
+    if (modoEnt === "calendario") {
+      const vis = lista.filter((p) => filtroEnt === "todos" || p.estado === filtroEnt);
+      cont.innerHTML = html + calendarioEntorno(vis);
+      enlazarEntorno(cont);
+      return;
+    }
     for (const e of ORDEN) {
       if (filtroEnt !== "todos" && filtroEnt !== e) continue;
       const grupo = lista.filter((p) => p.estado === e);
@@ -1296,7 +1388,7 @@
         ${grupo.length ? `<div class="burbujas">${grupo.map(tarjetaChat).join("")}</div>` : `<div class="ent-vacia">No tienes proyectos ${{ sin_empezar: "sin empezar", en_curso: "en curso", listo: "listos" }[e]}.</div>`}</section>`;
     }
     cont.innerHTML = html;
-    cont.querySelectorAll("[data-fe]").forEach((b) => (b.onclick = () => { filtroEnt = b.dataset.fe; pintarMis(); }));
+    enlazarEntorno(cont);
     cont.querySelectorAll(".bc").forEach((c) => {
       const p = mapaP.get(+c.dataset.id);
       c.querySelectorAll(".bc-abrir").forEach((x) => (x.onclick = () => abrirProyecto(p.id)));
