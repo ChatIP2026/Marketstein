@@ -1281,7 +1281,6 @@
       const p = mapaP.get(+c.dataset.id);
       c.querySelectorAll(".bc-abrir").forEach((x) => (x.onclick = () => abrirProyecto(p.id)));
       c.querySelector(".bc-carpeta").onclick = () => abrirProyecto(p.id);
-      c.querySelector(".bc-estado").onchange = (e) => { p.estado = e.target.value; armar(); };
     });
   }
   function tarjetaChat(p) {
@@ -1299,8 +1298,7 @@
         <p class="bc-msg">${msg}</p>
         <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul c-${p.estado}"></span><span><b>Tareas</b><small>${h} de ${ts.length} hechas · ${ts.length ? Math.round(h / ts.length * 100) : 0}%</small></span></button>
       </div>
-      <div class="bc-pie"><button class="bc-ir bc-abrir">Abrir <span>→</span></button>
-        <select class="bc-estado">${["sin_empezar", "en_curso", "listo"].map((e) => `<option value="${e}" ${p.estado === e ? "selected" : ""}>${ETIQUETA[e]}</option>`).join("")}</select></div>
+      <div class="bc-pie"><button class="bc-ir bc-abrir">Abrir <span>→</span></button></div>
     </article>`;
   }
   function pintarFeed() {
