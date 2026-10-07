@@ -575,14 +575,21 @@
   .carpeta-azul.c-en_curso::before { background: #f5c54e; }
   .carpeta-azul.c-listo { background: linear-gradient(180deg, #7ff0cc, #22c99a); box-shadow: 0 10px 20px rgba(34,201,154,.35); }
   .carpeta-azul.c-listo::before { background: #3fd8aa; }
-  .bc { position: relative; padding-right: 76px !important; }
+  .bc { position: relative; padding-bottom: 18px !important; }
+  .bc-info { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding-right: 58px; }
+  .bc-info b { font-size: 1.02rem; line-height: 1.25; }
+  .bc-anillo { display: inline-flex; align-items: center; gap: 7px; font-size: .84rem; font-weight: 600; color: #6ee0a7; }
+  .bc-anillo svg { display: block; }
+  .bc-msg { position: relative; margin-top: 0 !important; }
+  .bc-msg .bc-conejo { position: absolute; left: -30px; top: 0; }
+  .bc-ev::before { top: 28px !important; }
   .burbujas { align-items: start; }
   .bc-yo span { white-space: nowrap; }
-  .bc-flecha { all: unset; box-sizing: border-box; cursor: pointer; position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  .bc-flecha { all: unset; box-sizing: border-box; cursor: pointer; position: absolute; right: 16px; bottom: 16px;
     width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: #6c5ce7;
     background: linear-gradient(180deg, #ffffff, #eceafd); box-shadow: 0 6px 18px rgba(108,92,231,.35), inset 0 -2px 0 rgba(108,92,231,.12); transition: transform .15s, box-shadow .15s; }
   .bc-flecha svg { width: 22px; height: 22px; }
-  .bc-flecha:hover { transform: translateY(-50%) translateX(3px); box-shadow: 0 8px 24px rgba(108,92,231,.5); }
+  .bc-flecha:hover { transform: translateX(3px); box-shadow: 0 8px 24px rgba(108,92,231,.5); }
   .bc-flecha:focus-visible { outline: 2px solid #8d7cf5; outline-offset: 3px; }
   .bc-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
   .bc-ir { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-size: .95rem; padding-left: 6px; }
@@ -1282,7 +1289,7 @@
       if (filtroEnt !== "todos" && filtroEnt !== e) continue;
       const grupo = lista.filter((p) => p.estado === e);
       html += `<section class="ent-div"><h3>${pill(e)} <span class="chip">${grupo.length}</span></h3>
-        ${grupo.length ? `<div class="burbujas">${grupo.map(tarjetaChat).join("")}</div>` : `<div class="ent-vacia">No tienes proyectos ${ETIQUETA[e].toLowerCase()}.</div>`}</section>`;
+        ${grupo.length ? `<div class="burbujas">${grupo.map(tarjetaChat).join("")}</div>` : `<div class="ent-vacia">No tienes proyectos ${{ sin_empezar: "sin empezar", en_curso: "en curso", listo: "listos" }[e]}.</div>`}</section>`;
     }
     cont.innerHTML = html;
     cont.querySelectorAll("[data-fe]").forEach((b) => (b.onclick = () => { filtroEnt = b.dataset.fe; pintarMis(); }));
@@ -1291,6 +1298,10 @@
       c.querySelectorAll(".bc-abrir").forEach((x) => (x.onclick = () => abrirProyecto(p.id)));
       c.querySelector(".bc-carpeta").onclick = () => abrirProyecto(p.id);
     });
+  }
+  function anilloMini(pct) {
+    const r = 9, c = 2 * Math.PI * r;
+    return `<span class="bc-anillo"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="${r}" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="3"/><circle cx="12" cy="12" r="${r}" fill="none" stroke="#2ee6b0" stroke-width="3" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct / 100)}" transform="rotate(-90 12 12)"/></svg>${pct}%</span>`;
   }
   function tarjetaChat(p) {
     const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id);
@@ -1303,9 +1314,8 @@
     return `<article class="bc" data-id="${p.id}">
       ${p.solicitado_por ? `<div class="bc-yo" title="Ticket aceptado"><span>Solicitado por</span>${av(p.solicitado_por.nombre)}<b>${esc(p.solicitado_por.nombre)}</b><small>${esc(p.solicitado_por.area)}</small></div>` : ""}
       <div class="bc-ev">
-        <div class="bc-tit"><img class="bc-conejo" src="${CONEJO}" alt="" />${esc(p.nombre)} <small>${ult ? hace(ult.hecha_at || ult.created_at) : hace(p.created_at)}</small></div>
-        <p class="bc-msg">${msg}</p>
-        <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul c-${p.estado}"></span><span><b>Tareas</b><small>${h} de ${ts.length} hechas · ${ts.length ? Math.round(h / ts.length * 100) : 0}%</small></span></button>
+        <p class="bc-msg"><img class="bc-conejo" src="${CONEJO}" alt="Rabbit" />${msg}</p>
+        <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul c-${p.estado}"></span><span class="bc-info"><b>${esc(p.nombre)}</b>${anilloMini(ts.length ? Math.round(h / ts.length * 100) : 0)}</span></button>
       </div>
       <button class="bc-flecha bc-abrir" title="Abrir proyecto" aria-label="Abrir proyecto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </article>`;
