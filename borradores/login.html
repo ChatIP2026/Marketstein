@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Entrar</title>
+<style>
+  :root { --texto: #e8eaf0; --tenue: #9aa0b2; --borde: rgba(255,255,255,.1); --morado: #8d7cf5; --verde: #2ee6b0; --rojo: #ff8a8e; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; display: grid; place-items: center; padding: 20px; color: var(--texto);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(900px 600px at 30% 30%, rgba(70,120,220,.28), transparent 70%),
+      radial-gradient(700px 500px at 75% 85%, rgba(90,70,200,.26), transparent 70%),
+      #07080c;
+  }
+
+  /* Tarjeta: rectángulo con esquinas curvas */
+  .tarjeta {
+    width: min(880px, 100%); min-height: 480px; display: grid; grid-template-columns: 1fr 1fr;
+    border-radius: 28px; overflow: hidden; border: 1px solid var(--borde);
+    background: rgba(18, 20, 27, .86); backdrop-filter: blur(18px);
+    box-shadow: 0 40px 100px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
+  }
+
+  /* Lado izquierdo: el conejo */
+  .lado-conejo {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 36px;
+    background: radial-gradient(420px 320px at 50% 45%, rgba(141,124,245,.28), transparent 70%), linear-gradient(160deg, #1b1d29, #111219);
+    border-right: 1px solid var(--borde);
+  }
+  .conejo { width: 290px; height: 290px; overflow: visible; filter: drop-shadow(0 18px 30px rgba(0,0,0,.5)); transition: transform .3s; }
+  .globo {
+    min-height: 40px; padding: 9px 16px; border-radius: 14px; font-size: .92rem; text-align: center; max-width: 260px;
+    background: rgba(255,255,255,.06); border: 1px solid var(--borde); transition: opacity .2s;
+  }
+  .marca { position: absolute; left: 24px; top: 20px; font-weight: 700; letter-spacing: .02em; color: var(--tenue); font-size: .85rem; }
+
+  /* Partes del conejo que se mueven */
+  .oreja-i { transform-origin: 34px 32px; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
+  .oreja-d { transform-origin: 46px 38px; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
+  .cara > g { transition: opacity .15s; }
+  .ojos-abiertos { transition: transform .2s ease; }
+  .rubor { opacity: 0; transition: opacity .3s; }
+  .conejo.idle .oreja-d { animation: menear 4s ease-in-out infinite; }
+  .conejo.idle .ojos-felices { animation: parpadeo 4.5s infinite; transform-origin: 32px 50px; }
+  @keyframes menear { 0%, 80%, 100% { transform: rotate(0); } 85% { transform: rotate(-10deg); } 90% { transform: rotate(6deg); } 95% { transform: rotate(-4deg); } }
+  @keyframes parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.15); } }
+
+  /* Estados (gestos) */
+  .conejo .ojos-abiertos, .conejo .ojos-tapados, .conejo .ojos-tristes { opacity: 0; }
+  .conejo.mirando .ojos-felices, .conejo.tapando .ojos-felices, .conejo.triste .ojos-felices { opacity: 0; }
+  .conejo.mirando .ojos-abiertos { opacity: 1; }
+  .conejo.tapando .ojos-tapados { opacity: 1; }
+  .conejo.tapando .oreja-i { transform: rotate(-58deg) translate(-2px, 10px); }
+  .conejo.tapando .oreja-d { transform: rotate(-62deg) translate(2px, 6px); }
+  .conejo.tapando .rubor { opacity: .9; }
+  .conejo.triste .ojos-tristes { opacity: 1; }
+  .conejo.triste .oreja-i { transform: rotate(-35deg); }
+  .conejo.triste .oreja-d { transform: rotate(25deg); }
+  .conejo.triste { animation: sacudir .45s ease; }
+  .conejo.feliz { animation: saltar .6s ease; }
+  .conejo.feliz .rubor { opacity: .9; }
+  @keyframes sacudir { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+  @keyframes saltar { 30% { transform: translateY(-22px) rotate(-4deg); } 60% { transform: translateY(0); } 75% { transform: translateY(-8px); } }
+  @media (prefers-reduced-motion: reduce) { .conejo, .conejo * { animation: none !important; transition: none !important; } }
+
+  /* Lado derecho: formulario */
+  .lado-form { padding: 48px 44px; display: flex; flex-direction: column; justify-content: center; }
+  h1 { margin: 0 0 6px; font-size: 1.7rem; }
+  .sub { margin: 0 0 30px; color: var(--tenue); font-size: .92rem; }
+  label { display: block; font-size: .82rem; color: var(--tenue); margin-bottom: 7px; font-weight: 500; }
+  .campo { position: relative; margin-bottom: 18px; }
+  .campo input {
+    width: 100%; height: 48px; padding: 0 14px 0 42px; border-radius: 12px; font: inherit; font-size: .95rem; color: var(--texto);
+    background: rgba(255,255,255,.04); border: 1px solid var(--borde); transition: border-color .15s, background .15s;
+  }
+  .campo input:focus { outline: none; border-color: var(--morado); background: rgba(141,124,245,.08); box-shadow: 0 0 0 4px rgba(141,124,245,.15); }
+  .campo .ico { position: absolute; left: 14px; bottom: 15px; width: 18px; height: 18px; color: var(--tenue); pointer-events: none; }
+  .ver { position: absolute; right: 8px; bottom: 8px; width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--tenue); cursor: pointer; display: grid; place-items: center; }
+  .ver:hover { color: var(--texto); background: rgba(255,255,255,.06); }
+  .ver svg { width: 18px; height: 18px; }
+  .entrar {
+    width: 100%; height: 48px; margin-top: 8px; border: 0; border-radius: 12px; font: inherit; font-size: 1rem; font-weight: 600; color: #fff; cursor: pointer;
+    background: linear-gradient(180deg, #9a8af7, #6c5ce7); box-shadow: 0 10px 24px rgba(108,92,231,.35); transition: transform .1s, filter .15s;
+  }
+  .entrar:hover { filter: brightness(1.08); } .entrar:active { transform: translateY(1px); }
+  .entrar:disabled { opacity: .7; cursor: wait; }
+  .olvido { display: block; text-align: center; margin-top: 20px; color: var(--tenue); font-size: .88rem; text-decoration: none; }
+  .olvido:hover { color: var(--texto); text-decoration: underline; }
+  .mensaje { min-height: 20px; font-size: .84rem; margin: -6px 0 6px; }
+  .mensaje.error { color: var(--rojo); } .mensaje.ok { color: var(--verde); }
+  .nota { margin-top: 26px; font-size: .74rem; color: var(--tenue); text-align: center; opacity: .8; }
+  :focus-visible { outline: 2px solid var(--morado); outline-offset: 2px; }
+
+  @media (max-width: 720px) {
+    .tarjeta { grid-template-columns: 1fr; }
+    .lado-conejo { border-right: 0; border-bottom: 1px solid var(--borde); padding: 28px; }
+    .conejo { width: 150px; height: 150px; }
+    .lado-form { padding: 30px 24px; }
+  }
+</style>
+</head>
+<body>
+  <main class="tarjeta">
+    <!-- Izquierda: el conejo hace gestos según lo que hagas -->
+    <section class="lado-conejo" aria-hidden="true">
+      <span class="marca">Panel del equipo</span>
+      <svg class="conejo idle" id="conejo" viewBox="12 6 50 60">
+        <g fill="#ffffff" stroke="#000" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
+          <path class="oreja-i" d="M21.6 15.9c.4-1.2 1.6-1.7 2.8-1.3l8.4 3.5c.7.3 1.2.8 1.5 1.4l5.1 11.3-11.2 2.5-6.5-13.5c-.4-.9-.5-2.2-.1-3.9Z"/>
+          <path d="M22.1 42.3c0-2.4 1.4-4.6 3.6-5.7l7.6-3.7c2.6-1.3 5.6-1.3 8.2.1l9.7 5.3c2.1 1.2 3.4 3.4 3.4 5.8v7.4c0 2.5-1.4 4.7-3.6 5.8l-7.5 3.7c-2.7 1.3-5.9 1.3-8.6 0l-9.2-4.5c-2.2-1.1-3.6-3.3-3.6-5.8Z"/>
+          <path class="oreja-d" d="M43.3 18.5c0-1.4 1.4-2.2 2.6-1.6.5.3.9.6 1.2 1l5.9 6.6c.5.6.8 1.3.8 2.1v14.4c0 1.5-1.6 2.4-2.9 1.6l-6.4-4.2c-.8-.5-1.2-1.3-1.2-2.2Z"/>
+        </g>
+        <g class="cara" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round">
+          <!-- feliz (normal) -->
+          <g class="ojos-felices"><path d="M22.4 46.2c1.2.4 2 1.6 2.4 3"/><path d="M32.6 53.7c1.6-3 5.4-3.6 8.2-.3"/></g>
+          <!-- mirando lo que escribes -->
+          <g class="ojos-abiertos" id="pupilas" fill="#000" stroke="none"><circle cx="24" cy="48.6" r="1.25"/><circle cx="36.6" cy="51.6" r="1.6"/></g>
+          <!-- tapando (contraseña) -->
+          <g class="ojos-tapados"><path d="M22.6 47.4l2.2 1.4"/><path d="M33 51.2l2.6 1.2 2.6-.6"/></g>
+          <!-- triste (error) -->
+          <g class="ojos-tristes"><path d="M22.4 49c1.2-.6 2-1.4 2.4-2.6"/><path d="M32.8 51c1.6 2.6 5.2 3 7.8.4"/></g>
+          <path d="M28.6 49.6v5.4M25.9 52.3h5.4"/>
+        </g>
+        <g class="rubor" fill="#ff9db8"><ellipse cx="24.2" cy="53.2" rx="1.6" ry=".9"/><ellipse cx="41.8" cy="56" rx="2" ry="1"/></g>
+      </svg>
+      <div class="globo" id="globo">¡Hola! ¿Listo para trabajar?</div>
+    </section>
+
+    <!-- Derecha: formulario -->
+    <section class="lado-form">
+      <h1>Bienvenido</h1>
+      <p class="sub">Entra con tu correo para ver tus proyectos y tareas.</p>
+      <form id="form" novalidate>
+        <div class="campo">
+          <label for="correo">Correo o usuario</label>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+          <input id="correo" type="text" autocomplete="username" placeholder="tu@correo.com" />
+        </div>
+        <div class="campo">
+          <label for="clave">Contraseña</label>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <input id="clave" type="password" autocomplete="current-password" placeholder="••••••••" />
+          <button type="button" class="ver" id="ver" title="Mostrar contraseña" aria-label="Mostrar contraseña">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="mensaje" id="mensaje" role="status"></div>
+        <button class="entrar" id="entrar" type="submit">Entrar</button>
+        <a class="olvido" href="#" id="olvido">¿Olvidaste tu contraseña?</a>
+      </form>
+      <p class="nota">Vista previa: no se conecta a ninguna cuenta.</p>
+    </section>
+  </main>
+
+<script>
+  const conejo = document.getElementById("conejo");
+  const globo = document.getElementById("globo");
+  const correo = document.getElementById("correo");
+  const clave = document.getElementById("clave");
+  const mensaje = document.getElementById("mensaje");
+  const pupilas = document.getElementById("pupilas");
+
+  function gesto(nombre, texto) {
+    conejo.setAttribute("class", "conejo " + nombre);
+    if (texto) globo.textContent = texto;
+  }
+  const normal = () => gesto("idle", "¡Hola! ¿Listo para trabajar?");
+
+  // Mira hacia donde escribes: las pupilas avanzan con el texto
+  function mirar() {
+    const avance = Math.min(correo.value.length, 24) / 24; // 0 a 1
+    pupilas.style.transform = `translate(${-0.8 + avance * 1.8}px, 0.6px)`;
+  }
+  correo.addEventListener("focus", () => { gesto("mirando", "Te escucho… escribe tu correo"); mirar(); });
+  correo.addEventListener("input", mirar);
+  clave.addEventListener("focus", () => gesto(clave.type === "password" ? "tapando" : "mirando", clave.type === "password" ? "¡No estoy mirando! 🙈" : "Ups… se ve todo"));
+  [correo, clave].forEach((i) => i.addEventListener("blur", () => setTimeout(() => { if (![correo, clave].includes(document.activeElement)) normal(); }, 0)));
+
+  // Mostrar / ocultar contraseña
+  document.getElementById("ver").onclick = () => {
+    const ver = clave.type === "password";
+    clave.type = ver ? "text" : "password";
+    clave.focus();
+    gesto(ver ? "mirando" : "tapando", ver ? "Ups… se ve todo" : "¡No estoy mirando! 🙈");
+  };
+
+  // Entrar (simulado)
+  document.getElementById("form").onsubmit = (e) => {
+    e.preventDefault();
+    mensaje.className = "mensaje";
+    if (!correo.value.trim() || !clave.value) {
+      mensaje.className = "mensaje error";
+      mensaje.textContent = "Escribe tu correo y tu contraseña.";
+      gesto("triste", "Te falta algo…");
+      return;
+    }
+    if (clave.value.length < 6) {
+      mensaje.className = "mensaje error";
+      mensaje.textContent = "Correo o contraseña incorrectos.";
+      gesto("triste", "Mmm… eso no está bien");
+      return;
+    }
+    const b = document.getElementById("entrar");
+    b.disabled = true; b.textContent = "Entrando…";
+    setTimeout(() => {
+      mensaje.className = "mensaje ok";
+      mensaje.textContent = "¡Listo! Te llevamos a tu panel…";
+      gesto("feliz", "¡Bienvenido de vuelta! 🥕");
+      b.textContent = "Entrar"; b.disabled = false;
+    }, 700);
+  };
+
+  document.getElementById("olvido").onclick = (e) => {
+    e.preventDefault();
+    mensaje.className = "mensaje ok";
+    mensaje.textContent = correo.value.trim()
+      ? `Te enviaremos un enlace a ${correo.value.trim()} para crear una nueva contraseña.`
+      : "Escribe tu correo arriba y vuelve a pulsar aquí.";
+    gesto("mirando", "Tranquilo, pasa a todos 😉");
+    mirar();
+  };
+</script>
+</body>
+</html>
