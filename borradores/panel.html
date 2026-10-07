@@ -532,6 +532,17 @@
   .carpeta::before { content: ""; position: absolute; left: 0; top: -6px; width: 22px; height: 10px; border-radius: 5px 5px 0 0; background: #b5b9c5; }
   @media (max-width: 900px) { .ent { grid-template-columns: 1fr; } }
   /* Mi entorno: tarjetas estilo chat */
+  .ent-filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+  .ent-filtros button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; font-size: .86rem;
+    color: var(--tenue); background: rgba(255,255,255,.04); border: 1px solid var(--borde); transition: background .15s, color .15s; }
+  .ent-filtros button svg { width: 14px; height: 14px; }
+  .ent-filtros button span { font-size: .74rem; padding: 1px 7px; border-radius: 999px; background: rgba(255,255,255,.08); }
+  .ent-filtros button:hover { color: var(--texto); }
+  .ent-filtros button.activa { color: #fff; background: rgba(141,124,245,.2); border-color: #8d7cf5; }
+  .ent-filtros .f-en_curso svg { color: #ffd45c; } .ent-filtros .f-listo svg { color: #2ee6b0; } .ent-filtros .f-sin_empezar svg { color: #b4bac8; }
+  .ent-div { margin-bottom: 30px; }
+  .ent-div h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--borde); font-size: 1rem; }
+  .ent-vacia { color: var(--tenue); font-size: .88rem; padding: 14px; border: 1px dashed var(--borde); border-radius: 14px; }
   .burbujas { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
   .bc { display: flex; flex-direction: column; gap: 16px; padding: 14px; border-radius: 26px; background: linear-gradient(180deg, #2a2b2f, #1f2024); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 20px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06); }
   .bc-pregunta { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 18px; background: rgba(255,255,255,.04); }
@@ -1235,6 +1246,7 @@
   document.querySelector(".logo-caja").onclick = () => irA("inicio");
 
   // ===== Mi entorno: mis proyectos + línea de tiempo de cada uno =====
+  let filtroEnt = "todos";
   let entornoSel = null, filtroMis = "pendientes";
   const hace = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 6e4); return m < 1 ? "ahora" : m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.round(m / 60)} h` : `hace ${Math.round(m / 1440)} d`; };
   const av = (n, cls = "") => `<i class="av ${cls}" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
@@ -1250,8 +1262,21 @@
     const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
     let html = `<div class="mis-cab"><div><h2>${saludo}, ${yo} 👋</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div></div>`;
     if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.</div>`; return; }
-    html += `<div class="burbujas">${lista.map(tarjetaChat).join("")}</div>`;
+    // Filtros y divisiones por estado
+    const ORDEN = ["en_curso", "sin_empezar", "listo"];
+    const cuenta = (e) => lista.filter((p) => p.estado === e).length;
+    html += `<div class="ent-filtros">
+      <button data-fe="todos" class="${filtroEnt === "todos" ? "activa" : ""}">Todos <span>${lista.length}</span></button>
+      ${ORDEN.map((e) => `<button data-fe="${e}" class="f-${e} ${filtroEnt === e ? "activa" : ""}">${ICONOS[e]}${ETIQUETA[e]} <span>${cuenta(e)}</span></button>`).join("")}
+    </div>`;
+    for (const e of ORDEN) {
+      if (filtroEnt !== "todos" && filtroEnt !== e) continue;
+      const grupo = lista.filter((p) => p.estado === e);
+      html += `<section class="ent-div"><h3>${pill(e)} <span class="chip">${grupo.length}</span></h3>
+        ${grupo.length ? `<div class="burbujas">${grupo.map(tarjetaChat).join("")}</div>` : `<div class="ent-vacia">No tienes proyectos ${ETIQUETA[e].toLowerCase()}.</div>`}</section>`;
+    }
     cont.innerHTML = html;
+    cont.querySelectorAll("[data-fe]").forEach((b) => (b.onclick = () => { filtroEnt = b.dataset.fe; pintarMis(); }));
     cont.querySelectorAll(".bc").forEach((c) => {
       const p = mapaP.get(+c.dataset.id);
       c.querySelectorAll(".bc-abrir").forEach((x) => (x.onclick = () => abrirProyecto(p.id)));
