@@ -387,6 +387,44 @@
     font-size: .88rem; animation: entrarAviso .25s ease; transition: opacity .4s, transform .4s; }
   .aviso.fuera { opacity: 0; transform: translateX(-50%) translateY(10px); }
   @keyframes entrarAviso { from { opacity: 0; transform: translateX(-50%) translateY(10px); } }
+  /* Ventana de nuevo proyecto */
+  .modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; visibility: hidden; }
+  .modal-velo { position: absolute; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(3px); opacity: 0; transition: opacity .2s; }
+  .modal-caja { position: relative; width: min(560px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; padding: 24px; border-radius: 18px;
+    background: linear-gradient(160deg, rgba(141,124,245,.12), rgba(18,20,27,0) 40%), #14161d; border: 1px solid rgba(255,255,255,.1);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6); transform: translateY(12px) scale(.98); opacity: 0; transition: transform .2s, opacity .2s; }
+  body.con-modal .modal { visibility: visible; }
+  body.con-modal .modal-velo { opacity: 1; }
+  body.con-modal .modal-caja { transform: none; opacity: 1; }
+  .mn-cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .mn-cab h2 { margin: 0; font-size: 1.3rem; }
+  .mn-campo { display: block; margin-bottom: 16px; }
+  .mn-campo > span { display: block; font-size: .8rem; color: var(--tenue); margin-bottom: 7px; font-weight: 500; }
+  .mn-campo > span em { color: #ff8a8e; font-style: normal; }
+  .mn-campo > span small { font-weight: 400; opacity: .8; }
+  .mn-campo input, .mn-tarea input { width: 100%; box-sizing: border-box; background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--texto);
+    border-radius: 10px; padding: 11px 12px; font: inherit; font-size: .92rem; color-scheme: dark; }
+  .mn-campo input:focus, .mn-tarea input:focus { outline: 2px solid #8d7cf5; border-color: transparent; }
+  .mn-error { color: #ff9da0; font-size: .76rem; display: block; margin-top: 6px; }
+  .mn-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .mn-opciones { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mn-opciones button { all: unset; box-sizing: border-box; cursor: pointer; border-radius: 999px; border: 1px solid transparent; padding: 2px; opacity: .55; transition: opacity .15s; }
+  .mn-opciones button:hover { opacity: .85; }
+  .mn-opciones button.activa { opacity: 1; border-color: rgba(255,255,255,.35); }
+  .mn-opciones button:focus-visible { outline: 2px solid #8d7cf5; }
+  .mn-prio { font-size: .78rem !important; font-weight: 600; padding: 5px 14px !important; }
+  .mn-prio.alta { color: #ff9da0; background: rgba(229,72,77,.12); } .mn-prio.media { color: #f5c06a; background: rgba(245,158,11,.1); } .mn-prio.baja { color: #8fb4ff; background: rgba(90,140,255,.1); }
+  .mn-persona { display: inline-flex !important; align-items: center !important; gap: 8px !important; font-size: .84rem; padding: 4px 12px 4px 4px !important; background: rgba(255,255,255,.05); border: 1px solid var(--borde) !important; }
+  .mn-persona.activa { background: rgba(141,124,245,.18); border-color: #8d7cf5 !important; }
+  .mn-persona i { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .66rem; font-weight: 700; color: #141620; }
+  .mn-tarea { display: flex; gap: 8px; } .mn-tarea .cal-btn { flex: none; }
+  .mn-lista { list-style: none; margin: 8px 0 0; padding: 0; }
+  .mn-lista li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 10px; margin-top: 6px; border-radius: 9px; background: rgba(255,255,255,.04); font-size: .86rem; }
+  .mn-lista li button { all: unset; cursor: pointer; color: var(--tenue); padding: 0 4px; } .mn-lista li button:hover { color: #ff9da0; }
+  .mn-pie { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+  .mn-pie .nuevo-btn { height: 38px; padding: 0 18px; }
+  .mn-pie .cal-btn { height: 38px; padding: 0 16px; }
+  @media (max-width: 520px) { .mn-doble { grid-template-columns: 1fr; } }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -502,6 +540,32 @@
       </div>
     </aside>
   </div>
+</div>
+<div id="modalNuevo" class="modal" role="dialog" aria-modal="true" aria-labelledby="mnTitulo">
+  <div class="modal-velo" data-cerrar></div>
+  <form id="formNuevo" class="modal-caja" autocomplete="off" novalidate>
+    <div class="mn-cab"><h2 id="mnTitulo">Nuevo proyecto</h2><button type="button" class="det-cerrar" data-cerrar title="Cerrar (Esc)">✕</button></div>
+
+    <label class="mn-campo"><span>Nombre del proyecto <em>*</em></span>
+      <input name="nombre" maxlength="200" placeholder="Ej.: Campaña de Navidad" />
+      <small class="mn-error" hidden>Escribe un nombre para el proyecto.</small></label>
+
+    <div class="mn-doble">
+      <div class="mn-campo"><span>Estado</span><div class="mn-opciones" id="mnEstado"></div></div>
+      <div class="mn-campo"><span>Prioridad</span><div class="mn-opciones" id="mnPrio"></div></div>
+    </div>
+
+    <div class="mn-campo"><span>Encargados <small>(puedes elegir varios)</small></span><div class="mn-opciones" id="mnPersonas"></div></div>
+
+    <label class="mn-campo"><span>Fecha límite</span><input type="date" name="fecha" /></label>
+
+    <div class="mn-campo"><span>Tareas <small>(opcional)</small></span>
+      <div class="mn-tarea"><input id="mnTareaTxt" placeholder="Escribe una tarea y pulsa Enter" /><button type="button" id="mnTareaBtn" class="cal-btn">Añadir</button></div>
+      <ul id="mnTareas" class="mn-lista"></ul></div>
+
+    <div class="mn-pie"><button type="button" class="cal-btn" data-cerrar>Cancelar</button><button type="submit" class="nuevo-btn">Crear proyecto</button></div>
+    <p class="det-nota">Vista previa: el proyecto no se guarda.</p>
+  </form>
 </div>
 <script>
   // Interacción de prueba (sin base de datos)
@@ -808,13 +872,65 @@
   }
   document.getElementById("buscar").oninput = pintar;
   filtroSel.onchange = pintar;
-  document.getElementById("nuevoBtn").onclick = () => {
-    const nombre = prompt("Nombre del nuevo proyecto:");
-    if (nombre && nombre.trim()) {
-      mapaP.set(Date.now(), { id: Date.now(), nombre: nombre.trim(), estado: "sin_empezar", prioridad: "media", encargados: [], fecha_limite: null, created_at: new Date().toISOString() });
-      armar();
-    }
+  // ===== Ventana para crear un proyecto nuevo =====
+  const modal = document.getElementById("modalNuevo");
+  const fNuevo = document.getElementById("formNuevo");
+  let tareasNuevas = [];
+  function abrirNuevo() {
+    fNuevo.reset();
+    tareasNuevas = [];
+    fNuevo.querySelectorAll(".mn-persona").forEach((b) => b.classList.remove("activa"));
+    elegir("mnEstado", "sin_empezar"); elegir("mnPrio", "media");
+    pintarTareasNuevas();
+    fNuevo.querySelector(".mn-error").hidden = true;
+    document.body.classList.add("con-modal");
+    setTimeout(() => fNuevo.nombre.focus(), 50);
+  }
+  function cerrarNuevo() { document.body.classList.remove("con-modal"); }
+  function elegir(grupo, valor) {
+    document.querySelectorAll(`#${grupo} button`).forEach((b) => b.classList.toggle("activa", b.dataset.v === valor));
+    document.getElementById(grupo).dataset.valor = valor;
+  }
+  function pintarTareasNuevas() {
+    const ul = document.getElementById("mnTareas");
+    ul.innerHTML = tareasNuevas.map((t, i) => `<li><span>${esc(t)}</span><button type="button" data-i="${i}" title="Quitar">✕</button></li>`).join("");
+    ul.querySelectorAll("button").forEach((b) => (b.onclick = () => { tareasNuevas.splice(+b.dataset.i, 1); pintarTareasNuevas(); }));
+  }
+  // Opciones
+  document.getElementById("mnEstado").innerHTML = ["sin_empezar", "en_curso"].map((e) => `<button type="button" data-v="${e}">${pill(e)}</button>`).join("");
+  document.getElementById("mnPrio").innerHTML = ["alta", "media", "baja"].map((e) => `<button type="button" data-v="${e}" class="mn-prio ${e}">${e[0].toUpperCase() + e.slice(1)}</button>`).join("");
+  document.getElementById("mnPersonas").innerHTML = Object.keys(COLORES).map((n) => `<button type="button" class="mn-persona" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("");
+  ["mnEstado", "mnPrio"].forEach((g) => document.querySelectorAll(`#${g} button`).forEach((b) => (b.onclick = () => elegir(g, b.dataset.v))));
+  document.querySelectorAll(".mn-persona").forEach((b) => (b.onclick = () => b.classList.toggle("activa")));
+  const agregarTareaNueva = () => {
+    const inp = document.getElementById("mnTareaTxt"), v = inp.value.trim();
+    if (v) { tareasNuevas.push(v); pintarTareasNuevas(); inp.value = ""; }
+    inp.focus();
   };
+  document.getElementById("mnTareaBtn").onclick = agregarTareaNueva;
+  document.getElementById("mnTareaTxt").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); agregarTareaNueva(); } };
+  modal.querySelectorAll("[data-cerrar]").forEach((b) => (b.onclick = cerrarNuevo));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarNuevo(); });
+
+  fNuevo.onsubmit = (e) => {
+    e.preventDefault();
+    const nombre = fNuevo.nombre.value.trim();
+    if (!nombre) { fNuevo.querySelector(".mn-error").hidden = false; fNuevo.nombre.focus(); return; }
+    const id = Date.now();
+    mapaP.set(id, {
+      id, nombre,
+      estado: document.getElementById("mnEstado").dataset.valor,
+      prioridad: document.getElementById("mnPrio").dataset.valor,
+      encargados: [...fNuevo.querySelectorAll(".mn-persona.activa")].map((b) => b.dataset.n),
+      fecha_limite: fNuevo.fecha.value || null,
+      created_at: new Date().toISOString(),
+    });
+    tareasNuevas.forEach((texto, k) => mapaT.set(id + k + 1, { id: id + k + 1, proyecto_id: id, texto, hecha: false, created_at: new Date(Date.now() + k).toISOString() }));
+    cerrarNuevo();
+    armar();
+    avisar(`${pill(mapaP.get(id).estado)} Proyecto <b>${esc(nombre)}</b> creado`);
+  };
+  document.getElementById("nuevoBtn").onclick = abrirNuevo;
 
   // ===== Cambiar de vista =====
   let vistaActual = "kanban";
@@ -876,6 +992,7 @@
   armar();
 </script>
 <div class="velo" onclick="cerrarProyecto()"></div>
+
 <aside id="detalle" class="detalle" aria-label="Detalle del proyecto"></aside>
 </body>
 </html>
