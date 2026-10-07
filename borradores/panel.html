@@ -549,6 +549,7 @@
   .bc-tit small { font-size: .85rem; opacity: .8; }
   .bc-puntos { display: grid; grid-template-columns: 7px 7px; gap: 3px; width: 18px; }
   .bc-puntos i { width: 7px; height: 7px; border-radius: 50%; } .bc-puntos i:nth-child(1) { background: #6aa6ff; } .bc-puntos i:nth-child(2) { background: #ff6b6b; } .bc-puntos i:nth-child(3) { background: #ffd45c; } .bc-puntos i:nth-child(4) { background: #ff9d42; }
+  .bc-conejo { width: 22px; height: 22px; flex: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
   .bc-msg { margin: 10px 0 14px; font-size: 1rem; line-height: 1.45; color: #f0f0f2; }
   .bc-carpeta { all: unset; cursor: pointer; display: flex; align-items: center; gap: 16px; }
   .bc-carpeta b { display: block; font-size: .98rem; } .bc-carpeta small { color: var(--tenue); font-size: .8rem; }
@@ -1262,7 +1263,7 @@
     return `<article class="bc" data-id="${p.id}">
       <div class="bc-yo"><span>Hecho por</span>${av(p.creado_por)}<b>${p.creado_por}</b></div>
       <div class="bc-ev">
-        <div class="bc-tit"><span class="bc-puntos"><i></i><i></i><i></i><i></i></span>${esc(p.nombre)} <small>${ult ? hace(ult.hecha_at || ult.created_at) : hace(p.created_at)}</small></div>
+        <div class="bc-tit"><img class="bc-conejo" src="../img/rabbit.png" alt="" />${esc(p.nombre)} <small>${ult ? hace(ult.hecha_at || ult.created_at) : hace(p.created_at)}</small></div>
         <p class="bc-msg">${msg}</p>
         <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul c-${p.estado}"></span><span><b>Tareas</b><small>${h} de ${ts.length} hechas · ${ts.length ? Math.round(h / ts.length * 100) : 0}%</small></span></button>
       </div>
