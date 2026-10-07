@@ -550,10 +550,7 @@
       <input name="nombre" maxlength="200" placeholder="Ej.: Campaña de Navidad" />
       <small class="mn-error" hidden>Escribe un nombre para el proyecto.</small></label>
 
-    <div class="mn-doble">
-      <div class="mn-campo"><span>Estado</span><div class="mn-opciones" id="mnEstado"></div></div>
-      <div class="mn-campo"><span>Prioridad</span><div class="mn-opciones" id="mnPrio"></div></div>
-    </div>
+    <div class="mn-campo"><span>Prioridad</span><div class="mn-opciones" id="mnPrio"></div></div>
 
     <div class="mn-campo"><span>Encargados <small>(puedes elegir varios)</small></span><div class="mn-opciones" id="mnPersonas"></div></div>
 
@@ -880,7 +877,7 @@
     fNuevo.reset();
     tareasNuevas = [];
     fNuevo.querySelectorAll(".mn-persona").forEach((b) => b.classList.remove("activa"));
-    elegir("mnEstado", "sin_empezar"); elegir("mnPrio", "media");
+    elegir("mnPrio", "media");
     pintarTareasNuevas();
     fNuevo.querySelector(".mn-error").hidden = true;
     document.body.classList.add("con-modal");
@@ -897,10 +894,9 @@
     ul.querySelectorAll("button").forEach((b) => (b.onclick = () => { tareasNuevas.splice(+b.dataset.i, 1); pintarTareasNuevas(); }));
   }
   // Opciones
-  document.getElementById("mnEstado").innerHTML = ["sin_empezar", "en_curso"].map((e) => `<button type="button" data-v="${e}">${pill(e)}</button>`).join("");
   document.getElementById("mnPrio").innerHTML = ["alta", "media", "baja"].map((e) => `<button type="button" data-v="${e}" class="mn-prio ${e}">${e[0].toUpperCase() + e.slice(1)}</button>`).join("");
   document.getElementById("mnPersonas").innerHTML = Object.keys(COLORES).map((n) => `<button type="button" class="mn-persona" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("");
-  ["mnEstado", "mnPrio"].forEach((g) => document.querySelectorAll(`#${g} button`).forEach((b) => (b.onclick = () => elegir(g, b.dataset.v))));
+  ["mnPrio"].forEach((g) => document.querySelectorAll(`#${g} button`).forEach((b) => (b.onclick = () => elegir(g, b.dataset.v))));
   document.querySelectorAll(".mn-persona").forEach((b) => (b.onclick = () => b.classList.toggle("activa")));
   const agregarTareaNueva = () => {
     const inp = document.getElementById("mnTareaTxt"), v = inp.value.trim();
@@ -919,7 +915,7 @@
     const id = Date.now();
     mapaP.set(id, {
       id, nombre,
-      estado: document.getElementById("mnEstado").dataset.valor,
+      estado: "sin_empezar", // el estado cambia solo al ir marcando tareas
       prioridad: document.getElementById("mnPrio").dataset.valor,
       encargados: [...fNuevo.querySelectorAll(".mn-persona.activa")].map((b) => b.dataset.n),
       fecha_limite: fNuevo.fecha.value || null,
