@@ -498,6 +498,39 @@
   .mis-vacio b { display: block; font-size: 1.2rem; color: var(--texto); margin-bottom: 6px; }
   body.en-mis .app { display: flex; flex-direction: column; }
   @media (max-width: 700px) { .mt { flex-wrap: wrap; } .mt-texto { flex-basis: calc(100% - 40px); } .mt-fecha { width: auto; } }
+  /* Mi entorno */
+  .ent { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 22px; align-items: start; }
+  .ent-lista { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .ent-card { all: unset; box-sizing: border-box; cursor: pointer; display: block; position: relative; padding: 16px 16px 14px 22px; border-radius: 16px;
+    background: linear-gradient(115deg, rgba(var(--tinte), .14), rgba(20,22,30,.85) 70%); border: 1px solid rgba(var(--tinte), .25); transition: transform .15s, border-color .15s; }
+  .ent-card::before { content: ""; position: absolute; left: 9px; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--acento); }
+  .ent-card:hover { transform: translateY(-2px); }
+  .ent-card.sel { border-color: #8d7cf5; box-shadow: 0 0 0 1px #8d7cf5, 0 10px 30px rgba(141,124,245,.2); }
+  .ent-autor { display: flex; align-items: center; gap: 10px; }
+  .ent-autor small { display: block; font-size: .7rem; color: var(--tenue); } .ent-autor b { font-size: .9rem; }
+  .ent-anillo { margin-left: auto; }
+  .av { width: 30px; height: 30px; border-radius: 50%; display: inline-grid; place-items: center; font-style: normal; font-weight: 700; font-size: .78rem; color: #141620; flex: none; }
+  .av.grande { width: 42px; height: 42px; border-radius: 12px; font-size: 1rem; }
+  .ent-nombre { font-size: 1.08rem; font-weight: 700; margin: 12px 0 10px; color: #fff; }
+  .ent-pie { display: flex; justify-content: space-between; align-items: center; font-size: .76rem; color: var(--tenue); gap: 8px; }
+  .ent-feed { padding: 20px 22px; border-radius: 18px; background: rgba(0,0,0,.2); border: 1px solid var(--borde); min-width: 0; }
+  .feed-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+  .feed-cab h3 { margin: 0; font-size: 1.3rem; } .feed-cab p { margin: 4px 0 0; color: var(--tenue); font-size: .85rem; }
+  .feed-cab .cal-btn { height: 34px; padding: 0 14px; }
+  .feed-mias { padding: 14px; border-radius: 14px; background: rgba(141,124,245,.08); border: 1px solid rgba(141,124,245,.25); margin-bottom: 20px; }
+  .feed-mias h4, .feed-sub { margin: 0 0 10px; font-size: .9rem; display: flex; gap: 8px; align-items: center; }
+  .feed-mias .mt { background: rgba(255,255,255,.04); margin-bottom: 6px; padding: 10px 12px; }
+  .linea { position: relative; }
+  .ev { position: relative; display: flex; gap: 14px; padding-bottom: 20px; }
+  .ev:not(:last-child)::before { content: ""; position: absolute; left: 14px; top: 34px; bottom: 0; width: 2px; background: rgba(255,255,255,.08); }
+  .ev-cuerpo { flex: 1; min-width: 0; padding-top: 4px; }
+  .ev-tit { font-size: .86rem; color: var(--tenue); } .ev-tit b { color: var(--texto); } .ev-tit span { opacity: .8; }
+  .ev-txt { margin-top: 4px; font-size: .95rem; } .ev-txt.ok { color: #6ee0a7; }
+  .ev-arch { display: flex; align-items: center; gap: 14px; margin-top: 10px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--borde); max-width: 340px; }
+  .ev-arch b { display: block; font-size: .9rem; } .ev-arch small { color: var(--tenue); font-size: .76rem; }
+  .carpeta { position: relative; width: 52px; height: 40px; border-radius: 6px; background: linear-gradient(180deg, #c9ccd6, #9da1ae); flex: none; }
+  .carpeta::before { content: ""; position: absolute; left: 0; top: -6px; width: 22px; height: 10px; border-radius: 5px 5px 0 0; background: #b5b9c5; }
+  @media (max-width: 900px) { .ent { grid-template-columns: 1fr; } }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -555,7 +588,7 @@
     </svg>
     </div>
     <nav>
-      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mis tareas</a><a data-p="pronto" data-n="Proyectos">Proyectos</a><a data-p="pronto" data-n="Notas">Notas</a>
+      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="pronto" data-n="Notas">Notas</a>
     </nav>
     <div class="boton-neo campana-btn" title="Notificaciones" onclick="this.querySelector('.insignia')?.remove()">
       <svg viewBox="0 0 24 24" fill="currentColor">
@@ -687,9 +720,12 @@
     for (const p of mapaP.values()) {
       const lista = TAREAS_EJEMPLO[p.nombre] || [];
       const hechas = p.estado === "listo" ? lista.length : p.estado === "en_curso" ? 3 : p.nombre === "programa de puntos" ? 1 : 0;
-      lista.forEach((texto, k) => mapaT.set(++id, { id, proyecto_id: p.id, texto, hecha: k < hechas, encargado: p.encargados.length ? p.encargados[k % p.encargados.length] : null, created_at: `2026-10-06T10:0${k}:00Z` }));
+      p.creado_por = p.creado_por || (p.encargados[0] || "Hilary");
+      lista.forEach((texto, k) => mapaT.set(++id, { id, proyecto_id: p.id, texto, hecha: k < hechas, hecha_at: k < hechas ? new Date(Date.now() - (hechas - k) * 5.3e6).toISOString() : null, encargado: p.encargados.length ? p.encargados[k % p.encargados.length] : null, created_at: `2026-10-06T10:0${k}:00Z` }));
     }
   }
+  const ARCHIVOS_EJEMPLO = { "Diseño": { nombre: "Piezas Halloween", n: 8, peso: "226,4 MB" }, "PODCAST": { nombre: "Audios episodio piloto", n: 3, peso: "84,1 MB" } };
+  for (const p of mapaP.values()) p.creado_por = p.creado_por || p.encargados[0] || "Hilary";
   let proyectos = [];
   const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -1153,62 +1189,76 @@
   }));
   document.querySelector(".logo-caja").onclick = () => irA("inicio");
 
-  // ===== Mis tareas =====
-  let filtroMis = "pendientes";
+  // ===== Mi entorno: mis proyectos + línea de tiempo de cada uno =====
+  let entornoSel = null, filtroMis = "pendientes";
+  const hace = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 6e4); return m < 1 ? "ahora" : m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.round(m / 60)} h` : `hace ${Math.round(m / 1440)} d`; };
+  const av = (n, cls = "") => `<i class="av ${cls}" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
+  function misProyectos() {
+    return [...mapaP.values()].filter((p) => p.encargados.includes(yo) || p.creado_por === yo || [...mapaT.values()].some((t) => t.proyecto_id === p.id && t.encargado === yo))
+      .sort((a, b) => (a.estado === "listo") - (b.estado === "listo") || (a.fecha_limite || "9").localeCompare(b.fecha_limite || "9"));
+  }
   function pintarMis() {
     const cont = document.getElementById("vistaMis");
-    const mias = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
-    const fecha = (t) => mapaP.get(t.proyecto_id).fecha_limite;
-    const pend = mias.filter((t) => !t.hecha);
-    const lunes = new Date(HOY + "T00:00"); const finSemana = new Date(lunes); finSemana.setDate(lunes.getDate() + (7 - ((lunes.getDay() + 6) % 7)) - 1);
-    const finIso = isoDe(finSemana);
-    const grupoDe = (t) => { const f = fecha(t); if (!f) return "sin"; if (f < HOY) return "atrasadas"; if (f === HOY) return "hoy"; if (f <= finIso) return "semana"; return "luego"; };
-    const GRUPOS = [
-      { id: "atrasadas", t: "Atrasadas", c: "#ff8a8e" }, { id: "hoy", t: "Vence hoy", c: "#ffd45c" },
-      { id: "semana", t: "Esta semana", c: "#b3a7ff" }, { id: "luego", t: "Más adelante", c: "#8fb4ff" }, { id: "sin", t: "Sin fecha", c: "#9aa1b4" },
-    ];
-    const atrasadas = pend.filter((t) => grupoDe(t) === "atrasadas").length;
+    const lista = misProyectos();
+    if (!lista.some((p) => p.id === entornoSel)) entornoSel = lista[0]?.id ?? null;
+    const misT = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
+    const pend = misT.filter((t) => !t.hecha);
+    const atras = pend.filter((t) => { const f = mapaP.get(t.proyecto_id).fecha_limite; return f && f < HOY; }).length;
     const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
-    let html = `<div class="mis-cab"><div><h2>${saludo}, ${yo} 👋</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div>
+    let html = `<div class="mis-cab"><div><h2>${saludo}, ${yo} 👋</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"} en ${lista.filter((p) => p.estado !== "listo").length} proyecto(s).` : "No tienes tareas pendientes."}</p></div>
       <div class="mis-resumen">
         <span class="mis-chip" style="--tinte:154,161,180"><b>${pend.length}</b>pendientes</span>
-        <span class="mis-chip" style="--tinte:229,72,77"><b>${atrasadas}</b>atrasadas</span>
-        <span class="mis-chip" style="--tinte:46,230,176"><b>${mias.length - pend.length}</b>hechas</span>
-      </div></div>
-      <div class="mis-filtros"><button data-f="pendientes" class="${filtroMis === "pendientes" ? "activa" : ""}">Pendientes</button><button data-f="hechas" class="${filtroMis === "hechas" ? "activa" : ""}">Hechas</button></div>`;
-    if (filtroMis === "hechas") {
-      const hechas = mias.filter((t) => t.hecha);
-      html += hechas.length ? `<div class="grupo">${hechas.map(filaMis).join("")}</div>` : `<div class="mis-vacio"><b>Aún no has completado tareas</b>Cuando marques una, aparecerá aquí.</div>`;
-    } else if (!pend.length) {
-      html += `<div class="mis-vacio"><b>¡Todo al día! 🎉</b>No tienes tareas pendientes asignadas.</div>`;
-    } else {
-      for (const g of GRUPOS) {
-        const ts = pend.filter((t) => grupoDe(t) === g.id).sort((a, b) => (fecha(a) || "9").localeCompare(fecha(b) || "9"));
-        if (ts.length) html += `<div class="grupo"><h3><span class="punto" style="--c:${g.c}"></span>${g.t} <span class="chip">${ts.length}</span></h3>${ts.map(filaMis).join("")}</div>`;
-      }
-    }
+        <span class="mis-chip" style="--tinte:229,72,77"><b>${atras}</b>atrasadas</span>
+        <span class="mis-chip" style="--tinte:46,230,176"><b>${misT.length - pend.length}</b>hechas</span>
+      </div></div>`;
+    if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.</div>`; return; }
+    html += `<div class="ent"><div class="ent-lista">${lista.map(tarjetaEntorno).join("")}</div><div class="ent-feed" id="entFeed"></div></div>`;
     cont.innerHTML = html;
-    cont.querySelectorAll("[data-f]").forEach((b) => (b.onclick = () => { filtroMis = b.dataset.f; pintarMis(); }));
-    cont.querySelectorAll(".mt").forEach((fila) => {
-      const t = mapaT.get(+fila.dataset.id);
-      fila.querySelector(".mt-check").onclick = () => {
-        t.hecha = !t.hecha; ajustarEstado(t.proyecto_id);
-        if (t.hecha) { fila.classList.add("hecha"); fila.style.opacity = .4; setTimeout(pintarMis, 450); avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); pintarMis(); }); }
-        else pintarMis();
-      };
-      fila.querySelector(".mt-proy").onclick = () => abrirProyecto(t.proyecto_id);
-    });
+    cont.querySelectorAll(".ent-card").forEach((c) => (c.onclick = () => { entornoSel = +c.dataset.id; pintarMis(); }));
+    pintarFeed();
   }
-  function filaMis(t) {
-    const p = mapaP.get(t.proyecto_id), f = p.fecha_limite;
-    const d = f ? diasHasta(f) : null;
-    const txt = d === null ? "Sin fecha" : d < 0 ? `hace ${-d} día${d === -1 ? "" : "s"}` : d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(f);
-    return `<div class="mt ${t.hecha ? "hecha" : ""}" data-id="${t.id}">
-      <button class="mt-check" title="${t.hecha ? "Marcar como pendiente" : "Marcar como hecha"}">${t.hecha ? "✓" : ""}</button>
-      <span class="mt-texto">${esc(t.texto)}</span>
-      <button class="mt-proy" title="Abrir proyecto">${esc(p.nombre)}</button>
-      <span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span>
-      <span class="mt-fecha ${d !== null && d <= 1 && !t.hecha ? "rojo" : ""}">${txt}</span></div>`;
+  function tarjetaEntorno(p) {
+    const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id);
+    const h = ts.filter((t) => t.hecha).length, pct = ts.length ? Math.round(h / ts.length * 100) : 0;
+    const mias = ts.filter((t) => t.encargado === yo && !t.hecha).length;
+    const r = 15, c = 2 * Math.PI * r;
+    return `<button class="ent-card a-${p.estado} ${p.id === entornoSel ? "sel" : ""}" data-id="${p.id}">
+      <div class="ent-autor">${av(p.creado_por, "grande")}<div><small>Hecho por</small><b>${p.creado_por}</b></div>
+        <svg class="ent-anillo" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="${r}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="3.5"/><circle cx="20" cy="20" r="${r}" fill="none" stroke="#2ee6b0" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct / 100)}" transform="rotate(-90 20 20)"/><text x="20" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${pct}%</text></svg></div>
+      <div class="ent-nombre">${esc(p.nombre)}</div>
+      <div class="ent-pie">${pill(p.estado)}<span>${mias ? `${mias} tuya${mias === 1 ? "" : "s"}` : "Nada pendiente tuyo"}</span></div></button>`;
+  }
+  function pintarFeed() {
+    const box = document.getElementById("entFeed"), p = mapaP.get(entornoSel);
+    if (!box || !p) return;
+    const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
+    const mias = ts.filter((t) => t.encargado === yo && !t.hecha);
+    // eventos de la línea de tiempo
+    const ev = [{ at: p.created_at, quien: p.creado_por, tit: "Creó el proyecto", txt: `${p.encargados.length ? "Encargados: " + p.encargados.join(", ") : "Sin encargados aún"} · Prioridad ${p.prioridad}` }];
+    ts.filter((t) => t.hecha).forEach((t) => ev.push({ at: t.hecha_at || t.created_at, quien: t.encargado || p.creado_por, tit: "Completó una tarea", txt: t.texto, ok: true }));
+    const arch = ARCHIVOS_EJEMPLO[p.nombre];
+    if (arch) ev.push({ at: new Date(Date.now() - 4.2e6).toISOString(), quien: p.encargados[0] || p.creado_por, tit: "Subió archivos", txt: "Los archivos están listos para revisar.", arch });
+    ev.sort((a, b) => b.at.localeCompare(a.at));
+    box.innerHTML = `
+      <div class="feed-cab"><div><h3>${esc(p.nombre)}</h3><p>${p.fecha_limite ? `Vence el ${fmt(p.fecha_limite)}` : "Sin fecha límite"}</p></div><button class="cal-btn" id="feedAbrir">Ver proyecto</button></div>
+      <div class="feed-mias"><h4>Te toca a ti <span class="chip">${mias.length}</span></h4>
+        ${mias.length ? mias.map((t) => `<div class="mt" data-id="${t.id}"><button class="mt-check" title="Marcar como hecha"></button><span class="mt-texto">${esc(t.texto)}</span></div>`).join("") : `<div class="pronto-ok">No tienes tareas pendientes en este proyecto. 🎉</div>`}</div>
+      <h4 class="feed-sub">Actividad</h4>
+      <div class="linea">${ev.map((e) => `
+        <div class="ev"><div class="ev-ico">${av(e.quien)}</div>
+          <div class="ev-cuerpo"><div class="ev-tit"><b>${e.quien}</b> ${e.tit.toLowerCase()} <span>· ${hace(e.at)}</span></div>
+            <div class="ev-txt ${e.ok ? "ok" : ""}">${e.ok ? "✓ " : ""}${esc(e.txt)}</div>
+            ${e.arch ? `<div class="ev-arch"><div class="carpeta"></div><div><b>${esc(e.arch.nombre)}</b><small>${e.arch.n} archivos · ${e.arch.peso}</small></div></div>` : ""}
+          </div></div>`).join("")}</div>
+      ${arch ? `<p class="det-nota">Los archivos son de ejemplo: subir archivos sería una función nueva.</p>` : ""}`;
+    box.querySelector("#feedAbrir").onclick = () => abrirProyecto(p.id);
+    box.querySelectorAll(".mt").forEach((fila) => (fila.querySelector(".mt-check").onclick = () => {
+      const t = mapaT.get(+fila.dataset.id);
+      t.hecha = true; t.hecha_at = new Date().toISOString(); ajustarEstado(t.proyecto_id);
+      fila.classList.add("hecha"); fila.style.opacity = .4;
+      setTimeout(pintarMis, 400);
+      avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); pintarMis(); });
+    }));
   }
   pintarPerfil();
   const _armar = armar;
