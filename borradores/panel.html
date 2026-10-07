@@ -531,6 +531,36 @@
   .carpeta { position: relative; width: 52px; height: 40px; border-radius: 6px; background: linear-gradient(180deg, #c9ccd6, #9da1ae); flex: none; }
   .carpeta::before { content: ""; position: absolute; left: 0; top: -6px; width: 22px; height: 10px; border-radius: 5px 5px 0 0; background: #b5b9c5; }
   @media (max-width: 900px) { .ent { grid-template-columns: 1fr; } }
+  /* Mi entorno: tarjetas estilo chat */
+  .burbujas { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+  .bc { display: flex; flex-direction: column; gap: 16px; padding: 14px; border-radius: 26px; background: linear-gradient(180deg, #2a2b2f, #1f2024); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 20px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06); }
+  .bc-pregunta { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 18px; background: rgba(255,255,255,.04); }
+  .bc-pregunta input { flex: 1; min-width: 0; background: none; border: 0; color: var(--texto); font: inherit; font-size: .95rem; }
+  .bc-pregunta input:focus { outline: none; }
+  .bc-redondo { all: unset; cursor: pointer; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.08); color: #fff; }
+  .bc-enviar { all: unset; cursor: pointer; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: #f2f2f2; color: #111; font-weight: 700; }
+  .bc-yo { align-self: flex-end; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 14px; background: rgba(255,255,255,.08); font-size: .92rem; }
+  .bc-yo span { color: var(--tenue); } .bc-yo .av { width: 24px; height: 24px; border-radius: 7px; font-size: .66rem; }
+  .bc-yo b { color: #8ee3a8; text-decoration: underline; text-underline-offset: 3px; text-decoration-style: dotted; }
+  .bc-ev { position: relative; padding-left: 28px; }
+  .bc-ev::before { content: ""; position: absolute; left: 8px; top: 26px; bottom: 30px; width: 1px; background: rgba(255,255,255,.12); }
+  .bc-ev::after { content: ""; position: absolute; left: 5px; bottom: 26px; width: 7px; height: 7px; border-radius: 50%; background: #e5e36a; }
+  .bc-tit { display: flex; align-items: center; gap: 10px; margin-left: -28px; font-size: .95rem; color: var(--tenue); }
+  .bc-tit small { font-size: .85rem; opacity: .8; }
+  .bc-puntos { display: grid; grid-template-columns: 7px 7px; gap: 3px; width: 18px; }
+  .bc-puntos i { width: 7px; height: 7px; border-radius: 50%; } .bc-puntos i:nth-child(1) { background: #6aa6ff; } .bc-puntos i:nth-child(2) { background: #ff6b6b; } .bc-puntos i:nth-child(3) { background: #ffd45c; } .bc-puntos i:nth-child(4) { background: #ff9d42; }
+  .bc-msg { margin: 10px 0 14px; font-size: 1rem; line-height: 1.45; color: #f0f0f2; }
+  .bc-carpeta { all: unset; cursor: pointer; display: flex; align-items: center; gap: 16px; }
+  .bc-carpeta b { display: block; font-size: .98rem; } .bc-carpeta small { color: var(--tenue); font-size: .8rem; }
+  .carpeta-azul { position: relative; width: 70px; height: 54px; border-radius: 10px; background: linear-gradient(180deg, #7fb0ff, #4c86f0); box-shadow: 0 10px 20px rgba(76,134,240,.35); flex: none; }
+  .carpeta-azul::before { content: ""; position: absolute; left: 0; top: -8px; width: 30px; height: 14px; border-radius: 8px 8px 0 0; background: #5f95f4; }
+  .carpeta-azul::after { content: ""; position: absolute; left: 8px; right: 8px; top: 4px; height: 10px; border-radius: 3px; background: #e9f0ff; }
+  .bc-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+  .bc-ir { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-size: .95rem; padding-left: 6px; }
+  .bc-ir span { width: 30px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.1); }
+  .bc-estado { appearance: none; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: var(--texto); border-radius: 999px; padding: 9px 34px 9px 16px; font: inherit; font-size: .9rem; cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, #ccc 50%), linear-gradient(135deg, #ccc 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+  .bc-estado option { background: #1f2024; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -1200,33 +1230,41 @@
   function pintarMis() {
     const cont = document.getElementById("vistaMis");
     const lista = misProyectos();
-    if (!lista.some((p) => p.id === entornoSel)) entornoSel = lista[0]?.id ?? null;
     const misT = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
     const pend = misT.filter((t) => !t.hecha);
-    const atras = pend.filter((t) => { const f = mapaP.get(t.proyecto_id).fecha_limite; return f && f < HOY; }).length;
     const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
-    let html = `<div class="mis-cab"><div><h2>${saludo}, ${yo} 👋</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"} en ${lista.filter((p) => p.estado !== "listo").length} proyecto(s).` : "No tienes tareas pendientes."}</p></div>
-      <div class="mis-resumen">
-        <span class="mis-chip" style="--tinte:154,161,180"><b>${pend.length}</b>pendientes</span>
-        <span class="mis-chip" style="--tinte:229,72,77"><b>${atras}</b>atrasadas</span>
-        <span class="mis-chip" style="--tinte:46,230,176"><b>${misT.length - pend.length}</b>hechas</span>
-      </div></div>`;
+    let html = `<div class="mis-cab"><div><h2>${saludo}, ${yo} 👋</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div></div>`;
     if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.</div>`; return; }
-    html += `<div class="ent"><div class="ent-lista">${lista.map(tarjetaEntorno).join("")}</div><div class="ent-feed" id="entFeed"></div></div>`;
+    html += `<div class="burbujas">${lista.map(tarjetaChat).join("")}</div>`;
     cont.innerHTML = html;
-    cont.querySelectorAll(".ent-card").forEach((c) => (c.onclick = () => { entornoSel = +c.dataset.id; pintarMis(); }));
-    pintarFeed();
+    cont.querySelectorAll(".bc").forEach((c) => {
+      const p = mapaP.get(+c.dataset.id);
+      c.querySelector(".bc-abrir").onclick = () => abrirProyecto(p.id);
+      c.querySelector(".bc-carpeta").onclick = () => abrirProyecto(p.id);
+      c.querySelector(".bc-estado").onchange = (e) => { p.estado = e.target.value; armar(); };
+      const f = c.querySelector(".bc-pregunta");
+      f.onsubmit = (e) => { e.preventDefault(); const i = f.querySelector("input"); if (i.value.trim()) { avisar(`💬 Comentario enviado en <b>${esc(p.nombre)}</b>`); i.value = ""; } };
+    });
   }
-  function tarjetaEntorno(p) {
+  function tarjetaChat(p) {
     const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id);
-    const h = ts.filter((t) => t.hecha).length, pct = ts.length ? Math.round(h / ts.length * 100) : 0;
+    const h = ts.filter((t) => t.hecha).length;
     const mias = ts.filter((t) => t.encargado === yo && !t.hecha).length;
-    const r = 15, c = 2 * Math.PI * r;
-    return `<button class="ent-card a-${p.estado} ${p.id === entornoSel ? "sel" : ""}" data-id="${p.id}">
-      <div class="ent-autor">${av(p.creado_por, "grande")}<div><small>Hecho por</small><b>${p.creado_por}</b></div>
-        <svg class="ent-anillo" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="${r}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="3.5"/><circle cx="20" cy="20" r="${r}" fill="none" stroke="#2ee6b0" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct / 100)}" transform="rotate(-90 20 20)"/><text x="20" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${pct}%</text></svg></div>
-      <div class="ent-nombre">${esc(p.nombre)}</div>
-      <div class="ent-pie">${pill(p.estado)}<span>${mias ? `${mias} tuya${mias === 1 ? "" : "s"}` : "Nada pendiente tuyo"}</span></div></button>`;
+    const ult = ts.filter((t) => t.hecha).sort((a, b) => (b.hecha_at || "").localeCompare(a.hecha_at || ""))[0];
+    const msg = p.estado === "listo" ? "¡Proyecto terminado! Todas las tareas están listas 🎉"
+      : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto ⏰" : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
+      : "No tienes nada pendiente aquí por ahora.";
+    return `<article class="bc" data-id="${p.id}">
+      <form class="bc-pregunta"><button type="button" class="bc-redondo bc-abrir" title="Abrir proyecto">←</button><input placeholder="Escribe un comentario…" /><button class="bc-enviar" title="Enviar">→</button></form>
+      <div class="bc-yo"><span>Hecho por</span>${av(p.creado_por)}<b>${p.creado_por}</b></div>
+      <div class="bc-ev">
+        <div class="bc-tit"><span class="bc-puntos"><i></i><i></i><i></i><i></i></span>${esc(p.nombre)} <small>${ult ? hace(ult.hecha_at || ult.created_at) : hace(p.created_at)}</small></div>
+        <p class="bc-msg">${msg}</p>
+        <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul"></span><span><b>Tareas</b><small>${h} de ${ts.length} hechas · ${ts.length ? Math.round(h / ts.length * 100) : 0}%</small></span></button>
+      </div>
+      <div class="bc-pie"><button class="bc-ir bc-abrir">Abrir <span>→</span></button>
+        <select class="bc-estado">${["sin_empezar", "en_curso", "listo"].map((e) => `<option value="${e}" ${p.estado === e ? "selected" : ""}>${ETIQUETA[e]}</option>`).join("")}</select></div>
+    </article>`;
   }
   function pintarFeed() {
     const box = document.getElementById("entFeed"), p = mapaP.get(entornoSel);
