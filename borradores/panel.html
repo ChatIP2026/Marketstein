@@ -555,6 +555,13 @@
   .carpeta-azul { position: relative; width: 70px; height: 54px; border-radius: 10px; background: linear-gradient(180deg, #c4c4c6, #9b9b9e); box-shadow: 0 10px 20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35); flex: none; }
   .carpeta-azul::before { content: ""; position: absolute; left: 0; top: -8px; width: 30px; height: 14px; border-radius: 8px 8px 0 0; background: #a9a9ac; }
   .carpeta-azul::after { content: ""; position: absolute; left: 8px; right: 8px; top: 4px; height: 10px; border-radius: 3px; background: #f4f4f2; }
+  /* Color de la carpeta según el estado */
+  .carpeta-azul.c-sin_empezar { background: linear-gradient(180deg, #c3c7d2, #8f94a3); box-shadow: 0 10px 20px rgba(143,148,163,.3); }
+  .carpeta-azul.c-sin_empezar::before { background: #a5aab8; }
+  .carpeta-azul.c-en_curso { background: linear-gradient(180deg, #ffe08a, #f2b632); box-shadow: 0 10px 20px rgba(242,182,50,.35); }
+  .carpeta-azul.c-en_curso::before { background: #f5c54e; }
+  .carpeta-azul.c-listo { background: linear-gradient(180deg, #7ff0cc, #22c99a); box-shadow: 0 10px 20px rgba(34,201,154,.35); }
+  .carpeta-azul.c-listo::before { background: #3fd8aa; }
   .bc-pie { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
   .bc-ir { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-size: .95rem; padding-left: 6px; }
   .bc-ir span { width: 30px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.1); }
@@ -1260,7 +1267,7 @@
       <div class="bc-ev">
         <div class="bc-tit"><span class="bc-puntos"><i></i><i></i><i></i><i></i></span>${esc(p.nombre)} <small>${ult ? hace(ult.hecha_at || ult.created_at) : hace(p.created_at)}</small></div>
         <p class="bc-msg">${msg}</p>
-        <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul"></span><span><b>Tareas</b><small>${h} de ${ts.length} hechas · ${ts.length ? Math.round(h / ts.length * 100) : 0}%</small></span></button>
+        <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul c-${p.estado}"></span><span><b>Tareas</b><small>${h} de ${ts.length} hechas · ${ts.length ? Math.round(h / ts.length * 100) : 0}%</small></span></button>
       </div>
       <div class="bc-pie"><button class="bc-ir bc-abrir">Abrir <span>→</span></button>
         <select class="bc-estado">${["sin_empezar", "en_curso", "listo"].map((e) => `<option value="${e}" ${p.estado === e ? "selected" : ""}>${ETIQUETA[e]}</option>`).join("")}</select></div>
