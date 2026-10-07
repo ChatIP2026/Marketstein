@@ -112,7 +112,6 @@
   <main class="tarjeta">
     <!-- Izquierda: el conejo hace gestos según lo que hagas -->
     <section class="lado-conejo" aria-hidden="true">
-      <span class="marca">Panel del equipo</span>
       <div class="flota">
       <svg class="conejo idle" id="conejo" viewBox="12 6 50 60">
         <g fill="#ffffff" stroke="#000" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
@@ -171,18 +170,51 @@
   const mensaje = document.getElementById("mensaje");
   const pupilas = document.getElementById("pupilas");
 
+  // Mensajes que van rotando según lo que esté haciendo la persona
+  const MENSAJES = {
+    idle: [
+      "¡Hola! ¿Listo para trabajar?",
+      "Hoy es un buen día para tachar tareas ✅",
+      "Tus proyectos te están esperando",
+      "Un paso a la vez, sin que nada se venza",
+      "¿Café listo? ☕ Empecemos",
+      "El equipo avanza mejor cuando avanza junto",
+      "Pequeñas tareas, grandes proyectos",
+      "Entra y mira qué te toca hoy 🥕",
+    ],
+    correo: [
+      "Te escucho… escribe tu correo",
+      "Revisa que no falte la @",
+      "Ese correo me suena 👀",
+      "Casi estamos, sigue así",
+    ],
+  };
+  let rotacion = null, estadoActual = "";
+  function rotar(lista) {
+    clearInterval(rotacion);
+    let i = 0;
+    cambiarTexto(lista[0]);
+    rotacion = setInterval(() => { i = (i + 1) % lista.length; cambiarTexto(lista[i]); }, 3500);
+  }
+  function cambiarTexto(t) {
+    globo.style.opacity = 0;
+    setTimeout(() => { globo.textContent = t; globo.style.opacity = 1; }, 180);
+  }
+  // nombre = gesto del conejo · texto = mensaje fijo, o la clave de una lista que rota
   function gesto(nombre, texto) {
     conejo.setAttribute("class", "conejo " + nombre);
-    if (texto) globo.textContent = texto;
+    if (!texto) return;
+    if (MENSAJES[texto]) { if (estadoActual !== texto) { estadoActual = texto; rotar(MENSAJES[texto]); } }
+    else { clearInterval(rotacion); estadoActual = ""; cambiarTexto(texto); }
   }
-  const normal = () => gesto("idle", "¡Hola! ¿Listo para trabajar?");
+  const normal = () => gesto("idle", "idle");
 
   // Mira hacia donde escribes: las pupilas avanzan con el texto
   function mirar() {
     const avance = Math.min(correo.value.length, 24) / 24; // 0 a 1
     pupilas.style.transform = `translate(${-0.8 + avance * 1.8}px, 0.6px)`;
   }
-  correo.addEventListener("focus", () => { gesto("mirando", "Te escucho… escribe tu correo"); mirar(); });
+  correo.addEventListener("focus", () => { gesto("mirando", "correo"); mirar(); });
   correo.addEventListener("input", mirar);
   clave.addEventListener("focus", () => gesto(clave.type === "password" ? "tapando" : "mirando", clave.type === "password" ? "¡No estoy mirando! 🙈" : "Ups… se ve todo"));
   [correo, clave].forEach((i) => i.addEventListener("blur", () => setTimeout(() => { if (![correo, clave].includes(document.activeElement)) normal(); }, 0)));
@@ -220,6 +252,8 @@
       b.textContent = "Entrar"; b.disabled = false;
     }, 700);
   };
+
+  normal();
 
   document.getElementById("olvido").onclick = (e) => {
     e.preventDefault();
