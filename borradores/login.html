@@ -184,9 +184,21 @@
           </div>
           <div class="mensaje" id="mensaje" role="status"></div>
           <button class="entrar" id="entrar" type="submit">Entrar</button>
-          <a class="olvido" href="#" id="olvido">¿Olvidaste tu contraseña?</a>
+          <a class="olvido" href="#" data-ir="olvido">¿Olvidaste tu contraseña?</a>
         </form>
         <p class="cambiar">¿No tienes cuenta? <a href="#" data-ir="registro">Regístrate</a></p>
+      </div>
+
+      <!-- ===== Recuperar contraseña ===== -->
+      <div class="vista" id="vistaOlvido" hidden>
+        <h1>Recuperar contraseña</h1>
+        <p class="sub">Escribe tu correo y te enviaremos un enlace para crear una nueva.</p>
+        <form id="formOlvido" novalidate>
+          <div class="campo"><label for="oCorreo">Correo</label><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><input id="oCorreo" type="email" autocomplete="email" placeholder="tu@correo.com" /></div>
+          <div class="mensaje" id="mensajeO" role="status"></div>
+          <button class="entrar" type="submit">Enviar enlace</button>
+        </form>
+        <p class="cambiar"><a href="#" data-ir="entrar">← Volver a iniciar sesión</a></p>
       </div>
 
       <!-- ===== Crear cuenta ===== -->
@@ -283,7 +295,7 @@
   // Campos del registro: mira y rota mensajes de bienvenida
   ["rNombre", "rApellido", "rCorreo"].forEach((id) => document.getElementById(id).addEventListener("focus", () => gesto("mirando", "registro")));
   document.querySelectorAll(".lado-form input").forEach((i) => i.addEventListener("blur", () => setTimeout(() => {
-    if (!document.activeElement || document.activeElement.tagName !== "INPUT") vistaActual === "registro" ? gesto("idle", "registro") : normal();
+    if (!document.activeElement || document.activeElement.tagName !== "INPUT") vistaActual === "registro" ? gesto("idle", "registro") : vistaActual === "entrar" ? normal() : null;
   }, 0)));
 
   // Cambiar entre "Iniciar sesión" y "Crear cuenta"
@@ -293,7 +305,9 @@
     vistaActual = a.dataset.ir;
     document.getElementById("vistaEntrar").hidden = vistaActual !== "entrar";
     document.getElementById("vistaRegistro").hidden = vistaActual !== "registro";
-    vistaActual === "registro" ? gesto("feliz", "registro") : normal();
+    document.getElementById("vistaOlvido").hidden = vistaActual !== "olvido";
+    if (vistaActual === "olvido") { const o = document.getElementById("oCorreo"); o.value = correo.value.trim(); document.getElementById("mensajeO").textContent = ""; setTimeout(() => o.focus(), 50); }
+    vistaActual === "registro" ? gesto("feliz", "registro") : vistaActual === "olvido" ? gesto("mirando", "Tranquilo, pasa a todos 😉") : normal();
     setTimeout(() => conejo.setAttribute("class", "conejo idle"), 700);
   }));
 
@@ -355,14 +369,15 @@
     gesto("feliz", `¡Vamos con ${b.dataset.p}! 🥕`);
   }));
 
-  document.getElementById("olvido").onclick = (e) => {
+  // Recuperar contraseña (simulado)
+  document.getElementById("oCorreo").addEventListener("focus", () => gesto("mirando", "Tranquilo, pasa a todos 😉"));
+  document.getElementById("formOlvido").onsubmit = (e) => {
     e.preventDefault();
-    mensaje.className = "mensaje ok";
-    mensaje.textContent = correo.value.trim()
-      ? `Te enviaremos un enlace a ${correo.value.trim()} para crear una nueva contraseña.`
-      : "Escribe tu correo arriba y vuelve a pulsar aquí.";
-    gesto("mirando", "Tranquilo, pasa a todos 😉");
-    mirar();
+    const m = document.getElementById("mensajeO"), v = document.getElementById("oCorreo").value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { m.className = "mensaje error"; m.textContent = "Escribe un correo válido."; return gesto("triste", "Revisa tu correo 🤔"); }
+    m.className = "mensaje ok";
+    m.textContent = `Listo. Si ${v} tiene cuenta, te llegará un enlace en unos minutos. Revisa también tu carpeta de spam.`;
+    gesto("feliz", "¡Revisa tu correo! 📬");
   };
 </script>
 </body>
