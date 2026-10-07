@@ -457,6 +457,47 @@
   #listaTareas .item { align-items: center !important; }
   .aviso-deshacer { all: unset; cursor: pointer; margin-left: 6px; color: #b3a7ff; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
   .aviso-deshacer:hover { background: rgba(141,124,245,.18); }
+
+  /* ===== Navegación y Mis tareas ===== */
+  nav a { cursor: pointer; }
+  .menu-perfil { position: absolute; right: 30px; top: 92px; z-index: 30; width: 250px; padding: 12px; border-radius: 14px;
+    background: #171920; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 20px 50px rgba(0,0,0,.55); }
+  .app { position: relative; }
+  .mp-tit { font-size: .78rem; color: var(--tenue); padding: 2px 6px 8px; }
+  .mp-op { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; border-radius: 10px; font-size: .9rem; }
+  .mp-op:hover { background: rgba(255,255,255,.06); } .mp-op.activa { background: rgba(141,124,245,.16); }
+  .mp-op i { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .72rem; font-weight: 700; color: #141620; }
+  .mp-op .ok { margin-left: auto; color: #b3a7ff; }
+  .mp-nota { font-size: .7rem; color: var(--tenue); padding: 8px 6px 0; border-top: 1px solid var(--borde); margin-top: 6px; }
+  .avatar-yo { width: 100%; height: 100%; display: grid; place-items: center; font-weight: 700; font-size: .8rem; color: #141620; border-radius: 10px; }
+  .mis { padding: 26px 28px; flex: 1; min-height: 0; overflow-y: auto; }
+  .mis-cab { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  .mis-cab h2 { margin: 0; font-size: 1.6rem; } .mis-cab p { margin: 4px 0 0; color: var(--tenue); }
+  .mis-resumen { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mis-chip { padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(var(--tinte), .3); background: rgba(var(--tinte), .1); font-size: .82rem; color: var(--tenue); }
+  .mis-chip b { color: #fff; font-size: 1.1rem; margin-right: 4px; }
+  .mis-filtros { display: flex; gap: 6px; margin-bottom: 18px; }
+  .mis-filtros button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 9px; font-size: .84rem; color: var(--tenue); border: 1px solid var(--borde); }
+  .mis-filtros button.activa { color: var(--texto); background: rgba(255,255,255,.08); }
+  .grupo { margin-bottom: 22px; }
+  .grupo h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: .95rem; }
+  .grupo h3 .punto { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
+  .grupo h3 .chip { font-weight: 500; }
+  .mt { display: flex; align-items: center; gap: 14px; padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--borde); transition: background .15s, opacity .3s; }
+  .mt:hover { background: rgba(255,255,255,.06); }
+  .mt-check { all: unset; cursor: pointer; width: 20px; height: 20px; border-radius: 6px; border: 2px solid #5b6275; flex: none; display: grid; place-items: center; font-size: .7rem; color: #0b0c10; }
+  .mt-check:hover { border-color: #2ee6b0; }
+  .mt.hecha .mt-check { background: #2ee6b0; border-color: #2ee6b0; }
+  .mt.hecha .mt-texto { text-decoration: line-through; color: var(--tenue); }
+  .mt-texto { flex: 1; min-width: 0; font-size: .95rem; }
+  .mt-proy { all: unset; cursor: pointer; font-size: .76rem; color: var(--tenue); padding: 3px 10px; border-radius: 999px; border: 1px solid var(--borde); white-space: nowrap; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+  .mt-proy:hover { color: var(--texto); border-color: rgba(255,255,255,.25); }
+  .mt-fecha { font-size: .78rem; color: var(--tenue); width: 92px; text-align: right; white-space: nowrap; }
+  .mt-fecha.rojo { color: #ff9da0; font-weight: 600; }
+  .mis-vacio { text-align: center; padding: 50px 10px; color: var(--tenue); }
+  .mis-vacio b { display: block; font-size: 1.2rem; color: var(--texto); margin-bottom: 6px; }
+  body.en-mis .app { display: flex; flex-direction: column; }
+  @media (max-width: 700px) { .mt { flex-wrap: wrap; } .mt-texto { flex-basis: calc(100% - 40px); } .mt-fecha { width: auto; } }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -514,7 +555,7 @@
     </svg>
     </div>
     <nav>
-      <a class="activo">Inicio</a><a>Análisis</a><a>Proyectos</a><a>Equipo</a><a>Mensajes</a><a>Ajustes</a>
+      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mis tareas</a><a data-p="pronto" data-n="Proyectos">Proyectos</a><a data-p="pronto" data-n="Notas">Notas</a>
     </nav>
     <div class="boton-neo campana-btn" title="Notificaciones" onclick="this.querySelector('.insignia')?.remove()">
       <svg viewBox="0 0 24 24" fill="currentColor">
@@ -523,12 +564,20 @@
       </svg>
       <span class="insignia">1</span>
     </div>
-    <div class="boton-neo" title="Mi perfil">
+    <div class="boton-neo" title="Mi perfil" id="perfilBtn">
       <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.2"/><path d="M4.5 20.2c0-3.9 3.2-6.4 7.5-6.4s7.5 2.5 7.5 6.4c0 .6-.4.9-1 .9H5.5c-.6 0-1-.3-1-.9Z"/></svg>
     </div>
   </header>
 
-  <div class="rejilla">
+  <div class="menu-perfil" id="menuPerfil" hidden>
+    <div class="mp-tit">¿Quién eres?</div>
+    <div id="mpLista"></div>
+    <div class="mp-nota">Vista previa: luego se sabrá solo al iniciar sesión.</div>
+  </div>
+
+  <section class="mis vidrio" id="vistaMis" hidden></section>
+
+  <div class="rejilla" id="vistaInicio">
 
     <!-- Contenido principal -->
     <main class="principal">
@@ -598,9 +647,7 @@
 </div>
 <script>
   // Interacción de prueba (sin base de datos)
-  document.querySelectorAll("nav a").forEach(a => a.onclick = () => {
-    document.querySelectorAll("nav a").forEach(x => x.classList.remove("activo")); a.classList.add("activo");
-  });
+
   document.querySelectorAll(".item, .pendiente").forEach(i => { i.style.cursor = "pointer"; i.onclick = () => i.classList.toggle("sel"); });
 </script>
 <style>
@@ -1074,6 +1121,98 @@
     calHoy.onclick = () => { mesCal = new Date(); mesCal.setDate(1); diaSel = HOY; pintar(); };
   }
   armar();
+
+  // ===== Persona actual (luego vendrá del inicio de sesión) =====
+  let yo = "Ariana";
+  try { yo = localStorage.getItem("rabbit-yo") || yo; } catch (e) {}
+  const menuPerfil = document.getElementById("menuPerfil");
+  function pintarPerfil() {
+    document.getElementById("perfilBtn").innerHTML = `<span class="avatar-yo" style="background:${COLORES[yo]}" title="${yo}">${yo[0]}</span>`;
+    mpLista.innerHTML = Object.keys(COLORES).map((n) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="background:${COLORES[n]}">${n[0]}</i>${n}${n === yo ? '<span class="ok">✓</span>' : ""}</button>`).join("");
+    mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
+      yo = b.dataset.n; try { localStorage.setItem("rabbit-yo", yo); } catch (e) {}
+      menuPerfil.hidden = true; pintarPerfil(); if (pagina === "mis") pintarMis();
+    }));
+  }
+  document.getElementById("perfilBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = !menuPerfil.hidden; };
+  document.addEventListener("click", (e) => { if (!menuPerfil.contains(e.target)) menuPerfil.hidden = true; });
+
+  // ===== Navegación entre pestañas =====
+  let pagina = "inicio";
+  function irA(p) {
+    pagina = p;
+    document.querySelectorAll("nav a").forEach((x) => x.classList.toggle("activo", x.dataset.p === p));
+    document.getElementById("vistaInicio").hidden = p !== "inicio";
+    document.getElementById("vistaMis").hidden = p !== "mis";
+    document.body.classList.toggle("en-mis", p === "mis");
+    if (p === "mis") pintarMis(); else armar();
+  }
+  document.querySelectorAll("nav a").forEach((a) => (a.onclick = () => {
+    if (a.dataset.p === "pronto") return avisar(`<b>${a.dataset.n}</b> estará disponible pronto 🐰`);
+    irA(a.dataset.p);
+  }));
+  document.querySelector(".logo-caja").onclick = () => irA("inicio");
+
+  // ===== Mis tareas =====
+  let filtroMis = "pendientes";
+  function pintarMis() {
+    const cont = document.getElementById("vistaMis");
+    const mias = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
+    const fecha = (t) => mapaP.get(t.proyecto_id).fecha_limite;
+    const pend = mias.filter((t) => !t.hecha);
+    const lunes = new Date(HOY + "T00:00"); const finSemana = new Date(lunes); finSemana.setDate(lunes.getDate() + (7 - ((lunes.getDay() + 6) % 7)) - 1);
+    const finIso = isoDe(finSemana);
+    const grupoDe = (t) => { const f = fecha(t); if (!f) return "sin"; if (f < HOY) return "atrasadas"; if (f === HOY) return "hoy"; if (f <= finIso) return "semana"; return "luego"; };
+    const GRUPOS = [
+      { id: "atrasadas", t: "Atrasadas", c: "#ff8a8e" }, { id: "hoy", t: "Vence hoy", c: "#ffd45c" },
+      { id: "semana", t: "Esta semana", c: "#b3a7ff" }, { id: "luego", t: "Más adelante", c: "#8fb4ff" }, { id: "sin", t: "Sin fecha", c: "#9aa1b4" },
+    ];
+    const atrasadas = pend.filter((t) => grupoDe(t) === "atrasadas").length;
+    const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
+    let html = `<div class="mis-cab"><div><h2>${saludo}, ${yo} 👋</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div>
+      <div class="mis-resumen">
+        <span class="mis-chip" style="--tinte:154,161,180"><b>${pend.length}</b>pendientes</span>
+        <span class="mis-chip" style="--tinte:229,72,77"><b>${atrasadas}</b>atrasadas</span>
+        <span class="mis-chip" style="--tinte:46,230,176"><b>${mias.length - pend.length}</b>hechas</span>
+      </div></div>
+      <div class="mis-filtros"><button data-f="pendientes" class="${filtroMis === "pendientes" ? "activa" : ""}">Pendientes</button><button data-f="hechas" class="${filtroMis === "hechas" ? "activa" : ""}">Hechas</button></div>`;
+    if (filtroMis === "hechas") {
+      const hechas = mias.filter((t) => t.hecha);
+      html += hechas.length ? `<div class="grupo">${hechas.map(filaMis).join("")}</div>` : `<div class="mis-vacio"><b>Aún no has completado tareas</b>Cuando marques una, aparecerá aquí.</div>`;
+    } else if (!pend.length) {
+      html += `<div class="mis-vacio"><b>¡Todo al día! 🎉</b>No tienes tareas pendientes asignadas.</div>`;
+    } else {
+      for (const g of GRUPOS) {
+        const ts = pend.filter((t) => grupoDe(t) === g.id).sort((a, b) => (fecha(a) || "9").localeCompare(fecha(b) || "9"));
+        if (ts.length) html += `<div class="grupo"><h3><span class="punto" style="--c:${g.c}"></span>${g.t} <span class="chip">${ts.length}</span></h3>${ts.map(filaMis).join("")}</div>`;
+      }
+    }
+    cont.innerHTML = html;
+    cont.querySelectorAll("[data-f]").forEach((b) => (b.onclick = () => { filtroMis = b.dataset.f; pintarMis(); }));
+    cont.querySelectorAll(".mt").forEach((fila) => {
+      const t = mapaT.get(+fila.dataset.id);
+      fila.querySelector(".mt-check").onclick = () => {
+        t.hecha = !t.hecha; ajustarEstado(t.proyecto_id);
+        if (t.hecha) { fila.classList.add("hecha"); fila.style.opacity = .4; setTimeout(pintarMis, 450); avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); pintarMis(); }); }
+        else pintarMis();
+      };
+      fila.querySelector(".mt-proy").onclick = () => abrirProyecto(t.proyecto_id);
+    });
+  }
+  function filaMis(t) {
+    const p = mapaP.get(t.proyecto_id), f = p.fecha_limite;
+    const d = f ? diasHasta(f) : null;
+    const txt = d === null ? "Sin fecha" : d < 0 ? `hace ${-d} día${d === -1 ? "" : "s"}` : d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(f);
+    return `<div class="mt ${t.hecha ? "hecha" : ""}" data-id="${t.id}">
+      <button class="mt-check" title="${t.hecha ? "Marcar como pendiente" : "Marcar como hecha"}">${t.hecha ? "✓" : ""}</button>
+      <span class="mt-texto">${esc(t.texto)}</span>
+      <button class="mt-proy" title="Abrir proyecto">${esc(p.nombre)}</button>
+      <span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span>
+      <span class="mt-fecha ${d !== null && d <= 1 && !t.hecha ? "rojo" : ""}">${txt}</span></div>`;
+  }
+  pintarPerfil();
+  const _armar = armar;
+  armar = function () { _armar(); if (pagina === "mis") pintarMis(); };
 </script>
 <div class="velo" onclick="cerrarProyecto()"></div>
 
