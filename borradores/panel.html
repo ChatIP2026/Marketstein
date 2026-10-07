@@ -1246,11 +1246,9 @@
     cont.innerHTML = html;
     cont.querySelectorAll(".bc").forEach((c) => {
       const p = mapaP.get(+c.dataset.id);
-      c.querySelector(".bc-abrir").onclick = () => abrirProyecto(p.id);
+      c.querySelectorAll(".bc-abrir").forEach((x) => (x.onclick = () => abrirProyecto(p.id)));
       c.querySelector(".bc-carpeta").onclick = () => abrirProyecto(p.id);
       c.querySelector(".bc-estado").onchange = (e) => { p.estado = e.target.value; armar(); };
-      const f = c.querySelector(".bc-pregunta");
-      f.onsubmit = (e) => { e.preventDefault(); const i = f.querySelector("input"); if (i.value.trim()) { avisar(`💬 Comentario enviado en <b>${esc(p.nombre)}</b>`); i.value = ""; } };
     });
   }
   function tarjetaChat(p) {
@@ -1262,7 +1260,6 @@
       : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto ⏰" : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
       : "No tienes nada pendiente aquí por ahora.";
     return `<article class="bc" data-id="${p.id}">
-      <form class="bc-pregunta"><button type="button" class="bc-redondo bc-abrir" title="Abrir proyecto">←</button><input placeholder="Escribe un comentario…" /><button class="bc-enviar" title="Enviar">→</button></form>
       <div class="bc-yo"><span>Hecho por</span>${av(p.creado_por)}<b>${p.creado_por}</b></div>
       <div class="bc-ev">
         <div class="bc-tit"><span class="bc-puntos"><i></i><i></i><i></i><i></i></span>${esc(p.nombre)} <small>${ult ? hace(ult.hecha_at || ult.created_at) : hace(p.created_at)}</small></div>
