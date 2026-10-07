@@ -38,6 +38,14 @@
   }
   .marca { position: absolute; left: 24px; top: 20px; font-weight: 700; letter-spacing: .02em; color: var(--tenue); font-size: .85rem; }
 
+  /* Flotando todo el tiempo */
+  .flota { position: relative; display: flex; flex-direction: column; align-items: center; }
+  .flota .conejo { animation: flotar 3.2s ease-in-out infinite; }
+  .sombra { width: 120px; height: 16px; margin-top: -6px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.55), transparent);
+    animation: sombra 3.2s ease-in-out infinite; }
+  @keyframes flotar { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-16px) rotate(1.5deg); } }
+  @keyframes sombra { 0%, 100% { transform: scaleX(1); opacity: .9; } 50% { transform: scaleX(.72); opacity: .5; } }
+
   /* Partes del conejo que se mueven */
   .oreja-i { transform-origin: 34px 32px; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
   .oreja-d { transform-origin: 46px 38px; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
@@ -60,8 +68,8 @@
   .conejo.triste .ojos-tristes { opacity: 1; }
   .conejo.triste .oreja-i { transform: rotate(-35deg); }
   .conejo.triste .oreja-d { transform: rotate(25deg); }
-  .conejo.triste { animation: sacudir .45s ease; }
-  .conejo.feliz { animation: saltar .6s ease; }
+  .flota:has(.conejo.triste) { animation: sacudir .45s ease; }
+  .flota:has(.conejo.feliz) { animation: saltar .6s ease; }
   .conejo.feliz .rubor { opacity: .9; }
   @keyframes sacudir { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
   @keyframes saltar { 30% { transform: translateY(-22px) rotate(-4deg); } 60% { transform: translateY(0); } 75% { transform: translateY(-8px); } }
@@ -108,6 +116,7 @@
     <!-- Izquierda: el conejo hace gestos según lo que hagas -->
     <section class="lado-conejo" aria-hidden="true">
       <span class="marca">Panel del equipo</span>
+      <div class="flota">
       <svg class="conejo idle" id="conejo" viewBox="12 6 50 60">
         <g fill="#ffffff" stroke="#000" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
           <path class="oreja-i" d="M21.6 15.9c.4-1.2 1.6-1.7 2.8-1.3l8.4 3.5c.7.3 1.2.8 1.5 1.4l5.1 11.3-11.2 2.5-6.5-13.5c-.4-.9-.5-2.2-.1-3.9Z"/>
@@ -127,6 +136,8 @@
         </g>
         <g class="rubor" fill="#ff9db8"><ellipse cx="24.2" cy="53.2" rx="1.6" ry=".9"/><ellipse cx="41.8" cy="56" rx="2" ry="1"/></g>
       </svg>
+        <div class="sombra"></div>
+      </div>
       <div class="globo" id="globo">¡Hola! ¿Listo para trabajar?</div>
     </section>
 
