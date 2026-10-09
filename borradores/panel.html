@@ -720,6 +720,13 @@
   .tk-aviso { font-size: .82rem; color: #ffd45c; background: rgba(255,212,92,.08); border: 1px solid rgba(255,212,92,.3); border-radius: 10px; padding: 10px 12px; }
   .tk-nota { font-size: .76rem; color: var(--tenue); margin: 0; }
   .tk-form .nuevo-btn { height: 44px; font-size: .95rem; }
+  .hechas { margin-top: 8px; border-top: 1px solid var(--borde); padding-top: 6px; }
+  .hechas summary { cursor: pointer; list-style: none; font-size: .8rem; color: var(--tenue); padding: 6px 2px; display: flex; align-items: center; gap: 6px; }
+  .hechas summary::-webkit-details-marker { display: none; } .hechas summary::after { content: "▾"; margin-left: auto; } .hechas[open] summary::after { content: "▴"; }
+  .hechas summary span { font-size: .7rem; padding: 1px 7px; border-radius: 999px; background: rgba(46,230,176,.14); color: #2ee6b0; }
+  .hechas .hecha .t-texto, .hechas .hecha .mt-texto { text-decoration: line-through; opacity: .55; }
+  .hechas .caja.ok, .hechas .mt-check.ok { background: rgba(46,230,176,.18); border-color: #2ee6b0; color: #2ee6b0; display: grid; place-items: center; font-size: .7rem; }
+  .hechas .hecha:hover .t-texto, .hechas .hecha:hover .mt-texto { opacity: .9; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -980,7 +987,18 @@
       it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); armar(); }); }; // solo en esta vista previa
       cont.append(it);
     }
+    // Completadas: se pueden desmarcar si se marcaron por error
+    const hechas = [...mapaT.values()].filter((t) => t.hecha && mapaP.has(t.proyecto_id)).sort((a, b) => (b.hecha_at || "").localeCompare(a.hecha_at || ""));
+    if (hechas.length) {
+      const det = document.createElement("details");
+      det.className = "hechas"; det.open = tareasHechasAbiertas;
+      det.ontoggle = () => (tareasHechasAbiertas = det.open);
+      det.innerHTML = `<summary>Completadas <span>${hechas.length}</span></summary>` + hechas.map((t) => `<div class="item hecha" data-id="${t.id}" title="Desmarcar"><div class="caja ok">✓</div><div style="flex:1;min-width:0"><span class="t-texto">${esc(t.texto)}</span><span class="sub">${esc(mapaP.get(t.proyecto_id).nombre)}</span></div>${t.encargado ? avMini(t.encargado) : ""}</div>`).join("");
+      det.querySelectorAll(".item").forEach((it) => (it.onclick = () => { const t = mapaT.get(+it.dataset.id); t.hecha = false; ajustarEstado(t.proyecto_id); armar(); avisar(`↩️ <b>${esc(t.texto)}</b> vuelve a pendientes`); }));
+      cont.append(det);
+    }
   }
+  let tareasHechasAbiertas = false;
 
   // Carga del equipo: proyectos activos y tareas pendientes por persona
   function pintarCarga() {
@@ -1528,7 +1546,7 @@
     const box = document.getElementById("entFeed"), p = mapaP.get(entornoSel);
     if (!box || !p) return;
     const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
-    const mias = ts.filter((t) => t.encargado === yo && !t.hecha);
+    const mias = ts.filter((t) => t.encargado === yo && !t.hecha), misHechas = ts.filter((t) => t.encargado === yo && t.hecha);
     // eventos de la línea de tiempo
     const ev = [{ at: p.created_at, quien: p.creado_por, tit: "Creó el proyecto", txt: `${p.encargados.length ? "Encargados: " + p.encargados.join(", ") : "Sin encargados aún"} · Prioridad ${p.prioridad}` }];
     ts.filter((t) => t.hecha).forEach((t) => ev.push({ at: t.hecha_at || t.created_at, quien: t.encargado || p.creado_por, tit: "Completó una tarea", txt: t.texto, ok: true }));
@@ -1538,7 +1556,8 @@
     box.innerHTML = `
       <div class="feed-cab"><div><h3>${esc(p.nombre)}</h3><p>${p.fecha_limite ? `Vence el ${fmt(p.fecha_limite)}` : "Sin fecha límite"}</p></div><button class="cal-btn" id="feedAbrir">Ver proyecto</button></div>
       <div class="feed-mias"><h4>Te toca a ti <span class="chip">${mias.length}</span></h4>
-        ${mias.length ? mias.map((t) => `<div class="mt" data-id="${t.id}"><button class="mt-check" title="Marcar como hecha"></button><span class="mt-texto">${esc(t.texto)}</span></div>`).join("") : `<div class="pronto-ok">No tienes tareas pendientes en este proyecto. 🎉</div>`}</div>
+        ${mias.length ? mias.map((t) => `<div class="mt" data-id="${t.id}"><button class="mt-check" title="Marcar como hecha"></button><span class="mt-texto">${esc(t.texto)}</span></div>`).join("") : `<div class="pronto-ok">No tienes tareas pendientes en este proyecto. 🎉</div>`}
+        ${misHechas.length ? `<details class="hechas"><summary>Completadas <span>${misHechas.length}</span></summary>${misHechas.map((t) => `<div class="mt hecha" data-id="${t.id}"><button class="mt-check ok" title="Desmarcar">✓</button><span class="mt-texto">${esc(t.texto)}</span></div>`).join("")}</details>` : ""}</div>
       <h4 class="feed-sub">Actividad</h4>
       <div class="linea">${ev.map((e) => `
         <div class="ev"><div class="ev-ico">${av(e.quien)}</div>
@@ -1548,7 +1567,11 @@
           </div></div>`).join("")}</div>
       ${arch ? `<p class="det-nota">Los archivos son de ejemplo: subir archivos sería una función nueva.</p>` : ""}`;
     box.querySelector("#feedAbrir").onclick = () => abrirProyecto(p.id);
-    box.querySelectorAll(".mt").forEach((fila) => (fila.querySelector(".mt-check").onclick = () => {
+    box.querySelectorAll(".mt.hecha").forEach((fila) => (fila.querySelector(".mt-check").onclick = () => {
+      const t = mapaT.get(+fila.dataset.id); t.hecha = false; ajustarEstado(t.proyecto_id); pintarMis();
+      avisar(`↩️ <b>${esc(t.texto)}</b> vuelve a pendientes`);
+    }));
+    box.querySelectorAll(".mt:not(.hecha)").forEach((fila) => (fila.querySelector(".mt-check").onclick = () => {
       const t = mapaT.get(+fila.dataset.id);
       t.hecha = true; t.hecha_at = new Date().toISOString(); ajustarEstado(t.proyecto_id);
       fila.classList.add("hecha"); fila.style.opacity = .4;
