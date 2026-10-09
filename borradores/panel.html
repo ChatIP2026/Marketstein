@@ -651,7 +651,7 @@
   .tk-carga { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 12px; background: rgba(255,255,255,.04); }
   .tk-carga b { display: block; font-size: .84rem; } .tk-carga small { font-size: .72rem; color: var(--tenue); }
   .tk-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; align-items: start; }
-  .tk { all: unset; --card: #1d1f26; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 1fr 62px; transition: transform .15s; }
+  .tk { all: unset; --card: rgba(255,255,255,.045); box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 1fr 62px; transition: transform .15s; }
   .tk:hover { transform: translateY(-3px); } .tk:hover .tk-ir { background: #fff; color: #111; }
   .tk-a { position: relative; background: var(--card); border-radius: 22px 22px 0 0; padding: 14px 16px 4px; display: flex; align-items: center; justify-content: space-between; }
   .tk-a::after { content: ""; position: absolute; right: -18px; bottom: 0; width: 18px; height: 18px; background: radial-gradient(circle at 100% 0, transparent 17.5px, var(--card) 18px); }
@@ -659,6 +659,7 @@
   .tk-id { font-size: .74rem; color: var(--tenue); font-variant-numeric: tabular-nums; }
   .tk-ir { grid-column: 2; grid-row: 1; justify-self: end; width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,.22); display: grid; place-items: center; color: #fff; transition: .15s; }
   .tk-ir svg { width: 20px; height: 20px; }
+  .tk-a { box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
   .tk-b { grid-column: 1 / -1; background: var(--card); border-radius: 0 22px 22px 22px; padding: 12px 18px 18px; display: flex; flex-direction: column; }
   .tk-tit { font-size: 1.2rem; font-weight: 600; line-height: 1.25; color: #fff; }
   .tk-de { font-size: .8rem; color: var(--tenue); margin: 4px 0 16px; }
@@ -677,9 +678,9 @@
   .tkd-quien { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; } .tkd-quien .av { width: 34px; height: 34px; }
   .tkd-quien b { display: block; font-size: .9rem; } .tkd-quien small { font-size: .76rem; color: var(--tenue); }
   .tkd-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-  .tkd-k { background: #1d1f26; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0; }
+  .tkd-k { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0; }
   .tkd-k b { font-size: 1.05rem; } .tkd-rel { font-size: .74rem; color: var(--tenue); } .tkd-k .bc-f { font-size: .74rem; }
-  .tkd-b { background: #1d1f26; border-radius: 18px; padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .tkd-b { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 18px; padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; }
   .tkd-b h4 { margin: 0; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); font-weight: 600; }
   .tkd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .tkd-campo p { margin: 3px 0 0; font-size: .92rem; line-height: 1.5; }
@@ -688,8 +689,13 @@
   .tkd-hist summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .tkd-hist summary::-webkit-details-marker { display: none; } .tkd-hist summary span { font-size: .76rem; color: var(--tenue); }
   .tkd-hist summary span::after { content: " ▾"; } .tkd-hist[open] summary span::after { content: " ▴"; }
-  .tk-acc { margin: 0 0 12px !important; }
-  .tk-det { width: min(520px, 100vw) !important; background: #121319 !important; backdrop-filter: none !important; }
+  .tk-acc { margin: 0 0 12px !important; background: rgba(169,184,232,.06) !important; border-color: rgba(169,184,232,.22) !important; }
+  .tk-acc .nuevo-btn, .tk-form .nuevo-btn, .tk-nuevo { background: rgba(169,184,232,.16) !important; border: 1px solid rgba(169,184,232,.45) !important; color: #eef1fb !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+  .tk-acc .nuevo-btn:hover, .tk-form .nuevo-btn:hover, .tk-nuevo:hover { background: rgba(169,184,232,.26) !important; }
+  .tk-prios button.activa, .tk-pasos button.activa { --c: #a9b8e8; background: rgba(169,184,232,.18) !important; border-color: rgba(169,184,232,.6) !important; }
+  .tkd-cita { border-left-color: #a9b8e8 !important; background: rgba(169,184,232,.07) !important; }
+  .tk-prio { background: color-mix(in srgb, var(--c) 18%, transparent) !important; color: var(--c) !important; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
+  .tk-det { width: min(520px, 100vw) !important; background: linear-gradient(180deg, #16181f, #101117) !important; backdrop-filter: none !important; }
   .tk-sub { margin: 4px 0 0; color: var(--tenue); font-size: .84rem; }
   .tk-txt { margin: 0; font-size: .92rem; line-height: 1.5; color: #e8eaf0; white-space: pre-wrap; } .tk-txt a { color: #b3a7ff; }
   .tk-acc { margin: 22px 0 4px; padding: 16px; border-radius: 14px; background: rgba(141,124,245,.08); border: 1px solid rgba(141,124,245,.3); display: flex; flex-direction: column; gap: 12px; }
@@ -1559,11 +1565,11 @@
 
   // ===================== TICKETS =====================
   const TK_ESTADOS = {
-    revision_inicial: { t: "Por revisar", c: "#b3a7ff" }, falta_info: { t: "Falta info", c: "#ff9d42" },
+    revision_inicial: { t: "Por revisar", c: "#a9b8e8" }, falta_info: { t: "Falta info", c: "#ff9d42" },
     en_curso: { t: "En curso", c: "#ffd45c" }, en_revision: { t: "En revisión", c: "#6aa6ff" },
     entregado: { t: "Entregado", c: "#2ee6b0" }, rechazado: { t: "Rechazado", c: "#ff7b80" },
   };
-  const TK_PRIO = { urgente: { t: "Urgente", c: "#ff6161" }, alta: { t: "Alta", c: "#ff9d42" }, media: { t: "Media", c: "#b39af0" }, baja: { t: "Baja", c: "#97a3b3" } };
+  const TK_PRIO = { urgente: { t: "Urgente", c: "#ff6161" }, alta: { t: "Alta", c: "#ff9d42" }, media: { t: "Media", c: "#a9b8e8" }, baja: { t: "Baja", c: "#97a3b3" } };
   const TIPOS = { Post: ["Vertical (feed)", "Cuadrado", "Historia o reel"], Banner: ["Horizontal (web)", "Vertical", "Impreso"], "Presentación": ["Pantalla 16:9"],
     Flyer: ["A4 / impreso", "Digital vertical"], Mailing: ["Correo (600 px)"], Video: ["Horizontal", "Vertical (reel)", "Cuadrado"], Informe: ["Documento A4"], Otro: [] };
   const DIAS_MIN = { Post: 2, Banner: 3, "Presentación": 3, Flyer: 3, Mailing: 3, Video: 5, Informe: 4, Otro: 3 };
