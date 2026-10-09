@@ -681,7 +681,7 @@
   .tkd-k { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0; }
   .tkd-k b { font-size: 1.05rem; } .tkd-rel { font-size: .74rem; color: var(--tenue); } .tkd-k .bc-f { font-size: .74rem; }
   .tkd-b { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 18px; padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; }
-  .tkd-b h4 { margin: 0; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); font-weight: 600; }
+  .tkd-b h4 { margin: 0; font-size: .95rem; color: #fff; font-weight: 700; }
   .tkd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .tkd-campo p { margin: 3px 0 0; font-size: .92rem; line-height: 1.5; }
   .tkd-cita { margin: 0; padding: 10px 14px; border-left: 3px solid #8d7cf5; background: rgba(141,124,245,.08); border-radius: 0 10px 10px 0; font-size: .95rem; white-space: pre-wrap; }
@@ -977,7 +977,7 @@
       it.title = "Marcar como hecha";
       it.innerHTML = `<div class="caja"></div><div style="flex:1;min-width:0"><span class="t-texto">${esc(t.texto)}</span>
         <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` · <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>${t.encargado ? avMini(t.encargado) : ""}`;
-      it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); }; // solo en esta vista previa
+      it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); armar(); }); }; // solo en esta vista previa
       cont.append(it);
     }
   }
@@ -1668,8 +1668,8 @@
         <div class="tk-sec"><button class="cal-btn" id="tkInfo">Pedir más información</button><button class="cal-btn peligro" id="tkRechazar">Rechazar</button></div>
         <textarea id="tkMotivo" placeholder="Escribe la pregunta o el motivo…" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button>
       </div>`;
-    else if (mio && ["en_revision", "en_curso", "entregado"].includes(t.estado)) acciones = `
-      <div class="tk-acc"><h4>Situación del ticket</h4><p class="tk-ayuda">${{ en_revision: "Revisa la información. Si todo está claro, pásalo a En curso; si falta algo, pídeselo a " + esc(t.solicitante) + ".", en_curso: "Cuando lo termines, márcalo como Entregado.", entregado: "Ticket entregado. Si necesitas corregir algo, puedes regresarlo." }[t.estado]}</p>
+    else if ((mio || jefa) && t.asignado && ["en_revision", "en_curso", "entregado"].includes(t.estado)) acciones = `
+      <div class="tk-acc"><h4>Situación del ticket</h4>
         <div class="tk-pasos">${["en_revision", "en_curso", "entregado"].map((e) => `<button type="button" data-e="${e}" class="${t.estado === e ? "activa" : ""}">${TK_ESTADOS[e].t}</button>`).join("<span>→</span>")}</div>
         ${t.estado === "en_revision" ? `<div class="tk-sec"><button class="cal-btn" id="tkInfo">Pedir más información</button></div><textarea id="tkMotivo" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button>` : ""}</div>`;
     else if (jefa && ["en_revision", "en_curso", "falta_info"].includes(t.estado)) acciones = `
@@ -1690,7 +1690,7 @@
       ${acciones}
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
-      ${t.refs.length ? bloque("Referencias", `<div class="tkd-chips">${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 Referencia ${i + 1}</a>`).join("")}</div>`) : ""}
+      ${t.refs.length ? bloque("Referencias", `<div class="tkd-chips">${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} · último ${hace(t.historial.at(-1).at)}</span></summary>
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>· ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
@@ -1718,7 +1718,8 @@
     });
     d.querySelectorAll("[data-e]").forEach((b) => (b.onclick = () => {
       if (b.dataset.e === t.estado) return;
-      t.estado = b.dataset.e; registrar(t, { entregado: "Lo marcó como entregado", en_curso: "Revisó la información y lo pasó a En curso", en_revision: "Lo regresó a En revisión" }[t.estado]);
+      const antes = t.estado; t.estado = b.dataset.e;
+      registrar(t, t.estado === "entregado" ? "Lo marcó como entregado" : t.estado === "en_curso" ? (antes === "entregado" ? "Lo regresó a En curso" : "Revisó la información y lo pasó a En curso") : "Lo regresó a En revisión");
       if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = { entregado: "listo", en_curso: "en_curso", en_revision: "sin_empezar" }[t.estado]; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = t.estado === "entregado")); }
       despues(`Ticket en <b>${TK_ESTADOS[t.estado].t}</b>`);
     }));
