@@ -761,6 +761,10 @@
   .tpk-pill { font-size: .66rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--c); color: #141620; }
   .tpk small { font-size: .74rem; color: var(--tenue); }
   @media (max-width: 900px) { .tk-prio-kpis { gap: 16px; flex-wrap: wrap; } .tpk b { font-size: 1.8rem; } }
+  .tk-barra-f { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; } .tk-barra-f .ent-filtros { flex: 1; }
+  .tk-mes { display: flex; align-items: center; gap: 10px; font-size: .8rem; color: var(--tenue); }
+  .tk-mes select { background: rgba(255,255,255,.05); border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: .86rem; color-scheme: dark; cursor: pointer; }
+  .tk-mes select option { background: #1f2024; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -1421,7 +1425,7 @@
   function pintarPerfil() {
     document.getElementById("perfilBtn").innerHTML = `<span class="avatar-yo" style="${fondoAv(yo)}" title="${yo}">${letraAv(yo)}</span>`;
     const op = (n, rol) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i><span>${n}<small>${rol}</small></span>${n === yo ? '<span class="ok">✓</span>' : ""}</button>`;
-    mpLista.innerHTML = `<div class="mp-grupo">Equipo de marketing</div>` + Object.keys(COLORES).map((n) => op(n, n === JEFA ? "Jefa del área" : "Marketing")).join("")
+    mpLista.innerHTML = `<div class="mp-grupo">Equipo de marketing</div>` + Object.keys(COLORES).map((n) => op(n, n === JEFA ? "Marketing | Jefa" : "Marketing")).join("")
       + `<div class="mp-grupo">Otras áreas</div>` + Object.entries(SOLICITANTES).map(([n, a]) => op(n, a)).join("");
     mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
       yo = b.dataset.n; try { localStorage.setItem("rabbit-yo", yo); } catch (e) {}
@@ -1640,6 +1644,8 @@
   const enD = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
   const haceH = (h) => new Date(Date.now() - h * 36e5).toISOString();
   let tickets = [
+    { id: 8, titulo: "Post de aniversario de la empresa", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Post", formato: "Cuadrado", detalle: "Saludo por el aniversario de la empresa para redes internas.", destino: "Colaboradores", texto: "¡Feliz aniversario, equipo!", refs: [], fecha: enD(-24), estado: "entregado", prioridad: "media", asignado: "Pierina", creado: haceH(24 * 30), historial: [{ at: haceH(24 * 30), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(24 * 29), quien: "Hilary", txt: "Aceptó el ticket · prioridad Media · asignado a Pierina" }, { at: haceH(24 * 25), quien: "Pierina", txt: "Lo marcó como entregado" }] },
+    { id: 9, titulo: "Banner web de tasas de setiembre", solicitante: "Mario", area: "Ventas", tipo: "Banner", formato: "Horizontal (web)", detalle: "Banner para la web con las tasas del mes.", destino: "Clientes", texto: "Tasas desde 1.2 % mensual", refs: [], fecha: enD(-33), estado: "entregado", prioridad: "alta", asignado: "Ariana", creado: haceH(24 * 40), historial: [{ at: haceH(24 * 40), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(24 * 39), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }, { at: haceH(24 * 34), quien: "Ariana", txt: "Lo marcó como entregado" }] },
     { id: 7, titulo: "Brochure digital de servicios", solicitante: "Romano", area: "Comercial", tipo: "Flyer", formato: "Digital vertical", detalle: "Diseñar un brochure digital con los 4 servicios principales para enviar por WhatsApp y correo a clientes potenciales. Debe incluir logo, beneficios de cada servicio y datos de contacto del equipo comercial.", destino: "Clientes potenciales (pymes)", texto: "iPartner · Soluciones financieras para tu empresa\nCréditos · Leasing · Factoring · Asesoría\nEscríbenos: comercial@ipartner.pe", refs: ["https://pinterest.com/ejemplo-brochure"], adjuntos: true, fecha: enD(7), estado: "en_revision", prioridad: "alta", asignado: "Ariana", proyecto: 901, creado: haceH(3), historial: [{ at: haceH(3), quien: "Romano", txt: "Envió la solicitud" }, { at: haceH(1), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }] },
     { id: 1, titulo: "Post de LinkedIn para webinar de noviembre", solicitante: "Lucía", area: "Finanzas", tipo: "Post", formato: "Vertical (feed)", detalle: "Anunciar el webinar de educación financiera del 20 de noviembre. Queremos inscripciones.", destino: "Seguidores de LinkedIn", texto: "Webinar: Finanzas sin miedo · 20 nov · 7 p. m. · Inscríbete gratis", refs: ["https://pinterest.com/ejemplo"], fecha: enD(6), estado: "revision_inicial", creado: haceH(3), historial: [{ at: haceH(3), quien: "Lucía", txt: "Envió la solicitud" }] },
     { id: 2, titulo: "Flyer para charla de bienestar", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Flyer", formato: "Digital vertical", detalle: "Charla de pausas activas para todo el personal.", destino: "Colaboradores", texto: "", sinTexto: true, refs: [], fecha: enD(2), estado: "revision_inicial", creado: haceH(1), historial: [{ at: haceH(1), quien: "Rosa", txt: "Envió la solicitud" }] },
@@ -1648,7 +1654,7 @@
     { id: 5, titulo: "Mailing de bienvenida a clientes nuevos", solicitante: "Lucía", area: "Finanzas", tipo: "Mailing", formato: "Correo (600 px)", detalle: "Correo de bienvenida con los pasos para activar la cuenta.", destino: "Clientes nuevos", texto: "Bienvenido a iPartner", refs: [], fecha: enD(1), estado: "en_revision", prioridad: "urgente", asignado: "Pierina", creado: haceH(72), historial: [{ at: haceH(72), quien: "Lucía", txt: "Envió la solicitud" }, { at: haceH(70), quien: "Hilary", txt: "Aceptó el ticket · prioridad Urgente · asignado a Pierina" }] },
     { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket · asignado a Carlos" }, { at: haceH(200), quien: "Carlos", txt: "Revisó la información y empezó a trabajarlo" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado" }] },
   ];
-  let filtroTk = null, tkAbierto = null;
+  let filtroTk = null, tkAbierto = null, mesTk = null;
   const tkVisibles = () => esSolicitante() ? tickets.filter((t) => t.solicitante === yo)
     : yo === JEFA ? tickets : tickets.filter((t) => t.asignado === yo);
   function contarTickets() {
@@ -1666,7 +1672,13 @@
   function pintarTickets() {
     const cont = document.getElementById("vistaTickets");
     const sol = esSolicitante(), jefa = yo === JEFA;
-    const vis = tkVisibles();
+    const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
+    const mesDe = (t) => t.fecha.slice(0, 7), hoyMes = new Date().toISOString().slice(0, 7);
+    const todosVis = tkVisibles();
+    const meses = [...new Set([hoyMes, ...todosVis.map(mesDe)])].sort().reverse();
+    if (mesTk === null) mesTk = hoyMes;
+    const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
+    const vis = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
     const FILTROS = sol ? [["activos", "En proceso"], ["falta_info", "Te piden info"], ["entregado", "Entregados"], ["todos", "Todas"]]
       : jefa ? [["revision_inicial", "Por revisar"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["falta_info", "Falta info"], ["entregado", "Entregados"], ["todos", "Todos"]]
       : [["en_revision", "En revisión"], ["en_curso", "En curso"], ["falta_info", "Falta info"], ["entregado", "Entregados"], ["todos", "Todos"]];
@@ -1683,10 +1695,12 @@
         return `<div class="tk-carga"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} · ${tareas} tareas pendientes</small></div></div>`; }).join("");
       html += `<div class="tk-equipo"><span>Carga del equipo</span>${carga}</div>`;
     }
-    html += `<div class="ent-filtros">${FILTROS.map(([k, t]) => `<button data-ft="${k}" class="${filtroTk === k ? "activa" : ""}">${t} <span>${vis.filter((x) => pasa(x, k)).length}</span></button>`).join("")}</div>`;
+    const selMes = `<label class="tk-mes"><span>📅 Mes de entrega</span><select id="tkMes">${meses.map((m) => `<option value="${m}" ${mesTk === m ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""} · ${todosVis.filter((t) => mesDe(t) === m).length}</option>`).join("")}<option value="todos" ${mesTk === "todos" ? "selected" : ""}>Todos los meses · ${todosVis.length}</option></select></label>`;
+    html += `<div class="tk-barra-f"><div class="ent-filtros">${FILTROS.map(([k, t]) => `<button data-ft="${k}" class="${filtroTk === k ? "activa" : ""}">${t} <span>${vis.filter((x) => pasa(x, k)).length}</span></button>`).join("")}</div>${selMes}</div>`;
     html += lista.length ? `<div class="tk-lista">${lista.map(tarjetaTk).join("")}</div>`
       : `<div class="mis-vacio"><b>${sol ? "No tienes solicitudes aquí" : "Nada por aquí"}</b>${sol ? "Usa “Nueva solicitud” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}</div>`;
     cont.innerHTML = html;
+    cont.querySelector("#tkMes").onchange = (e) => { mesTk = e.target.value; pintarTickets(); };
     cont.querySelectorAll("[data-ft]").forEach((b) => (b.onclick = () => { filtroTk = b.dataset.ft; pintarTickets(); }));
     cont.querySelectorAll(".tk").forEach((c) => (c.onclick = () => abrirTicket(+c.dataset.id)));
     cont.querySelector("#tkNuevo")?.addEventListener("click", abrirFormTicket);
@@ -1862,7 +1876,7 @@
     { nombre: "Pierina", apellido: "", correo: "pierina@ipartner.pe", area: "Marketing", rol: "equipo", activa: true },
     ...Object.entries(SOLICITANTES).map(([n, a]) => ({ nombre: n, apellido: "", correo: n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") + "@ipartner.pe", area: a, rol: "solicitante", carpeta: carpetaDe(n), activa: n !== "Romano" })),
   ];
-  const ROLES = { jefa: "Jefa del área", equipo: "Equipo de marketing", solicitante: "Otra área" };
+  const ROLES = { jefa: "Marketing | Jefa", equipo: "Equipo de marketing", solicitante: "Otra área" };
   let filtroPer = "todas";
   const claveTemporal = () => { const L = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; return Array.from({ length: 10 }, () => L[Math.floor(Math.random() * L.length)]).join(""); };
   function pintarPersonas() {
