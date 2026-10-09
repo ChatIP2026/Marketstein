@@ -765,6 +765,10 @@
   .tk-mes { display: flex; align-items: center; gap: 10px; font-size: .8rem; color: var(--tenue); }
   .tk-mes select { background: rgba(255,255,255,.05); border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: .86rem; color-scheme: dark; cursor: pointer; }
   .tk-mes select option { background: #1f2024; }
+  button.tk-carga { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid transparent; transition: .15s; }
+  button.tk-carga:hover { background: rgba(255,255,255,.08); }
+  button.tk-carga.activa { border-color: rgba(169,184,232,.7); background: rgba(169,184,232,.16); }
+  .tk-equipo:has(.activa) button.tk-carga:not(.activa) { opacity: .5; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -1654,7 +1658,7 @@
     { id: 5, titulo: "Mailing de bienvenida a clientes nuevos", solicitante: "Lucía", area: "Finanzas", tipo: "Mailing", formato: "Correo (600 px)", detalle: "Correo de bienvenida con los pasos para activar la cuenta.", destino: "Clientes nuevos", texto: "Bienvenido a iPartner", refs: [], fecha: enD(1), estado: "en_revision", prioridad: "urgente", asignado: "Pierina", creado: haceH(72), historial: [{ at: haceH(72), quien: "Lucía", txt: "Envió la solicitud" }, { at: haceH(70), quien: "Hilary", txt: "Aceptó el ticket · prioridad Urgente · asignado a Pierina" }] },
     { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket · asignado a Carlos" }, { at: haceH(200), quien: "Carlos", txt: "Revisó la información y empezó a trabajarlo" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado" }] },
   ];
-  let filtroTk = null, tkAbierto = null, mesTk = null;
+  let filtroTk = null, tkAbierto = null, mesTk = null, personaTk = null;
   const tkVisibles = () => esSolicitante() ? tickets.filter((t) => t.solicitante === yo)
     : yo === JEFA ? tickets : tickets.filter((t) => t.asignado === yo);
   function contarTickets() {
@@ -1678,7 +1682,8 @@
     const meses = [...new Set([hoyMes, ...todosVis.map(mesDe)])].sort().reverse();
     if (mesTk === null) mesTk = hoyMes;
     const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
-    const vis = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
+    const delMes = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
+    const vis = jefa && personaTk ? delMes.filter((t) => t.asignado === personaTk) : delMes;
     const FILTROS = sol ? [["activos", "En proceso"], ["entregado", "Entregados"], ["todos", "Todas"]]
       : jefa ? [["revision_inicial", "Por revisar"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["todos", "Todos"]]
       : [["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["todos", "Todos"]];
@@ -1694,7 +1699,7 @@
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
         const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
-        return `<div class="tk-carga"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} · ${tareas} tareas pendientes</small></div></div>`; }).join("");
+        return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} · ${tareas} tareas pendientes</small></div></button>`; }).join("");
       html += `<div class="tk-equipo">${carga}</div>`;
     }
     const selMes = `<label class="tk-mes"><select id="tkMes" title="Mes de entrega">${meses.map((m) => `<option value="${m}" ${mesTk === m ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""} | ${todosVis.filter((t) => mesDe(t) === m).length} 🏷️</option>`).join("")}<option value="todos" ${mesTk === "todos" ? "selected" : ""}>Todos los meses | ${todosVis.length} 🏷️</option></select></label>`;
@@ -1702,6 +1707,7 @@
     html += lista.length ? `<div class="tk-lista">${lista.map(tarjetaTk).join("")}</div>`
       : `<div class="mis-vacio"><b>${sol ? "No tienes solicitudes aquí" : "Nada por aquí"}</b>${sol ? "Usa “Nueva solicitud” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}</div>`;
     cont.innerHTML = html;
+    cont.querySelectorAll("[data-per]").forEach((b) => (b.onclick = () => { personaTk = personaTk === b.dataset.per ? null : b.dataset.per; filtroTk = "todos"; pintarTickets(); }));
     cont.querySelector("#tkMes").onchange = (e) => { mesTk = e.target.value; pintarTickets(); };
     cont.querySelectorAll("[data-ft]").forEach((b) => (b.onclick = () => { filtroTk = b.dataset.ft; pintarTickets(); }));
     cont.querySelectorAll(".tk").forEach((c) => (c.onclick = () => abrirTicket(+c.dataset.id)));
