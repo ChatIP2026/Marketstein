@@ -1413,7 +1413,7 @@
   const menuPerfil = document.getElementById("menuPerfil");
   function pintarPerfil() {
     document.getElementById("perfilBtn").innerHTML = `<span class="avatar-yo" style="${fondoAv(yo)}" title="${yo}">${letraAv(yo)}</span>`;
-    const op = (n, rol) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="background:${colorDe(n)}">${n[0]}</i><span>${n}<small>${rol}</small></span>${n === yo ? '<span class="ok">✓</span>' : ""}</button>`;
+    const op = (n, rol) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i><span>${n}<small>${rol}</small></span>${n === yo ? '<span class="ok">✓</span>' : ""}</button>`;
     mpLista.innerHTML = `<div class="mp-grupo">Equipo de marketing</div>` + Object.keys(COLORES).map((n) => op(n, n === JEFA ? "Jefa del área" : "Marketing")).join("")
       + `<div class="mp-grupo">Otras áreas</div>` + Object.entries(SOLICITANTES).map(([n, a]) => op(n, a)).join("");
     mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
