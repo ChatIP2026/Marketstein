@@ -1716,7 +1716,7 @@
       ${acciones}
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
-      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Archivos en la carpeta · busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
+      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Carpeta de ${esc(t.solicitante)} · busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} · último ${hace(t.historial.at(-1).at)}</span></summary>
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>· ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
@@ -1773,7 +1773,7 @@
         <label>Texto que debe ir en la pieza<textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
         <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
         <label>Referencias <small>(opcional, un link por línea)</small><textarea name="refs" placeholder="Drive, Pinterest, web…"></textarea></label>
-        <div class="tk-adj"><button type="button" class="cal-btn" id="tkAdjuntar">📎 Adjuntar referencia</button><span id="tkAdjTxt">Abre la carpeta de referencias para subir tus archivos.</span></div>
+        <div class="tk-adj"><button type="button" class="cal-btn" id="tkAdjuntar">📎 Adjuntar referencia</button><span id="tkAdjTxt">Se abrirá tu carpeta personal: <b>Referencias – ${esc(yo)}</b></span></div>
         <label>¿Para cuándo lo necesitas? *<input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
@@ -1799,9 +1799,9 @@
     f.fecha.onchange = revisarFecha;
     let adjunto = false;
     d.querySelector("#tkAdjuntar").onclick = () => {
-      adjunto = true; // aquí se abrirá la carpeta compartida: window.open(CARPETA_REFERENCIAS)
+      adjunto = true; // aquí se abrirá la carpeta de la persona: window.open(perfil.carpeta_url)
       d.querySelector("#tkAdjuntar").classList.add("activa");
-      d.querySelector("#tkAdjTxt").innerHTML = "✓ Carpeta abierta. Sube tus archivos y envía el ticket: Rabbit les pondrá el número del ticket.";
+      d.querySelector("#tkAdjTxt").innerHTML = `✓ Se abrió <b>Referencias – ${esc(yo)}</b>. Sube tus archivos y envía el ticket: Rabbit les pondrá el número del ticket.`;
     };
     f.onsubmit = (e) => {
       e.preventDefault();
