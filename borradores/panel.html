@@ -639,6 +639,54 @@
   .bc-estado { appearance: none; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: var(--texto); border-radius: 999px; padding: 9px 34px 9px 16px; font: inherit; font-size: .9rem; cursor: pointer;
     background-image: linear-gradient(45deg, transparent 50%, #ccc 50%), linear-gradient(135deg, #ccc 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
   .bc-estado option { background: #1f2024; }
+  /* ===== Tickets ===== */
+  .nav-num { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; background: #ff9d42; color: #111; font-size: .68rem; font-weight: 800; }
+  body.rol-solicitante .rejilla, body.rol-solicitante .campana-btn { display: none !important; }
+  .mp-grupo { font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--tenue); padding: 8px 8px 4px; }
+  .mp-op > span:not(.ok) { display: flex; flex-direction: column; line-height: 1.2; } .mp-op small { font-size: .7rem; color: var(--tenue); }
+  .tk-nuevo { height: 40px; padding: 0 18px; font-size: .92rem; }
+  body.con-detalle .tk-nuevo { visibility: hidden; }
+  .tk-equipo { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid var(--borde); }
+  .tk-equipo > span { font-size: .78rem; color: var(--tenue); margin-right: 6px; }
+  .tk-carga { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 12px; background: rgba(255,255,255,.04); }
+  .tk-carga b { display: block; font-size: .84rem; } .tk-carga small { font-size: .72rem; color: var(--tenue); }
+  .tk-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; align-items: start; }
+  .tk { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 14px 22px; border-radius: 18px;
+    background: linear-gradient(180deg, #2a2b2f, #1f2024); border: 1px solid rgba(255,255,255,.08); transition: transform .15s, border-color .15s; }
+  .tk::before { content: ""; position: absolute; left: 9px; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--c); }
+  .tk:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.16); }
+  .tk-top { display: flex; align-items: center; gap: 8px; } .tk-fecha { margin-left: auto; font-size: .8rem; }
+  .tk-pill { font-size: .7rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
+  .tk-prio { font-size: .7rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--c); color: #141620; }
+  .tk-prio.sin { background: none; color: var(--tenue); border: 1px dashed var(--borde); font-weight: 500; }
+  .tk-tit { font-size: 1.02rem; line-height: 1.3; color: #fff; }
+  .tk-meta { display: flex; flex-direction: column; gap: 2px; font-size: .8rem; color: var(--tenue); } .tk-meta b { color: var(--texto); }
+  .tk-pie { display: flex; justify-content: space-between; align-items: center; font-size: .78rem; color: var(--tenue); }
+  .tk-asig { display: inline-flex; align-items: center; gap: 6px; color: var(--texto); } .tk-asig .av { width: 22px; height: 22px; font-size: .62rem; } .tk-asig.vacio { color: var(--tenue); }
+  .tk-det { width: min(520px, 100vw) !important; }
+  .tk-sub { margin: 4px 0 0; color: var(--tenue); font-size: .84rem; }
+  .tk-txt { margin: 0; font-size: .92rem; line-height: 1.5; color: #e8eaf0; white-space: pre-wrap; } .tk-txt a { color: #b3a7ff; }
+  .tk-acc { margin: 22px 0 4px; padding: 16px; border-radius: 14px; background: rgba(141,124,245,.08); border: 1px solid rgba(141,124,245,.3); display: flex; flex-direction: column; gap: 12px; }
+  .tk-acc h4 { margin: 0; font-size: .95rem; }
+  .tk-acc label { display: flex; flex-direction: column; gap: 7px; font-size: .78rem; color: var(--tenue); }
+  .tk-prios { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tk-prios button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: .82rem; color: var(--texto); background: rgba(255,255,255,.05); border: 1px solid var(--borde); }
+  .tk-prios button .av { width: 20px; height: 20px; font-size: .6rem; }
+  .tk-prios button.activa { border-color: var(--c, #8d7cf5); background: color-mix(in srgb, var(--c, #8d7cf5) 22%, transparent); }
+  .tk-acc .nuevo-btn { height: 40px; }
+  .tk-sec { display: flex; gap: 8px; } .tk-sec .cal-btn { height: 34px; padding: 0 12px; } .cal-btn.peligro { color: #ff9da0; border-color: rgba(229,72,77,.4); }
+  .tk-acc textarea, .tk-form textarea, .tk-form input, .tk-form select { width: 100%; box-sizing: border-box; background: rgba(255,255,255,.04); border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: .9rem; color-scheme: dark; }
+  .tk-acc textarea, .tk-form textarea { min-height: 76px; resize: vertical; }
+  .tk-form select option { background: #1f2024; }
+  .tk-pasos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; } .tk-pasos span { color: var(--tenue); }
+  .tk-pasos button { all: unset; cursor: pointer; padding: 7px 12px; border-radius: 10px; font-size: .84rem; background: rgba(255,255,255,.05); border: 1px solid var(--borde); }
+  .tk-pasos button.activa { background: rgba(141,124,245,.25); border-color: #8d7cf5; color: #fff; }
+  .tk-form { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+  .tk-form label { display: flex; flex-direction: column; gap: 6px; font-size: .8rem; color: var(--tenue); font-weight: 500; } .tk-form small { font-weight: 400; opacity: .8; }
+  .tk-form .tk-check { flex-direction: row; align-items: center; gap: 8px; margin-top: -6px; } .tk-form .tk-check input { width: auto; }
+  .tk-aviso { font-size: .82rem; color: #ffd45c; background: rgba(255,212,92,.08); border: 1px solid rgba(255,212,92,.3); border-radius: 10px; padding: 10px 12px; }
+  .tk-nota { font-size: .76rem; color: var(--tenue); margin: 0; }
+  .tk-form .nuevo-btn { height: 44px; font-size: .95rem; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -696,7 +744,7 @@
     </svg>
     </div>
     <nav>
-      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="pronto" data-n="Notas">Notas</a>
+      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="tickets">Tickets <span class="nav-num" id="navTk"></span></a><a data-p="pronto" data-n="Notas">Notas</a>
     </nav>
     <div class="boton-neo campana-btn" title="Notificaciones" onclick="this.querySelector('.insignia')?.remove()">
       <svg viewBox="0 0 24 24" fill="currentColor">
@@ -717,6 +765,7 @@
   </div>
 
   <section class="mis vidrio" id="vistaMis" hidden></section>
+  <section class="mis vidrio" id="vistaTickets" hidden></section>
 
   <div class="rejilla" id="vistaInicio">
 
@@ -1273,15 +1322,20 @@
   armar();
 
   // ===== Persona actual (luego vendrá del inicio de sesión) =====
+  const JEFA = "Hilary";
+  const SOLICITANTES = { Mario: "Ventas", "Lucía": "Finanzas", Rosa: "Recursos Humanos" };
+  const esSolicitante = () => yo in SOLICITANTES;
   let yo = "Ariana";
   try { yo = localStorage.getItem("rabbit-yo") || yo; } catch (e) {}
   const menuPerfil = document.getElementById("menuPerfil");
   function pintarPerfil() {
-    document.getElementById("perfilBtn").innerHTML = `<span class="avatar-yo" style="background:${COLORES[yo]}" title="${yo}">${yo[0]}</span>`;
-    mpLista.innerHTML = Object.keys(COLORES).map((n) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="background:${COLORES[n]}">${n[0]}</i>${n}${n === yo ? '<span class="ok">✓</span>' : ""}</button>`).join("");
+    document.getElementById("perfilBtn").innerHTML = `<span class="avatar-yo" style="background:${colorDe(yo)}" title="${yo}">${yo[0]}</span>`;
+    const op = (n, rol) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="background:${colorDe(n)}">${n[0]}</i><span>${n}<small>${rol}</small></span>${n === yo ? '<span class="ok">✓</span>' : ""}</button>`;
+    mpLista.innerHTML = `<div class="mp-grupo">Equipo de marketing</div>` + Object.keys(COLORES).map((n) => op(n, n === JEFA ? "Jefa del área" : "Marketing")).join("")
+      + `<div class="mp-grupo">Otras áreas</div>` + Object.entries(SOLICITANTES).map(([n, a]) => op(n, a)).join("");
     mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
       yo = b.dataset.n; try { localStorage.setItem("rabbit-yo", yo); } catch (e) {}
-      menuPerfil.hidden = true; pintarPerfil(); if (pagina === "mis") pintarMis();
+      menuPerfil.hidden = true; pintarPerfil(); aplicarRol();
     }));
   }
   document.getElementById("perfilBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = !menuPerfil.hidden; };
@@ -1294,8 +1348,9 @@
     document.querySelectorAll("nav a").forEach((x) => x.classList.toggle("activo", x.dataset.p === p));
     document.getElementById("vistaInicio").hidden = p !== "inicio";
     document.getElementById("vistaMis").hidden = p !== "mis";
-    document.body.classList.toggle("en-mis", p === "mis");
-    if (p === "mis") pintarMis(); else armar();
+    document.getElementById("vistaTickets").hidden = p !== "tickets";
+    document.body.classList.toggle("en-mis", p === "mis" || p === "tickets");
+    if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else armar();
   }
   document.querySelectorAll("nav a").forEach((a) => (a.onclick = () => {
     if (a.dataset.p === "pronto") return avisar(`<b>${a.dataset.n}</b> estará disponible pronto 🐰`);
@@ -1465,6 +1520,213 @@
     }));
   }
   pintarPerfil();
+  // Cada rol ve un panel distinto: otras áreas solo ven Tickets (sus solicitudes)
+  function aplicarRol() {
+    filtroTk = null;
+    const sol = esSolicitante();
+    document.body.classList.toggle("rol-solicitante", sol);
+    document.querySelectorAll("nav a").forEach((a) => (a.hidden = sol && a.dataset.p !== "tickets"));
+    document.querySelector('nav a[data-p="tickets"]').firstChild.textContent = sol ? "Mis solicitudes " : "Tickets ";
+    if (sol) irA("tickets"); else if (pagina === "mis") pintarMis(); else if (pagina === "tickets") pintarTickets();
+    contarTickets();
+  }
+
+  // ===================== TICKETS =====================
+  const TK_ESTADOS = {
+    revision_inicial: { t: "Por revisar", c: "#b3a7ff" }, falta_info: { t: "Falta info", c: "#ff9d42" },
+    en_curso: { t: "En curso", c: "#ffd45c" }, en_revision: { t: "En revisión", c: "#6aa6ff" },
+    entregado: { t: "Entregado", c: "#2ee6b0" }, rechazado: { t: "Rechazado", c: "#ff7b80" },
+  };
+  const TK_PRIO = { urgente: { t: "Urgente", c: "#ff6161" }, alta: { t: "Alta", c: "#ff9d42" }, media: { t: "Media", c: "#b39af0" }, baja: { t: "Baja", c: "#97a3b3" } };
+  const TIPOS = { Post: ["Vertical (feed)", "Cuadrado", "Historia o reel"], Banner: ["Horizontal (web)", "Vertical", "Impreso"], "Presentación": ["Pantalla 16:9"],
+    Flyer: ["A4 / impreso", "Digital vertical"], Mailing: ["Correo (600 px)"], Video: ["Horizontal", "Vertical (reel)", "Cuadrado"], Informe: ["Documento A4"], Otro: [] };
+  const DIAS_MIN = { Post: 2, Banner: 3, "Presentación": 3, Flyer: 3, Mailing: 3, Video: 5, Informe: 4, Otro: 3 };
+  const enD = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+  const haceH = (h) => new Date(Date.now() - h * 36e5).toISOString();
+  let tickets = [
+    { id: 1, titulo: "Post de LinkedIn para webinar de noviembre", solicitante: "Lucía", area: "Finanzas", tipo: "Post", formato: "Vertical (feed)", detalle: "Anunciar el webinar de educación financiera del 20 de noviembre. Queremos inscripciones.", destino: "Seguidores de LinkedIn", texto: "Webinar: Finanzas sin miedo · 20 nov · 7 p. m. · Inscríbete gratis", refs: ["https://pinterest.com/ejemplo"], fecha: enD(6), estado: "revision_inicial", creado: haceH(3), historial: [{ at: haceH(3), quien: "Lucía", txt: "Envió la solicitud" }] },
+    { id: 2, titulo: "Flyer para charla de bienestar", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Flyer", formato: "Digital vertical", detalle: "Charla de pausas activas para todo el personal.", destino: "Colaboradores", texto: "", sinTexto: true, refs: [], fecha: enD(2), estado: "revision_inicial", creado: haceH(1), historial: [{ at: haceH(1), quien: "Rosa", txt: "Envió la solicitud" }] },
+    { id: 3, titulo: "Presentación comercial Q4", solicitante: "Mario", area: "Ventas", tipo: "Presentación", formato: "Pantalla 16:9", detalle: "Actualizar la presentación con los nuevos precios.", destino: "Clientes", texto: "", refs: [], fecha: enD(8), estado: "falta_info", prioridad: "media", creado: haceH(26), historial: [{ at: haceH(26), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(20), quien: "Hilary", txt: "Pidió más información: ¿Nos pasas la lista de precios actualizada?" }] },
+    { id: 4, titulo: "Banner para la feria de Ventas", solicitante: "Mario", area: "Ventas", tipo: "Banner", formato: "Impreso", detalle: "Banner roll-up para el stand de la feria.", destino: "Visitantes de la feria", texto: "iPartner · Tu socio financiero", refs: [], fecha: enD(4), estado: "en_curso", prioridad: "alta", asignado: "Ariana", proyecto: 900, creado: haceH(50), historial: [{ at: haceH(50), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(44), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }] },
+    { id: 5, titulo: "Mailing de bienvenida a clientes nuevos", solicitante: "Lucía", area: "Finanzas", tipo: "Mailing", formato: "Correo (600 px)", detalle: "Correo de bienvenida con los pasos para activar la cuenta.", destino: "Clientes nuevos", texto: "Bienvenido a iPartner", refs: [], fecha: enD(1), estado: "en_revision", prioridad: "urgente", asignado: "Pierina", creado: haceH(72), historial: [{ at: haceH(72), quien: "Lucía", txt: "Envió la solicitud" }, { at: haceH(70), quien: "Hilary", txt: "Aceptó el ticket · prioridad Urgente · asignado a Pierina" }, { at: haceH(4), quien: "Pierina", txt: "Lo pasó a revisión" }] },
+    { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket · asignado a Carlos" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado" }] },
+  ];
+  let filtroTk = null, tkAbierto = null;
+  const tkVisibles = () => esSolicitante() ? tickets.filter((t) => t.solicitante === yo)
+    : yo === JEFA ? tickets : tickets.filter((t) => t.asignado === yo);
+  function contarTickets() {
+    const n = yo === JEFA ? tickets.filter((t) => t.estado === "revision_inicial").length
+      : esSolicitante() ? tickets.filter((t) => t.solicitante === yo && t.estado === "falta_info").length
+      : tickets.filter((t) => t.asignado === yo && t.estado === "en_curso").length;
+    const el = document.getElementById("navTk"); el.textContent = n || ""; el.hidden = !n;
+  }
+  const pillTk = (e) => `<span class="tk-pill" style="--c:${TK_ESTADOS[e].c}">${TK_ESTADOS[e].t}</span>`;
+  const fechaTk = (t) => {
+    if (t.estado === "entregado") return `<span class="bc-f listo">✓ Entregado</span>`;
+    const d = diasHasta(t.fecha), txt = d < 0 ? `Atrasado ${-d} d` : d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(t.fecha);
+    return `<span class="bc-f ${d <= 2 ? "urgente" : d <= 7 ? "proxima" : "lejos"}">${d <= 2 ? "⏰ " : ""}${txt}</span>`;
+  };
+  function pintarTickets() {
+    const cont = document.getElementById("vistaTickets");
+    const sol = esSolicitante(), jefa = yo === JEFA;
+    const vis = tkVisibles();
+    const FILTROS = sol ? [["activos", "En proceso"], ["falta_info", "Te piden info"], ["entregado", "Entregados"], ["todos", "Todas"]]
+      : jefa ? [["revision_inicial", "Por revisar"], ["activos", "En proceso"], ["en_revision", "En revisión"], ["falta_info", "Falta info"], ["entregado", "Entregados"], ["todos", "Todos"]]
+      : [["activos", "Por hacer"], ["en_revision", "En revisión"], ["entregado", "Entregados"], ["todos", "Todos"]];
+    if (!FILTROS.some((f) => f[0] === filtroTk)) filtroTk = FILTROS[0][0];
+    const pasa = (t, f) => f === "todos" ? true : f === "activos" ? ["en_curso", "en_revision", "revision_inicial"].includes(t.estado) && !(jefa && t.estado === "revision_inicial") || (sol && t.estado === "revision_inicial" && f === "activos") : t.estado === f;
+    const lista = vis.filter((t) => pasa(t, filtroTk)).sort((a, b) => (TK_PRIO[a.prioridad] ? Object.keys(TK_PRIO).indexOf(a.prioridad) : 9) - (TK_PRIO[b.prioridad] ? Object.keys(TK_PRIO).indexOf(b.prioridad) : 9) || a.fecha.localeCompare(b.fecha));
+    const titulo = sol ? `Hola, ${yo} 👋` : jefa ? "Bandeja de tickets" : "Mis tickets";
+    const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
+      : jefa ? "Revisa las solicitudes, decide la prioridad y asígnalas al equipo." : "Solicitudes de otras áreas que Hilary te asignó.";
+    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}</div>`;
+    if (jefa) {
+      const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
+        const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
+        return `<div class="tk-carga"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} · ${tareas} tareas pendientes</small></div></div>`; }).join("");
+      html += `<div class="tk-equipo"><span>Carga del equipo</span>${carga}</div>`;
+    }
+    html += `<div class="ent-filtros">${FILTROS.map(([k, t]) => `<button data-ft="${k}" class="${filtroTk === k ? "activa" : ""}">${t} <span>${vis.filter((x) => pasa(x, k)).length}</span></button>`).join("")}</div>`;
+    html += lista.length ? `<div class="tk-lista">${lista.map(tarjetaTk).join("")}</div>`
+      : `<div class="mis-vacio"><b>${sol ? "No tienes solicitudes aquí" : "Nada por aquí"}</b>${sol ? "Usa “Nueva solicitud” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}</div>`;
+    cont.innerHTML = html;
+    cont.querySelectorAll("[data-ft]").forEach((b) => (b.onclick = () => { filtroTk = b.dataset.ft; pintarTickets(); }));
+    cont.querySelectorAll(".tk").forEach((c) => (c.onclick = () => abrirTicket(+c.dataset.id)));
+    cont.querySelector("#tkNuevo")?.addEventListener("click", abrirFormTicket);
+  }
+  function tarjetaTk(t) {
+    const pr = TK_PRIO[t.prioridad];
+    return `<button class="tk" data-id="${t.id}" style="--c:${pr ? pr.c : "rgba(255,255,255,.15)"}">
+      <div class="tk-top">${pillTk(t.estado)}${pr ? `<span class="tk-prio">${pr.t}</span>` : `<span class="tk-prio sin">Sin prioridad</span>`}<span class="tk-fecha">${fechaTk(t)}</span></div>
+      <b class="tk-tit">${esc(t.titulo)}</b>
+      <div class="tk-meta"><span>${esc(t.tipo)} · ${esc(t.formato || "—")}</span>${esSolicitante() ? "" : `<span>De <b>${esc(t.solicitante)}</b> · ${esc(t.area)}</span>`}</div>
+      <div class="tk-pie">${t.asignado ? `<span class="tk-asig"><i class="av" style="${fondoAv(t.asignado)}">${letraAv(t.asignado)}</i>${t.asignado}</span>` : `<span class="tk-asig vacio">Sin asignar</span>`}<span class="tk-id">#${String(t.id).padStart(3, "0")}</span></div>
+    </button>`;
+  }
+  function registrar(t, txt) { t.historial.push({ at: new Date().toISOString(), quien: yo, txt }); }
+  function abrirTicket(id) {
+    tkAbierto = id;
+    const t = tickets.find((x) => x.id === id), d = document.getElementById("detalle");
+    const sol = esSolicitante(), jefa = yo === JEFA, mio = t.asignado === yo;
+    d.className = "detalle tk-det";
+    let acciones = "";
+    if (jefa && ["revision_inicial", "falta_info"].includes(t.estado)) acciones = `
+      <div class="tk-acc"><h4>Aceptar ticket</h4>
+        <label>Prioridad<div class="tk-prios">${Object.entries(TK_PRIO).map(([k, v]) => `<button type="button" data-p="${k}" style="--c:${v.c}" class="${(t.prioridad || "media") === k ? "activa" : ""}">${v.t}</button>`).join("")}</div></label>
+        <label>Asignar a<div class="tk-prios">${Object.keys(COLORES).map((n) => `<button type="button" data-a="${n}" class="${t.asignado === n ? "activa" : ""}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></label>
+        <button class="nuevo-btn" id="tkAceptar">Aceptar y asignar</button>
+        <div class="tk-sec"><button class="cal-btn" id="tkInfo">Pedir más información</button><button class="cal-btn peligro" id="tkRechazar">Rechazar</button></div>
+        <textarea id="tkMotivo" placeholder="Escribe la pregunta o el motivo…" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button>
+      </div>`;
+    else if ((mio || jefa) && ["en_curso", "en_revision"].includes(t.estado)) acciones = `
+      <div class="tk-acc"><h4>Avance</h4><div class="tk-pasos">${["en_curso", "en_revision", "entregado"].map((e) => `<button type="button" data-e="${e}" class="${t.estado === e ? "activa" : ""}">${TK_ESTADOS[e].t}</button>`).join("<span>→</span>")}</div></div>`;
+    else if (sol && t.estado === "falta_info") acciones = `
+      <div class="tk-acc"><h4>Te piden más información</h4><textarea id="tkResp" placeholder="Escribe tu respuesta…"></textarea><button class="nuevo-btn" id="tkResponder">Responder y reenviar</button></div>`;
+    d.innerHTML = `
+      <div class="det-cab"><div>${pillTk(t.estado)}<h2 style="margin-top:10px">${esc(t.titulo)}</h2><p class="tk-sub">#${String(t.id).padStart(3, "0")} · ${esc(t.solicitante)} · ${esc(t.area)}</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      <dl class="det-datos">
+        <dt>Tipo</dt><dd>${esc(t.tipo)} · ${esc(t.formato || "—")}</dd>
+        <dt>Entrega</dt><dd>${fmt(t.fecha)} · ${fechaTk(t)}</dd>
+        <dt>Prioridad</dt><dd>${TK_PRIO[t.prioridad] ? `<span class="tk-prio" style="--c:${TK_PRIO[t.prioridad].c}">${TK_PRIO[t.prioridad].t}</span>` : "La define Hilary"}</dd>
+        <dt>Asignado</dt><dd>${t.asignado || "Aún nadie"}</dd>
+      </dl>
+      <h3 class="det-sub">Detalle</h3><p class="tk-txt">${esc(t.detalle)}</p>
+      ${t.destino ? `<h3 class="det-sub">Dirigido a</h3><p class="tk-txt">${esc(t.destino)}</p>` : ""}
+      <h3 class="det-sub">Texto de la pieza</h3><p class="tk-txt">${t.texto ? esc(t.texto) : "<i>Aún no tiene el texto final</i>"}</p>
+      ${t.refs.length ? `<h3 class="det-sub">Referencias</h3><p class="tk-txt">${t.refs.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">Referencia ${i + 1}</a>`).join(" · ")}</p>` : ""}
+      ${acciones}
+      <h3 class="det-sub">Historial</h3>
+      <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>· ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div>
+      <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
+    d.querySelector(".det-cerrar").onclick = cerrarProyecto;
+    let prio = t.prioridad || "media", asig = t.asignado || null, modo = null;
+    d.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => { prio = b.dataset.p; d.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("activa", x === b)); }));
+    d.querySelectorAll("[data-a]").forEach((b) => (b.onclick = () => { asig = b.dataset.a; d.querySelectorAll("[data-a]").forEach((x) => x.classList.toggle("activa", x === b)); }));
+    d.querySelector("#tkAceptar")?.addEventListener("click", () => {
+      if (!asig) return avisar("Elige a quién asignar el ticket");
+      t.prioridad = prio; t.asignado = asig; t.estado = "en_curso";
+      registrar(t, `Aceptó el ticket · prioridad ${TK_PRIO[prio].t} · asignado a ${asig}`);
+      // Al aceptarlo aparece en Mi entorno de la persona asignada
+      const pid = Date.now();
+      mapaP.set(pid, { id: pid, nombre: t.titulo, estado: "en_curso", prioridad: prio === "urgente" ? "alta" : prio, encargados: [asig], fecha_limite: t.fecha, created_at: new Date().toISOString(), creado_por: JEFA, solicitado_por: { nombre: t.solicitante, area: t.area }, ticket: t.id });
+      mapaT.set(pid + 1, { id: pid + 1, proyecto_id: pid, texto: `Entregar: ${t.titulo}`, hecha: false, encargado: asig, created_at: new Date().toISOString() });
+      t.proyecto = pid; despues(`✅ Ticket aceptado y asignado a <b>${asig}</b>`);
+    });
+    const motivo = (m) => { modo = m; d.querySelector("#tkMotivo").hidden = false; d.querySelector("#tkMotivoOk").hidden = false; d.querySelector("#tkMotivo").placeholder = m === "info" ? "¿Qué información falta?" : "¿Por qué se rechaza?"; d.querySelector("#tkMotivo").focus(); };
+    d.querySelector("#tkInfo")?.addEventListener("click", () => motivo("info"));
+    d.querySelector("#tkRechazar")?.addEventListener("click", () => motivo("rechazo"));
+    d.querySelector("#tkMotivoOk")?.addEventListener("click", () => {
+      const v = d.querySelector("#tkMotivo").value.trim(); if (!v) return;
+      if (modo === "info") { t.estado = "falta_info"; registrar(t, "Pidió más información: " + v); despues(`Se pidió más información a <b>${esc(t.solicitante)}</b>`); }
+      else { t.estado = "rechazado"; registrar(t, "Rechazó el ticket: " + v); despues("Ticket rechazado"); }
+    });
+    d.querySelectorAll("[data-e]").forEach((b) => (b.onclick = () => {
+      t.estado = b.dataset.e; registrar(t, t.estado === "entregado" ? "Lo marcó como entregado" : `Lo pasó a ${TK_ESTADOS[t.estado].t.toLowerCase()}`);
+      if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = t.estado === "entregado" ? "listo" : "en_curso"; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = t.estado === "entregado")); }
+      despues(`Ticket en <b>${TK_ESTADOS[t.estado].t}</b>`);
+    }));
+    d.querySelector("#tkResponder")?.addEventListener("click", () => {
+      const v = d.querySelector("#tkResp").value.trim(); if (!v) return;
+      t.estado = "revision_inicial"; registrar(t, "Respondió: " + v); despues("Respuesta enviada a marketing");
+    });
+    document.body.classList.add("con-detalle");
+  }
+  function despues(msg) { armar(); pintarTickets(); contarTickets(); abrirTicket(tkAbierto); avisar(msg); }
+
+  // ===== Formulario de nueva solicitud (solo otras áreas) =====
+  function abrirFormTicket() {
+    const d = document.getElementById("detalle");
+    d.className = "detalle tk-det";
+    d.innerHTML = `
+      <div class="det-cab"><div><h2>Nueva solicitud</h2><p class="tk-sub">${yo} · ${SOLICITANTES[yo]}</p></div><button class="det-cerrar" type="button">✕</button></div>
+      <form class="tk-form" novalidate>
+        <label>Nombre del pedido *<input name="titulo" placeholder="Ej.: Post de LinkedIn para el webinar" /></label>
+        <div class="mn-doble"><label>Tipo de pieza *<select name="tipo"><option value="">Selecciona…</option>${Object.keys(TIPOS).map((k) => `<option>${k}</option>`).join("")}</select></label>
+          <label>Formato<select name="formato" disabled><option value="">Elige el tipo primero</option></select></label></div>
+        <label class="tk-otro" hidden>¿Qué tipo de pieza es?<input name="otro" placeholder="Ej.: Firma de correo, invitación…" /></label>
+        <label>Detalla el pedido *<textarea name="detalle" placeholder="De qué se trata, el objetivo y el mensaje principal."></textarea></label>
+        <label>¿A quién va dirigido? <small>(opcional)</small><input name="destino" placeholder="Ej.: clientes, seguidores de LinkedIn" /></label>
+        <label>Texto que debe ir en la pieza<textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
+        <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
+        <label>Referencias <small>(opcional, un link por línea)</small><textarea name="refs" placeholder="Drive, Pinterest, web…"></textarea></label>
+        <label>¿Para cuándo lo necesitas? *<input type="date" name="fecha" /></label>
+        <div class="tk-aviso" hidden></div>
+        <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
+        <div class="mensaje tk-err"></div>
+        <button class="nuevo-btn">Enviar solicitud</button>
+      </form>`;
+    d.querySelector(".det-cerrar").onclick = cerrarProyecto;
+    const f = d.querySelector("form"), aviso = d.querySelector(".tk-aviso");
+    f.fecha.min = HOY;
+    f.tipo.onchange = () => {
+      const ops = TIPOS[f.tipo.value] || [];
+      f.formato.innerHTML = ops.length ? ops.map((o) => `<option>${o}</option>`).join("") : `<option value="">No aplica</option>`;
+      f.formato.disabled = !ops.length; d.querySelector(".tk-otro").hidden = f.tipo.value !== "Otro"; revisarFecha();
+    };
+    f.sinTexto.onchange = () => { f.texto.disabled = f.sinTexto.checked; };
+    const revisarFecha = () => {
+      const min = DIAS_MIN[f.tipo.value];
+      if (!f.fecha.value || !min) return (aviso.hidden = true);
+      const dd = diasHasta(f.fecha.value);
+      aviso.hidden = dd >= min;
+      aviso.textContent = `⏰ Un ${f.tipo.value.toLowerCase()} suele necesitar al menos ${min} días. Puedes enviarlo igual; Hilary verá si es posible.`;
+    };
+    f.fecha.onchange = revisarFecha;
+    f.onsubmit = (e) => {
+      e.preventDefault();
+      const err = d.querySelector(".tk-err");
+      if (!f.titulo.value.trim() || !f.tipo.value || !f.detalle.value.trim() || !f.fecha.value) { err.className = "mensaje error tk-err"; err.textContent = "Completa los campos con *."; return; }
+      const id = Math.max(...tickets.map((t) => t.id)) + 1;
+      tickets.push({ id, titulo: f.titulo.value.trim(), solicitante: yo, area: SOLICITANTES[yo], tipo: f.tipo.value === "Otro" ? (f.otro.value.trim() || "Otro") : f.tipo.value,
+        formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
+        refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
+        historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió la solicitud" }] });
+      cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets();
+      avisar(`📨 Solicitud <b>#${String(id).padStart(3, "0")}</b> enviada a marketing`);
+    };
+    document.body.classList.add("con-detalle");
+  }
+  aplicarRol();
   const _armar = armar;
   armar = function () { _armar(); if (pagina === "mis") pintarMis(); };
 </script>
