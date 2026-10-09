@@ -903,7 +903,11 @@
     // Ticket aceptado: Mario (Ventas) pidió un proyecto y ahora lo lleva Ariana
     mapaP.set(900, { id: 900, nombre: "Banner para la feria de Ventas", estado: "en_curso", prioridad: "alta", encargados: ["Ariana"], fecha_limite: enDias(4),
       created_at: new Date(Date.now() - 2 * 864e5).toISOString(), creado_por: "Ariana", solicitado_por: { nombre: "Mario", area: "Ventas" } });
+    // Simulación: Romano (Comercial) pidió un diseño, Hilary se lo asignó a Ariana
+    mapaP.set(901, { id: 901, nombre: "Brochure digital de servicios", estado: "sin_empezar", prioridad: "alta", encargados: ["Ariana"], fecha_limite: enDias(7),
+      created_at: new Date(Date.now() - 36e5).toISOString(), creado_por: "Hilary", solicitado_por: { nombre: "Romano", area: "Comercial" }, ticket: 7 });
     const TAREAS_EJEMPLO = {
+      "Brochure digital de servicios": ["Entregar: Brochure digital de servicios"],
       "PODCAST": ["Definir temas de la temporada", "Invitar a los primeros 3 invitados", "Grabar episodio piloto", "Editar audio del piloto", "Diseñar portada del podcast", "Publicar en Spotify"],
       "MAILING": ["Limpiar base de contactos", "Redactar correo de bienvenida", "Diseñar plantilla", "Configurar envío automático", "Prueba A/B del asunto", "Revisar métricas del primer envío"],
       "programa de puntos": ["Definir reglas de acumulación", "Elegir premios", "Calcular costos", "Diseñar tarjeta de socio", "Crear landing del programa", "Capacitar al equipo de ventas"],
@@ -1356,7 +1360,7 @@
 
   // ===== Persona actual (luego vendrá del inicio de sesión) =====
   const JEFA = "Hilary";
-  const SOLICITANTES = { Mario: "Ventas", "Lucía": "Finanzas", Rosa: "Recursos Humanos" };
+  const SOLICITANTES = { Romano: "Comercial", Mario: "Ventas", "Lucía": "Finanzas", Rosa: "Recursos Humanos" };
   const esSolicitante = () => yo in SOLICITANTES;
   let yo = "Ariana";
   try { yo = localStorage.getItem("rabbit-yo") || yo; } catch (e) {}
@@ -1577,6 +1581,7 @@
   const enD = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
   const haceH = (h) => new Date(Date.now() - h * 36e5).toISOString();
   let tickets = [
+    { id: 7, titulo: "Brochure digital de servicios", solicitante: "Romano", area: "Comercial", tipo: "Flyer", formato: "Digital vertical", detalle: "Diseñar un brochure digital con los 4 servicios principales para enviar por WhatsApp y correo a clientes potenciales. Debe incluir logo, beneficios de cada servicio y datos de contacto del equipo comercial.", destino: "Clientes potenciales (pymes)", texto: "iPartner · Soluciones financieras para tu empresa\nCréditos · Leasing · Factoring · Asesoría\nEscríbenos: comercial@ipartner.pe", refs: ["https://pinterest.com/ejemplo-brochure"], fecha: enD(7), estado: "en_revision", prioridad: "alta", asignado: "Ariana", proyecto: 901, creado: haceH(3), historial: [{ at: haceH(3), quien: "Romano", txt: "Envió la solicitud" }, { at: haceH(1), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }] },
     { id: 1, titulo: "Post de LinkedIn para webinar de noviembre", solicitante: "Lucía", area: "Finanzas", tipo: "Post", formato: "Vertical (feed)", detalle: "Anunciar el webinar de educación financiera del 20 de noviembre. Queremos inscripciones.", destino: "Seguidores de LinkedIn", texto: "Webinar: Finanzas sin miedo · 20 nov · 7 p. m. · Inscríbete gratis", refs: ["https://pinterest.com/ejemplo"], fecha: enD(6), estado: "revision_inicial", creado: haceH(3), historial: [{ at: haceH(3), quien: "Lucía", txt: "Envió la solicitud" }] },
     { id: 2, titulo: "Flyer para charla de bienestar", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Flyer", formato: "Digital vertical", detalle: "Charla de pausas activas para todo el personal.", destino: "Colaboradores", texto: "", sinTexto: true, refs: [], fecha: enD(2), estado: "revision_inicial", creado: haceH(1), historial: [{ at: haceH(1), quien: "Rosa", txt: "Envió la solicitud" }] },
     { id: 3, titulo: "Presentación comercial Q4", solicitante: "Mario", area: "Ventas", tipo: "Presentación", formato: "Pantalla 16:9", detalle: "Actualizar la presentación con los nuevos precios.", destino: "Clientes", texto: "", refs: [], fecha: enD(8), estado: "falta_info", prioridad: "media", creado: haceH(26), historial: [{ at: haceH(26), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(20), quien: "Hilary", txt: "Pidió más información: ¿Nos pasas la lista de precios actualizada?" }] },
