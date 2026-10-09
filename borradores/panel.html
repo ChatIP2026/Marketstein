@@ -727,6 +727,9 @@
   .hechas .hecha .t-texto, .hechas .hecha .mt-texto { text-decoration: line-through; opacity: .55; }
   .hechas .caja.ok, .hechas .mt-check.ok { background: rgba(46,230,176,.18); border-color: #2ee6b0; color: #2ee6b0; display: grid; place-items: center; font-size: .7rem; }
   .hechas .hecha:hover .t-texto, .hechas .hecha:hover .mt-texto { opacity: .9; }
+  .tk-adj { display: flex; align-items: center; gap: 10px; margin-top: -4px; } .tk-adj span { font-size: .78rem; color: var(--tenue); }
+  .tk-adj .cal-btn { height: 34px; padding: 0 12px; white-space: nowrap; } .tk-adj .cal-btn.activa { border-color: #2ee6b0; color: #2ee6b0; }
+  .tk-chip.adj b { color: #fff; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -1604,7 +1607,7 @@
   const enD = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
   const haceH = (h) => new Date(Date.now() - h * 36e5).toISOString();
   let tickets = [
-    { id: 7, titulo: "Brochure digital de servicios", solicitante: "Romano", area: "Comercial", tipo: "Flyer", formato: "Digital vertical", detalle: "Diseñar un brochure digital con los 4 servicios principales para enviar por WhatsApp y correo a clientes potenciales. Debe incluir logo, beneficios de cada servicio y datos de contacto del equipo comercial.", destino: "Clientes potenciales (pymes)", texto: "iPartner · Soluciones financieras para tu empresa\nCréditos · Leasing · Factoring · Asesoría\nEscríbenos: comercial@ipartner.pe", refs: ["https://pinterest.com/ejemplo-brochure"], fecha: enD(7), estado: "en_revision", prioridad: "alta", asignado: "Ariana", proyecto: 901, creado: haceH(3), historial: [{ at: haceH(3), quien: "Romano", txt: "Envió la solicitud" }, { at: haceH(1), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }] },
+    { id: 7, titulo: "Brochure digital de servicios", solicitante: "Romano", area: "Comercial", tipo: "Flyer", formato: "Digital vertical", detalle: "Diseñar un brochure digital con los 4 servicios principales para enviar por WhatsApp y correo a clientes potenciales. Debe incluir logo, beneficios de cada servicio y datos de contacto del equipo comercial.", destino: "Clientes potenciales (pymes)", texto: "iPartner · Soluciones financieras para tu empresa\nCréditos · Leasing · Factoring · Asesoría\nEscríbenos: comercial@ipartner.pe", refs: ["https://pinterest.com/ejemplo-brochure"], adjuntos: true, fecha: enD(7), estado: "en_revision", prioridad: "alta", asignado: "Ariana", proyecto: 901, creado: haceH(3), historial: [{ at: haceH(3), quien: "Romano", txt: "Envió la solicitud" }, { at: haceH(1), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }] },
     { id: 1, titulo: "Post de LinkedIn para webinar de noviembre", solicitante: "Lucía", area: "Finanzas", tipo: "Post", formato: "Vertical (feed)", detalle: "Anunciar el webinar de educación financiera del 20 de noviembre. Queremos inscripciones.", destino: "Seguidores de LinkedIn", texto: "Webinar: Finanzas sin miedo · 20 nov · 7 p. m. · Inscríbete gratis", refs: ["https://pinterest.com/ejemplo"], fecha: enD(6), estado: "revision_inicial", creado: haceH(3), historial: [{ at: haceH(3), quien: "Lucía", txt: "Envió la solicitud" }] },
     { id: 2, titulo: "Flyer para charla de bienestar", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Flyer", formato: "Digital vertical", detalle: "Charla de pausas activas para todo el personal.", destino: "Colaboradores", texto: "", sinTexto: true, refs: [], fecha: enD(2), estado: "revision_inicial", creado: haceH(1), historial: [{ at: haceH(1), quien: "Rosa", txt: "Envió la solicitud" }] },
     { id: 3, titulo: "Presentación comercial Q4", solicitante: "Mario", area: "Ventas", tipo: "Presentación", formato: "Pantalla 16:9", detalle: "Actualizar la presentación con los nuevos precios.", destino: "Clientes", texto: "", refs: [], fecha: enD(8), estado: "falta_info", prioridad: "media", creado: haceH(26), historial: [{ at: haceH(26), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(20), quien: "Hilary", txt: "Pidió más información: ¿Nos pasas la lista de precios actualizada?" }] },
@@ -1713,7 +1716,7 @@
       ${acciones}
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
-      ${t.refs.length ? bloque("Referencias", `<div class="tkd-chips">${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
+      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Archivos en la carpeta · busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} · último ${hace(t.historial.at(-1).at)}</span></summary>
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>· ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
@@ -1770,6 +1773,7 @@
         <label>Texto que debe ir en la pieza<textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
         <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
         <label>Referencias <small>(opcional, un link por línea)</small><textarea name="refs" placeholder="Drive, Pinterest, web…"></textarea></label>
+        <div class="tk-adj"><button type="button" class="cal-btn" id="tkAdjuntar">📎 Adjuntar referencia</button><span id="tkAdjTxt">Abre la carpeta de referencias para subir tus archivos.</span></div>
         <label>¿Para cuándo lo necesitas? *<input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
@@ -1793,6 +1797,12 @@
       aviso.textContent = `⏰ Un ${f.tipo.value.toLowerCase()} suele necesitar al menos ${min} días. Puedes enviarlo igual; Hilary verá si es posible.`;
     };
     f.fecha.onchange = revisarFecha;
+    let adjunto = false;
+    d.querySelector("#tkAdjuntar").onclick = () => {
+      adjunto = true; // aquí se abrirá la carpeta compartida: window.open(CARPETA_REFERENCIAS)
+      d.querySelector("#tkAdjuntar").classList.add("activa");
+      d.querySelector("#tkAdjTxt").innerHTML = "✓ Carpeta abierta. Sube tus archivos y envía el ticket: Rabbit les pondrá el número del ticket.";
+    };
     f.onsubmit = (e) => {
       e.preventDefault();
       const err = d.querySelector(".tk-err");
@@ -1800,7 +1810,7 @@
       const id = Math.max(...tickets.map((t) => t.id)) + 1;
       tickets.push({ id, titulo: f.titulo.value.trim(), solicitante: yo, area: SOLICITANTES[yo], tipo: f.tipo.value === "Otro" ? (f.otro.value.trim() || "Otro") : f.tipo.value,
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
-        refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
+        refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), adjuntos: adjunto, fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
         historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió la solicitud" }] });
       cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets();
       avisar(`📨 Solicitud <b>#${String(id).padStart(3, "0")}</b> enviada a marketing`);
