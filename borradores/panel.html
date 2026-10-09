@@ -754,6 +754,13 @@
   .cp-cred small { display: block; font-size: .72rem; color: #7a8094; } .cp-cred b { font-size: .95rem; } .cp-cred .mono { font-family: ui-monospace, Menlo, monospace; letter-spacing: .06em; }
   .cp-btn { display: inline-block; background: #111318; color: #fff; text-decoration: none; font-weight: 600; padding: 12px 26px; border-radius: 12px; margin-bottom: 16px; }
   .correo-prev .cp-chico { font-size: .76rem; color: #7a8094; margin: 0; }
+  .tk-prio-kpis { display: flex; gap: 30px; align-items: center; }
+  .tpk { display: flex; align-items: center; gap: 10px; }
+  .tpk b { font-size: 2.4rem; font-weight: 600; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+  .tpk > div { display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
+  .tpk-pill { font-size: .66rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--c); color: #141620; }
+  .tpk small { font-size: .74rem; color: var(--tenue); }
+  @media (max-width: 900px) { .tk-prio-kpis { gap: 16px; flex-wrap: wrap; } .tpk b { font-size: 1.8rem; } }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -1669,7 +1676,7 @@
     const titulo = sol ? `Hola, ${yo} 👋` : jefa ? "Bandeja de tickets" : "Mis tickets";
     const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
       : jefa ? "Revisa las solicitudes, decide la prioridad y asígnalas al equipo." : "Solicitudes de otras áreas que Hilary te asignó.";
-    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}</div>`;
+    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado"].includes(t.estado)).length; return `<div class="tpk" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
         const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
