@@ -1663,13 +1663,10 @@
         <div class="tk-sec"><button class="cal-btn" id="tkInfo">Pedir más información</button><button class="cal-btn peligro" id="tkRechazar">Rechazar</button></div>
         <textarea id="tkMotivo" placeholder="Escribe la pregunta o el motivo…" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button>
       </div>`;
-    else if (mio && t.estado === "en_revision") acciones = `
-      <div class="tk-acc"><h4>Revisa la información</h4><p class="tk-ayuda">Si todo está claro, empieza. Si falta algo, pídeselo a ${esc(t.solicitante)}.</p>
-        <button class="nuevo-btn" data-e="en_curso">Todo claro, empezar</button>
-        <div class="tk-sec"><button class="cal-btn" id="tkInfo">Pedir más información</button></div>
-        <textarea id="tkMotivo" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button></div>`;
-    else if (mio && t.estado === "en_curso") acciones = `
-      <div class="tk-acc"><h4>¿Ya lo terminaste?</h4><button class="nuevo-btn" data-e="entregado">Marcar como entregado</button></div>`;
+    else if (mio && ["en_revision", "en_curso", "entregado"].includes(t.estado)) acciones = `
+      <div class="tk-acc"><h4>Situación del ticket</h4><p class="tk-ayuda">${{ en_revision: "Revisa la información. Si todo está claro, pásalo a En curso; si falta algo, pídeselo a " + esc(t.solicitante) + ".", en_curso: "Cuando lo termines, márcalo como Entregado.", entregado: "Ticket entregado. Si necesitas corregir algo, puedes regresarlo." }[t.estado]}</p>
+        <div class="tk-pasos">${["en_revision", "en_curso", "entregado"].map((e) => `<button type="button" data-e="${e}" class="${t.estado === e ? "activa" : ""}">${TK_ESTADOS[e].t}</button>`).join("<span>→</span>")}</div>
+        ${t.estado === "en_revision" ? `<div class="tk-sec"><button class="cal-btn" id="tkInfo">Pedir más información</button></div><textarea id="tkMotivo" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button>` : ""}</div>`;
     else if (jefa && ["en_revision", "en_curso", "falta_info"].includes(t.estado)) acciones = `
       <div class="tk-acc"><h4>Seguimiento</h4><p class="tk-ayuda">${t.estado === "en_revision" ? `${t.asignado} está revisando la información del ticket.` : t.estado === "en_curso" ? `✓ ${t.asignado} revisó la información y ya está trabajando en el ticket.` : `Se pidió más información a ${esc(t.solicitante)}.`}</p></div>`;
     else if (sol && t.estado === "falta_info") acciones = `
@@ -1715,8 +1712,9 @@
       else { t.estado = "rechazado"; registrar(t, "Rechazó el ticket: " + v); despues("Ticket rechazado"); }
     });
     d.querySelectorAll("[data-e]").forEach((b) => (b.onclick = () => {
-      t.estado = b.dataset.e; registrar(t, t.estado === "entregado" ? "Lo marcó como entregado" : "Revisó la información y empezó a trabajarlo");
-      if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = t.estado === "entregado" ? "listo" : "en_curso"; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = t.estado === "entregado")); }
+      if (b.dataset.e === t.estado) return;
+      t.estado = b.dataset.e; registrar(t, { entregado: "Lo marcó como entregado", en_curso: "Revisó la información y lo pasó a En curso", en_revision: "Lo regresó a En revisión" }[t.estado]);
+      if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = { entregado: "listo", en_curso: "en_curso", en_revision: "sin_empezar" }[t.estado]; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = t.estado === "entregado")); }
       despues(`Ticket en <b>${TK_ESTADOS[t.estado].t}</b>`);
     }));
     d.querySelector("#tkResponder")?.addEventListener("click", () => {
