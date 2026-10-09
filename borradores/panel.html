@@ -1697,7 +1697,7 @@
         return `<div class="tk-carga"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} · ${tareas} tareas pendientes</small></div></div>`; }).join("");
       html += `<div class="tk-equipo">${carga}</div>`;
     }
-    const selMes = `<label class="tk-mes"><select id="tkMes" title="Mes de entrega">${meses.map((m) => `<option value="${m}" ${mesTk === m ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""} | 🏷️ ${todosVis.filter((t) => mesDe(t) === m).length}</option>`).join("")}<option value="todos" ${mesTk === "todos" ? "selected" : ""}>Todos los meses | 🏷️ ${todosVis.length}</option></select></label>`;
+    const selMes = `<label class="tk-mes"><select id="tkMes" title="Mes de entrega">${meses.map((m) => `<option value="${m}" ${mesTk === m ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""} | ${todosVis.filter((t) => mesDe(t) === m).length} 🏷️</option>`).join("")}<option value="todos" ${mesTk === "todos" ? "selected" : ""}>Todos los meses | ${todosVis.length} 🏷️</option></select></label>`;
     html += `<div class="tk-barra-f"><div class="ent-filtros">${FILTROS.map(([k, t]) => `<button data-ft="${k}" class="${filtroTk === k ? "activa" : ""}">${t} <span>${vis.filter((x) => pasa(x, k)).length}</span></button>`).join("")}</div>${selMes}</div>`;
     html += lista.length ? `<div class="tk-lista">${lista.map(tarjetaTk).join("")}</div>`
       : `<div class="mis-vacio"><b>${sol ? "No tienes solicitudes aquí" : "Nada por aquí"}</b>${sol ? "Usa “Nueva solicitud” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}</div>`;
