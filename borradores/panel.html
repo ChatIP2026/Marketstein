@@ -986,7 +986,7 @@
   const textoPlazo = (d) => (d < 0 ? `venció hace ${-d} día${d === -1 ? "" : "s"}` : d === 0 ? "vence hoy" : d === 1 ? "vence mañana" : `vence en ${d} días`);
 
   // El estado del proyecto se actualiza solo según sus tareas:
-  //  todas hechas → Listo · alguna hecha → En curso · se desmarca una de un proyecto Listo → En curso
+  //  todas hechas → Listo | alguna hecha → En curso | se desmarca una de un proyecto Listo → En curso
   function ajustarEstado(pid) {
     const p = mapaP.get(pid);
     if (!p) return;
@@ -1026,7 +1026,7 @@
       it.className = "item";
       it.title = "Marcar como hecha";
       it.innerHTML = `<div class="caja"></div><div style="flex:1;min-width:0"><span class="t-texto">${esc(t.texto)}</span>
-        <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` · <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>${t.encargado ? avMini(t.encargado) : ""}`;
+        <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` | <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>${t.encargado ? avMini(t.encargado) : ""}`;
       it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); armar(); }); }; // solo en esta vista previa
       cont.append(it);
     }
@@ -1059,7 +1059,7 @@
       b.className = "carga" + (filtroSel.value === f.n ? " activa" : "");
       b.title = filtroSel.value === f.n ? "Quitar filtro" : `Ver solo los proyectos de ${f.n}`;
       b.innerHTML = `<i class="carga-av" style="${fondoAv(f.n)}">${letraAv(f.n)}</i>
-        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small title="Proyectos activos · tareas pendientes asignadas a esta persona">${f.activos} proy. · ${f.pend} tareas</small></div>
+        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small title="Proyectos activos | tareas pendientes asignadas a esta persona">${f.activos} proy. | ${f.pend} tareas</small></div>
         <div class="carga-barra"><i style="width:${(f.activos / max) * 100}%;background:${COLORES[f.n]}"></i></div></div>`;
       b.onclick = () => { filtroSel.value = filtroSel.value === f.n ? "" : f.n; pintar(); };
       cont.append(b);
@@ -1079,7 +1079,7 @@
       const cuando = dias < 0 ? `Venció hace ${-dias} día${dias === -1 ? "" : "s"}` : dias === 0 ? "Vence hoy" : dias === 1 ? "Vence mañana" : `Vence en ${dias} días`;
       const it = document.createElement("button");
       it.className = "pronto a-" + p.estado + (dias <= 1 ? " urgente" : "");
-      it.innerHTML = `<b>${esc(p.nombre)}</b><small>${cuando} · ${fmt(p.fecha_limite)}</small>`;
+      it.innerHTML = `<b>${esc(p.nombre)}</b><small>${cuando} | ${fmt(p.fecha_limite)}</small>`;
       it.onclick = () => abrirProyecto(p.id);
       listaPronto.append(it);
     }
@@ -1263,7 +1263,7 @@
         f.className = "ficha a-" + c.id;
         f.draggable = true;
         f.tabIndex = 0;
-        f.title = "Clic para abrir · arrastra para cambiar de estado";
+        f.title = "Clic para abrir | arrastra para cambiar de estado";
         const nombres = p.encargados.length ? p.encargados.join(", ") : "Sin encargado";
         const fechaTxt = p.fecha ? `${vencido(p) ? "Venció" : "Vence"} ${fmt(p.fecha)}` : "Sin fecha";
         const diasF = p.fecha ? Math.round((new Date(p.fecha + "T00:00") - new Date(HOY + "T00:00")) / 864e5) : null;
@@ -1399,7 +1399,7 @@
     const fechaSel = new Date(diaSel + "T00:00").toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" });
     const lateral = delDia.length
       ? delDia.map((p) => `<div class="cal-item a-${p.estado}"><b>${esc(p.nombre)}</b>${pill(p.estado)}
-          <small>${p.encargados.join(", ") || "Sin encargado"} · Prioridad ${p.prioridad}</small></div>`).join("")
+          <small>${p.encargados.join(", ") || "Sin encargado"} | Prioridad ${p.prioridad}</small></div>`).join("")
       : `<div class="cal-vacio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Sin proyectos que venzan este día</div>`;
 
     const sinFecha = lista.filter((p) => !p.fecha).length;
@@ -1489,7 +1489,7 @@
     const prox = lista.filter((p) => p.fecha_limite && p.fecha_limite >= HOY && p.estado !== "listo").sort((a, b) => a.fecha_limite.localeCompare(b.fecha_limite)).slice(0, 4);
     const fila = (p) => { const ts = tsDe(p), pend = ts.filter((t) => !t.hecha).length, mias = ts.filter((t) => !t.hecha && t.encargado === yo).length;
       return `<button class="ec-item e-${p.estado}" data-pid="${p.id}"><span class="carpeta-azul c-${p.estado} chica"></span><span class="ec-item-txt"><b>${esc(p.nombre)}</b>
-        <small>${pend}/${ts.length} pendientes${mias ? ` · ${mias} tuya${mias === 1 ? "" : "s"}` : ""}${p.solicitado_por ? ` · pedido por ${esc(p.solicitado_por.nombre)}` : ""}</small></span>${anilloMini(ts.length ? Math.round((ts.length - pend) / ts.length * 100) : 0)}</button>`; };
+        <small>${pend}/${ts.length} pendientes${mias ? ` | ${mias} tuya${mias === 1 ? "" : "s"}` : ""}${p.solicitado_por ? ` | pedido por ${esc(p.solicitado_por.nombre)}` : ""}</small></span>${anilloMini(ts.length ? Math.round((ts.length - pend) / ts.length * 100) : 0)}</button>`; };
     const sinFecha = lista.filter((p) => !p.fecha_limite).length;
     const titDia = mayus(new Date(diaEnt + "T00:00").toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" }));
     return `<div class="ec">
@@ -1497,7 +1497,7 @@
         <div class="ec-cab"><b>${mayus(new Date(y, m, 1).toLocaleDateString("es", { month: "long", year: "numeric" }))}</b>
           <div class="cal-nav"><button class="cal-btn" id="ecHoy">Hoy</button><button class="cal-btn" id="ecPrev">‹</button><button class="cal-btn" id="ecNext">›</button></div></div>
         <div class="ec-grid">${celdas}</div>
-        <div class="leyenda"><span><i style="background:#9aa1b4"></i>Sin empezar</span><span><i style="background:#ffd45c"></i>En curso</span><span><i style="background:#2ee6b0"></i>Listo</span>${sinFecha ? `<span>· ${sinFecha} proyecto(s) sin fecha no aparecen</span>` : ""}</div>
+        <div class="leyenda"><span><i style="background:#9aa1b4"></i>Sin empezar</span><span><i style="background:#ffd45c"></i>En curso</span><span><i style="background:#2ee6b0"></i>Listo</span>${sinFecha ? `<span>| ${sinFecha} proyecto(s) sin fecha no aparecen</span>` : ""}</div>
       </div>
       <aside class="ec-lado">
         <h4>${titDia}</h4>
@@ -1592,7 +1592,7 @@
     const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
     const mias = ts.filter((t) => t.encargado === yo && !t.hecha), misHechas = ts.filter((t) => t.encargado === yo && t.hecha);
     // eventos de la línea de tiempo
-    const ev = [{ at: p.created_at, quien: p.creado_por, tit: "Creó el proyecto", txt: `${p.encargados.length ? "Encargados: " + p.encargados.join(", ") : "Sin encargados aún"} · Prioridad ${p.prioridad}` }];
+    const ev = [{ at: p.created_at, quien: p.creado_por, tit: "Creó el proyecto", txt: `${p.encargados.length ? "Encargados: " + p.encargados.join(", ") : "Sin encargados aún"} | Prioridad ${p.prioridad}` }];
     ts.filter((t) => t.hecha).forEach((t) => ev.push({ at: t.hecha_at || t.created_at, quien: t.encargado || p.creado_por, tit: "Completó una tarea", txt: t.texto, ok: true }));
     const arch = ARCHIVOS_EJEMPLO[p.nombre];
     if (arch) ev.push({ at: new Date(Date.now() - 4.2e6).toISOString(), quien: p.encargados[0] || p.creado_por, tit: "Subió archivos", txt: "Los archivos están listos para revisar.", arch });
@@ -1605,9 +1605,9 @@
       <h4 class="feed-sub">Actividad</h4>
       <div class="linea">${ev.map((e) => `
         <div class="ev"><div class="ev-ico">${av(e.quien)}</div>
-          <div class="ev-cuerpo"><div class="ev-tit"><b>${e.quien}</b> ${e.tit.toLowerCase()} <span>· ${hace(e.at)}</span></div>
+          <div class="ev-cuerpo"><div class="ev-tit"><b>${e.quien}</b> ${e.tit.toLowerCase()} <span>| ${hace(e.at)}</span></div>
             <div class="ev-txt ${e.ok ? "ok" : ""}">${e.ok ? "✓ " : ""}${esc(e.txt)}</div>
-            ${e.arch ? `<div class="ev-arch"><div class="carpeta"></div><div><b>${esc(e.arch.nombre)}</b><small>${e.arch.n} archivos · ${e.arch.peso}</small></div></div>` : ""}
+            ${e.arch ? `<div class="ev-arch"><div class="carpeta"></div><div><b>${esc(e.arch.nombre)}</b><small>${e.arch.n} archivos | ${e.arch.peso}</small></div></div>` : ""}
           </div></div>`).join("")}</div>
       ${arch ? `<p class="det-nota">Los archivos son de ejemplo: subir archivos sería una función nueva.</p>` : ""}`;
     box.querySelector("#feedAbrir").onclick = () => abrirProyecto(p.id);
@@ -1648,15 +1648,15 @@
   const enD = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
   const haceH = (h) => new Date(Date.now() - h * 36e5).toISOString();
   let tickets = [
-    { id: 8, titulo: "Post de aniversario de la empresa", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Post", formato: "Cuadrado", detalle: "Saludo por el aniversario de la empresa para redes internas.", destino: "Colaboradores", texto: "¡Feliz aniversario, equipo!", refs: [], fecha: enD(-24), estado: "entregado", prioridad: "media", asignado: "Pierina", creado: haceH(24 * 30), historial: [{ at: haceH(24 * 30), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(24 * 29), quien: "Hilary", txt: "Aceptó el ticket · prioridad Media · asignado a Pierina" }, { at: haceH(24 * 25), quien: "Pierina", txt: "Lo marcó como entregado" }] },
-    { id: 9, titulo: "Banner web de tasas de setiembre", solicitante: "Mario", area: "Ventas", tipo: "Banner", formato: "Horizontal (web)", detalle: "Banner para la web con las tasas del mes.", destino: "Clientes", texto: "Tasas desde 1.2 % mensual", refs: [], fecha: enD(-33), estado: "entregado", prioridad: "alta", asignado: "Ariana", creado: haceH(24 * 40), historial: [{ at: haceH(24 * 40), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(24 * 39), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }, { at: haceH(24 * 34), quien: "Ariana", txt: "Lo marcó como entregado" }] },
-    { id: 7, titulo: "Brochure digital de servicios", solicitante: "Romano", area: "Comercial", tipo: "Flyer", formato: "Digital vertical", detalle: "Diseñar un brochure digital con los 4 servicios principales para enviar por WhatsApp y correo a clientes potenciales. Debe incluir logo, beneficios de cada servicio y datos de contacto del equipo comercial.", destino: "Clientes potenciales (pymes)", texto: "iPartner · Soluciones financieras para tu empresa\nCréditos · Leasing · Factoring · Asesoría\nEscríbenos: comercial@ipartner.pe", refs: ["https://pinterest.com/ejemplo-brochure"], adjuntos: true, fecha: enD(7), estado: "en_revision", prioridad: "alta", asignado: "Ariana", proyecto: 901, creado: haceH(3), historial: [{ at: haceH(3), quien: "Romano", txt: "Envió la solicitud" }, { at: haceH(1), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }] },
-    { id: 1, titulo: "Post de LinkedIn para webinar de noviembre", solicitante: "Lucía", area: "Finanzas", tipo: "Post", formato: "Vertical (feed)", detalle: "Anunciar el webinar de educación financiera del 20 de noviembre. Queremos inscripciones.", destino: "Seguidores de LinkedIn", texto: "Webinar: Finanzas sin miedo · 20 nov · 7 p. m. · Inscríbete gratis", refs: ["https://pinterest.com/ejemplo"], fecha: enD(6), estado: "revision_inicial", creado: haceH(3), historial: [{ at: haceH(3), quien: "Lucía", txt: "Envió la solicitud" }] },
+    { id: 8, titulo: "Post de aniversario de la empresa", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Post", formato: "Cuadrado", detalle: "Saludo por el aniversario de la empresa para redes internas.", destino: "Colaboradores", texto: "¡Feliz aniversario, equipo!", refs: [], fecha: enD(-24), estado: "entregado", prioridad: "media", asignado: "Pierina", creado: haceH(24 * 30), historial: [{ at: haceH(24 * 30), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(24 * 29), quien: "Hilary", txt: "Aceptó el ticket | prioridad Media | asignado a Pierina" }, { at: haceH(24 * 25), quien: "Pierina", txt: "Lo marcó como entregado" }] },
+    { id: 9, titulo: "Banner web de tasas de setiembre", solicitante: "Mario", area: "Ventas", tipo: "Banner", formato: "Horizontal (web)", detalle: "Banner para la web con las tasas del mes.", destino: "Clientes", texto: "Tasas desde 1.2 % mensual", refs: [], fecha: enD(-33), estado: "entregado", prioridad: "alta", asignado: "Ariana", creado: haceH(24 * 40), historial: [{ at: haceH(24 * 40), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(24 * 39), quien: "Hilary", txt: "Aceptó el ticket | prioridad Alta | asignado a Ariana" }, { at: haceH(24 * 34), quien: "Ariana", txt: "Lo marcó como entregado" }] },
+    { id: 7, titulo: "Brochure digital de servicios", solicitante: "Romano", area: "Comercial", tipo: "Flyer", formato: "Digital vertical", detalle: "Diseñar un brochure digital con los 4 servicios principales para enviar por WhatsApp y correo a clientes potenciales. Debe incluir logo, beneficios de cada servicio y datos de contacto del equipo comercial.", destino: "Clientes potenciales (pymes)", texto: "iPartner | Soluciones financieras para tu empresa\nCréditos | Leasing | Factoring | Asesoría\nEscríbenos: comercial@ipartner.pe", refs: ["https://pinterest.com/ejemplo-brochure"], adjuntos: true, fecha: enD(7), estado: "en_revision", prioridad: "alta", asignado: "Ariana", proyecto: 901, creado: haceH(3), historial: [{ at: haceH(3), quien: "Romano", txt: "Envió la solicitud" }, { at: haceH(1), quien: "Hilary", txt: "Aceptó el ticket | prioridad Alta | asignado a Ariana" }] },
+    { id: 1, titulo: "Post de LinkedIn para webinar de noviembre", solicitante: "Lucía", area: "Finanzas", tipo: "Post", formato: "Vertical (feed)", detalle: "Anunciar el webinar de educación financiera del 20 de noviembre. Queremos inscripciones.", destino: "Seguidores de LinkedIn", texto: "Webinar: Finanzas sin miedo | 20 nov | 7 p. m. | Inscríbete gratis", refs: ["https://pinterest.com/ejemplo"], fecha: enD(6), estado: "revision_inicial", creado: haceH(3), historial: [{ at: haceH(3), quien: "Lucía", txt: "Envió la solicitud" }] },
     { id: 2, titulo: "Flyer para charla de bienestar", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Flyer", formato: "Digital vertical", detalle: "Charla de pausas activas para todo el personal.", destino: "Colaboradores", texto: "", sinTexto: true, refs: [], fecha: enD(2), estado: "revision_inicial", creado: haceH(1), historial: [{ at: haceH(1), quien: "Rosa", txt: "Envió la solicitud" }] },
     { id: 3, titulo: "Presentación comercial Q4", solicitante: "Mario", area: "Ventas", tipo: "Presentación", formato: "Pantalla 16:9", detalle: "Actualizar la presentación con los nuevos precios.", destino: "Clientes", texto: "", refs: [], fecha: enD(8), estado: "revision_inicial", creado: haceH(26), historial: [{ at: haceH(26), quien: "Mario", txt: "Envió la solicitud" }] },
-    { id: 4, titulo: "Banner para la feria de Ventas", solicitante: "Mario", area: "Ventas", tipo: "Banner", formato: "Impreso", detalle: "Banner roll-up para el stand de la feria.", destino: "Visitantes de la feria", texto: "iPartner · Tu socio financiero", refs: [], fecha: enD(4), estado: "en_curso", prioridad: "alta", asignado: "Ariana", proyecto: 900, creado: haceH(50), historial: [{ at: haceH(50), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(44), quien: "Hilary", txt: "Aceptó el ticket · prioridad Alta · asignado a Ariana" }, { at: haceH(30), quien: "Ariana", txt: "Revisó la información y empezó a trabajarlo" }] },
-    { id: 5, titulo: "Mailing de bienvenida a clientes nuevos", solicitante: "Lucía", area: "Finanzas", tipo: "Mailing", formato: "Correo (600 px)", detalle: "Correo de bienvenida con los pasos para activar la cuenta.", destino: "Clientes nuevos", texto: "Bienvenido a iPartner", refs: [], fecha: enD(1), estado: "en_revision", prioridad: "urgente", asignado: "Pierina", creado: haceH(72), historial: [{ at: haceH(72), quien: "Lucía", txt: "Envió la solicitud" }, { at: haceH(70), quien: "Hilary", txt: "Aceptó el ticket · prioridad Urgente · asignado a Pierina" }] },
-    { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket · asignado a Carlos" }, { at: haceH(200), quien: "Carlos", txt: "Revisó la información y empezó a trabajarlo" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado" }] },
+    { id: 4, titulo: "Banner para la feria de Ventas", solicitante: "Mario", area: "Ventas", tipo: "Banner", formato: "Impreso", detalle: "Banner roll-up para el stand de la feria.", destino: "Visitantes de la feria", texto: "iPartner | Tu socio financiero", refs: [], fecha: enD(4), estado: "en_curso", prioridad: "alta", asignado: "Ariana", proyecto: 900, creado: haceH(50), historial: [{ at: haceH(50), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(44), quien: "Hilary", txt: "Aceptó el ticket | prioridad Alta | asignado a Ariana" }, { at: haceH(30), quien: "Ariana", txt: "Revisó la información y empezó a trabajarlo" }] },
+    { id: 5, titulo: "Mailing de bienvenida a clientes nuevos", solicitante: "Lucía", area: "Finanzas", tipo: "Mailing", formato: "Correo (600 px)", detalle: "Correo de bienvenida con los pasos para activar la cuenta.", destino: "Clientes nuevos", texto: "Bienvenido a iPartner", refs: [], fecha: enD(1), estado: "en_revision", prioridad: "urgente", asignado: "Pierina", creado: haceH(72), historial: [{ at: haceH(72), quien: "Lucía", txt: "Envió la solicitud" }, { at: haceH(70), quien: "Hilary", txt: "Aceptó el ticket | prioridad Urgente | asignado a Pierina" }] },
+    { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket | asignado a Carlos" }, { at: haceH(200), quien: "Carlos", txt: "Revisó la información y empezó a trabajarlo" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado" }] },
   ];
   let filtroTk = null, tkAbierto = null, mesTk = null, personaTk = null;
   const tkVisibles = () => esSolicitante() ? tickets.filter((t) => t.solicitante === yo)
@@ -1699,7 +1699,7 @@
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
         const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
-        return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} · ${tareas} tareas pendientes</small></div></button>`; }).join("");
+        return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} | ${tareas} tareas pendientes</small></div></button>`; }).join("");
       html += `<div class="tk-equipo">${carga}</div>`;
     }
     const selMes = `<label class="tk-mes"><select id="tkMes" title="Mes de entrega">${meses.map((m) => `<option value="${m}" ${mesTk === m ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""} | ${todosVis.filter((t) => mesDe(t) === m).length} 🏷️</option>`).join("")}<option value="todos" ${mesTk === "todos" ? "selected" : ""}>Todos los meses | ${todosVis.length} 🏷️</option></select></label>`;
@@ -1722,7 +1722,7 @@
       <span class="tk-ir">${FLECHA}</span>
       <div class="tk-b">
         <b class="tk-tit">${esc(t.titulo)}</b>
-        <span class="tk-de">${sol ? (t.asignado ? `Lo hace ${t.asignado}` : "Esperando a Hilary") : `${esc(t.solicitante)} · ${esc(t.area)}`}</span>
+        <span class="tk-de">${sol ? (t.asignado ? `Lo hace ${t.asignado}` : "Esperando a Hilary") : `${esc(t.solicitante)} | ${esc(t.area)}`}</span>
         <div class="tk-fila">
           <div><small>Estado</small>${pillTk(t.estado)}</div>
           <div class="der"><small>Prioridad</small>${pr ? `<span class="tk-prio" style="--c:${pr.c}">${pr.t}</span>` : `<span class="tk-prio sin">Sin definir</span>`}</div>
@@ -1762,7 +1762,7 @@
     d.innerHTML = `
       <div class="det-cab"><div class="tkd-cab"><span class="tk-id">#${String(t.id).padStart(3, "0")}</span>${pillTk(t.estado)}</div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <h2 class="tkd-tit">${esc(t.titulo)}</h2>
-      <div class="tkd-quien"><i class="av" style="${fondoAv(t.solicitante)}">${letraAv(t.solicitante)}</i><div><b>${esc(t.solicitante)}</b><small>${esc(t.area)} · lo pidió ${hace(t.historial[0].at)}</small></div></div>
+      <div class="tkd-quien"><i class="av" style="${fondoAv(t.solicitante)}">${letraAv(t.solicitante)}</i><div><b>${esc(t.solicitante)}</b><small>${esc(t.area)} | lo pidió ${hace(t.historial[0].at)}</small></div></div>
       <div class="tkd-kpis">
         <div class="tkd-k"><small>Entrega</small><b>${fmt(t.fecha)}</b><span class="tkd-rel">${t.estado === "entregado" ? "✓ Entregado" : ((d) => d < 0 ? `Atrasado ${-d} d` : d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `En ${d} días`)(diasHasta(t.fecha))}</span></div>
         <div class="tkd-k"><small>Prioridad</small>${TK_PRIO[t.prioridad] ? `<span class="tk-prio" style="--c:${TK_PRIO[t.prioridad].c}">${TK_PRIO[t.prioridad].t}</span>` : `<span class="tk-prio sin">La define Hilary</span>`}</div>
@@ -1771,9 +1771,9 @@
       ${acciones}
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
-      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Carpeta de ${esc(t.solicitante)} · busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
-      <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} · último ${hace(t.historial.at(-1).at)}</span></summary>
-      <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>· ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
+      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Carpeta de ${esc(t.solicitante)} | busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
+      <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} | último ${hace(t.historial.at(-1).at)}</span></summary>
+      <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>| ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     let prio = t.prioridad || "media", asig = t.asignado || null, modo = null;
@@ -1782,7 +1782,7 @@
     d.querySelector("#tkAceptar")?.addEventListener("click", () => {
       if (!asig) return avisar("Elige a quién asignar el ticket");
       t.prioridad = prio; t.asignado = asig; t.estado = "en_revision";
-      registrar(t, `Aceptó el ticket · prioridad ${TK_PRIO[prio].t} · asignado a ${asig}`);
+      registrar(t, `Aceptó el ticket | prioridad ${TK_PRIO[prio].t} | asignado a ${asig}`);
       // Al aceptarlo aparece en Mi entorno de la persona asignada
       const pid = Date.now();
       mapaP.set(pid, { id: pid, nombre: t.titulo, estado: "sin_empezar", prioridad: prio === "urgente" ? "alta" : prio, encargados: [asig], fecha_limite: t.fecha, created_at: new Date().toISOString(), creado_por: JEFA, solicitado_por: { nombre: t.solicitante, area: t.area }, ticket: t.id });
@@ -1817,7 +1817,7 @@
     const d = document.getElementById("detalle");
     d.className = "detalle tk-det";
     d.innerHTML = `
-      <div class="det-cab"><div><h2>Nueva solicitud</h2><p class="tk-sub">${yo} · ${SOLICITANTES[yo]}</p></div><button class="det-cerrar" type="button">✕</button></div>
+      <div class="det-cab"><div><h2>Nueva solicitud</h2><p class="tk-sub">${yo} | ${SOLICITANTES[yo]}</p></div><button class="det-cerrar" type="button">✕</button></div>
       <form class="tk-form" novalidate>
         <label>Nombre del pedido *<input name="titulo" placeholder="Ej.: Post de LinkedIn para el webinar" /></label>
         <div class="mn-doble"><label>Tipo de pieza *<select name="tipo"><option value="">Selecciona…</option>${Object.keys(TIPOS).map((k) => `<option>${k}</option>`).join("")}</select></label>
