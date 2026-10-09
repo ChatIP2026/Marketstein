@@ -730,6 +730,30 @@
   .tk-adj { display: flex; align-items: center; gap: 10px; margin-top: -4px; } .tk-adj span { font-size: .78rem; color: var(--tenue); }
   .tk-adj .cal-btn { height: 34px; padding: 0 12px; white-space: nowrap; } .tk-adj .cal-btn.activa { border-color: #2ee6b0; color: #2ee6b0; }
   .tk-chip.adj b { color: #fff; }
+  /* ===== Personas ===== */
+  .per-lista { display: flex; flex-direction: column; gap: 8px; }
+  .per { display: grid; grid-template-columns: 44px minmax(180px, 1.6fr) 1fr 1.1fr 1fr 1fr 130px; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 16px; background: linear-gradient(180deg, #2a3247, #222939); filter: drop-shadow(0 0 1px rgba(190,205,245,.25)); }
+  .per-av { width: 40px !important; height: 40px !important; font-size: .95rem !important; }
+  .per-nom b { display: block; font-size: .95rem; } .per-nom small { font-size: .78rem; color: var(--tenue); }
+  .per-col { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; min-width: 0; } .per-col small { font-size: .68rem; color: var(--tenue); }
+  .per-rol { font-size: .74rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid; }
+  .per-rol.r-jefa { color: #ffd45c; border-color: rgba(255,212,92,.45); background: rgba(255,212,92,.1); }
+  .per-rol.r-equipo { color: #a9b8e8; border-color: rgba(169,184,232,.45); background: rgba(169,184,232,.1); }
+  .per-rol.r-solicitante { color: #c9ced9; border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.05); }
+  .per-est { font-size: .78rem; color: var(--tenue); } .per-est.ok { color: #2ee6b0; } .per-nada { color: var(--tenue); }
+  .per-acc { display: flex; justify-content: flex-end; } .per-acc .cal-btn { height: 32px; padding: 0 12px; font-size: .78rem; white-space: nowrap; }
+  @media (max-width: 1000px) { .per { grid-template-columns: 44px 1fr; } .per-col, .per-acc { grid-column: 2; flex-direction: row; align-items: center; gap: 8px; justify-content: flex-start; } }
+  .tk-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .per-aviso { font-size: .82rem; color: #d5dcf2; background: rgba(169,184,232,.08); border: 1px solid rgba(169,184,232,.25); border-radius: 10px; padding: 10px 12px; margin-top: -4px; }
+  .per-clave { display: flex; gap: 8px; align-items: center; } .per-clave code { flex: 1; font-size: 1rem; letter-spacing: .08em; padding: 9px 12px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px dashed rgba(255,255,255,.2); color: #fff; }
+  .per-clave .cal-btn { height: 38px; }
+  .correo-prev { margin-top: 6px; background: #f4f5f8; color: #1d2130; border-radius: 18px; padding: 26px 24px; text-align: center; }
+  .cp-logo { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 16px; background: #111318; display: grid; place-items: center; } .cp-logo img { width: 44px; }
+  .correo-prev h3 { margin: 0 0 8px; font-size: 1.25rem; } .correo-prev p { margin: 0 0 16px; font-size: .9rem; line-height: 1.5; color: #4a5064; }
+  .cp-cred { display: grid; gap: 8px; text-align: left; background: #fff; border: 1px solid #e2e5ee; border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; }
+  .cp-cred small { display: block; font-size: .72rem; color: #7a8094; } .cp-cred b { font-size: .95rem; } .cp-cred .mono { font-family: ui-monospace, Menlo, monospace; letter-spacing: .06em; }
+  .cp-btn { display: inline-block; background: #111318; color: #fff; text-decoration: none; font-weight: 600; padding: 12px 26px; border-radius: 12px; margin-bottom: 16px; }
+  .correo-prev .cp-chico { font-size: .76rem; color: #7a8094; margin: 0; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -787,7 +811,7 @@
     </svg>
     </div>
     <nav>
-      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="tickets">Tickets <span class="nav-num" id="navTk"></span></a><a data-p="pronto" data-n="Notas">Notas</a>
+      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="tickets">Tickets <span class="nav-num" id="navTk"></span></a><a data-p="personas">Personas</a><a data-p="pronto" data-n="Notas">Notas</a>
     </nav>
     <div class="boton-neo campana-btn" title="Notificaciones" onclick="this.querySelector('.insignia')?.remove()">
       <svg viewBox="0 0 24 24" fill="currentColor">
@@ -809,6 +833,7 @@
 
   <section class="mis vidrio" id="vistaMis" hidden></section>
   <section class="mis vidrio" id="vistaTickets" hidden></section>
+  <section class="mis vidrio" id="vistaPersonas" hidden></section>
 
   <div class="rejilla" id="vistaInicio">
 
@@ -1407,8 +1432,9 @@
     document.getElementById("vistaInicio").hidden = p !== "inicio";
     document.getElementById("vistaMis").hidden = p !== "mis";
     document.getElementById("vistaTickets").hidden = p !== "tickets";
-    document.body.classList.toggle("en-mis", p === "mis" || p === "tickets");
-    if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else armar();
+    document.getElementById("vistaPersonas").hidden = p !== "personas";
+    document.body.classList.toggle("en-mis", p !== "inicio");
+    if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else if (p === "personas") pintarPersonas(); else armar();
   }
   document.querySelectorAll("nav a").forEach((a) => (a.onclick = () => {
     if (a.dataset.p === "pronto") return avisar(`<b>${a.dataset.n}</b> estará disponible pronto 🐰`);
@@ -1818,6 +1844,98 @@
     document.body.classList.add("con-detalle");
   }
   aplicarRol();
+
+  // ===== Personas: cuentas con acceso a Rabbit (las crea el equipo de marketing) =====
+  const AREAS = ["Marketing", "Comercial", "Ventas", "Finanzas", "Recursos Humanos", "Legal", "Operaciones"];
+  const carpetaDe = (n) => `https://drive.google.com/drive/folders/referencias-${n.toLowerCase()}`;
+  const personas = [
+    { nombre: "Hilary", apellido: "", correo: "hilary@ipartner.pe", area: "Marketing", rol: "jefa", activa: true },
+    { nombre: "Ariana", apellido: "", correo: "ariana@ipartner.pe", area: "Marketing", rol: "equipo", activa: true },
+    { nombre: "Carlos", apellido: "", correo: "carlos@ipartner.pe", area: "Marketing", rol: "equipo", activa: true },
+    { nombre: "Pierina", apellido: "", correo: "pierina@ipartner.pe", area: "Marketing", rol: "equipo", activa: true },
+    ...Object.entries(SOLICITANTES).map(([n, a]) => ({ nombre: n, apellido: "", correo: n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") + "@ipartner.pe", area: a, rol: "solicitante", carpeta: carpetaDe(n), activa: n !== "Romano" })),
+  ];
+  const ROLES = { jefa: "Jefa del área", equipo: "Equipo de marketing", solicitante: "Otra área" };
+  let filtroPer = "todas";
+  const claveTemporal = () => { const L = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; return Array.from({ length: 10 }, () => L[Math.floor(Math.random() * L.length)]).join(""); };
+  function pintarPersonas() {
+    const cont = document.getElementById("vistaPersonas");
+    const pasa = (x) => filtroPer === "todas" || (filtroPer === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante");
+    const F = [["todas", "Todas"], ["equipo", "Equipo de marketing"], ["otras", "Otras áreas"]];
+    cont.innerHTML = `<div class="mis-cab"><div><h2>Personas</h2><p>Cuentas con acceso a Rabbit. Solo el equipo de marketing puede crearlas.</p></div><button class="nuevo-btn tk-nuevo" id="perNueva">＋ Nueva persona</button></div>
+      <div class="ent-filtros">${F.map(([k, t]) => `<button data-fp="${k}" class="${filtroPer === k ? "activa" : ""}">${t} <span>${personas.filter((x) => k === "todas" || (k === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")).length}</span></button>`).join("")}</div>
+      <div class="per-lista">${personas.filter(pasa).map((x, i) => `
+        <div class="per">
+          <i class="av per-av" style="${fondoAv(x.nombre)}">${letraAv(x.nombre)}</i>
+          <div class="per-nom"><b>${esc(x.nombre)} ${esc(x.apellido)}</b><small>${esc(x.correo)}</small></div>
+          <div class="per-col"><small>Área</small><span class="tk-chip">${esc(x.area)}</span></div>
+          <div class="per-col"><small>Rol</small><span class="per-rol r-${x.rol}">${ROLES[x.rol]}</span></div>
+          <div class="per-col"><small>Referencias</small>${x.carpeta ? `<a class="tk-chip enl" href="#" onclick="return false">📁 Su carpeta</a>` : `<span class="per-nada">—</span>`}</div>
+          <div class="per-col"><small>Estado</small>${x.activa ? `<span class="per-est ok">● Activa</span>` : `<span class="per-est">● Aún no entra</span>`}</div>
+          <div class="per-acc">${x.activa ? "" : `<button class="cal-btn" data-reenviar="${personas.indexOf(x)}">Reenviar acceso</button>`}</div>
+        </div>`).join("")}</div>`;
+    cont.querySelectorAll("[data-fp]").forEach((b) => (b.onclick = () => { filtroPer = b.dataset.fp; pintarPersonas(); }));
+    cont.querySelectorAll("[data-reenviar]").forEach((b) => (b.onclick = () => { const x = personas[+b.dataset.reenviar]; mostrarBienvenida(x, claveTemporal(), true); }));
+    cont.querySelector("#perNueva").onclick = abrirFormPersona;
+  }
+  function abrirFormPersona() {
+    const d = document.getElementById("detalle");
+    d.className = "detalle tk-det";
+    let clave = claveTemporal();
+    d.innerHTML = `<div class="det-cab"><div><h2>Nueva persona</h2><p class="tk-sub">Le llegará un correo de bienvenida con su acceso.</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      <form class="tk-form" autocomplete="off">
+        <div class="tk-dos"><label>Nombre *<input name="nombre" /></label><label>Apellido *<input name="apellido" /></label></div>
+        <label>Correo *<input name="correo" type="email" placeholder="nombre@ipartner.pe" /></label>
+        <label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label>
+        <div class="per-aviso" id="perRol"></div>
+        <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
+        <label>Contraseña temporal<div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></label>
+        <div class="mensaje tk-err"></div>
+        <button class="nuevo-btn" type="submit">Crear cuenta y enviar correo</button>
+      </form><p class="det-nota">Vista previa: no se crea ninguna cuenta real.</p>`;
+    d.querySelector(".det-cerrar").onclick = cerrarProyecto;
+    const f = d.querySelector("form");
+    const verRol = () => {
+      const mk = f.area.value === "Marketing";
+      d.querySelector("#perRol").innerHTML = mk ? "👥 Será parte del <b>equipo de marketing</b>: verá Inicio, Mi entorno, Tickets y Personas." : "📨 Será de <b>otra área</b>: solo podrá enviar tickets y ver los suyos.";
+      d.querySelector("#perCarpeta").hidden = mk;
+    };
+    f.area.onchange = verRol; verRol();
+    d.querySelector("#perOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#perClave").textContent = clave; };
+    f.onsubmit = (e) => {
+      e.preventDefault();
+      const err = d.querySelector(".tk-err"), v = (k) => f[k].value.trim();
+      if (!v("nombre") || !v("apellido") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa nombre, apellido y un correo válido."; return; }
+      if (personas.some((x) => x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe una cuenta con ese correo."; return; }
+      const mk = f.area.value === "Marketing";
+      const x = { nombre: v("nombre"), apellido: v("apellido"), correo: v("correo"), area: f.area.value, rol: mk ? "equipo" : "solicitante", carpeta: mk ? "" : (v("carpeta") || carpetaDe(v("nombre"))), activa: false };
+      personas.push(x);
+      if (!mk) { SOLICITANTES[x.nombre] = x.area; pintarPerfil(); }
+      pintarPersonas();
+      mostrarBienvenida(x, clave, false);
+    };
+    document.body.classList.add("con-detalle");
+    f.nombre.focus();
+  }
+  // Vista previa del correo de bienvenida que recibiría la persona
+  function mostrarBienvenida(x, clave, reenvio) {
+    const d = document.getElementById("detalle");
+    d.className = "detalle tk-det";
+    d.innerHTML = `<div class="det-cab"><div><span class="per-est ok">✓ ${reenvio ? "Acceso reenviado" : "Cuenta creada"}</span><h2 style="margin-top:8px">Correo enviado a ${esc(x.nombre)}</h2><p class="tk-sub">Así le llegará a ${esc(x.correo)}</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      <div class="correo-prev">
+        <div class="cp-logo"><img src="${CONEJO}" alt="" /></div>
+        <h3>¡Hola, ${esc(x.nombre)}! 👋</h3>
+        <p>${x.rol === "solicitante" ? "Ya tienes acceso a <b>RABBIT AI</b>, donde puedes pedir piezas al equipo de marketing y seguir su avance." : "Ya eres parte de <b>RABBIT AI</b>, el panel del equipo de marketing."}</p>
+        <div class="cp-cred"><div><small>Correo</small><b>${esc(x.correo)}</b></div><div><small>Contraseña temporal</small><b class="mono">${esc(clave)}</b></div></div>
+        <a class="cp-btn" href="#" onclick="return false">Entrar a Rabbit</a>
+        <p class="cp-chico">Por seguridad, al entrar por primera vez te pediremos crear tu propia contraseña. También puedes entrar con tu cuenta de Google o Microsoft usando este mismo correo.</p>
+      </div>
+      <p class="det-nota">Vista previa: no se envía ningún correo real.</p>`;
+    d.querySelector(".det-cerrar").onclick = cerrarProyecto;
+    document.body.classList.add("con-detalle");
+    avisar(`📧 Correo de bienvenida enviado a <b>${esc(x.nombre)}</b>`);
+  }
+
   const _armar = armar;
   armar = function () { _armar(); if (pagina === "mis") pintarMis(); };
 </script>
