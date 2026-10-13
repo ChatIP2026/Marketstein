@@ -960,6 +960,7 @@
   :is(.bc.a-en_curso, .ec-lado) .carpeta-azul { background: linear-gradient(180deg, #ffffff, #d4d7de) !important; box-shadow: 0 10px 20px rgba(0,0,0,.35) !important; }
   :is(.bc.a-en_curso, .ec-lado) .carpeta-azul::before { background: #d4d7de !important; }
   :is(.bc.a-en_curso, .ec-lado) .carpeta-azul::after { background: #9ca3af !important; }
+  .vista { display: inline-flex; align-items: center; gap: 6px; } .vista .vi { width: 15px; height: 15px; }
 </style>
 </head>
 <body>
@@ -1026,7 +1027,7 @@
       <section class="seccion vidrio tablero-caja">
         <div class="tablero-barra">
           <h3>Todos los proyectos <span class="chip-ejemplo" title="Fechas cercanas y 6 tareas por proyecto añadidas solo para probar">Datos de ejemplo</span></h3>
-          <div class="vistas"><span class="vista activa" data-v="kanban">▥ Por estado</span><span class="vista" data-v="calendario">▦ Calendario</span></div>
+          <div class="vistas"><span class="vista activa" data-v="kanban"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>Por estado</span><span class="vista" data-v="calendario"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendario</span></div>
           <div class="acciones">
             <input id="buscar" class="buscar" placeholder="⌕  Buscar…" />
             <select id="filtro" class="filtro"><option value="">Todos</option></select>
