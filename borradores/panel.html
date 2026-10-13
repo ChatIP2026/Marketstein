@@ -2222,7 +2222,7 @@
     const series = Object.fromEntries(EVALUADOS.map((n) => [n, serieDiaria(n, mesDash)]));
     const dias = series[EVALUADOS[0]].length;
     // Geometría del gráfico
-    const W = 700, H = 300, L = 36, R = 92, T = 16, B = 30;
+    const W = 700, H = 368, L = 36, R = 92, T = 16, B = 30;
     const x = (d) => L + (dias === 1 ? 0 : ((d - 1) / (dias - 1)) * (W - L - R)), y = (v) => T + (1 - v / 20) * (H - T - B);
     const grid = [0, 5, 10, 15, 20].map((g) => `<line x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}" class="dg-l"/><text x="${L - 8}" y="${y(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("");
     const paso = 1;
