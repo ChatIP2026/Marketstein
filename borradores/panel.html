@@ -973,6 +973,9 @@
   .lateral { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; gap: 14px !important; }
   .lateral > hr { display: none; }
   .lateral > div:not([hidden]) { background: #14161c; border-radius: 22px; padding: 16px; box-shadow: 0 14px 30px rgba(15,23,42,.22); }
+  .lateral > div:not([hidden]):has(#listaCarga) { flex: 1; display: flex; flex-direction: column; }
+  #listaCarga { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  #listaCarga .carga { flex: 1; max-height: 110px; display: flex; align-items: center !important; }
 </style>
 </head>
 <body>
