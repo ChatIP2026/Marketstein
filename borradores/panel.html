@@ -788,6 +788,25 @@
   .dm-tabla input { background: rgba(255,255,255,.05); border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; padding: 8px 10px; font: inherit; color-scheme: dark; width: 100%; box-sizing: border-box; }
   .dg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
   .dg-grid b { font-size: .84rem; color: #d5dcf2; } .dg-grid p { margin: 6px 0 4px; font-size: .82rem; color: var(--tenue); line-height: 1.45; } .dg-grid small { font-size: .7rem; color: #a9b8e8; }
+  .dk-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+  @media (max-width: 900px) { .dk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .dk { border-radius: 20px; padding: 16px 18px; min-height: 132px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+    background: linear-gradient(120deg, rgba(60,70,140,.28), rgba(110,60,140,.18)); border: 1px solid rgba(190,205,245,.14); }
+  .dk-cab { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: #d5dcf2; } .dk-cab em { margin-left: auto; font-style: normal; font-size: .72rem; color: var(--tenue); }
+  .dk-ico { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: #fff; } .dk-ico svg { width: 16px; height: 16px; }
+  .dk-num { display: flex; align-items: baseline; gap: 6px; } .dk-num b { font-size: 2rem; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; } .dk-num small { color: var(--tenue); }
+  .dk-pie { font-size: .7rem; color: var(--tenue); }
+  .dg-caja { border-radius: 20px; padding: 18px; background: rgba(255,255,255,.03); border: 1px solid var(--borde); margin-bottom: 18px; }
+  .dg-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+  .dg-cab h4 { margin: 0; font-size: .95rem; } .dg-cab small { font-size: .76rem; color: var(--tenue); }
+  .dg-leyenda { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; color: var(--texto); } .dg-leyenda i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  .dg-svg-caja { position: relative; } .dg-svg { width: 100%; height: auto; display: block; }
+  .dg-l { stroke: rgba(255,255,255,.06); stroke-width: 1; } .dg-t { fill: #8b92a6; font-size: 11px; }
+  .dg-linea { fill: none; stroke: var(--c); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .dg-fin { stroke: #1b1f2b; stroke-width: 2; } .dg-nom { fill: #d5dcf2; font-size: 12px; font-weight: 600; }
+  .dg-cruz { stroke: rgba(255,255,255,.35); stroke-dasharray: 4 4; }
+  .dg-tip { position: absolute; top: 10px; min-width: 150px; padding: 10px 12px; border-radius: 12px; background: #11141c; border: 1px solid rgba(255,255,255,.12); font-size: .78rem; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .dg-tip b { display: block; margin-bottom: 6px; } .dg-tip div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .dg-tip i { width: 8px; height: 8px; border-radius: 50%; } .dg-tip span { margin-left: auto; font-variant-numeric: tabular-nums; color: #fff; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -1993,9 +2012,11 @@
     { k: "punt", t: "Puntualidad", peso: 0.2, auto: false, d: "Base de 20 puntos. Se descuentan 2 puntos por cada día de tardanza en el mes." },
     { k: "vest", t: "Vestimenta", peso: 0.2, auto: false, d: "De 0 a 20 según el cumplimiento del código de vestimenta." },
   ];
-  const EVALUADOS = ["Ariana", "Carlos", "Pierina"];
+  const EVALUADOS = ["Ariana", "Carlos", "Hilary", "Pierina"];
+  // Colores de línea validados para fondo oscuro (se distinguen también con daltonismo; además van con etiqueta directa)
+  const COL_LINEA = { Ariana: "#d9539a", Carlos: "#2f9bd9", Hilary: "#c97a12", Pierina: "#8e6cf0" };
   const MANUAL = {}; // { "2026-10": { Carlos: { tardanzas: 1, vestimenta: 20 } } } (lo ingresa Hilary)
-  const ejemploManual = { Ariana: { tardanzas: 0, vestimenta: 18 }, Carlos: { tardanzas: 1, vestimenta: 20 }, Pierina: { tardanzas: 2, vestimenta: 19 } };
+  const ejemploManual = { Ariana: { tardanzas: 0, vestimenta: 18 }, Carlos: { tardanzas: 1, vestimenta: 20 }, Pierina: { tardanzas: 2, vestimenta: 19 }, Hilary: { tardanzas: 0, vestimenta: 20 } };
   let mesDash = new Date().toISOString().slice(0, 7);
   const r2 = (n) => Math.round(n * 100) / 100;
   function puntaje(n, mes) {
@@ -2018,37 +2039,79 @@
     return { n, v, det, m, final: r2(PILARES.reduce((a, p) => a + v[p.k] * p.peso, 0)) };
   }
   const tono = (x) => (x >= 16 ? "bien" : x >= 12 ? "medio" : "bajo");
+  const ICO_PILAR = {
+    proy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>',
+    tick: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg>',
+    punt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    vest: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 6l2 4 2-1v12h8V9l2 1 2-4-4-3-2 2h-4Z"/></svg>',
+  };
+  // Serie diaria (vista previa): puntaje automático = promedio de Proyectos y Tickets, acumulado hasta cada día.
+  // Al conectar Supabase se calculará con las tareas y tickets reales de cada día.
+  function serieDiaria(n, mes) {
+    const [y, m] = mes.split("-").map(Number), hoy = new Date();
+    const dias = mes === hoy.toISOString().slice(0, 7) ? hoy.getDate() : new Date(y, m, 0).getDate();
+    const fin = (() => { const r = puntaje(n, mes); return (r.v.proy + r.v.tick) / 2; })();
+    let semilla = [...(n + mes)].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) >>> 0;
+    const azar = () => ((semilla = (semilla * 1103515245 + 12345) >>> 0) / 4294967296);
+    let v = 12 + azar() * 4; const out = [];
+    for (let d = 1; d <= dias; d++) { v += (azar() - 0.5) * 2.4 + (fin - v) * (d / dias) * 0.35; v = Math.max(4, Math.min(20, v)); out.push(d === dias ? fin : r2(v)); }
+    return out;
+  }
   function pintarDash() {
     const cont = document.getElementById("vistaDash"), jefa = yo === JEFA;
     const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
     const hoyMes = new Date().toISOString().slice(0, 7);
     const meses = [...new Set([hoyMes, ...tickets.map((t) => t.fecha.slice(0, 7))])].sort().reverse();
     const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
-    const res = EVALUADOS.map((n) => puntaje(n, mesDash)).sort((a, b) => b.final - a.final);
-    const prom = r2(res.reduce((a, r) => a + r.final, 0) / res.length), mejor = res[0], empate = res.filter((r) => r.final === res[0].final).length > 1;
+    const res = EVALUADOS.map((n) => puntaje(n, mesDash));
+    const prom = (k) => res.reduce((a, r) => a + r.v[k], 0) / res.length;
+    const series = Object.fromEntries(EVALUADOS.map((n) => [n, serieDiaria(n, mesDash)]));
+    const dias = series[EVALUADOS[0]].length;
+    // Geometría del gráfico
+    const W = 1000, H = 300, L = 36, R = 90, T = 16, B = 30;
+    const x = (d) => L + (dias === 1 ? 0 : ((d - 1) / (dias - 1)) * (W - L - R)), y = (v) => T + (1 - v / 20) * (H - T - B);
+    const grid = [0, 5, 10, 15, 20].map((g) => `<line x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}" class="dg-l"/><text x="${L - 8}" y="${y(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("");
+    const paso = dias > 20 ? 5 : dias > 10 ? 3 : 1;
+    const ejeX = Array.from({ length: dias }, (_, i) => i + 1).filter((d) => d === 1 || d % paso === 0 || d === dias).map((d) => `<text x="${x(d)}" y="${H - 8}" class="dg-t" text-anchor="middle">${d}</text>`).join("");
+    // Etiquetas directas al final de cada línea, separadas para que no choquen
+    const finales = EVALUADOS.map((n) => ({ n, yv: y(series[n][dias - 1]) })).sort((a, b) => a.yv - b.yv);
+    for (let i = 1; i < finales.length; i++) if (finales[i].yv - finales[i - 1].yv < 16) finales[i].yv = finales[i - 1].yv + 16;
+    const lineas = EVALUADOS.map((n) => `<polyline class="dg-linea" style="--c:${COL_LINEA[n]}" points="${series[n].map((v, i) => `${x(i + 1)},${y(v)}`).join(" ")}"/>
+      <circle cx="${x(dias)}" cy="${y(series[n][dias - 1])}" r="5" fill="${COL_LINEA[n]}" class="dg-fin"/>`).join("");
+    const etiquetas = finales.map((f) => `<text x="${x(dias) + 12}" y="${f.yv + 4}" class="dg-nom">${f.n} ${series[f.n][dias - 1].toFixed(1)}</text>`).join("");
     cont.innerHTML = `
       <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
-        <div class="tk-prio-kpis">
-          <div class="tpk" style="--c:#a9b8e8"><b>${res.length}</b><div><span class="tpk-pill">Evaluados</span><small>personas</small></div></div>
-          <div class="tpk" style="--c:#ffd45c"><b>${prom.toFixed(2)}</b><div><span class="tpk-pill">Promedio</span><small>del equipo</small></div></div>
-          <div class="tpk" style="--c:#2ee6b0"><b>${mejor.final.toFixed(2)}</b><div><span class="tpk-pill">Mejor puntaje</span><small>${res.filter((r) => r.final === mejor.final).map((r) => r.n).join(" y ")}</small></div></div>
-        </div></div>
-      <div class="tk-barra-f"><div></div><label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div>
-      <div class="dash-grid">${res.map((r, i) => `
-        <article class="dash-card ${r.final === mejor.final ? "ganador" : ""}">
-          <div class="dc-cab"><i class="av dc-av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i><div><b>${r.n}</b><small>Marketing</small></div>
-            <div class="dc-final"><b class="t-${tono(r.final)}">${r.final.toFixed(2)}</b><small>de 20</small></div></div>
-          <div class="dc-estado">${r.final === mejor.final ? (empate ? "🏆 Ganador del mes (empate)" : "🏆 Ganador del mes") : "Finalista"}</div>
-          ${PILARES.map((p) => `<div class="dc-pilar">
-            <div class="dc-fila"><span>${p.t} <em>${Math.round(p.peso * 100)}%</em></span><b class="t-${tono(r.v[p.k])}">${r.v[p.k].toFixed(2)}</b></div>
-            <div class="dc-barra"><i class="b-${tono(r.v[p.k])}" style="width:${(r.v[p.k] / 20) * 100}%"></i></div>
-            <small>${r.det[p.k]}${p.auto ? "" : " | manual"}</small></div>`).join("")}
-        </article>`).join("")}</div>
-      ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Los demás pilares se calculan solos con Rabbit.</p>
+        <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div>
+      <div class="dk-grid">${PILARES.map((p) => { const v = prom(p.k); return `
+        <div class="dk"><div class="dk-cab"><span class="dk-ico">${ICO_PILAR[p.k]}</span><span>${p.t}</span><em>${Math.round(p.peso * 100)}%</em></div>
+          <div class="dk-num"><b>${v.toFixed(1)}</b><small>/ 20</small></div>
+          <small class="dk-pie">Promedio del equipo | ${p.auto ? "automático" : "manual"}</small></div>`; }).join("")}</div>
+      <section class="dg-caja">
+        <div class="dg-cab"><div><h4>Rendimiento diario</h4><small>Puntaje automático (Proyectos y Tickets) de cada integrante, día a día.</small></div>
+          <div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
+        <div class="dg-svg-caja"><svg viewBox="0 0 ${W} ${H}" class="dg-svg" role="img" aria-label="Rendimiento diario del equipo">${grid}${ejeX}${lineas}${etiquetas}
+          <line class="dg-cruz" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/><g class="dg-puntos"></g>
+          <rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="dg-hit"/></svg>
+          <div class="dg-tip" hidden></div></div>
+        <p class="det-nota">Vista previa: la curva es de ejemplo; al conectar Rabbit se actualizará cada día con datos reales.</p>
+      </section>
+      ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Alimentan los recuadros de Puntualidad y Vestimenta.</p>
         <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
         ${EVALUADOS.map((n) => { const m = MANUAL[mesDash][n]; return `<span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span><input type="number" min="0" max="10" value="${m.tardanzas}" data-n="${n}" data-c="tardanzas" /><input type="number" min="0" max="20" value="${m.vestimenta}" data-n="${n}" data-c="vestimenta" />`; }).join("")}</div></section>` : ""}`;
     cont.querySelector("#dashMes").onchange = (e) => { mesDash = e.target.value; pintarDash(); };
     cont.querySelectorAll(".dm-tabla input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); pintarDash(); }));
+    // Cruz + tooltip al pasar el mouse
+    const svg = cont.querySelector(".dg-svg"), cruz = svg.querySelector(".dg-cruz"), pts = svg.querySelector(".dg-puntos"), tip = cont.querySelector(".dg-tip");
+    svg.querySelector(".dg-hit").onmousemove = (e) => {
+      const r = svg.getBoundingClientRect(), px = ((e.clientX - r.left) / r.width) * W;
+      const d = Math.min(dias, Math.max(1, Math.round(((px - L) / (W - L - R)) * (dias - 1)) + 1));
+      cruz.setAttribute("x1", x(d)); cruz.setAttribute("x2", x(d)); cruz.style.display = "";
+      pts.innerHTML = EVALUADOS.map((n) => `<circle cx="${x(d)}" cy="${y(series[n][d - 1])}" r="5" fill="${COL_LINEA[n]}" class="dg-fin"/>`).join("");
+      tip.hidden = false;
+      tip.innerHTML = `<b>${d} de ${MESES[+mesDash.slice(5) - 1].toLowerCase()}</b>` + EVALUADOS.map((n) => ({ n, v: series[n][d - 1] })).sort((a, b) => b.v - a.v).map((o) => `<div><i style="background:${COL_LINEA[o.n]}"></i>${o.n}<span>${o.v.toFixed(1)}</span></div>`).join("");
+      const izq = (x(d) / W) * r.width; tip.style.left = `${izq > r.width * 0.65 ? izq - 170 : izq + 14}px`;
+    };
+    svg.querySelector(".dg-hit").onmouseleave = () => { cruz.style.display = "none"; pts.innerHTML = ""; tip.hidden = true; };
   }
 
   const _armar = armar;
