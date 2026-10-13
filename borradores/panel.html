@@ -2083,8 +2083,8 @@
       <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
         <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div>
       <div class="dk-grid">${PILARES.map((p) => { const v = prom(p.k); return `
-        <div class="dk" title="Promedio del equipo sobre 20 | ${p.auto ? "automático" : "manual"} | peso ${Math.round(p.peso * 100)}%"><div class="dk-cab"><span class="dk-ico">${ICO_PILAR[p.k]}</span><span>${p.t.replace(" del mes", "").replace(" a tiempo", "")}</span></div>
-          <div class="dk-num"><b>${v.toFixed(1)}</b></div></div>`; }).join("")}</div>
+        <div class="dk" title="Promedio del equipo sobre 20 | ${p.auto ? "automático" : "manual"} | peso ${Math.round(p.peso * 100)}%"><div class="dk-cab"><span>${p.t}</span></div>
+          <div class="dk-num"><b>${v.toFixed(1)}</b><small>/ 20</small></div><small class="dk-pie">Promedio del equipo</small></div>`; }).join("")}</div>
       <section class="dg-caja">
         <div class="dg-cab"><h4>Rendimiento diario</h4>
           <div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
