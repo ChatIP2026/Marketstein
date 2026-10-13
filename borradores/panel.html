@@ -848,6 +848,13 @@
     header, .dash-acc, .dash-manual, .detalle, .velo, .aviso { display: none !important; }
     #vistaDash { box-shadow: none !important; }
   }
+  .dm-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 760px) { .dm-cols { grid-template-columns: 1fr; } }
+  .dm-box { border-radius: 16px; padding: 14px 16px; background: rgba(255,255,255,.03); border: 1px solid var(--borde); }
+  .dm-box h5 { margin: 0 0 8px; font-size: .88rem; color: #fff; }
+  .dm-fila { display: grid; grid-template-columns: 1fr 90px 70px; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06); } .dm-fila:last-child { border-bottom: 0; }
+  .dm-fila input { background: rgba(255,255,255,.05); border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; padding: 7px 10px; font: inherit; text-align: center; color-scheme: dark; width: 100%; box-sizing: border-box; }
+  .dm-fila em { font-style: normal; font-size: .8rem; font-weight: 700; text-align: right; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -2156,8 +2163,10 @@
         </div>`).join("")}</div>
 `}
       ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Alimentan los recuadros de Puntualidad y Vestimenta.</p>
-        <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
-        ${EVALUADOS.map((n) => { const m = MANUAL[mesDash][n]; return `<span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span><input type="number" min="0" max="10" value="${m.tardanzas}" data-n="${n}" data-c="tardanzas" /><input type="number" min="0" max="20" value="${m.vestimenta}" data-n="${n}" data-c="vestimenta" />`; }).join("")}</div></section>` : ""}`;
+        <div class="dm-cols">${[["tardanzas", "Días de tardanza", "punt", 10], ["vestimenta", "Vestimenta (0 a 20)", "vest", 20]].map(([c, t, k, max]) => `
+          <div class="dm-box"><h5>${t}</h5>${EVALUADOS.map((n) => { const r = res.find((x) => x.n === n); return `
+            <div class="dm-fila"><span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span>
+              <input type="number" min="0" max="${max}" value="${MANUAL[mesDash][n][c]}" data-n="${n}" data-c="${c}" /><em class="t-${tono(r.v[k])}">${r.v[k].toFixed(1)} pts</em></div>`; }).join("")}</div>`).join("")}</div></div></section>` : ""}`;
     cont.querySelector("#dashMes").onchange = (e) => { mesDash = e.target.value; pintarDash(); };
     cont.querySelector("#dashVista")?.addEventListener("click", () => { vistaTabla = !vistaTabla; pintarDash(); });
     const menuD = cont.querySelector(".dash-menu");
@@ -2176,7 +2185,7 @@
       avisar("⬇ Descargando el dashboard en Excel");
     }));
     if (!cont.querySelector(".dg-svg")) return;
-    cont.querySelectorAll(".dm-tabla input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); pintarDash(); }));
+    cont.querySelectorAll(".dm-cols input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); pintarDash(); }));
     // Cruz + tooltip al pasar el mouse
     const svg = cont.querySelector(".dg-svg"), cruz = svg.querySelector(".dg-cruz"), pts = svg.querySelector(".dg-puntos"), tip = cont.querySelector(".dg-tip");
     svg.querySelector(".dg-hit").onmousemove = (e) => {
