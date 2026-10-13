@@ -1023,8 +1023,9 @@
   .dt-caja { border-color: #0a0a0a !important; }
   .ent-filtros button svg { width: 18px !important; height: 18px !important; }
   /* Tickets: toques en negro */
-  .tk-ir { background: #0a0a0a !important; color: #fff !important; border-color: #0a0a0a !important; }
-  .tk:hover .tk-ir { background: #262626 !important; }
+  .tk:hover { filter: drop-shadow(0 0 1.2px #0a0a0a) drop-shadow(0 12px 24px rgba(10,10,10,.18)) !important; }
+  .tk.p-fuerte { filter: drop-shadow(1.5px 0 0 #0a0a0a) drop-shadow(-1.5px 0 0 #0a0a0a) drop-shadow(0 1.5px 0 #0a0a0a) drop-shadow(0 -1.5px 0 #0a0a0a) !important; }
+  .tk.p-fuerte:hover { filter: drop-shadow(1.5px 0 0 #0a0a0a) drop-shadow(-1.5px 0 0 #0a0a0a) drop-shadow(0 1.5px 0 #0a0a0a) drop-shadow(0 -1.5px 0 #0a0a0a) drop-shadow(0 12px 24px rgba(10,10,10,.25)) !important; }
   .tk-id { background: #0a0a0a; color: #fff !important; font-weight: 700; padding: 3px 9px; border-radius: 999px; font-size: .7rem; }
 </style>
 </head>
@@ -1946,7 +1947,7 @@
   function tarjetaTk(t) {
     const pr = TK_PRIO[t.prioridad], sol = esSolicitante();
     const quien = sol ? t.asignado : t.solicitante;
-    return `<button class="tk" data-id="${t.id}">
+    return `<button class="tk ${["urgente", "alta"].includes(t.prioridad) && !["entregado", "rechazado"].includes(t.estado) ? "p-fuerte" : ""}" data-id="${t.id}">
       <div class="tk-a">${quien ? `<i class="av tk-av" style="${fondoAv(quien)}">${letraAv(quien)}</i>` : `<i class="av tk-av vacio">?</i>`}<span class="tk-id">#${String(t.id).padStart(3, "0")}</span></div>
       <span class="tk-ir">${FLECHA}</span>
       <div class="tk-b">
