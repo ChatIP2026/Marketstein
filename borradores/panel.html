@@ -1011,6 +1011,16 @@
   @keyframes desc-suelo { 0% { transform: scaleX(1); } 7% { transform: scaleX(.75); } 14%, 100% { transform: scaleX(1); } }
   #dashVista { display: inline-flex; align-items: center; gap: 8px; }
   .mas-ico { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: #0a0a0a; box-shadow: 0 1px 3px rgba(0,0,0,.2); } .mas-ico svg { width: 15px; height: 15px; }
+  /* Vista detallada: encabezado y pie en negro */
+  .dt thead th { background: #0a0a0a !important; color: #fff !important; border-right-color: rgba(255,255,255,.12) !important; }
+  .dt thead tr:first-child th:is(:nth-child(3), :nth-child(5)), .dt thead tr:last-child th:is(:nth-child(4), :nth-child(5), :nth-child(6), :nth-child(9)) { background: #262626 !important; }
+  .dt thead tr:last-child th { color: #a3a3a3 !important; }
+  .dt thead tr:first-child th:not(:first-child) { border-bottom: 1px solid rgba(255,255,255,.18) !important; }
+  .dt tfoot td { background: #0a0a0a !important; color: #fff !important; border-right-color: rgba(255,255,255,.12) !important; }
+  .dt tfoot td:is(:nth-child(3), :nth-child(5)) { background: #262626 !important; }
+  .dt-prom { background: #fff !important; color: #0a0a0a !important; border-color: #fff !important; }
+  .dt-prom-final { background: #16a34a !important; color: #fff !important; border-color: #16a34a !important; }
+  .dt-caja { border-color: #0a0a0a !important; }
 </style>
 </head>
 <body>
