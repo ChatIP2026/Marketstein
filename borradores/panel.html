@@ -790,7 +790,7 @@
   .dg-grid b { font-size: .84rem; color: #d5dcf2; } .dg-grid p { margin: 6px 0 4px; font-size: .82rem; color: var(--tenue); line-height: 1.45; } .dg-grid small { font-size: .7rem; color: #a9b8e8; }
   .dk-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
   @media (max-width: 900px) { .dk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .dk { border-radius: 20px; padding: 16px 18px; min-height: 132px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+  .dk { border-radius: 20px; padding: 16px 18px; min-height: 120px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
     background: linear-gradient(120deg, rgba(60,70,140,.28), rgba(110,60,140,.18)); border: 1px solid rgba(190,205,245,.14); }
   .dk-cab { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: #d5dcf2; } .dk-cab em { margin-left: auto; font-style: normal; font-size: .72rem; color: var(--tenue); }
   .dk-ico { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: #fff; } .dk-ico svg { width: 16px; height: 16px; }
@@ -2083,17 +2083,15 @@
       <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
         <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div>
       <div class="dk-grid">${PILARES.map((p) => { const v = prom(p.k); return `
-        <div class="dk"><div class="dk-cab"><span class="dk-ico">${ICO_PILAR[p.k]}</span><span>${p.t}</span><em>${Math.round(p.peso * 100)}%</em></div>
-          <div class="dk-num"><b>${v.toFixed(1)}</b><small>/ 20</small></div>
-          <small class="dk-pie">Promedio del equipo | ${p.auto ? "automático" : "manual"}</small></div>`; }).join("")}</div>
+        <div class="dk" title="Promedio del equipo sobre 20 | ${p.auto ? "automático" : "manual"} | peso ${Math.round(p.peso * 100)}%"><div class="dk-cab"><span class="dk-ico">${ICO_PILAR[p.k]}</span><span>${p.t.replace(" del mes", "").replace(" a tiempo", "")}</span></div>
+          <div class="dk-num"><b>${v.toFixed(1)}</b></div></div>`; }).join("")}</div>
       <section class="dg-caja">
-        <div class="dg-cab"><div><h4>Rendimiento diario</h4><small>Puntaje automático (Proyectos y Tickets) de cada integrante, día a día.</small></div>
+        <div class="dg-cab"><h4>Rendimiento diario</h4>
           <div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
         <div class="dg-svg-caja"><svg viewBox="0 0 ${W} ${H}" class="dg-svg" role="img" aria-label="Rendimiento diario del equipo">${grid}${ejeX}${lineas}${etiquetas}
           <line class="dg-cruz" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/><g class="dg-puntos"></g>
           <rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="dg-hit"/></svg>
           <div class="dg-tip" hidden></div></div>
-        <p class="det-nota">Vista previa: la curva es de ejemplo; al conectar Rabbit se actualizará cada día con datos reales.</p>
       </section>
       ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Alimentan los recuadros de Puntualidad y Vestimenta.</p>
         <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
