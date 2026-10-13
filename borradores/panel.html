@@ -832,22 +832,26 @@
   .dash-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; min-width: 220px; padding: 6px; border-radius: 12px; background: #15171c; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 12px 30px rgba(0,0,0,.5); display: flex; flex-direction: column; }
   .dash-menu[hidden] { display: none; }
   .dash-menu button { all: unset; cursor: pointer; padding: 9px 12px; border-radius: 8px; font-size: .86rem; } .dash-menu button:hover { background: rgba(255,255,255,.07); }
-  .dt-caja { overflow-x: auto; border-radius: 18px; border: 1px solid var(--borde); margin-bottom: 18px; }
+  .dt-caja { overflow-x: auto; border-radius: 18px; border: 1px solid rgba(255,255,255,.12); margin-bottom: 18px; box-shadow: 0 14px 34px rgba(0,0,0,.35); }
   .dt { width: 100%; border-collapse: collapse; font-size: .86rem; }
-  .dt th, .dt td { padding: 10px 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,.06); white-space: nowrap; }
+  .dt th, .dt td { padding: 11px 12px; text-align: center; white-space: nowrap; border-right: 1px solid rgba(255,255,255,.09); }
+  .dt th:last-child, .dt td:last-child { border-right: 0; }
   .dt td:first-child, .dt th:first-child { text-align: left; }
-  .dt thead th { font-size: .74rem; font-weight: 700; color: #fff; background: #1a1e29; }
-  .dt thead tr:first-child th { color: #fff; font-size: .8rem; background: #1a1e29; border-bottom: 1px solid rgba(255,255,255,.08); }
-  .dt thead tr:last-child th { color: #9aa1b4; font-weight: 600; background: #161a23; }
-  /* Separación entre pilares */
-  .dt thead tr:first-child th:nth-child(n+2),
-  .dt thead tr:last-child th:is(:nth-child(1), :nth-child(4), :nth-child(7), :nth-child(9), :nth-child(10)),
-  .dt tbody td:is(:nth-child(2), :nth-child(5), :nth-child(8), :nth-child(10), :nth-child(11)),
-  .dt tfoot td:is(:nth-child(2), :nth-child(4), :nth-child(6), :nth-child(8), :nth-child(9)) { border-left: 1px solid rgba(255,255,255,.14); }
-  .dt tbody tr:hover { background: rgba(255,255,255,.03); }
+  /* Encabezado en un solo bloque sólido */
+  .dt thead th { background: #23304d; color: #fff; font-weight: 700; font-size: .74rem; border-right-color: rgba(255,255,255,.14); }
+  .dt thead tr:first-child th { font-size: .82rem; padding-top: 14px; }
+  .dt thead tr:last-child th { color: #c3cbe0; font-weight: 600; padding-bottom: 12px; }
+  /* Filas alternadas */
+  .dt tbody tr:nth-child(odd) td { background: #1b202c; } .dt tbody tr:nth-child(even) td { background: #161a24; }
+  .dt tbody tr:hover td { background: #222839; }
+  /* Línea más marcada entre pilares */
+  .dt thead tr:first-child th:not(:last-child),
+  .dt thead tr:last-child th:is(:nth-child(3), :nth-child(6), :nth-child(8), :nth-child(9)),
+  .dt tbody td:is(:nth-child(1), :nth-child(4), :nth-child(7), :nth-child(9), :nth-child(10)),
+  .dt tfoot td:is(:nth-child(1), :nth-child(3), :nth-child(5), :nth-child(7), :nth-child(8)) { border-right: 1px solid rgba(255,255,255,.22); }
   .dt-n { font-weight: 700; font-variant-numeric: tabular-nums; } .dt-final { font-size: 1rem; }
   .dt-gan { color: #ffd45c; font-weight: 700; }
-  .dt tfoot td { color: #fff; font-weight: 700; font-size: .86rem; border-bottom: 0; background: #161a23; }
+  .dt tfoot td { color: #fff; font-weight: 700; font-size: .86rem; background: #23304d; border-top: 1px solid rgba(255,255,255,.14); }
   @media print {
     body { background: #0c0e13 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     header, .dash-acc, .dash-manual, .detalle, .velo, .aviso { display: none !important; }
