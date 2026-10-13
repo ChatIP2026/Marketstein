@@ -953,6 +953,13 @@
   .per:has(.r-jefa) .tk-chip { background: rgba(255,255,255,.1) !important; border-color: rgba(255,255,255,.15) !important; }
   .ec-lado .ec-prox { background: transparent !important; } .ec-lado .bc-f.lejos, .ec-lado .bc-f.proxima { color: #c9ced9 !important; }
   .ec-dia.sel { background: #14161c !important; border-color: #14161c !important; } .ec-dia.sel .ec-num { background: #fff !important; color: #14161c !important; } .ec-dia.sel .ec-ev { background: rgba(255,255,255,.12) !important; color: #fff !important; }
+  /* Carpetas: negras en fondo claro, blancas con gris en fondo negro */
+  .carpeta-azul, .carpeta-azul[class*="c-"] { background: linear-gradient(180deg, #2a2d35, #14161c) !important; box-shadow: 0 10px 20px rgba(15,23,42,.25) !important; }
+  .carpeta-azul::before, .carpeta-azul[class*="c-"]::before { background: #2a2d35 !important; }
+  .carpeta-azul::after { background: #e5e7eb !important; }
+  :is(.bc.a-en_curso, .ec-lado) .carpeta-azul { background: linear-gradient(180deg, #ffffff, #d4d7de) !important; box-shadow: 0 10px 20px rgba(0,0,0,.35) !important; }
+  :is(.bc.a-en_curso, .ec-lado) .carpeta-azul::before { background: #d4d7de !important; }
+  :is(.bc.a-en_curso, .ec-lado) .carpeta-azul::after { background: #9ca3af !important; }
 </style>
 </head>
 <body>
