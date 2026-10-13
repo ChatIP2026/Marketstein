@@ -810,7 +810,7 @@
   .di-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
   @media (min-width: 1500px) { .di-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   @media (max-width: 760px) { .di-grid { grid-template-columns: 1fr; } }
-  .di { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 18px 18px 20px; border-radius: 22px;
+  .di { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 18px 18px 20px; border-radius: 22px;
     background: #050607; border: 1px solid rgba(255,255,255,.06); box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
   .di-per { display: grid; grid-template-columns: auto 1fr; row-gap: 10px; column-gap: 10px; align-items: center; min-width: 0; }
   .di-av { width: 36px !important; height: 36px !important; } .di-per b { font-size: 1rem; font-weight: 500; color: #f2f3f5; }
@@ -820,6 +820,12 @@
   .di-ico { width: 16px; display: grid; place-items: center; color: #6c717d; margin-right: 4px; } .di-ico svg { width: 13px; height: 13px; }
   .di-fila i { width: 22px; height: 10px; border-radius: 6px; background: linear-gradient(180deg, #55575d, #3f4146); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
   .di-fila i.on { background: #5fe03a; box-shadow: none; }
+  .di-fila { position: relative; cursor: default; border-radius: 8px; transition: background .15s; }
+  .di-pilares:hover .di-fila { opacity: .45; } .di-pilares .di-fila:hover { opacity: 1; background: rgba(255,255,255,.05); }
+  .di-tip { position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 5; min-width: 170px; padding: 10px 12px; border-radius: 12px; background: #15171c; border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 12px 30px rgba(0,0,0,.5); display: flex; flex-direction: column; gap: 3px; opacity: 0; transform: translateY(4px); pointer-events: none; transition: .15s; white-space: nowrap; }
+  .di-fila:hover .di-tip { opacity: 1; transform: none; }
+  .di-tip b { font-size: .82rem; color: #fff; } .di-tip span { font-size: .78rem; color: #c9ced9; } .di-tip em { font-style: normal; font-size: .74rem; color: #5fe03a; font-weight: 700; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -2110,7 +2116,8 @@
         <div class="di">
           <div class="di-per"><i class="av di-av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i><b>${r.n}</b><span class="di-final">${r.final.toFixed(1)}<small> / 20</small></span></div>
           <div class="di-pilares">${PILARES.map((p) => { const on = Math.round((r.v[p.k] / 20) * 6); return `
-            <div class="di-fila" title="${p.t}: ${r.v[p.k].toFixed(1)} / 20"><span class="di-ico">${ICO_PILAR[p.k]}</span>${Array.from({ length: 6 }, (_, i) => `<i class="${i < on ? "on" : ""}"></i>`).join("")}</div>`; }).join("")}</div>
+            <div class="di-fila"><span class="di-ico">${ICO_PILAR[p.k]}</span>${Array.from({ length: 6 }, (_, i) => `<i class="${i < on ? "on" : ""}"></i>`).join("")}
+              <div class="di-tip"><b>${p.t}</b><span>${r.det[p.k].replace(" | manual", "")}</span><em>${r.v[p.k].toFixed(1)} / 20</em></div></div>`; }).join("")}</div>
         </div>`).join("")}</div>
       ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Alimentan los recuadros de Puntualidad y Vestimenta.</p>
         <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
