@@ -638,7 +638,7 @@
   .bc-estado option { background: #ffffff; }
   /* ===== Tickets ===== */
   .nav-num { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; background: #ff9d42; color: #111; font-size: .68rem; font-weight: 800; }
-  body.rol-solicitante .rejilla, body.rol-solicitante .campana-btn { display: none !important; }
+  body.rol-solicitante .rejilla { display: none !important; }
   .mp-grupo { font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--tenue); padding: 8px 8px 4px; }
   .mp-op > span:not(.ok) { display: flex; flex-direction: column; line-height: 1.2; } .mp-op small { font-size: .7rem; color: var(--tenue); }
   .tk-nuevo { height: 40px; padding: 0 18px; font-size: .92rem; }
@@ -1036,6 +1036,27 @@
   .tk-id { background: #0a0a0a; color: #fff !important; font-weight: 700; padding: 3px 9px; border-radius: 999px; font-size: .7rem; }
   .tk.p-fuerte .bc-f.urgente { color: #ff8a8f !important; }
   .tk-prio-kpis { gap: 10px !important; } .tpk { padding: 10px 16px; border-radius: 16px; background: #fff; border: 1px solid #e5e5e5; box-shadow: 0 4px 14px rgba(10,10,10,.05); }
+  /* Perfil y notificaciones */
+  .mp-yo { display: flex; align-items: center; gap: 10px; padding: 4px 4px 12px; border-bottom: 1px solid var(--borde); margin-bottom: 8px; }
+  .mp-yo i { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-weight: 700; flex: none; }
+  .mp-yo b { display: block; font-size: .95rem; } .mp-yo small { font-size: .74rem; color: var(--tenue); }
+  .mp-acc { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; font-size: .88rem; }
+  .mp-acc svg { width: 18px; height: 18px; } .mp-acc:hover { background: #f5f5f5; } .mp-acc.salir { color: #dc2626 !important; }
+  .mp-demo { margin-top: 8px; border-top: 1px solid var(--borde); padding-top: 6px; } .mp-demo summary { cursor: pointer; font-size: .72rem; color: var(--tenue); padding: 6px 4px; }
+  .menu-notif { width: 360px !important; right: 86px !important; padding: 0 !important; overflow: hidden; }
+  .nt-cab { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--borde); }
+  .nt-cab b { font-size: 1rem; } .nt-todas { all: unset; cursor: pointer; font-size: .74rem; color: #737373; } .nt-todas:hover { color: #0a0a0a; text-decoration: underline; }
+  .nt-lista { max-height: 460px; overflow-y: auto; padding: 4px 8px 10px; }
+  .nt-lista .mp-grupo span { background: #0a0a0a; color: #fff; border-radius: 999px; padding: 1px 7px; margin-left: 4px; }
+  .nt { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 12px; position: relative; }
+  .nt:hover { background: #f5f5f5; } .nt.nueva { background: #fafafa; }
+  .nt-ico { width: 34px; height: 34px; flex: none; border-radius: 10px; display: grid; place-items: center; background: #f5f5f5; font-size: 1rem; }
+  .nt.nueva .nt-ico { background: #0a0a0a; }
+  .nt-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; } .nt-txt b { font-size: .84rem; } .nt-txt small { font-size: .78rem; color: #525252; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 250px; } .nt-txt em { font-style: normal; font-size: .7rem; color: #a3a3a3; }
+  .nt:not(.nueva) .nt-txt b { font-weight: 500; color: #525252; }
+  .nt-punto { position: absolute; right: 12px; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: #0a0a0a; }
+  .nt-vacio { font-size: .8rem; color: var(--tenue); padding: 6px 10px; margin: 0; }
+  .insignia { background: #0a0a0a !important; color: #fff !important; border-color: #fff !important; }
 </style>
 </head>
 <body>
@@ -1064,12 +1085,12 @@
     <nav>
       <a class="activo" data-p="inicio"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Inicio</a><a data-p="mis"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Mi entorno</a><a data-p="tickets"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg><span class="nl">Tickets</span> <span class="nav-num" id="navTk"></span></a><a data-p="personas"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.2.6 3.5 2.4 3.5 5.2"/></svg>Personas</a><a data-p="dashboard"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/><path d="M16 7h4v4"/></svg>Dashboard</a>
     </nav>
-    <div class="boton-neo campana-btn" title="Notificaciones" onclick="this.querySelector('.insignia')?.remove()">
+    <div class="boton-neo campana-btn" title="Notificaciones" id="campanaBtn">
       <svg viewBox="0 0 24 24" fill="currentColor">
         <g class="badajo"><circle cx="12" cy="3.6" r="1.4"/><path d="M12 4.5c-3.6 0-6 2.7-6 6.3v3.4L4.3 17.3c-.3.6.1 1.2.8 1.2h13.8c.7 0 1.1-.6.8-1.2L18 14.2v-3.4c0-3.6-2.4-6.3-6-6.3Z"/><path d="M9.7 19.6a2.4 2.4 0 0 0 4.6 0Z"/></g>
         <g class="ondas" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.2 9.5A9 9 0 0 1 6 4.6"/><path d="M20.8 9.5A9 9 0 0 0 18 4.6"/></g>
       </svg>
-      <span class="insignia">1</span>
+      <span class="insignia" id="nNotif" hidden></span>
     </div>
     <div class="boton-neo" title="Mi perfil" id="perfilBtn">
       <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.2"/><path d="M4.5 20.2c0-3.9 3.2-6.4 7.5-6.4s7.5 2.5 7.5 6.4c0 .6-.4.9-1 .9H5.5c-.6 0-1-.3-1-.9Z"/></svg>
@@ -1077,10 +1098,14 @@
   </header>
 
   <div class="menu-perfil" id="menuPerfil" hidden>
-    <div class="mp-tit">¿Quién eres?</div>
-    <div id="mpLista"></div>
-    <div class="mp-nota">Vista previa: luego se sabrá solo al iniciar sesión.</div>
+    <div id="mpCab"></div>
+    <div id="mpAcc"></div>
+    <details class="mp-demo"><summary>Vista previa: cambiar de persona</summary>
+      <div id="mpLista"></div>
+      <div class="mp-nota">Solo en la vista previa. Con el login real, Rabbit sabrá quién eres.</div>
+    </details>
   </div>
+  <div class="menu-perfil menu-notif" id="menuNotif" hidden></div>
 
   <section class="mis vidrio" id="vistaMis" hidden></section>
   <section class="mis vidrio" id="vistaTickets" hidden></section>
@@ -1671,11 +1696,68 @@
       + `<div class="mp-grupo">Otras áreas</div>` + Object.entries(SOLICITANTES).map(([n, a]) => op(n, a)).join("");
     mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
       yo = b.dataset.n; try { localStorage.setItem("rabbit-yo", yo); } catch (e) {}
-      menuPerfil.hidden = true; pintarPerfil(); aplicarRol();
+      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif();
+    }));
+    const ext = !!SOLICITANTES[yo];
+    document.getElementById("mpCab").innerHTML = `<div class="mp-yo"><i style="${fondoAv(yo)}">${letraAv(yo)}</i><div><b>${yo}</b><small>${ext ? SOLICITANTES[yo] : yo === JEFA ? "Marketing | Jefa" : "Marketing"}</small></div></div>`;
+    const IC = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+    document.getElementById("mpAcc").innerHTML = (ext ? `<button class="mp-acc" id="mpMisTk">${IC('<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/>')}Mis tickets (historial completo)</button>` : "")
+      + `<button class="mp-acc salir" id="mpSalir">${IC('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>')}Cerrar sesión</button>`;
+    document.getElementById("mpMisTk")?.addEventListener("click", () => { menuPerfil.hidden = true; mesTk = "todos"; filtroTk = "todos"; irA("tickets"); });
+    document.getElementById("mpSalir").onclick = () => { location.href = "login.html"; };
+  }
+  document.getElementById("perfilBtn").onclick = (e) => { e.stopPropagation(); document.getElementById("menuNotif").hidden = true; menuPerfil.hidden = !menuPerfil.hidden; };
+  document.addEventListener("click", (e) => { if (!menuPerfil.contains(e.target)) menuPerfil.hidden = true; if (!menuNotif.contains(e.target) && !e.target.closest("#campanaBtn")) menuNotif.hidden = true; });
+
+  // ===== Notificaciones (por persona): no leídas primero, luego leídas =====
+  const menuNotif = document.getElementById("menuNotif");
+  const LEIDAS = {}; // { persona: Set(ids) } (en Supabase se guardará por usuario)
+  const haceDias = (n) => new Date(Date.now() - n * 864e5).toISOString();
+  function notificaciones() {
+    const L = [], hoyI = new Date().toISOString().slice(0, 10);
+    const add = (id, ico, tit, txt, at, ir) => L.push({ id, ico, tit, txt, at, ir });
+    const tks = (() => { try { return tickets; } catch (e) { return []; } })();
+    if (SOLICITANTES[yo]) {
+      // Externos: avance de sus propios tickets
+      tks.filter((t) => t.solicitante === yo).forEach((t) => {
+        const num = "#" + String(t.id).padStart(3, "0");
+        if (t.estado === "revision_inicial") add("rv" + t.id, "👀", "Tu ticket está en revisión", `${num} ${t.titulo}`, t.historial[0].at, ["tk", t.id]);
+        const ac = t.historial.find((h) => /Aceptó/.test(h.txt)); if (ac) add("ap" + t.id, "✅", "Tu ticket fue aprobado", `${num} ${t.titulo} | lo hará ${t.asignado}`, ac.at, ["tk", t.id]);
+        const en = t.historial.find((h) => /entregado/i.test(h.txt)); if (t.estado === "entregado" && en) add("fn" + t.id, "🎉", "Tu ticket fue finalizado", `${num} ${t.titulo}`, en.at, ["tk", t.id]);
+      });
+    } else {
+      // Vencimientos: 4 días o menos
+      [...mapaP.values()].filter((p) => p.estado !== "listo" && p.fecha_limite && (yo === JEFA || p.encargados.includes(yo))).forEach((p) => {
+        const d = diasHasta(p.fecha_limite); if (d >= 0 && d <= 4) add("vp" + p.id, "⏰", d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `Vence en ${d} días`, `Proyecto: ${p.nombre}`, haceDias(Math.max(0, 4 - d) * 0.2), ["p", p.id]);
+      });
+      tks.filter((t) => t.asignado === yo && !["entregado", "rechazado"].includes(t.estado)).forEach((t) => {
+        const d = diasHasta(t.fecha); if (d >= 0 && d <= 4) add("vt" + t.id, "⏰", d === 0 ? "Ticket vence hoy" : d === 1 ? "Ticket vence mañana" : `Ticket vence en ${d} días`, `#${String(t.id).padStart(3, "0")} ${t.titulo}`, haceDias(0.1), ["tk", t.id]);
+      });
+      // Tickets nuevos por aprobar (solo Hilary)
+      if (yo === JEFA) tks.filter((t) => t.estado === "revision_inicial").forEach((t) => add("nt" + t.id, "📨", "Nuevo ticket por revisar", `${t.solicitante} (${t.area}): ${t.titulo}`, t.historial[0].at, ["tk", t.id]));
+      // Asignaciones nuevas: tickets, proyectos y tareas
+      tks.filter((t) => t.asignado === yo).forEach((t) => { const h = t.historial.find((x) => /asignado a/.test(x.txt)); if (h) add("at" + t.id, "🎫", "Te asignaron un ticket", `#${String(t.id).padStart(3, "0")} ${t.titulo}`, h.at, ["tk", t.id]); });
+      [...mapaP.values()].filter((p) => p.encargados.includes(yo) && p.creado_por && p.creado_por !== yo && !p.solicitado_por).forEach((p) => add("ap" + p.id, "📁", "Te asignaron un proyecto", `${p.nombre} | por ${p.creado_por}`, p.created_at, ["p", p.id]));
+      [...mapaT.values()].filter((t) => t.encargado === yo && !t.hecha && mapaP.has(t.proyecto_id)).slice(0, 4).forEach((t, i) => add("as" + t.id, "☑️", "Te asignaron una tarea", `${t.texto} | ${mapaP.get(t.proyecto_id).nombre}`, t.created_at || haceDias(i + 1), ["p", t.proyecto_id]));
+    }
+    // Ejemplo: algunas ya leídas al inicio para mostrar los dos grupos
+    if (!LEIDAS[yo]) LEIDAS[yo] = new Set(L.sort((a, b) => b.at.localeCompare(a.at)).slice(Math.ceil(L.length / 2)).map((n) => n.id));
+    return L.sort((a, b) => b.at.localeCompare(a.at));
+  }
+  function pintarNotif() {
+    const L = notificaciones(), leidas = LEIDAS[yo], nuevas = L.filter((n) => !leidas.has(n.id)), viejas = L.filter((n) => leidas.has(n.id));
+    const badge = document.getElementById("nNotif"); badge.textContent = nuevas.length; badge.hidden = !nuevas.length;
+    const item = (n, nueva) => `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${n.ico}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small><em>${hace(n.at)}</em></span>${nueva ? '<i class="nt-punto"></i>' : ""}</button>`;
+    menuNotif.innerHTML = `<div class="nt-cab"><b>Notificaciones</b>${nuevas.length ? '<button class="nt-todas">Marcar todas como leídas</button>' : ""}</div>
+      <div class="nt-lista"><div class="mp-grupo">No leídas <span>${nuevas.length}</span></div>${nuevas.length ? nuevas.map((n) => item(n, true)).join("") : '<p class="nt-vacio">Estás al día 🎉</p>'}
+      <div class="mp-grupo">Leídas</div>${viejas.length ? viejas.map((n) => item(n, false)).join("") : '<p class="nt-vacio">Nada por aquí.</p>'}</div>`;
+    menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
+    menuNotif.querySelectorAll(".nt").forEach((b) => (b.onclick = () => {
+      const n = L.find((x) => x.id === b.dataset.id); leidas.add(n.id); menuNotif.hidden = true; pintarNotif();
+      if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1]); }
     }));
   }
-  document.getElementById("perfilBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = !menuPerfil.hidden; };
-  document.addEventListener("click", (e) => { if (!menuPerfil.contains(e.target)) menuPerfil.hidden = true; });
+  document.getElementById("campanaBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = true; pintarNotif(); menuNotif.hidden = !menuNotif.hidden; };
 
   // ===== Navegación entre pestañas =====
   let pagina = "inicio";
@@ -2111,7 +2193,7 @@
     };
     document.body.classList.add("con-detalle");
   }
-  aplicarRol();
+  aplicarRol(); pintarNotif();
 
   // ===== Personas: cuentas con acceso a Rabbit (las crea el equipo de marketing) =====
   const AREAS = ["Marketing", "Comercial", "Ventas", "Finanzas", "Recursos Humanos", "Legal", "Operaciones"];
