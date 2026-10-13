@@ -1057,6 +1057,18 @@
   .nt-punto { position: absolute; right: 12px; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: #0a0a0a; }
   .nt-vacio { font-size: .8rem; color: var(--tenue); padding: 6px 10px; margin: 0; }
   .insignia { background: #e5484d !important; color: #fff !important; border: 2px solid #fff !important; min-width: 20px !important; height: 20px !important; padding: 0 4px !important; border-radius: 10px !important; font-size: .62rem !important; line-height: 1 !important; box-sizing: border-box !important; letter-spacing: -.02em; font-weight: 800 !important; top: -8px !important; right: -8px !important; }
+  /* Avisos emergentes */
+  #toasts { position: fixed; top: 16px; right: 16px; z-index: 60; display: flex; flex-direction: column; gap: 10px; width: min(370px, calc(100vw - 32px)); pointer-events: none; }
+  .toast { all: unset; box-sizing: border-box; pointer-events: auto; cursor: pointer; display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 20px;
+    background: rgba(255,255,255,.86); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(10,10,10,.06); box-shadow: 0 18px 40px rgba(10,10,10,.18);
+    animation: toast-in .45s cubic-bezier(.2,.9,.3,1.2) both; }
+  .toast.fuera { animation: toast-out .35s ease forwards; }
+  .toast-app { width: 38px; height: 38px; flex: none; border-radius: 10px; background: #0a0a0a; display: grid; place-items: center; } .toast-app img { width: 26px; filter: invert(1); }
+  .toast-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+  .toast-top { display: flex; justify-content: space-between; } .toast-top b { font-size: .68rem; letter-spacing: .04em; color: #737373; } .toast-top em { font-style: normal; font-size: .68rem; color: #a3a3a3; }
+  .toast-txt > b { font-size: .88rem; color: #0a0a0a; } .toast-txt small { font-size: .8rem; color: #525252; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @keyframes toast-in { from { transform: translateY(-120%); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes toast-out { to { transform: translateY(-120%); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -1696,7 +1708,7 @@
       + `<div class="mp-grupo">Otras áreas</div>` + Object.entries(SOLICITANTES).map(([n, a]) => op(n, a)).join("");
     mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
       yo = b.dataset.n; try { localStorage.setItem("rabbit-yo", yo); } catch (e) {}
-      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif();
+      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); avisoDemo();
     }));
     const ext = !!SOLICITANTES[yo];
     document.getElementById("mpCab").innerHTML = `<div class="mp-yo"><i style="${fondoAv(yo)}">${letraAv(yo)}</i><div><b>${yo}</b><small>${ext ? SOLICITANTES[yo] : yo === JEFA ? "Marketing | Jefa" : "Marketing"}</small></div></div>`;
@@ -1757,6 +1769,20 @@
       if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1]); }
     }));
   }
+  // Aviso emergente tipo celular: baja desde arriba, dura unos segundos y desaparece
+  function mostrarToast(n) {
+    let pila = document.getElementById("toasts");
+    if (!pila) { pila = document.createElement("div"); pila.id = "toasts"; document.body.append(pila); }
+    const t = document.createElement("button");
+    t.className = "toast";
+    t.innerHTML = `<span class="toast-app"><img src="${CONEJO}" alt="" /></span><span class="toast-txt"><span class="toast-top"><b>RABBIT AI</b><em>ahora</em></span><b>${n.ico} ${esc(n.tit)}</b><small>${esc(n.txt)}</small></span>`;
+    const cerrar = () => { t.classList.add("fuera"); setTimeout(() => t.remove(), 350); };
+    t.onclick = () => { cerrar(); LEIDAS[yo].add(n.id); pintarNotif(); if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1]); } };
+    pila.prepend(t);
+    setTimeout(cerrar, 6000);
+  }
+  // Vista previa: al entrar (o cambiar de persona) llega su notificación más reciente sin leer
+  function avisoDemo() { setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, 1200); }
   document.getElementById("campanaBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = true; pintarNotif(); menuNotif.hidden = !menuNotif.hidden; };
 
   // ===== Navegación entre pestañas =====
@@ -2193,7 +2219,7 @@
     };
     document.body.classList.add("con-detalle");
   }
-  aplicarRol(); pintarNotif();
+  aplicarRol(); pintarNotif(); avisoDemo();
 
   // ===== Personas: cuentas con acceso a Rabbit (las crea el equipo de marketing) =====
   const AREAS = ["Marketing", "Comercial", "Ventas", "Finanzas", "Recursos Humanos", "Legal", "Operaciones"];
