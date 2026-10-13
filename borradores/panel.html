@@ -1009,6 +1009,8 @@
   @keyframes desc-giro { 0%, 18% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   @keyframes desc-tap { 0% { transform: translateY(0); } 7% { transform: translateY(2.5px); } 14%, 100% { transform: translateY(0); } }
   @keyframes desc-suelo { 0% { transform: scaleX(1); } 7% { transform: scaleX(.75); } 14%, 100% { transform: scaleX(1); } }
+  #dashVista { display: inline-flex; align-items: center; gap: 8px; }
+  .mas-ico { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: radial-gradient(circle at 35% 30%, #a3a3a3, #737373); box-shadow: inset 0 1px 2px rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.2); } .mas-ico svg { width: 15px; height: 15px; }
 </style>
 </head>
 <body>
@@ -2271,7 +2273,7 @@
     const defs = `<defs><pattern id="rayas" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/></pattern>${SERIES_B.map(([k, , c]) => `<linearGradient id="bg-${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}"/><stop offset=".55" stop-color="${c}" stop-opacity=".9"/><stop offset="1" stop-color="${c}" stop-opacity=".12"/></linearGradient>`).join("")}</defs>`;
     cont.innerHTML = `
       <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
-        <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? "📈 Vista gráfica" : "📋 Vista detallada"}</button>` : ""}
+        <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? "📈 Vista gráfica" : `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></span>Vista detallada`}</button>` : ""}
           <div class="dash-desc"><button class="cal-btn" id="dashDesc"><span class="desc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><g class="desc-toque"><g class="desc-flecha"><path d="M12 5v10M7.5 10.5 12 15l4.5-4.5"/></g></g><path class="desc-suelo" d="M5 20h14"/></svg></span>Descargar</button><div class="dash-menu" hidden><button data-d="pdf">PDF (para imprimir o enviar)</button><button data-d="csv">Excel (.csv)</button></div></div>
           <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div></div>
       <div class="dk-grid">${PILARES.map((p) => { const v = prom(p.k); return `
