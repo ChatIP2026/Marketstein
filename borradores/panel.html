@@ -991,6 +991,11 @@
   .db-hit { fill: transparent; rx: 10; } .db-grupo.on .db-hit { fill: rgba(255,255,255,.05); }
   .db-caja .dg-leyenda { font-size: .72rem; gap: 10px; }
   .dg-leyenda i.redondo { width: 8px; height: 8px; border-radius: 50%; }
+  .dg-linea { stroke-linejoin: miter !important; stroke-linecap: butt !important; stroke-width: 2.2 !important; }
+  .dg-pred { fill: none; stroke: #525252; stroke-width: 2.2; }
+  .dg-hoy { stroke: rgba(255,255,255,.45); stroke-dasharray: 4 4; }
+  .dg-hoy-t { fill: #a3a3a3; font-size: 13px; }
+  .dg-fut { fill: #525252 !important; }
 </style>
 </head>
 <body>
@@ -2222,21 +2227,22 @@
     const series = Object.fromEntries(EVALUADOS.map((n) => [n, serieDiaria(n, mesDash)]));
     const dias = series[EVALUADOS[0]].length;
     // Geometría del gráfico
-    const W = 700, H = 368, L = 36, R = 92, T = 16, B = 30;
-    const x = (d) => L + (dias === 1 ? 0 : ((d - 1) / (dias - 1)) * (W - L - R)), y = (v) => T + (1 - v / 20) * (H - T - B);
+    // Eje: días transcurridos + 2 días de predicción (en el mes actual); meses pasados se ven completos
+    const esHoyMes = mesDash === new Date().toISOString().slice(0, 7), diasMesL = new Date(+mesDash.slice(0, 4), +mesDash.slice(5), 0).getDate();
+    const PRED = esHoyMes ? Math.min(2, diasMesL - dias) : 0, ND = dias + PRED;
+    const W = 700, H = 368, L = 36, R = 16, T = 34, B = 30;
+    const x = (d) => L + (ND === 1 ? 0 : ((d - 1) / (ND - 1)) * (W - L - R)), y = (v) => T + (1 - v / 20) * (H - T - B);
     const grid = [0, 5, 10, 15, 20].map((g) => `<line x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}" class="dg-l"/><text x="${L - 8}" y="${y(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("");
-    const paso = 1;
-    const ejeX = Array.from({ length: dias }, (_, i) => i + 1).filter((d) => d === 1 || d % paso === 0 || d === dias).map((d) => `<text x="${x(d)}" y="${H - 8}" class="dg-t" text-anchor="middle">${d}</text>`).join("");
-    // Etiquetas directas al final de cada línea, separadas para que no choquen
-    const finales = EVALUADOS.map((n) => ({ n, yv: y(series[n][dias - 1]) })).sort((a, b) => a.yv - b.yv);
-    for (let i = 1; i < finales.length; i++) if (finales[i].yv - finales[i - 1].yv < 16) finales[i].yv = finales[i - 1].yv + 16;
-    // Curvas suaves (como la referencia) + promedio del equipo punteado con área rayada
-    const curva = (vals) => vals.map((v, i) => { const X = x(i + 1), Y = y(v); if (!i) return `M${X},${Y}`; const px = x(i), py = y(vals[i - 1]), cx = (px + X) / 2; return `C${cx},${py} ${cx},${Y} ${X},${Y}`; }).join(" ");
-    const promD = Array.from({ length: dias }, (_, i) => EVALUADOS.reduce((a, n) => a + series[n][i], 0) / EVALUADOS.length);
-    const area = `<path d="${curva(promD)} L${x(dias)},${y(0)} L${x(1)},${y(0)} Z" fill="url(#rayas)"/><path d="${curva(promD)}" class="dg-prom"/>`;
-    const lineas = area + EVALUADOS.map((n) => `<path class="dg-linea" style="--c:${COL_LINEA[n]}" d="${curva(series[n])}"/>
-      <circle cx="${x(dias)}" cy="${y(series[n][dias - 1])}" r="5" fill="${COL_LINEA[n]}" class="dg-fin"/>`).join("");
-    const etiquetas = finales.map((f) => `<text x="${x(dias) + 12}" y="${f.yv + 4}" class="dg-nom">${f.n} ${series[f.n][dias - 1].toFixed(1)}</text>`).join("");
+    const ejeX = Array.from({ length: ND }, (_, i) => i + 1).map((d) => `<text x="${x(d)}" y="${H - 8}" class="dg-t ${d > dias ? "dg-fut" : ""}" text-anchor="middle">${d}</text>`).join("");
+    const recta = (pts) => pts.map(([d, v], i) => `${i ? "L" : "M"}${x(d)},${y(v)}`).join(" ");
+    // Predicción: sigue la tendencia de los últimos 3 días de cada persona
+    const pred = (n) => { const v = series[n], k = Math.min(3, v.length - 1), pend = k ? (v[v.length - 1] - v[v.length - 1 - k]) / k : 0; return Array.from({ length: PRED }, (_, i) => Math.max(0, Math.min(20, v[v.length - 1] + pend * (i + 1) * 0.8))); };
+    const DSEM = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"], fHoy = new Date(+mesDash.slice(0, 4), +mesDash.slice(5) - 1, dias);
+    const marcaHoy = `<line x1="${x(dias)}" x2="${x(dias)}" y1="${T - 6}" y2="${H - B}" class="dg-hoy"/><text x="${x(dias)}" y="${T - 14}" class="dg-hoy-t" text-anchor="middle">${DSEM[fHoy.getDay()]} ${dias}</text>`;
+    const lineas = EVALUADOS.map((n) => (PRED ? `<path class="dg-pred" d="${recta([[dias, series[n][dias - 1]], ...pred(n).map((v, i) => [dias + i + 1, v])])}"/>` : "")).join("") + marcaHoy
+      + EVALUADOS.map((n) => `<path class="dg-linea" style="--c:${COL_LINEA[n]}" d="${recta(series[n].map((v, i) => [i + 1, v]))}"/>
+      <circle cx="${x(dias)}" cy="${y(series[n][dias - 1])}" r="11" fill="${COL_LINEA[n]}" opacity=".22"/><circle cx="${x(dias)}" cy="${y(series[n][dias - 1])}" r="5" fill="${COL_LINEA[n]}" class="dg-fin"/>`).join("");
+    const etiquetas = "";
     // Performance semanal: promedio de cada semana del mes por persona (las semanas futuras quedan vacías)
     const [yy, mm] = mesDash.split("-").map(Number), diasMes = new Date(yy, mm, 0).getDate(), nSem = Math.ceil(diasMes / 7);
     // Semana a nivel equipo: promedio del equipo y mejor puntaje de la semana
@@ -2274,7 +2280,7 @@
           <div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
         <div class="dg-svg-caja"><svg viewBox="0 0 ${W} ${H}" class="dg-svg" role="img" aria-label="Rendimiento diario del equipo">${defs}${grid}${ejeX}${lineas}${etiquetas}
           <line class="dg-cruz" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/><g class="dg-puntos"></g>
-          <rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="dg-hit"/></svg>
+          <rect x="${L}" y="${T}" width="${x(dias) - L}" height="${H - T - B}" fill="transparent" class="dg-hit"/></svg>
           <div class="dg-tip" hidden></div></div>
       </section>
       <section class="dg-caja db-caja">
@@ -2317,7 +2323,7 @@
     const svg = cont.querySelector(".dg-svg"), cruz = svg.querySelector(".dg-cruz"), pts = svg.querySelector(".dg-puntos"), tip = cont.querySelector(".dg-tip");
     svg.querySelector(".dg-hit").onmousemove = (e) => {
       const r = svg.getBoundingClientRect(), px = ((e.clientX - r.left) / r.width) * W;
-      const d = Math.min(dias, Math.max(1, Math.round(((px - L) / (W - L - R)) * (dias - 1)) + 1));
+      const d = Math.min(dias, Math.max(1, Math.round(((px - L) / (W - L - R)) * (ND - 1)) + 1));
       cruz.setAttribute("x1", x(d)); cruz.setAttribute("x2", x(d)); cruz.style.display = "";
       pts.innerHTML = EVALUADOS.map((n) => `<circle cx="${x(d)}" cy="${y(series[n][d - 1])}" r="5" fill="${COL_LINEA[n]}" class="dg-fin"/>`).join("");
       tip.hidden = false;
