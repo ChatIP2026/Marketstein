@@ -990,6 +990,7 @@
   .db-svg { width: 100%; height: auto; display: block; }
   .db-hit { fill: transparent; rx: 10; } .db-grupo.on .db-hit { fill: rgba(255,255,255,.05); }
   .db-caja .dg-leyenda { font-size: .72rem; gap: 10px; }
+  .dg-leyenda i.redondo { width: 8px; height: 8px; border-radius: 50%; }
 </style>
 </head>
 <body>
@@ -2238,13 +2239,17 @@
     const etiquetas = finales.map((f) => `<text x="${x(dias) + 12}" y="${f.yv + 4}" class="dg-nom">${f.n} ${series[f.n][dias - 1].toFixed(1)}</text>`).join("");
     // Performance semanal: promedio de cada semana del mes por persona (las semanas futuras quedan vacías)
     const [yy, mm] = mesDash.split("-").map(Number), diasMes = new Date(yy, mm, 0).getDate(), nSem = Math.ceil(diasMes / 7);
-    const sem = Array.from({ length: nSem }, (_, k) => Object.fromEntries(EVALUADOS.map((n) => { const v = series[n].slice(k * 7, k * 7 + 7); return [n, v.length ? v.reduce((a, b) => a + b, 0) / v.length : null]; })));
-    const BW = 460, BH = 300, BL = 30, BB = 30, BT = 16, by = (v) => BT + (1 - v / 20) * (BH - BT - BB), gw = (BW - BL - 8) / nSem, bw = (gw - 8) / EVALUADOS.length - 4;
+    // Semana a nivel equipo: promedio del equipo y mejor puntaje de la semana
+    const sem = Array.from({ length: nSem }, (_, k) => { const vs = EVALUADOS.map((n) => series[n].slice(k * 7, k * 7 + 7)).filter((v) => v.length).map((v) => v.reduce((a, b) => a + b, 0) / v.length);
+      return vs.length ? { prom: vs.reduce((a, b) => a + b, 0) / vs.length, mejor: Math.max(...vs) } : null; });
+    const SERIES_B = [["prom", "Promedio del equipo", "#d9dce3"], ["mejor", "Mejor puntaje", "#6b7080"]];
+    const BW = 460, BH = 300, BL = 30, BB = 30, BT = 16, by = (v) => BT + (1 - v / 20) * (BH - BT - BB), gw = (BW - BL - 8) / nSem, bw = (gw - 18) / 2;
+    const barra = (x0, v, col) => { const y0 = by(v), h = by(0) - y0, r = Math.min(10, bw / 3); return `<path d="M${x0},${by(0)} V${y0 + r} Q${x0},${y0} ${x0 + r},${y0} H${x0 + bw - r} Q${x0 + bw},${y0} ${x0 + bw},${y0 + r} V${by(0)} Z" fill="url(#bg-${col})"/>`; };
     const barras = [0, 10, 20].map((g) => `<line x1="${BL}" x2="${BW}" y1="${by(g)}" y2="${by(g)}" class="dg-l"/><text x="${BL - 8}" y="${by(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("")
-      + sem.map((w, k) => { const gx = BL + 8 + k * gw, x0 = gx + (gw - EVALUADOS.length * (bw + 3)) / 2;
-        return `<g class="db-grupo" data-k="${k}"><rect x="${gx}" y="${BT}" width="${gw - 4}" height="${BH - BT - BB}" class="db-hit"/>${EVALUADOS.map((n, i) => w[n] == null ? `<rect x="${x0 + i * (bw + 3)}" y="${by(0) - 4}" width="${bw}" height="4" rx="2" fill="rgba(255,255,255,.12)"/>` : `<rect x="${x0 + i * (bw + 3)}" y="${by(w[n])}" width="${bw}" height="${by(0) - by(w[n])}" rx="${Math.min(10, bw / 2.5)}" fill="url(#g-${n})"/>`).join("")}
-          <text x="${gx + (gw - 4) / 2}" y="${BH - 8}" class="dg-t" text-anchor="middle">Sem ${k + 1}</text></g>`; }).join("");
-    const defs = `<defs><pattern id="rayas" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/></pattern>${EVALUADOS.map((n) => `<linearGradient id="g-${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${COL_LINEA[n]}"/><stop offset="1" stop-color="${COL_LINEA[n]}" stop-opacity=".15"/></linearGradient>`).join("")}</defs>`;
+      + sem.map((w, k) => { const gx = BL + 8 + k * gw, x0 = gx + 6;
+        return `<g class="db-grupo" data-k="${k}"><rect x="${gx}" y="${BT}" width="${gw - 2}" height="${BH - BT - BB}" class="db-hit"/>${w ? SERIES_B.map(([key], i) => barra(x0 + i * (bw + 4), w[key], key)).join("") : `<rect x="${x0}" y="${by(0) - 4}" width="${bw * 2 + 4}" height="4" rx="2" fill="rgba(255,255,255,.12)"/>`}
+          <text x="${gx + (gw - 2) / 2}" y="${BH - 8}" class="dg-t" text-anchor="middle">Sem ${k + 1}</text></g>`; }).join("");
+    const defs = `<defs><pattern id="rayas" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/></pattern>${SERIES_B.map(([k, , c]) => `<linearGradient id="bg-${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}"/><stop offset=".55" stop-color="${c}" stop-opacity=".9"/><stop offset="1" stop-color="${c}" stop-opacity=".12"/></linearGradient>`).join("")}</defs>`;
     cont.innerHTML = `
       <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
         <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? "📈 Vista gráfica" : "📋 Vista detallada"}</button>` : ""}
@@ -2273,8 +2278,8 @@
           <div class="dg-tip" hidden></div></div>
       </section>
       <section class="dg-caja db-caja">
-        <div class="dg-cab"><h4>Performance semanal</h4><div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
-        <div class="dg-svg-caja"><svg viewBox="0 0 ${BW} ${BH}" class="db-svg" role="img" aria-label="Performance semanal del equipo">${defs.replace(/id="/g, 'id="b')}${barras.replace(/url\(#/g, "url(#b")}</svg><div class="dg-tip db-tip" hidden></div></div>
+        <div class="dg-cab"><h4>Performance semanal</h4><div class="dg-leyenda">${SERIES_B.map(([, t, c]) => `<span><i class="redondo" style="background:${c}"></i>${t}</span>`).join("")}</div></div>
+        <div class="dg-svg-caja"><svg viewBox="0 0 ${BW} ${BH}" class="db-svg" role="img" aria-label="Performance semanal del equipo">${defs}${barras}</svg><div class="dg-tip db-tip" hidden></div></div>
       </section></div>
       <div class="di-grid">${res.map((r) => `
         <div class="di">
@@ -2323,7 +2328,7 @@
     const bsvg = cont.querySelector(".db-svg"), btip = cont.querySelector(".db-tip");
     bsvg.querySelectorAll(".db-grupo").forEach((g) => {
       g.onmouseenter = () => { const k = +g.dataset.k, w = sem[k]; g.classList.add("on"); btip.hidden = false;
-        btip.innerHTML = `<b>Semana ${k + 1}</b>` + EVALUADOS.map((n) => `<div><i style="background:${COL_LINEA[n]}"></i>${n}<span>${w[n] == null ? "—" : w[n].toFixed(1)}</span></div>`).join("");
+        btip.innerHTML = `<b>Semana ${k + 1}</b>` + SERIES_B.map(([key, t, c]) => `<div><i style="background:${c}"></i>${t}<span>${w ? w[key].toFixed(1) : "—"}</span></div>`).join("");
         const r = bsvg.getBoundingClientRect(), gx = ((BL + 8 + k * gw) / BW) * r.width; btip.style.left = `${gx > r.width * 0.55 ? gx - 165 : gx + (gw / BW) * r.width}px`; };
       g.onmouseleave = () => { g.classList.remove("on"); btip.hidden = true; };
     });
