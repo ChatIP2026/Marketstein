@@ -2224,7 +2224,7 @@
     const W = 700, H = 300, L = 36, R = 92, T = 16, B = 30;
     const x = (d) => L + (dias === 1 ? 0 : ((d - 1) / (dias - 1)) * (W - L - R)), y = (v) => T + (1 - v / 20) * (H - T - B);
     const grid = [0, 5, 10, 15, 20].map((g) => `<line x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}" class="dg-l"/><text x="${L - 8}" y="${y(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("");
-    const paso = dias > 20 ? 5 : dias > 10 ? 3 : 1;
+    const paso = 1;
     const ejeX = Array.from({ length: dias }, (_, i) => i + 1).filter((d) => d === 1 || d % paso === 0 || d === dias).map((d) => `<text x="${x(d)}" y="${H - 8}" class="dg-t" text-anchor="middle">${d}</text>`).join("");
     // Etiquetas directas al final de cada línea, separadas para que no choquen
     const finales = EVALUADOS.map((n) => ({ n, yv: y(series[n][dias - 1]) })).sort((a, b) => a.yv - b.yv);
