@@ -1212,7 +1212,8 @@
       const total = misT.length + tks.length, hechas = (misT.length - pendT) + (tks.length - pendK);
       // Pendientes = proyectos activos + tareas pendientes + tickets abiertos; avance = tareas y tickets terminados
       const totP = [...mapaP.values()].filter((p) => p.encargados.includes(n)).length;
-      return { n, pend: suyos.length + pendT + pendK, tot: totP + misT.length + tks.length, det: `${suyos.length} proyectos | ${pendT} tareas | ${pendK} tickets`, avance: total ? hechas / total : 0 };
+      const tot = totP + misT.length + tks.length, pend = suyos.length + pendT + pendK;
+      return { n, pend, tot, hechasTot: tot - pend, det: `${suyos.length} proyectos | ${pendT} tareas | ${pendK} tickets`, avance: tot ? (tot - pend) / tot : 0 };
     });
     cont.innerHTML = "";
     for (const f of filas) {
@@ -1220,7 +1221,7 @@
       b.className = "carga" + (filtroSel.value === f.n ? " activa" : "");
       b.title = filtroSel.value === f.n ? "Quitar filtro" : `Ver solo los proyectos de ${f.n}`;
       b.innerHTML = `<i class="carga-av" style="${fondoAv(f.n)}">${letraAv(f.n)}</i>
-        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small title="${f.det}">${f.pend}/${f.tot} pendientes</small></div>
+        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small title="${f.det}">${f.hechasTot}/${f.tot} completadas</small></div>
         <div class="carga-barra" title="Avance: ${Math.round(f.avance * 100)}% de tareas y tickets terminados"><i style="width:${f.avance * 100}%;background:#5fe03a"></i></div></div>`;
       b.onclick = () => { filtroSel.value = filtroSel.value === f.n ? "" : f.n; pintar(); };
       cont.append(b);
