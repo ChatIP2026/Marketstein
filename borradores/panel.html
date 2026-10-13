@@ -837,21 +837,23 @@
   .dt th, .dt td { padding: 11px 12px; text-align: center; white-space: nowrap; border-right: 1px solid rgba(255,255,255,.09); }
   .dt th:last-child, .dt td:last-child { border-right: 0; }
   .dt td:first-child, .dt th:first-child { text-align: left; }
-  /* Encabezado en un solo bloque sólido */
-  .dt thead th { background: #23304d; color: #fff; font-weight: 700; font-size: .74rem; border-right-color: rgba(255,255,255,.14); }
+  /* Encabezado neutro; cada pilar intercala dos grises para distinguirse */
+  .dt thead th { color: #fff; font-weight: 700; font-size: .74rem; background: #2b2e35; border-right-color: rgba(255,255,255,.1); }
   .dt thead tr:first-child th { font-size: .82rem; padding-top: 14px; }
-  .dt thead tr:last-child th { color: #c3cbe0; font-weight: 600; padding-bottom: 12px; }
-  /* Filas alternadas */
-  .dt tbody tr:nth-child(odd) td { background: #1b202c; } .dt tbody tr:nth-child(even) td { background: #161a24; }
-  .dt tbody tr:hover td { background: #222839; }
+  .dt thead tr:last-child th { color: #b9bdc7; font-weight: 600; padding-bottom: 12px; }
+  .dt thead tr:first-child th:is(:nth-child(3), :nth-child(5)), .dt thead tr:last-child th:is(:nth-child(4), :nth-child(5), :nth-child(6), :nth-child(9)) { background: #363940; }
+  .dt tbody td { background: #1c1d21; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .dt tbody td:is(:nth-child(5), :nth-child(6), :nth-child(7), :nth-child(10)) { background: #23252a; }
+  .dt tbody tr:hover td { background: #2a2c32; }
   /* Línea más marcada entre pilares */
   .dt thead tr:first-child th:not(:last-child),
   .dt thead tr:last-child th:is(:nth-child(3), :nth-child(6), :nth-child(8), :nth-child(9)),
   .dt tbody td:is(:nth-child(1), :nth-child(4), :nth-child(7), :nth-child(9), :nth-child(10)),
-  .dt tfoot td:is(:nth-child(1), :nth-child(3), :nth-child(5), :nth-child(7), :nth-child(8)) { border-right: 1px solid rgba(255,255,255,.22); }
+  .dt tfoot td:is(:nth-child(1), :nth-child(3), :nth-child(5), :nth-child(7), :nth-child(8)) { border-right: 1px solid rgba(255,255,255,.2); }
   .dt-n { font-weight: 700; font-variant-numeric: tabular-nums; } .dt-final { font-size: 1rem; }
   .dt-gan { color: #ffd45c; font-weight: 700; }
-  .dt tfoot td { color: #fff; font-weight: 700; font-size: .86rem; background: #23304d; border-top: 1px solid rgba(255,255,255,.14); }
+  .dt tfoot td { color: #fff; font-weight: 700; font-size: .86rem; background: #2b2e35; border-top: 1px solid rgba(255,255,255,.14); }
+  .dt tfoot td:is(:nth-child(4), :nth-child(5), :nth-child(8)) { background: #363940; }
   @media print {
     body { background: #0c0e13 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     header, .dash-acc, .dash-manual, .detalle, .velo, .aviso { display: none !important; }
@@ -2152,7 +2154,7 @@
           <td><span class="dm-nom"><i class="av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i>${r.n}</span></td>
           <td>${r.raw.tareas}</td><td>${r.raw.hechas}</td>${c(r.v.proy)}<td>${r.raw.tks}</td><td>${r.raw.aTiempo}</td>${c(r.v.tick)}<td>${r.m.tardanzas}</td>${c(r.v.punt)}${c(r.v.vest)}
           <td class="dt-n dt-final t-${tono(r.final)}">${r.final.toFixed(2)}</td><td>${r.final === mx ? `<span class="dt-gan">🏆 Ganador</span>` : "Finalista"}</td></tr>`; }).join("")}</tbody>
-        <tfoot><tr><td>Promedio del equipo</td><td colspan="2"></td><td class="dt-n">${prom("proy").toFixed(2)}</td><td colspan="2"></td><td class="dt-n">${prom("tick").toFixed(2)}</td><td></td><td class="dt-n">${prom("punt").toFixed(2)}</td><td class="dt-n">${prom("vest").toFixed(2)}</td><td class="dt-n dt-final">${(res.reduce((a, r) => a + r.final, 0) / res.length).toFixed(2)}</td><td></td></tr></tfoot>
+        <tfoot><tr><td>Promedio del equipo</td><td colspan="2"></td><td class="dt-n">${prom("proy").toFixed(2)}</td><td colspan="2"></td><td class="dt-n">${prom("tick").toFixed(2)}</td><td></td><td class="dt-n">${prom("punt").toFixed(2)}</td><td class="dt-n">${prom("vest").toFixed(2)}</td><td class="dt-n dt-final" colspan="2">${(res.reduce((a, r) => a + r.final, 0) / res.length).toFixed(2)}</td></tr></tfoot>
       </table></div>
 ` : `
       <section class="dg-caja">
