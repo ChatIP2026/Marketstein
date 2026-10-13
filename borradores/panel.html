@@ -961,6 +961,7 @@
   :is(.bc.a-en_curso, .ec-lado) .carpeta-azul::before { background: #d4d7de !important; }
   :is(.bc.a-en_curso, .ec-lado) .carpeta-azul::after { background: #9ca3af !important; }
   .vista { display: inline-flex; align-items: center; gap: 6px; } .vista .vi { width: 15px; height: 15px; }
+  nav a { display: inline-flex; align-items: center; gap: 8px; } nav a .ni { width: 18px; height: 18px; flex: none; }
 </style>
 </head>
 <body>
@@ -987,7 +988,7 @@
     </svg>
     </div>
     <nav>
-      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="tickets">Tickets <span class="nav-num" id="navTk"></span></a><a data-p="personas">Personas</a><a data-p="dashboard">Dashboard</a>
+      <a class="activo" data-p="inicio"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Inicio</a><a data-p="mis"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Mi entorno</a><a data-p="tickets"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg><span class="nl">Tickets</span> <span class="nav-num" id="navTk"></span></a><a data-p="personas"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.2.6 3.5 2.4 3.5 5.2"/></svg>Personas</a><a data-p="dashboard"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/><path d="M16 7h4v4"/></svg>Dashboard</a>
     </nav>
     <div class="boton-neo campana-btn" title="Notificaciones" onclick="this.querySelector('.insignia')?.remove()">
       <svg viewBox="0 0 24 24" fill="currentColor">
@@ -1794,7 +1795,7 @@
     const sol = esSolicitante();
     document.body.classList.toggle("rol-solicitante", sol);
     document.querySelectorAll("nav a").forEach((a) => (a.hidden = sol && a.dataset.p !== "tickets"));
-    document.querySelector('nav a[data-p="tickets"]').firstChild.textContent = sol ? "Mis solicitudes " : "Tickets ";
+    document.querySelector('nav a[data-p="tickets"] .nl').textContent = sol ? "Mis solicitudes" : "Tickets";
     if (sol) irA("tickets"); else if (pagina === "mis") pintarMis(); else if (pagina === "tickets") pintarTickets();
     contarTickets();
   }
