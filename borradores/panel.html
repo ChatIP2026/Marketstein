@@ -976,6 +976,10 @@
   .lateral > div:not([hidden]):has(#listaCarga) { flex: 1; display: flex; flex-direction: column; }
   #listaCarga { flex: 1; display: flex; flex-direction: column; gap: 10px; }
   #listaCarga .carga { flex: 1; max-height: 110px; display: flex; align-items: center !important; }
+  .tk-equipo { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+  .tk-equipo button.tk-carga { background: #14161c !important; padding: 10px 16px 10px 10px !important; border-radius: 14px !important; box-shadow: 0 8px 18px rgba(15,23,42,.18); }
+  .tk-equipo button.tk-carga :is(b) { color: #fff !important; } .tk-equipo button.tk-carga small { color: #9aa0ae !important; }
+  .tk-equipo button.tk-carga.activa { background: #fff !important; border: 2px solid #14161c !important; }
 </style>
 </head>
 <body>
@@ -1863,9 +1867,9 @@
     const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
     const delMes = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
     const vis = jefa && personaTk ? delMes.filter((t) => t.asignado === personaTk) : delMes;
-    const FILTROS = sol ? [["activos", "En proceso"], ["entregado", "Entregados"], ["todos", "Todas"]]
-      : jefa ? [["revision_inicial", "Por revisar"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["todos", "Todos"]]
-      : [["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["todos", "Todos"]];
+    const FILTROS = sol ? [["todos", "Todas"], ["activos", "En proceso"], ["entregado", "Entregados"]]
+      : jefa ? [["todos", "Todos"], ["revision_inicial", "Por revisar"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"]]
+      : [["todos", "Todos"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"]];
     if (!FILTROS.some((f) => f[0] === filtroTk)) filtroTk = FILTROS[0][0];
     // Sin filtro "Falta info": esos tickets se ven donde esperan (por revisar si no tiene asignado, en revisión si ya lo tiene)
     const estadoF = (t) => t.estado !== "falta_info" ? t.estado : t.asignado ? "en_revision" : "revision_inicial";
