@@ -1048,11 +1048,7 @@
         <div class="tit"><h3>Carga del equipo</h3></div>
         <div id="listaCarga"></div>
       </div>
-      <hr />
-      <div>
-        <div class="tit"><h3>Tareas pendientes <span class="chip" id="nTareas">0</span></h3></div>
-        <div id="listaTareas"></div>
-      </div>
+      <div hidden><span id="nTareas"></span><div id="listaTareas"></div></div>
     </aside>
   </div>
 </div>
@@ -1210,18 +1206,21 @@
     const tareas = [...mapaT.values()];
     const filas = Object.keys(COLORES).map((n) => {
       const suyos = [...mapaP.values()].filter((p) => p.encargados.includes(n) && p.estado !== "listo");
-      const ids = new Set(suyos.map((p) => p.id));
-      return { n, activos: suyos.length, pend: tareas.filter((t) => t.encargado === n && !t.hecha && mapaP.has(t.proyecto_id)).length };
+      const misT = tareas.filter((t) => t.encargado === n && mapaP.has(t.proyecto_id));
+      let tks = []; try { tks = tickets.filter((t) => t.asignado === n && t.estado !== "rechazado"); } catch (e) {}
+      const pendT = misT.filter((t) => !t.hecha).length, pendK = tks.filter((t) => t.estado !== "entregado").length;
+      const total = misT.length + tks.length, hechas = (misT.length - pendT) + (tks.length - pendK);
+      // Pendientes = proyectos activos + tareas pendientes + tickets abiertos; avance = tareas y tickets terminados
+      return { n, pend: suyos.length + pendT + pendK, det: `${suyos.length} proyectos | ${pendT} tareas | ${pendK} tickets`, avance: total ? hechas / total : 0 };
     });
-    const max = Math.max(1, ...filas.map((f) => f.activos));
     cont.innerHTML = "";
     for (const f of filas) {
       const b = document.createElement("button");
       b.className = "carga" + (filtroSel.value === f.n ? " activa" : "");
       b.title = filtroSel.value === f.n ? "Quitar filtro" : `Ver solo los proyectos de ${f.n}`;
       b.innerHTML = `<i class="carga-av" style="${fondoAv(f.n)}">${letraAv(f.n)}</i>
-        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small title="Proyectos activos | tareas pendientes asignadas a esta persona">${f.activos} proy. | ${f.pend} tareas</small></div>
-        <div class="carga-barra"><i style="width:${(f.activos / max) * 100}%;background:${COLORES[f.n]}"></i></div></div>`;
+        <div class="carga-info"><div class="carga-fila"><b>${f.n}</b><small title="${f.det}">${f.pend} pendientes</small></div>
+        <div class="carga-barra" title="Avance: ${Math.round(f.avance * 100)}% de tareas y tickets terminados"><i style="width:${f.avance * 100}%;background:#5fe03a"></i></div></div>`;
       b.onclick = () => { filtroSel.value = filtroSel.value === f.n ? "" : f.n; pintar(); };
       cont.append(b);
     }
