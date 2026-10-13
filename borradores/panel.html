@@ -2046,9 +2046,7 @@
         </article>`).join("")}</div>
       ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Los demás pilares se calculan solos con Rabbit.</p>
         <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
-        ${EVALUADOS.map((n) => { const m = MANUAL[mesDash][n]; return `<span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span><input type="number" min="0" max="10" value="${m.tardanzas}" data-n="${n}" data-c="tardanzas" /><input type="number" min="0" max="20" value="${m.vestimenta}" data-n="${n}" data-c="vestimenta" />`; }).join("")}</div></section>` : ""}
-      <section class="tkd-b dash-guia"><h4>Guía del modelo</h4><div class="dg-grid">${PILARES.map((p, i) => `<div><b>Pilar ${i + 1}: ${p.t} (${Math.round(p.peso * 100)}% | 0 a 20)</b><p>${p.d}</p><small>${p.auto ? "Se calcula solo con Rabbit." : "Lo ingresa Hilary."}</small></div>`).join("")}
-        <div><b>Puntaje final (100%)</b><p>(Proyectos × 30%) + (Tickets × 30%) + (Puntualidad × 20%) + (Vestimenta × 20%). El mayor puntaje del mes es el ganador.</p><small>El historial de cada mes se guarda siempre.</small></div></div></section>`;
+        ${EVALUADOS.map((n) => { const m = MANUAL[mesDash][n]; return `<span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span><input type="number" min="0" max="10" value="${m.tardanzas}" data-n="${n}" data-c="tardanzas" /><input type="number" min="0" max="20" value="${m.vestimenta}" data-n="${n}" data-c="vestimenta" />`; }).join("")}</div></section>` : ""}`;
     cont.querySelector("#dashMes").onchange = (e) => { mesDash = e.target.value; pintarDash(); };
     cont.querySelectorAll(".dm-tabla input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); pintarDash(); }));
   }
