@@ -1024,9 +1024,17 @@
   .ent-filtros button svg { width: 18px !important; height: 18px !important; }
   /* Tickets: toques en negro */
   .tk:hover { filter: drop-shadow(0 0 1.2px #0a0a0a) drop-shadow(0 12px 24px rgba(10,10,10,.18)) !important; }
-  .tk.p-fuerte { filter: drop-shadow(1.5px 0 0 #0a0a0a) drop-shadow(-1.5px 0 0 #0a0a0a) drop-shadow(0 1.5px 0 #0a0a0a) drop-shadow(0 -1.5px 0 #0a0a0a) !important; }
-  .tk.p-fuerte:hover { filter: drop-shadow(1.5px 0 0 #0a0a0a) drop-shadow(-1.5px 0 0 #0a0a0a) drop-shadow(0 1.5px 0 #0a0a0a) drop-shadow(0 -1.5px 0 #0a0a0a) drop-shadow(0 12px 24px rgba(10,10,10,.25)) !important; }
+  /* Prioridad alta o urgente: tarjeta negra */
+  .tk.p-fuerte { --card: #0a0a0a !important; }
+  .tk.p-fuerte .tk-a, .tk.p-fuerte .tk-b { background: #0a0a0a !important; background-image: none !important; }
+  .tk.p-fuerte :is(.tk-tit, .tk-fila b, .bc-f, .tk-fecha) { color: #fff !important; }
+  .tk.p-fuerte :is(.tk-de, .tk-fila small) { color: #a3a3a3 !important; }
+  .tk.p-fuerte .tk-id { background: #fff; color: #0a0a0a !important; }
+  .tk.p-fuerte .tk-chip { background: rgba(255,255,255,.1) !important; border-color: rgba(255,255,255,.15) !important; color: #fff !important; }
+  .tk.p-fuerte .tk-ir { background: #0a0a0a !important; color: #fff !important; border-color: rgba(255,255,255,.35) !important; }
+  .tk.p-fuerte:hover .tk-ir { background: #fff !important; color: #0a0a0a !important; border-color: #fff !important; }
   .tk-id { background: #0a0a0a; color: #fff !important; font-weight: 700; padding: 3px 9px; border-radius: 999px; font-size: .7rem; }
+  .tk.p-fuerte .bc-f.urgente { color: #ff8a8f !important; }
 </style>
 </head>
 <body>
