@@ -981,7 +981,7 @@
   .tk-equipo button.tk-carga :is(b) { color: #fff !important; } .tk-equipo button.tk-carga small { color: #9aa0ae !important; }
   .tk-equipo button.tk-carga.activa { background: #fff !important; border: 2px solid #14161c !important; }
   .ent-filtros button.activa svg { color: #fff !important; }
-  .dg-fila { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; margin-bottom: 18px; }
+  .dg-fila { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; margin-bottom: 18px; }
   @media (max-width: 1000px) { .dg-fila { grid-template-columns: 1fr; } }
   .dg-fila .dg-caja { margin-bottom: 0 !important; }
   .dg-prom { fill: none; stroke: rgba(255,255,255,.75); stroke-width: 2; stroke-dasharray: 6 5; }
@@ -2239,10 +2239,10 @@
     // Performance semanal: promedio de cada semana del mes por persona (las semanas futuras quedan vacías)
     const [yy, mm] = mesDash.split("-").map(Number), diasMes = new Date(yy, mm, 0).getDate(), nSem = Math.ceil(diasMes / 7);
     const sem = Array.from({ length: nSem }, (_, k) => Object.fromEntries(EVALUADOS.map((n) => { const v = series[n].slice(k * 7, k * 7 + 7); return [n, v.length ? v.reduce((a, b) => a + b, 0) / v.length : null]; })));
-    const BW = 460, BH = 300, BL = 30, BB = 30, BT = 16, by = (v) => BT + (1 - v / 20) * (BH - BT - BB), gw = (BW - BL - 8) / nSem, bw = Math.min(16, (gw - 16) / EVALUADOS.length - 3);
+    const BW = 460, BH = 300, BL = 30, BB = 30, BT = 16, by = (v) => BT + (1 - v / 20) * (BH - BT - BB), gw = (BW - BL - 8) / nSem, bw = (gw - 8) / EVALUADOS.length - 4;
     const barras = [0, 10, 20].map((g) => `<line x1="${BL}" x2="${BW}" y1="${by(g)}" y2="${by(g)}" class="dg-l"/><text x="${BL - 8}" y="${by(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("")
       + sem.map((w, k) => { const gx = BL + 8 + k * gw, x0 = gx + (gw - EVALUADOS.length * (bw + 3)) / 2;
-        return `<g class="db-grupo" data-k="${k}"><rect x="${gx}" y="${BT}" width="${gw - 4}" height="${BH - BT - BB}" class="db-hit"/>${EVALUADOS.map((n, i) => w[n] == null ? `<rect x="${x0 + i * (bw + 3)}" y="${by(0) - 4}" width="${bw}" height="4" rx="2" fill="rgba(255,255,255,.12)"/>` : `<rect x="${x0 + i * (bw + 3)}" y="${by(w[n])}" width="${bw}" height="${by(0) - by(w[n])}" rx="5" fill="url(#g-${n})"/>`).join("")}
+        return `<g class="db-grupo" data-k="${k}"><rect x="${gx}" y="${BT}" width="${gw - 4}" height="${BH - BT - BB}" class="db-hit"/>${EVALUADOS.map((n, i) => w[n] == null ? `<rect x="${x0 + i * (bw + 3)}" y="${by(0) - 4}" width="${bw}" height="4" rx="2" fill="rgba(255,255,255,.12)"/>` : `<rect x="${x0 + i * (bw + 3)}" y="${by(w[n])}" width="${bw}" height="${by(0) - by(w[n])}" rx="${Math.min(10, bw / 2.5)}" fill="url(#g-${n})"/>`).join("")}
           <text x="${gx + (gw - 4) / 2}" y="${BH - 8}" class="dg-t" text-anchor="middle">Sem ${k + 1}</text></g>`; }).join("");
     const defs = `<defs><pattern id="rayas" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/></pattern>${EVALUADOS.map((n) => `<linearGradient id="g-${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${COL_LINEA[n]}"/><stop offset="1" stop-color="${COL_LINEA[n]}" stop-opacity=".15"/></linearGradient>`).join("")}</defs>`;
     cont.innerHTML = `
