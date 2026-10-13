@@ -981,6 +981,15 @@
   .tk-equipo button.tk-carga :is(b) { color: #fff !important; } .tk-equipo button.tk-carga small { color: #9aa0ae !important; }
   .tk-equipo button.tk-carga.activa { background: #fff !important; border: 2px solid #14161c !important; }
   .ent-filtros button.activa svg { color: #fff !important; }
+  .dg-fila { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; margin-bottom: 18px; }
+  @media (max-width: 1000px) { .dg-fila { grid-template-columns: 1fr; } }
+  .dg-fila .dg-caja { margin-bottom: 0 !important; }
+  .dg-prom { fill: none; stroke: rgba(255,255,255,.75); stroke-width: 2; stroke-dasharray: 6 5; }
+  .dg-nota { display: flex; align-items: center; gap: 8px; font-size: .74rem; color: #9aa0ae !important; margin-top: 4px; }
+  .dg-nota i { width: 18px; border-top: 2px dashed rgba(255,255,255,.75); }
+  .db-svg { width: 100%; height: auto; display: block; }
+  .db-hit { fill: transparent; rx: 10; } .db-grupo.on .db-hit { fill: rgba(255,255,255,.05); }
+  .db-caja .dg-leyenda { font-size: .72rem; gap: 10px; }
 </style>
 </head>
 <body>
@@ -2212,7 +2221,7 @@
     const series = Object.fromEntries(EVALUADOS.map((n) => [n, serieDiaria(n, mesDash)]));
     const dias = series[EVALUADOS[0]].length;
     // Geometría del gráfico
-    const W = 1000, H = 300, L = 36, R = 90, T = 16, B = 30;
+    const W = 700, H = 300, L = 36, R = 92, T = 16, B = 30;
     const x = (d) => L + (dias === 1 ? 0 : ((d - 1) / (dias - 1)) * (W - L - R)), y = (v) => T + (1 - v / 20) * (H - T - B);
     const grid = [0, 5, 10, 15, 20].map((g) => `<line x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}" class="dg-l"/><text x="${L - 8}" y="${y(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("");
     const paso = dias > 20 ? 5 : dias > 10 ? 3 : 1;
@@ -2220,9 +2229,22 @@
     // Etiquetas directas al final de cada línea, separadas para que no choquen
     const finales = EVALUADOS.map((n) => ({ n, yv: y(series[n][dias - 1]) })).sort((a, b) => a.yv - b.yv);
     for (let i = 1; i < finales.length; i++) if (finales[i].yv - finales[i - 1].yv < 16) finales[i].yv = finales[i - 1].yv + 16;
-    const lineas = EVALUADOS.map((n) => `<polyline class="dg-linea" style="--c:${COL_LINEA[n]}" points="${series[n].map((v, i) => `${x(i + 1)},${y(v)}`).join(" ")}"/>
+    // Curvas suaves (como la referencia) + promedio del equipo punteado con área rayada
+    const curva = (vals) => vals.map((v, i) => { const X = x(i + 1), Y = y(v); if (!i) return `M${X},${Y}`; const px = x(i), py = y(vals[i - 1]), cx = (px + X) / 2; return `C${cx},${py} ${cx},${Y} ${X},${Y}`; }).join(" ");
+    const promD = Array.from({ length: dias }, (_, i) => EVALUADOS.reduce((a, n) => a + series[n][i], 0) / EVALUADOS.length);
+    const area = `<path d="${curva(promD)} L${x(dias)},${y(0)} L${x(1)},${y(0)} Z" fill="url(#rayas)"/><path d="${curva(promD)}" class="dg-prom"/>`;
+    const lineas = area + EVALUADOS.map((n) => `<path class="dg-linea" style="--c:${COL_LINEA[n]}" d="${curva(series[n])}"/>
       <circle cx="${x(dias)}" cy="${y(series[n][dias - 1])}" r="5" fill="${COL_LINEA[n]}" class="dg-fin"/>`).join("");
     const etiquetas = finales.map((f) => `<text x="${x(dias) + 12}" y="${f.yv + 4}" class="dg-nom">${f.n} ${series[f.n][dias - 1].toFixed(1)}</text>`).join("");
+    // Performance semanal: promedio de cada semana del mes por persona (las semanas futuras quedan vacías)
+    const [yy, mm] = mesDash.split("-").map(Number), diasMes = new Date(yy, mm, 0).getDate(), nSem = Math.ceil(diasMes / 7);
+    const sem = Array.from({ length: nSem }, (_, k) => Object.fromEntries(EVALUADOS.map((n) => { const v = series[n].slice(k * 7, k * 7 + 7); return [n, v.length ? v.reduce((a, b) => a + b, 0) / v.length : null]; })));
+    const BW = 460, BH = 300, BL = 30, BB = 30, BT = 16, by = (v) => BT + (1 - v / 20) * (BH - BT - BB), gw = (BW - BL - 8) / nSem, bw = Math.min(16, (gw - 16) / EVALUADOS.length - 3);
+    const barras = [0, 10, 20].map((g) => `<line x1="${BL}" x2="${BW}" y1="${by(g)}" y2="${by(g)}" class="dg-l"/><text x="${BL - 8}" y="${by(g) + 4}" class="dg-t" text-anchor="end">${g}</text>`).join("")
+      + sem.map((w, k) => { const gx = BL + 8 + k * gw, x0 = gx + (gw - EVALUADOS.length * (bw + 3)) / 2;
+        return `<g class="db-grupo" data-k="${k}"><rect x="${gx}" y="${BT}" width="${gw - 4}" height="${BH - BT - BB}" class="db-hit"/>${EVALUADOS.map((n, i) => w[n] == null ? `<rect x="${x0 + i * (bw + 3)}" y="${by(0) - 4}" width="${bw}" height="4" rx="2" fill="rgba(255,255,255,.12)"/>` : `<rect x="${x0 + i * (bw + 3)}" y="${by(w[n])}" width="${bw}" height="${by(0) - by(w[n])}" rx="5" fill="url(#g-${n})"/>`).join("")}
+          <text x="${gx + (gw - 4) / 2}" y="${BH - 8}" class="dg-t" text-anchor="middle">Sem ${k + 1}</text></g>`; }).join("");
+    const defs = `<defs><pattern id="rayas" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/></pattern>${EVALUADOS.map((n) => `<linearGradient id="g-${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${COL_LINEA[n]}"/><stop offset="1" stop-color="${COL_LINEA[n]}" stop-opacity=".15"/></linearGradient>`).join("")}</defs>`;
     cont.innerHTML = `
       <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
         <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? "📈 Vista gráfica" : "📋 Vista detallada"}</button>` : ""}
@@ -2242,14 +2264,19 @@
         <tfoot><tr><td>Promedio del equipo</td><td colspan="3"><span class="dt-prom">${prom("proy").toFixed(2)}</span></td><td colspan="3"><span class="dt-prom">${prom("tick").toFixed(2)}</span></td><td colspan="2"><span class="dt-prom">${prom("punt").toFixed(2)}</span></td><td><span class="dt-prom">${prom("vest").toFixed(2)}</span></td><td colspan="2"><span class="dt-prom dt-prom-final">${(res.reduce((a, r) => a + r.final, 0) / res.length).toFixed(2)}</span></td></tr></tfoot>
       </table></div>
 ` : `
-      <section class="dg-caja">
+      <div class="dg-fila"><section class="dg-caja">
         <div class="dg-cab"><h4>Rendimiento diario</h4>
           <div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
-        <div class="dg-svg-caja"><svg viewBox="0 0 ${W} ${H}" class="dg-svg" role="img" aria-label="Rendimiento diario del equipo">${grid}${ejeX}${lineas}${etiquetas}
+        <div class="dg-svg-caja"><svg viewBox="0 0 ${W} ${H}" class="dg-svg" role="img" aria-label="Rendimiento diario del equipo">${defs}${grid}${ejeX}${lineas}${etiquetas}
           <line class="dg-cruz" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/><g class="dg-puntos"></g>
           <rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="dg-hit"/></svg>
           <div class="dg-tip" hidden></div></div>
+        <div class="dg-nota"><i></i>Promedio del equipo</div>
       </section>
+      <section class="dg-caja db-caja">
+        <div class="dg-cab"><h4>Performance semanal</h4><div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
+        <div class="dg-svg-caja"><svg viewBox="0 0 ${BW} ${BH}" class="db-svg" role="img" aria-label="Performance semanal del equipo">${defs.replace(/id="/g, 'id="b')}${barras.replace(/url\(#/g, "url(#b")}</svg><div class="dg-tip db-tip" hidden></div></div>
+      </section></div>
       <div class="di-grid">${res.map((r) => `
         <div class="di">
           <div class="di-per"><i class="av di-av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i><b>${r.n}</b><span class="di-final">${r.final.toFixed(1)}<small> / 20</small></span></div>
@@ -2294,6 +2321,13 @@
       const izq = (x(d) / W) * r.width; tip.style.left = `${izq > r.width * 0.65 ? izq - 170 : izq + 14}px`;
     };
     svg.querySelector(".dg-hit").onmouseleave = () => { cruz.style.display = "none"; pts.innerHTML = ""; tip.hidden = true; };
+    const bsvg = cont.querySelector(".db-svg"), btip = cont.querySelector(".db-tip");
+    bsvg.querySelectorAll(".db-grupo").forEach((g) => {
+      g.onmouseenter = () => { const k = +g.dataset.k, w = sem[k]; g.classList.add("on"); btip.hidden = false;
+        btip.innerHTML = `<b>Semana ${k + 1}</b>` + EVALUADOS.map((n) => `<div><i style="background:${COL_LINEA[n]}"></i>${n}<span>${w[n] == null ? "—" : w[n].toFixed(1)}</span></div>`).join("");
+        const r = bsvg.getBoundingClientRect(), gx = ((BL + 8 + k * gw) / BW) * r.width; btip.style.left = `${gx > r.width * 0.55 ? gx - 165 : gx + (gw / BW) * r.width}px`; };
+      g.onmouseleave = () => { g.classList.remove("on"); btip.hidden = true; };
+    });
   }
 
   const _armar = armar;
