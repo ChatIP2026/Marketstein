@@ -826,6 +826,28 @@
     box-shadow: 0 12px 30px rgba(0,0,0,.5); display: flex; flex-direction: column; gap: 3px; opacity: 0; transform: translateY(4px); pointer-events: none; transition: .15s; white-space: nowrap; }
   .di-fila:hover .di-tip { opacity: 1; transform: none; }
   .di-tip b { font-size: .82rem; color: #fff; } .di-tip span { font-size: .78rem; color: #c9ced9; } .di-tip em { font-style: normal; font-size: .74rem; color: #5fe03a; font-weight: 700; }
+  .dash-acc { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .dash-acc .cal-btn { height: 38px; padding: 0 14px; white-space: nowrap; }
+  .dash-desc { position: relative; }
+  .dash-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; min-width: 220px; padding: 6px; border-radius: 12px; background: #15171c; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 12px 30px rgba(0,0,0,.5); display: flex; flex-direction: column; }
+  .dash-menu[hidden] { display: none; }
+  .dash-menu button { all: unset; cursor: pointer; padding: 9px 12px; border-radius: 8px; font-size: .86rem; } .dash-menu button:hover { background: rgba(255,255,255,.07); }
+  .dt-caja { overflow-x: auto; border-radius: 18px; border: 1px solid var(--borde); margin-bottom: 18px; }
+  .dt { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  .dt th, .dt td { padding: 10px 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,.06); white-space: nowrap; }
+  .dt td:first-child, .dt th:first-child { text-align: left; }
+  .dt thead th { font-size: .74rem; font-weight: 700; color: #fff; background: #1b2030; }
+  .dt thead tr:first-child th { font-size: .78rem; }
+  .dt th.p1 { background: rgba(141,124,245,.22); } .dt th.p2 { background: rgba(47,155,217,.2); } .dt th.p3 { background: rgba(201,122,18,.22); } .dt th.p4 { background: rgba(217,83,154,.2); } .dt th.pf { background: rgba(46,230,176,.18); }
+  .dt tbody tr:hover { background: rgba(255,255,255,.03); }
+  .dt-n { font-weight: 700; font-variant-numeric: tabular-nums; } .dt-final { font-size: 1rem; }
+  .dt-gan { color: #ffd45c; font-weight: 700; }
+  .dt tfoot td { color: var(--tenue); font-size: .8rem; border-bottom: 0; background: rgba(255,255,255,.02); }
+  @media print {
+    body { background: #0c0e13 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    header, .dash-acc, .dash-manual, .detalle, .velo, .aviso { display: none !important; }
+    #vistaDash { box-shadow: none !important; }
+  }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -2036,7 +2058,7 @@
   const COL_LINEA = { Ariana: "#d9539a", Carlos: "#2f9bd9", Hilary: "#c97a12", Pierina: "#8e6cf0" };
   const MANUAL = {}; // { "2026-10": { Carlos: { tardanzas: 1, vestimenta: 20 } } } (lo ingresa Hilary)
   const ejemploManual = { Ariana: { tardanzas: 0, vestimenta: 18 }, Carlos: { tardanzas: 1, vestimenta: 20 }, Pierina: { tardanzas: 2, vestimenta: 19 }, Hilary: { tardanzas: 0, vestimenta: 20 } };
-  let mesDash = new Date().toISOString().slice(0, 7);
+  let mesDash = new Date().toISOString().slice(0, 7), vistaTabla = false;
   const r2 = (n) => Math.round(n * 100) / 100;
   function puntaje(n, mes) {
     const enMes = (f) => (f || new Date().toISOString()).slice(0, 7) === mes;
@@ -2055,7 +2077,7 @@
       proy: tareas.length ? `${hechas} de ${tareas.length} tareas` : "Sin tareas este mes", tick: tks.length ? `${aTiempo} de ${tks.length} a tiempo` : "Sin tickets vencidos ni entregados",
       punt: m.tardanzas ? `${m.tardanzas} tardanza${m.tardanzas === 1 ? "" : "s"}` : "Sin tardanzas", vest: "Código de vestimenta",
     };
-    return { n, v, det, m, final: r2(PILARES.reduce((a, p) => a + v[p.k] * p.peso, 0)) };
+    return { n, v, det, m, raw: { tareas: tareas.length, hechas, tks: tks.length, aTiempo }, final: r2(PILARES.reduce((a, p) => a + v[p.k] * p.peso, 0)) };
   }
   const tono = (x) => (x >= 16 ? "bien" : x >= 12 ? "medio" : "bajo");
   const ICO_PILAR = {
@@ -2100,10 +2122,23 @@
     const etiquetas = finales.map((f) => `<text x="${x(dias) + 12}" y="${f.yv + 4}" class="dg-nom">${f.n} ${series[f.n][dias - 1].toFixed(1)}</text>`).join("");
     cont.innerHTML = `
       <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
-        <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div>
+        <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? "📈 Vista gráfica" : "📋 Vista detallada"}</button>` : ""}
+          <div class="dash-desc"><button class="cal-btn" id="dashDesc">⬇ Descargar</button><div class="dash-menu" hidden><button data-d="pdf">PDF (para imprimir o enviar)</button><button data-d="csv">Excel (.csv)</button></div></div>
+          <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div></div>
       <div class="dk-grid">${PILARES.map((p) => { const v = prom(p.k); return `
         <div class="dk" title="Promedio del equipo sobre 20 | ${p.auto ? "automático" : "manual"} | peso ${Math.round(p.peso * 100)}%"><div class="dk-cab"><span>${p.t}</span></div>
           <div class="dk-num"><b>${v.toFixed(1)}</b><small>/ 20</small></div><small class="dk-pie">Promedio del equipo</small></div>`; }).join("")}</div>
+      ${vistaTabla && jefa ? `
+      <div class="dt-caja"><table class="dt">
+        <thead><tr><th rowspan="2">Colaborador</th><th colspan="3" class="p1">Proyectos del mes (30%)</th><th colspan="3" class="p2">Tickets a tiempo (30%)</th><th colspan="2" class="p3">Puntualidad (20%)</th><th class="p4">Vestimenta (20%)</th><th colspan="2" class="pf">Evaluación final</th></tr>
+          <tr><th class="p1">Asignadas</th><th class="p1">Hechas</th><th class="p1">Puntos</th><th class="p2">Tickets</th><th class="p2">A tiempo</th><th class="p2">Puntos</th><th class="p3">Tardanzas</th><th class="p3">Puntos</th><th class="p4">Puntos</th><th class="pf">Puntaje</th><th class="pf">Estado</th></tr></thead>
+        <tbody>${[...res].sort((a, b) => b.final - a.final).map((r) => { const mx = Math.max(...res.map((x) => x.final)), c = (v) => `<td class="dt-n t-${tono(v)}">${v.toFixed(2)}</td>`; return `<tr>
+          <td><span class="dm-nom"><i class="av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i>${r.n}</span></td>
+          <td>${r.raw.tareas}</td><td>${r.raw.hechas}</td>${c(r.v.proy)}<td>${r.raw.tks}</td><td>${r.raw.aTiempo}</td>${c(r.v.tick)}<td>${r.m.tardanzas}</td>${c(r.v.punt)}${c(r.v.vest)}
+          <td class="dt-n dt-final t-${tono(r.final)}">${r.final.toFixed(2)}</td><td>${r.final === mx ? `<span class="dt-gan">🏆 Ganador</span>` : "Finalista"}</td></tr>`; }).join("")}</tbody>
+        <tfoot><tr><td>Promedio del equipo</td><td colspan="2"></td><td class="dt-n">${prom("proy").toFixed(2)}</td><td colspan="2"></td><td class="dt-n">${prom("tick").toFixed(2)}</td><td></td><td class="dt-n">${prom("punt").toFixed(2)}</td><td class="dt-n">${prom("vest").toFixed(2)}</td><td class="dt-n dt-final">${(res.reduce((a, r) => a + r.final, 0) / res.length).toFixed(2)}</td><td></td></tr></tfoot>
+      </table></div>
+` : `
       <section class="dg-caja">
         <div class="dg-cab"><h4>Rendimiento diario</h4>
           <div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
@@ -2119,10 +2154,28 @@
             <div class="di-fila"><span class="di-ico">${ICO_PILAR[p.k]}</span>${Array.from({ length: 6 }, (_, i) => { const f = Math.max(0, Math.min(1, (r.v[p.k] / 20) * 6 - i)); return `<i style="--f:${Math.round(f * 100)}%"></i>`; }).join("")}
               <div class="di-tip"><b>${p.t}</b><span>${r.det[p.k].replace(" | manual", "")}</span><em>${r.v[p.k].toFixed(1)} / 20</em></div></div>`; }).join("")}</div>
         </div>`).join("")}</div>
+`}
       ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Alimentan los recuadros de Puntualidad y Vestimenta.</p>
         <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
         ${EVALUADOS.map((n) => { const m = MANUAL[mesDash][n]; return `<span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span><input type="number" min="0" max="10" value="${m.tardanzas}" data-n="${n}" data-c="tardanzas" /><input type="number" min="0" max="20" value="${m.vestimenta}" data-n="${n}" data-c="vestimenta" />`; }).join("")}</div></section>` : ""}`;
     cont.querySelector("#dashMes").onchange = (e) => { mesDash = e.target.value; pintarDash(); };
+    cont.querySelector("#dashVista")?.addEventListener("click", () => { vistaTabla = !vistaTabla; pintarDash(); });
+    const menuD = cont.querySelector(".dash-menu");
+    cont.querySelector("#dashDesc").onclick = (e) => { e.stopPropagation(); menuD.hidden = !menuD.hidden; };
+    document.addEventListener("click", () => (menuD.hidden = true), { once: true });
+    menuD.querySelectorAll("[data-d]").forEach((b) => (b.onclick = () => {
+      menuD.hidden = true;
+      if (b.dataset.d === "pdf") return window.print();
+      // Excel: un archivo .csv con el detalle del mes (se abre directo en Excel)
+      const fila = (a) => a.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(";");
+      const csv = [fila(["Colaborador", "Tareas asignadas", "Tareas hechas", "Pts Proyectos", "Tickets", "A tiempo", "Pts Tickets", "Tardanzas", "Pts Puntualidad", "Pts Vestimenta", "Puntaje final"])]
+        .concat([...res].sort((a, b) => b.final - a.final).map((r) => fila([r.n, r.raw.tareas, r.raw.hechas, r.v.proy.toFixed(2), r.raw.tks, r.raw.aTiempo, r.v.tick.toFixed(2), r.m.tardanzas, r.v.punt.toFixed(2), r.v.vest.toFixed(2), r.final.toFixed(2)]))).join("\r\n");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }));
+      a.download = `Dashboard_Rabbit_${mesDash}.csv`; a.click();
+      avisar("⬇ Descargando el dashboard en Excel");
+    }));
+    if (!cont.querySelector(".dg-svg")) return;
     cont.querySelectorAll(".dm-tabla input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); pintarDash(); }));
     // Cruz + tooltip al pasar el mouse
     const svg = cont.querySelector(".dg-svg"), cruz = svg.querySelector(".dg-cruz"), pts = svg.querySelector(".dg-puntos"), tip = cont.querySelector(".dg-tip");
