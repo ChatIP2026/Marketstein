@@ -808,16 +808,16 @@
   .dg-tip { position: absolute; top: 10px; min-width: 150px; padding: 10px 12px; border-radius: 12px; background: #11141c; border: 1px solid rgba(255,255,255,.12); font-size: .78rem; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
   .dg-tip b { display: block; margin-bottom: 6px; } .dg-tip div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .dg-tip i { width: 8px; height: 8px; border-radius: 50%; } .dg-tip span { margin-left: auto; font-variant-numeric: tabular-nums; color: #fff; }
   .di-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
-  .di { display: flex; align-items: center; gap: 18px; padding: 18px 20px; border-radius: 20px; background: #0f1117; border: 1px solid rgba(255,255,255,.07); }
-  .di-per { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 110px; }
-  .di-av { width: 52px !important; height: 52px !important; } .di-per b { font-size: 1.05rem; color: #fff; }
-  .di-final { font-size: 1.7rem; font-weight: 700; color: #fff; line-height: 1; } .di-final small { font-size: .8rem; color: var(--tenue); font-weight: 400; }
-  .di-pilares { flex: 1; display: flex; flex-direction: column; }
-  .di-fila { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.07); } .di-fila:last-child { border-bottom: 0; }
-  .di-ico { width: 22px; display: grid; place-items: center; color: #8b92a6; margin-right: 4px; } .di-ico svg { width: 16px; height: 16px; }
-  .di-fila i { flex: 1; height: 10px; border-radius: 6px; background: #3a3d45; }
   @media (max-width: 900px) { .di-grid { grid-template-columns: 1fr; } }
-  .di-fila i.on { background: #7ee35a; box-shadow: 0 0 10px rgba(126,227,90,.45); }
+  .di { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 22px; border-radius: 22px; background: #050607; border: 1px solid rgba(255,255,255,.06); }
+  .di-per { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; row-gap: 10px; align-items: center; }
+  .di-av { width: 40px !important; height: 40px !important; } .di-per b { font-size: 1.1rem; font-weight: 500; color: #f2f3f5; }
+  .di-final { grid-column: 1 / -1; font-size: 2.6rem; font-weight: 600; color: #fff; line-height: 1; letter-spacing: -.01em; } .di-final small { font-size: .9rem; color: #7c8190; font-weight: 400; letter-spacing: 0; }
+  .di-pilares { flex: none; display: flex; flex-direction: column; }
+  .di-fila { display: flex; align-items: center; gap: 7px; padding: 9px 0; border-bottom: 1px solid #2a2c31; } .di-fila:last-child { border-bottom: 0; }
+  .di-ico { width: 18px; display: grid; place-items: center; color: #6c717d; margin-right: 6px; } .di-ico svg { width: 14px; height: 14px; }
+  .di-fila i { width: 30px; height: 11px; border-radius: 6px; background: #4a4c52; }
+  .di-fila i.on { background: #62f03e; box-shadow: 0 0 8px rgba(98,240,62,.55), inset 0 1px 0 rgba(255,255,255,.35); }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
