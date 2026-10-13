@@ -769,6 +769,25 @@
   button.tk-carga:hover { background: rgba(255,255,255,.08); }
   button.tk-carga.activa { border-color: rgba(169,184,232,.7); background: rgba(169,184,232,.16); }
   .tk-equipo:has(.activa) button.tk-carga:not(.activa) { opacity: .5; }
+  /* ===== Dashboard ===== */
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-bottom: 18px; }
+  .dash-card { border-radius: 22px; padding: 18px; background: linear-gradient(180deg, #2a3247, #222939); filter: drop-shadow(0 0 1px rgba(190,205,245,.3)); display: flex; flex-direction: column; gap: 12px; }
+  .dash-card.ganador { background: linear-gradient(180deg, #33324a, #262536); filter: drop-shadow(0 0 1.5px rgba(255,212,92,.7)); }
+  .dc-cab { display: flex; align-items: center; gap: 12px; } .dc-av { width: 46px !important; height: 46px !important; }
+  .dc-cab b { display: block; font-size: 1.05rem; } .dc-cab small { color: var(--tenue); font-size: .76rem; }
+  .dc-final { margin-left: auto; text-align: right; } .dc-final b { font-size: 2rem; line-height: 1; } .dc-final small { display: block; font-size: .7rem; color: var(--tenue); }
+  .dc-estado { align-self: flex-start; font-size: .74rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.07); color: var(--tenue); }
+  .ganador .dc-estado { background: rgba(255,212,92,.16); color: #ffd45c; }
+  .dc-pilar { display: flex; flex-direction: column; gap: 5px; } .dc-pilar small { font-size: .7rem; color: var(--tenue); }
+  .dc-fila { display: flex; justify-content: space-between; align-items: baseline; font-size: .84rem; } .dc-fila em { font-style: normal; font-size: .7rem; color: var(--tenue); margin-left: 4px; } .dc-fila b { font-size: .95rem; }
+  .dc-barra { height: 7px; border-radius: 7px; background: rgba(255,255,255,.08); overflow: hidden; } .dc-barra i { display: block; height: 100%; border-radius: 7px; }
+  .b-bien { background: #2ee6b0; } .b-medio { background: #ffd45c; } .b-bajo { background: #ff7b80; }
+  .t-bien { color: #2ee6b0; } .t-medio { color: #ffd45c; } .t-bajo { color: #ff7b80; }
+  .dm-tabla { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px 14px; align-items: center; max-width: 620px; }
+  .dm-tabla small { font-size: .72rem; color: var(--tenue); } .dm-nom { display: flex; align-items: center; gap: 8px; font-size: .9rem; } .dm-nom .av { width: 28px; height: 28px; }
+  .dm-tabla input { background: rgba(255,255,255,.05); border: 1px solid var(--borde); color: var(--texto); border-radius: 10px; padding: 8px 10px; font: inherit; color-scheme: dark; width: 100%; box-sizing: border-box; }
+  .dg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .dg-grid b { font-size: .84rem; color: #d5dcf2; } .dg-grid p { margin: 6px 0 4px; font-size: .82rem; color: var(--tenue); line-height: 1.45; } .dg-grid small { font-size: .7rem; color: #a9b8e8; }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -826,7 +845,7 @@
     </svg>
     </div>
     <nav>
-      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="tickets">Tickets <span class="nav-num" id="navTk"></span></a><a data-p="personas">Personas</a><a data-p="pronto" data-n="Notas">Notas</a>
+      <a class="activo" data-p="inicio">Inicio</a><a data-p="mis">Mi entorno</a><a data-p="tickets">Tickets <span class="nav-num" id="navTk"></span></a><a data-p="personas">Personas</a><a data-p="dashboard">Dashboard</a>
     </nav>
     <div class="boton-neo campana-btn" title="Notificaciones" onclick="this.querySelector('.insignia')?.remove()">
       <svg viewBox="0 0 24 24" fill="currentColor">
@@ -849,6 +868,7 @@
   <section class="mis vidrio" id="vistaMis" hidden></section>
   <section class="mis vidrio" id="vistaTickets" hidden></section>
   <section class="mis vidrio" id="vistaPersonas" hidden></section>
+  <section class="mis vidrio" id="vistaDash" hidden></section>
 
   <div class="rejilla" id="vistaInicio">
 
@@ -1448,8 +1468,9 @@
     document.getElementById("vistaMis").hidden = p !== "mis";
     document.getElementById("vistaTickets").hidden = p !== "tickets";
     document.getElementById("vistaPersonas").hidden = p !== "personas";
+    document.getElementById("vistaDash").hidden = p !== "dashboard";
     document.body.classList.toggle("en-mis", p !== "inicio");
-    if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else if (p === "personas") pintarPersonas(); else armar();
+    if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else if (p === "personas") pintarPersonas(); else if (p === "dashboard") pintarDash(); else armar();
   }
   document.querySelectorAll("nav a").forEach((a) => (a.onclick = () => {
     if (a.dataset.p === "pronto") return avisar(`<b>${a.dataset.n}</b> estará disponible pronto 🐰`);
@@ -1963,6 +1984,73 @@
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     document.body.classList.add("con-detalle");
     avisar(`📧 Correo de bienvenida enviado a <b>${esc(x.nombre)}</b>`);
+  }
+
+  // ===== Dashboard: rendimiento mensual del equipo (escala 0 a 20 por pilar) =====
+  const PILARES = [
+    { k: "proy", t: "Proyectos del mes", peso: 0.3, auto: true, d: "Tareas de proyectos completadas ÷ tareas asignadas en el mes × 20." },
+    { k: "tick", t: "Tickets a tiempo", peso: 0.3, auto: true, d: "Tickets entregados hasta su fecha de entrega ÷ tickets del mes ya entregados o vencidos × 20. Los que aún no vencen no cuentan." },
+    { k: "punt", t: "Puntualidad", peso: 0.2, auto: false, d: "Base de 20 puntos. Se descuentan 2 puntos por cada día de tardanza en el mes." },
+    { k: "vest", t: "Vestimenta", peso: 0.2, auto: false, d: "De 0 a 20 según el cumplimiento del código de vestimenta." },
+  ];
+  const EVALUADOS = ["Ariana", "Carlos", "Pierina"];
+  const MANUAL = {}; // { "2026-10": { Carlos: { tardanzas: 1, vestimenta: 20 } } } (lo ingresa Hilary)
+  const ejemploManual = { Ariana: { tardanzas: 0, vestimenta: 18 }, Carlos: { tardanzas: 1, vestimenta: 20 }, Pierina: { tardanzas: 2, vestimenta: 19 } };
+  let mesDash = new Date().toISOString().slice(0, 7);
+  const r2 = (n) => Math.round(n * 100) / 100;
+  function puntaje(n, mes) {
+    const enMes = (f) => (f || new Date().toISOString()).slice(0, 7) === mes;
+    const tareas = [...mapaT.values()].filter((t) => t.encargado === n && mapaP.has(t.proyecto_id) && enMes(mapaP.get(t.proyecto_id).fecha_limite));
+    const hechas = tareas.filter((t) => t.hecha).length;
+    // Solo cuentan los tickets ya entregados o los que ya pasaron su fecha sin entregarse
+    const hoyISO = new Date().toISOString().slice(0, 10);
+    const tks = tickets.filter((t) => t.asignado === n && t.fecha.slice(0, 7) === mes && t.estado !== "rechazado" && (t.estado === "entregado" || t.fecha < hoyISO));
+    const aTiempo = tks.filter((t) => { if (t.estado !== "entregado") return false; const h = [...t.historial].reverse().find((x) => /entregado/i.test(x.txt)); return !h || h.at.slice(0, 10) <= t.fecha; }).length;
+    const m = (MANUAL[mes] ||= JSON.parse(JSON.stringify(ejemploManual)))[n] ||= { tardanzas: 0, vestimenta: 20 };
+    const v = {
+      proy: tareas.length ? (hechas / tareas.length) * 20 : 20, tick: tks.length ? (aTiempo / tks.length) * 20 : 20,
+      punt: Math.max(0, 20 - 2 * m.tardanzas), vest: Math.min(20, Math.max(0, +m.vestimenta || 0)),
+    };
+    const det = {
+      proy: tareas.length ? `${hechas} de ${tareas.length} tareas` : "Sin tareas este mes", tick: tks.length ? `${aTiempo} de ${tks.length} a tiempo` : "Sin tickets vencidos ni entregados",
+      punt: m.tardanzas ? `${m.tardanzas} tardanza${m.tardanzas === 1 ? "" : "s"}` : "Sin tardanzas", vest: "Código de vestimenta",
+    };
+    return { n, v, det, m, final: r2(PILARES.reduce((a, p) => a + v[p.k] * p.peso, 0)) };
+  }
+  const tono = (x) => (x >= 16 ? "bien" : x >= 12 ? "medio" : "bajo");
+  function pintarDash() {
+    const cont = document.getElementById("vistaDash"), jefa = yo === JEFA;
+    const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
+    const hoyMes = new Date().toISOString().slice(0, 7);
+    const meses = [...new Set([hoyMes, ...tickets.map((t) => t.fecha.slice(0, 7))])].sort().reverse();
+    const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
+    const res = EVALUADOS.map((n) => puntaje(n, mesDash)).sort((a, b) => b.final - a.final);
+    const prom = r2(res.reduce((a, r) => a + r.final, 0) / res.length), mejor = res[0], empate = res.filter((r) => r.final === res[0].final).length > 1;
+    cont.innerHTML = `
+      <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
+        <div class="tk-prio-kpis">
+          <div class="tpk" style="--c:#a9b8e8"><b>${res.length}</b><div><span class="tpk-pill">Evaluados</span><small>personas</small></div></div>
+          <div class="tpk" style="--c:#ffd45c"><b>${prom.toFixed(2)}</b><div><span class="tpk-pill">Promedio</span><small>del equipo</small></div></div>
+          <div class="tpk" style="--c:#2ee6b0"><b>${mejor.final.toFixed(2)}</b><div><span class="tpk-pill">Mejor puntaje</span><small>${res.filter((r) => r.final === mejor.final).map((r) => r.n).join(" y ")}</small></div></div>
+        </div></div>
+      <div class="tk-barra-f"><div></div><label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div>
+      <div class="dash-grid">${res.map((r, i) => `
+        <article class="dash-card ${r.final === mejor.final ? "ganador" : ""}">
+          <div class="dc-cab"><i class="av dc-av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i><div><b>${r.n}</b><small>Marketing</small></div>
+            <div class="dc-final"><b class="t-${tono(r.final)}">${r.final.toFixed(2)}</b><small>de 20</small></div></div>
+          <div class="dc-estado">${r.final === mejor.final ? (empate ? "🏆 Ganador del mes (empate)" : "🏆 Ganador del mes") : "Finalista"}</div>
+          ${PILARES.map((p) => `<div class="dc-pilar">
+            <div class="dc-fila"><span>${p.t} <em>${Math.round(p.peso * 100)}%</em></span><b class="t-${tono(r.v[p.k])}">${r.v[p.k].toFixed(2)}</b></div>
+            <div class="dc-barra"><i class="b-${tono(r.v[p.k])}" style="width:${(r.v[p.k] / 20) * 100}%"></i></div>
+            <small>${r.det[p.k]}${p.auto ? "" : " | manual"}</small></div>`).join("")}
+        </article>`).join("")}</div>
+      ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Los demás pilares se calculan solos con Rabbit.</p>
+        <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
+        ${EVALUADOS.map((n) => { const m = MANUAL[mesDash][n]; return `<span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span><input type="number" min="0" max="10" value="${m.tardanzas}" data-n="${n}" data-c="tardanzas" /><input type="number" min="0" max="20" value="${m.vestimenta}" data-n="${n}" data-c="vestimenta" />`; }).join("")}</div></section>` : ""}
+      <section class="tkd-b dash-guia"><h4>Guía del modelo</h4><div class="dg-grid">${PILARES.map((p, i) => `<div><b>Pilar ${i + 1}: ${p.t} (${Math.round(p.peso * 100)}% | 0 a 20)</b><p>${p.d}</p><small>${p.auto ? "Se calcula solo con Rabbit." : "Lo ingresa Hilary."}</small></div>`).join("")}
+        <div><b>Puntaje final (100%)</b><p>(Proyectos × 30%) + (Tickets × 30%) + (Puntualidad × 20%) + (Vestimenta × 20%). El mayor puntaje del mes es el ganador.</p><small>El historial de cada mes se guarda siempre.</small></div></div></section>`;
+    cont.querySelector("#dashMes").onchange = (e) => { mesDash = e.target.value; pintarDash(); };
+    cont.querySelectorAll(".dm-tabla input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); pintarDash(); }));
   }
 
   const _armar = armar;
