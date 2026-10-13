@@ -914,6 +914,24 @@
   .tk-prios button.activa, .tk-pasos button.activa { background: #14161c !important; color: #fff !important; border-color: #14161c !important; }
   .dash-menu, .dg-tip, .di-tip, .menu-perfil { background: #fff !important; }
   .detalle { background: #fff !important; }
+
+  /* ===== Toques en negro ===== */
+  .lateral, #vistaDash .dg-caja, .di, .tk-equipo, .kpi:nth-child(4) { background: #14161c !important; border-color: #14161c !important; box-shadow: 0 14px 30px rgba(15,23,42,.22) !important; }
+  :is(.lateral, #vistaDash .dg-caja, .di, .tk-equipo, .kpi:nth-child(4)), :is(.lateral, #vistaDash .dg-caja, .di, .tk-equipo, .kpi:nth-child(4)) :is(h3, h4, b, span, div, a, .t-texto, .kpi-num, .kpi-txt) { color: #fff; }
+  :is(.lateral, #vistaDash .dg-caja, .di, .tk-equipo) :is(small, .sub, .di-final small, .di-ico) { color: #9aa0ae !important; }
+  .lateral :is(.pr, .item, .carga, [class*="pronto"] > div) { background: rgba(255,255,255,.06) !important; border-color: rgba(255,255,255,.08) !important; }
+  .lateral hr { border-color: rgba(255,255,255,.1); } .lateral .chip, .tk-equipo .chip { background: rgba(255,255,255,.12) !important; color: #fff !important; }
+  .lateral .carga-barra { background: rgba(255,255,255,.12) !important; } .lateral .caja { border-color: rgba(255,255,255,.4) !important; }
+  .tk-equipo button.tk-carga { background: rgba(255,255,255,.07) !important; } .tk-equipo button.tk-carga.activa { background: #fff !important; } .tk-equipo button.tk-carga.activa :is(b, small) { color: #14161c !important; }
+  #vistaDash .dg-caja .dg-l { stroke: rgba(255,255,255,.08); } #vistaDash .dg-caja .dg-t { fill: #8b92a6; } #vistaDash .dg-caja .dg-nom { fill: #fff; } #vistaDash .dg-caja .dg-fin { stroke: #14161c; }
+  #vistaDash .dg-caja .dg-tip { background: #fff !important; } #vistaDash .dg-caja .dg-tip :is(b, div, span) { color: #14161c !important; }
+  .di-fila { border-bottom-color: rgba(255,255,255,.1) !important; } .di-fila i { background: linear-gradient(90deg, #5fe03a var(--f, 0%), #3a3d45 var(--f, 0%)) !important; }
+  .di-tip { background: #fff !important; } .di-tip :is(b, span) { color: #14161c !important; } .di-tip em { color: #16a34a !important; }
+  .kpi:nth-child(4)::before { background: #fff !important; box-shadow: none !important; } .kpi:nth-child(4) .kpi-ico { background: rgba(255,255,255,.1) !important; border-color: rgba(255,255,255,.2) !important; color: #fff !important; }
+  .lateral .pronto { background: rgba(255,255,255,.06) !important; border: 1px solid rgba(255,255,255,.08) !important; box-shadow: none !important; }
+  .lateral .pronto :is(b, span, div) { color: #fff !important; } .lateral .pronto small, .lateral .pronto .sub { color: #9aa0ae !important; }
+  .lateral .pronto.urgente small, .lateral .rojo-txt { color: #ff8a8f !important; }
+  .lateral h3 { color: #fff !important; } .lateral .item { background: transparent !important; border-color: transparent !important; }
 </style>
 </head>
 <body>
@@ -994,17 +1012,17 @@
     <!-- Columna lateral -->
     <aside class="lateral vidrio">
       <div>
-        <div class="tit"><h3 style="color:var(--texto)">Vence pronto <span class="chip" id="nPronto">0</span></h3></div>
+        <div class="tit"><h3>Vence pronto <span class="chip" id="nPronto">0</span></h3></div>
         <div id="listaPronto"></div>
       </div>
       <hr />
       <div>
-        <div class="tit"><h3 style="color:var(--texto)">Carga del equipo</h3></div>
+        <div class="tit"><h3>Carga del equipo</h3></div>
         <div id="listaCarga"></div>
       </div>
       <hr />
       <div>
-        <div class="tit"><h3 style="color:var(--texto)">Tareas pendientes <span class="chip" id="nTareas">0</span></h3></div>
+        <div class="tit"><h3>Tareas pendientes <span class="chip" id="nTareas">0</span></h3></div>
         <div id="listaTareas"></div>
       </div>
     </aside>
