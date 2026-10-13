@@ -807,6 +807,17 @@
   .dg-cruz { stroke: rgba(255,255,255,.35); stroke-dasharray: 4 4; }
   .dg-tip { position: absolute; top: 10px; min-width: 150px; padding: 10px 12px; border-radius: 12px; background: #11141c; border: 1px solid rgba(255,255,255,.12); font-size: .78rem; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
   .dg-tip b { display: block; margin-bottom: 6px; } .dg-tip div { display: flex; align-items: center; gap: 6px; padding: 2px 0; } .dg-tip i { width: 8px; height: 8px; border-radius: 50%; } .dg-tip span { margin-left: auto; font-variant-numeric: tabular-nums; color: #fff; }
+  .di-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+  .di { display: flex; align-items: center; gap: 18px; padding: 18px 20px; border-radius: 20px; background: #0f1117; border: 1px solid rgba(255,255,255,.07); }
+  .di-per { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 110px; }
+  .di-av { width: 52px !important; height: 52px !important; } .di-per b { font-size: 1.05rem; color: #fff; }
+  .di-final { font-size: 1.7rem; font-weight: 700; color: #fff; line-height: 1; } .di-final small { font-size: .8rem; color: var(--tenue); font-weight: 400; }
+  .di-pilares { flex: 1; display: flex; flex-direction: column; }
+  .di-fila { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.07); } .di-fila:last-child { border-bottom: 0; }
+  .di-ico { width: 22px; display: grid; place-items: center; color: #8b92a6; margin-right: 4px; } .di-ico svg { width: 16px; height: 16px; }
+  .di-fila i { flex: 1; height: 10px; border-radius: 6px; background: #3a3d45; }
+  @media (max-width: 900px) { .di-grid { grid-template-columns: 1fr; } }
+  .di-fila i.on { background: #7ee35a; box-shadow: 0 0 10px rgba(126,227,90,.45); }
   .mas { font-size: .7rem; color: var(--tenue); text-align: center; padding-top: 6px; }
   /* Línea de tiempo */
   .lt { border: 1px solid var(--borde); border-radius: 14px; background: rgba(0,0,0,.22); overflow: hidden; }
@@ -2093,6 +2104,12 @@
           <rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="dg-hit"/></svg>
           <div class="dg-tip" hidden></div></div>
       </section>
+      <div class="di-grid">${res.map((r) => `
+        <div class="di">
+          <div class="di-per"><i class="av di-av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i><b>${r.n}</b><span class="di-final">${r.final.toFixed(1)}<small> / 20</small></span></div>
+          <div class="di-pilares">${PILARES.map((p) => { const on = Math.round((r.v[p.k] / 20) * 6); return `
+            <div class="di-fila" title="${p.t}: ${r.v[p.k].toFixed(1)} / 20"><span class="di-ico">${ICO_PILAR[p.k]}</span>${Array.from({ length: 6 }, (_, i) => `<i class="${i < on ? "on" : ""}"></i>`).join("")}</div>`; }).join("")}</div>
+        </div>`).join("")}</div>
       ${jefa ? `<section class="tkd-b dash-manual"><h4>Datos manuales de ${nomMes(mesDash)}</h4><p class="tk-ayuda">Solo Hilary los ingresa. Alimentan los recuadros de Puntualidad y Vestimenta.</p>
         <div class="dm-tabla"><span></span><small>Días de tardanza</small><small>Vestimenta (0 a 20)</small>
         ${EVALUADOS.map((n) => { const m = MANUAL[mesDash][n]; return `<span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span><input type="number" min="0" max="10" value="${m.tardanzas}" data-n="${n}" data-c="tardanzas" /><input type="number" min="0" max="20" value="${m.vestimenta}" data-n="${n}" data-c="vestimenta" />`; }).join("")}</div></section>` : ""}`;
