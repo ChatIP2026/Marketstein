@@ -729,7 +729,7 @@
   .tk-chip.adj b { color: #0a0a0a; }
   /* ===== Personas ===== */
   .per-lista { display: flex; flex-direction: column; gap: 8px; }
-  .per { display: grid; grid-template-columns: 44px minmax(180px, 1.6fr) 1fr 1.1fr 1fr 1fr 130px; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 16px; background: linear-gradient(180deg, #ffffff, #ffffff); filter: drop-shadow(0 0 1px rgba(190,205,245,.25)); }
+  .per { display: grid; grid-template-columns: 44px minmax(180px, 1.6fr) 1fr 1.1fr 1fr 1fr 210px; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 16px; background: linear-gradient(180deg, #ffffff, #ffffff); filter: drop-shadow(0 0 1px rgba(190,205,245,.25)); }
   .per-av { width: 40px !important; height: 40px !important; font-size: .95rem !important; }
   .per-nom b { display: block; font-size: .95rem; } .per-nom small { font-size: .78rem; color: var(--tenue); }
   .per-col { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; min-width: 0; } .per-col small { font-size: .68rem; color: var(--tenue); }
@@ -1080,6 +1080,34 @@
   body.con-detalle .velo { backdrop-filter: blur(4px); }
   .detalle.tk-det .tkd-kpis { grid-template-columns: repeat(3, 1fr); }
   @media (min-width: 900px) { .detalle.tk-det .tk-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; } .detalle.tk-det .tk-form > :is(.tk-dos, .per-aviso, .tk-aviso, .tk-nota, .mensaje, .nuevo-btn, .tk-adj, label:has(textarea)) { grid-column: 1 / -1; } }
+  /* Pantallas vacías con el conejo */
+  .mis-vacio::before { content: ""; display: block; width: 56px; height: 56px; margin: 0 auto 12px; background: var(--conejo) center/contain no-repeat; opacity: .55; }
+  .ent-vacia { display: flex; align-items: center; gap: 12px; } .ent-vacia::before { content: ""; width: 30px; height: 30px; flex: none; background: var(--conejo) center/contain no-repeat; opacity: .5; }
+  /* Buscadores */
+  .tk-buscar { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 12px; background: #fff; border: 1px solid #e5e5e5; color: #737373; min-width: 240px; }
+  .tk-buscar svg { width: 16px; height: 16px; flex: none; } .tk-buscar input { all: unset; flex: 1; font-size: .86rem; color: #0a0a0a; }
+  .tk-barra-f { align-items: center !important; } .tk-barra-f > .tk-buscar { margin-left: auto; }
+  /* Entregable, edición, cancelar, comentarios */
+  .tk-ent { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #d4d4d4; }
+  .tk-ent label, .tk-editar label { display: flex; flex-direction: column; gap: 6px; font-size: .78rem; color: #737373; }
+  .tk-ent input, .tk-editar input, .tkc-nuevo input { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid #e5e5e5; font: inherit; font-size: .88rem; background: #fff; }
+  .tk-editar { margin-top: 12px; border-top: 1px solid #e5e5e5; padding-top: 10px; display: flex; flex-direction: column; gap: 12px; }
+  .tk-editar[open] { gap: 12px; } .tk-editar summary { cursor: pointer; font-size: .84rem; font-weight: 600; color: #0a0a0a; }
+  .tkd-entregable { background: #0a0a0a !important; } .tkd-entregable h4 { color: #a3a3a3 !important; }
+  .tk-ent-link { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 10px 16px; border-radius: 12px; background: #fff; color: #0a0a0a; font-weight: 600; text-decoration: none; } .tk-ent-link svg { width: 16px; height: 16px; }
+  .tkd-por { font-size: .74rem; color: #737373; }
+  .tkd-n { background: #0a0a0a; color: #fff; border-radius: 999px; padding: 1px 8px; font-size: .72rem; margin-left: 4px; }
+  .tkc-lista { display: flex; flex-direction: column; gap: 10px; }
+  .tkc { display: flex; gap: 10px; } .tkc .av { width: 28px; height: 28px; flex: none; }
+  .tkc > div { background: #fff; border: 1px solid #e5e5e5; border-radius: 4px 14px 14px 14px; padding: 8px 12px; max-width: 85%; }
+  .tkc.mio { flex-direction: row-reverse; } .tkc.mio > div { background: #0a0a0a; border-color: #0a0a0a; border-radius: 14px 4px 14px 14px; } .tkc.mio p, .tkc.mio b { color: #fff !important; }
+  .tkc b { font-size: .78rem; } .tkc b span { font-weight: 400; color: #a3a3a3; margin-left: 4px; } .tkc p { margin: 2px 0 0; font-size: .86rem; }
+  .tkc-nuevo { display: flex; gap: 8px; } .tkc-nuevo .nuevo-btn { height: 40px; }
+  /* Personas: acciones */
+  .per-acc { gap: 6px; } .per-ico { all: unset; cursor: pointer; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; border: 1px solid #e5e5e5; background: #fff; color: #525252; }
+  .per-ico svg { width: 15px; height: 15px; } .per-ico:hover { background: #0a0a0a; color: #fff; border-color: #0a0a0a; } .per-ico.peligro:hover { background: #dc2626; border-color: #dc2626; }
+  .per.inactiva { opacity: .5; } .per-est.off { color: #dc2626 !important; }
+  .per:has(.r-jefa) .per-ico { background: transparent; border-color: rgba(255,255,255,.25); color: #fff; }
 </style>
 </head>
 <body>
@@ -1149,7 +1177,7 @@
 
       <section class="seccion vidrio tablero-caja">
         <div class="tablero-barra">
-          <h3>Todos los proyectos <span class="chip-ejemplo" title="Fechas cercanas y 6 tareas por proyecto añadidas solo para probar">Datos de ejemplo</span></h3>
+          <h3>Todos los proyectos</h3>
           <div class="vistas"><span class="vista activa" data-v="kanban"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.6"/></svg>Por estado</span><span class="vista" data-v="calendario"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendario</span></div>
           <div class="acciones">
             <input id="buscar" class="buscar" placeholder="⌕  Buscar…" />
@@ -1331,7 +1359,7 @@
     const filas = Object.keys(COLORES).map((n) => {
       const suyos = [...mapaP.values()].filter((p) => p.encargados.includes(n) && p.estado !== "listo");
       const misT = tareas.filter((t) => t.encargado === n && mapaP.has(t.proyecto_id));
-      let tks = []; try { tks = tickets.filter((t) => t.asignado === n && t.estado !== "rechazado"); } catch (e) {}
+      let tks = []; try { tks = tickets.filter((t) => t.asignado === n && !["rechazado", "cancelado"].includes(t.estado)); } catch (e) {}
       const pendT = misT.filter((t) => !t.hecha).length, pendK = tks.filter((t) => t.estado !== "entregado").length;
       const total = misT.length + tks.length, hechas = (misT.length - pendT) + (tks.length - pendK);
       // Pendientes = proyectos activos + tareas pendientes + tickets abiertos; avance = tareas y tickets terminados
@@ -1753,7 +1781,7 @@
       [...mapaP.values()].filter((p) => p.estado !== "listo" && p.fecha_limite && (yo === JEFA || p.encargados.includes(yo))).forEach((p) => {
         const d = diasHasta(p.fecha_limite); if (d >= 0 && d <= 4) add("vp" + p.id, "⏰", d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `Vence en ${d} días`, `Proyecto: ${p.nombre}`, haceDias(Math.max(0, 4 - d) * 0.2), ["p", p.id]);
       });
-      tks.filter((t) => t.asignado === yo && !["entregado", "rechazado"].includes(t.estado)).forEach((t) => {
+      tks.filter((t) => t.asignado === yo && !["entregado", "rechazado", "cancelado"].includes(t.estado)).forEach((t) => {
         const d = diasHasta(t.fecha); if (d >= 0 && d <= 4) add("vt" + t.id, "⏰", d === 0 ? "Ticket vence hoy" : d === 1 ? "Ticket vence mañana" : `Ticket vence en ${d} días`, `#${String(t.id).padStart(3, "0")} ${t.titulo}`, haceDias(0.1), ["tk", t.id]);
       });
       // Tickets nuevos por aprobar (solo Hilary)
@@ -1997,7 +2025,7 @@
   pintarPerfil();
   // Cada rol ve un panel distinto: otras áreas solo ven Tickets (sus solicitudes)
   function aplicarRol() {
-    filtroTk = null;
+    filtroTk = null; busTk = ""; personaTk = null;
     const sol = esSolicitante();
     document.body.classList.toggle("rol-solicitante", sol);
     document.querySelectorAll("nav a").forEach((a) => (a.hidden = sol && a.dataset.p !== "tickets"));
@@ -2010,7 +2038,7 @@
   const TK_ESTADOS = {
     revision_inicial: { t: "Por revisar", c: "#a9b8e8" }, falta_info: { t: "Falta info", c: "#ff9d42" },
     en_curso: { t: "En curso", c: "#ffd45c" }, en_revision: { t: "En revisión", c: "#6aa6ff" },
-    entregado: { t: "Entregado", c: "#2ee6b0" }, rechazado: { t: "Rechazado", c: "#ff7b80" },
+    entregado: { t: "Entregado", c: "#2ee6b0" }, rechazado: { t: "Rechazado", c: "#ff7b80" }, cancelado: { t: "Cancelado", c: "#a3a3a3" },
   };
   const TK_PRIO = { urgente: { t: "Urgente", c: "#ff6161" }, alta: { t: "Alta", c: "#ff9d42" }, media: { t: "Media", c: "#a9b8e8" }, baja: { t: "Baja", c: "#97a3b3" } };
   const TIPOS = { Post: ["Vertical (feed)", "Cuadrado", "Historia o reel"], Banner: ["Horizontal (web)", "Vertical", "Impreso"], "Presentación": ["Pantalla 16:9"],
@@ -2027,9 +2055,9 @@
     { id: 3, titulo: "Presentación comercial Q4", solicitante: "Mario", area: "Ventas", tipo: "Presentación", formato: "Pantalla 16:9", detalle: "Actualizar la presentación con los nuevos precios.", destino: "Clientes", texto: "", refs: [], fecha: enD(8), estado: "revision_inicial", creado: haceH(26), historial: [{ at: haceH(26), quien: "Mario", txt: "Envió la solicitud" }] },
     { id: 4, titulo: "Banner para la feria de Ventas", solicitante: "Mario", area: "Ventas", tipo: "Banner", formato: "Impreso", detalle: "Banner roll-up para el stand de la feria.", destino: "Visitantes de la feria", texto: "iPartner | Tu socio financiero", refs: [], fecha: enD(4), estado: "en_curso", prioridad: "alta", asignado: "Ariana", proyecto: 900, creado: haceH(50), historial: [{ at: haceH(50), quien: "Mario", txt: "Envió la solicitud" }, { at: haceH(44), quien: "Hilary", txt: "Aceptó el ticket | prioridad Alta | asignado a Ariana" }, { at: haceH(30), quien: "Ariana", txt: "Revisó la información y empezó a trabajarlo" }] },
     { id: 5, titulo: "Mailing de bienvenida a clientes nuevos", solicitante: "Lucía", area: "Finanzas", tipo: "Mailing", formato: "Correo (600 px)", detalle: "Correo de bienvenida con los pasos para activar la cuenta.", destino: "Clientes nuevos", texto: "Bienvenido a iPartner", refs: [], fecha: enD(1), estado: "en_revision", prioridad: "urgente", asignado: "Pierina", creado: haceH(72), historial: [{ at: haceH(72), quien: "Lucía", txt: "Envió la solicitud" }, { at: haceH(70), quien: "Hilary", txt: "Aceptó el ticket | prioridad Urgente | asignado a Pierina" }] },
-    { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket | asignado a Carlos" }, { at: haceH(200), quien: "Carlos", txt: "Revisó la información y empezó a trabajarlo" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado" }] },
+    { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió la solicitud" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket | asignado a Carlos" }, { at: haceH(200), quien: "Carlos", txt: "Revisó la información y empezó a trabajarlo" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado y adjuntó el entregable" }], entregable: "https://drive.google.com/ejemplo-video-rrhh", comentarios: [{ quien: "Carlos", txt: "¿El video lleva subtítulos?", at: haceH(220) }, { quien: "Rosa", txt: "Sí, por favor, en español.", at: haceH(218) }] },
   ];
-  let filtroTk = null, tkAbierto = null, mesTk = null, personaTk = null;
+  let filtroTk = null, tkAbierto = null, mesTk = null, personaTk = null, busTk = "";
   const tkVisibles = () => esSolicitante() ? tickets.filter((t) => t.solicitante === yo)
     : yo === JEFA ? tickets : tickets.filter((t) => t.asignado === yo);
   function contarTickets() {
@@ -2054,31 +2082,34 @@
     if (mesTk === null) mesTk = hoyMes;
     const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
     const delMes = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
-    const vis = jefa && personaTk ? delMes.filter((t) => t.asignado === personaTk) : delMes;
-    const FILTROS = sol ? [["todos", "Todas"], ["activos", "En proceso"], ["entregado", "Entregados"]]
-      : jefa ? [["todos", "Todos"], ["revision_inicial", "Por revisar"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"]]
-      : [["todos", "Todos"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"]];
+    const qTk = busTk.trim().toLowerCase();
+    const vis = (jefa && personaTk ? delMes.filter((t) => t.asignado === personaTk) : delMes).filter((t) => !qTk || [t.titulo, t.solicitante, t.area, t.tipo, t.asignado || "", "#" + String(t.id).padStart(3, "0")].join(" ").toLowerCase().includes(qTk));
+    const FILTROS = sol ? [["todos", "Todas"], ["activos", "En proceso"], ["entregado", "Entregados"], ["rechazado", "Rechazadas o canceladas"]]
+      : jefa ? [["todos", "Todos"], ["revision_inicial", "Por revisar"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["rechazado", "Rechazados"]]
+      : [["todos", "Todos"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["rechazado", "Cancelados"]];
     if (!FILTROS.some((f) => f[0] === filtroTk)) filtroTk = FILTROS[0][0];
     // Sin filtro "Falta info": esos tickets se ven donde esperan (por revisar si no tiene asignado, en revisión si ya lo tiene)
     const estadoF = (t) => t.estado !== "falta_info" ? t.estado : t.asignado ? "en_revision" : "revision_inicial";
-    const pasa = (t, f) => f === "todos" ? true : f === "activos" ? (sol ? ["en_curso", "en_revision", "revision_inicial", "falta_info"].includes(t.estado) : ["en_curso", "en_revision", "falta_info"].includes(t.estado)) : estadoF(t) === f;
+    const pasa = (t, f) => f === "todos" ? true : f === "activos" ? (sol ? ["en_curso", "en_revision", "revision_inicial", "falta_info"].includes(t.estado) : ["en_curso", "en_revision", "falta_info"].includes(t.estado)) : f === "rechazado" ? ["rechazado", "cancelado"].includes(t.estado) : estadoF(t) === f;
     const lista = vis.filter((t) => pasa(t, filtroTk)).sort((a, b) => (TK_PRIO[a.prioridad] ? Object.keys(TK_PRIO).indexOf(a.prioridad) : 9) - (TK_PRIO[b.prioridad] ? Object.keys(TK_PRIO).indexOf(b.prioridad) : 9) || a.fecha.localeCompare(b.fecha));
     const titulo = sol ? `Hola, ${yo} 👋` : jefa ? "Bandeja de tickets" : "Mis tickets";
     const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
       : jefa ? "Revisa las solicitudes, decide la prioridad y asígnalas al equipo." : "Solicitudes de otras áreas que Hilary te asignó.";
-    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado"].includes(t.estado)).length; return `<div class="tpk" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
+    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length; return `<div class="tpk" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
         const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
         return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} | ${tareas} tareas pendientes</small></div></button>`; }).join("");
       html += `<div class="tk-equipo">${carga}</div>`;
     }
-    const selMes = `<label class="tk-mes"><select id="tkMes" title="Mes de entrega">${meses.map((m) => `<option value="${m}" ${mesTk === m ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""} | ${todosVis.filter((t) => mesDe(t) === m).length} 🏷️</option>`).join("")}<option value="todos" ${mesTk === "todos" ? "selected" : ""}>Todos los meses | ${todosVis.length} 🏷️</option></select></label>`;
+    const selMes = `<label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="tkBuscar" placeholder="Buscar ticket, persona o #número" value="${esc(busTk)}" /></label><label class="tk-mes"><select id="tkMes" title="Mes de entrega">${meses.map((m) => `<option value="${m}" ${mesTk === m ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""} | ${todosVis.filter((t) => mesDe(t) === m).length} 🏷️</option>`).join("")}<option value="todos" ${mesTk === "todos" ? "selected" : ""}>Todos los meses | ${todosVis.length} 🏷️</option></select></label>`;
     html += `<div class="tk-barra-f"><div class="ent-filtros">${FILTROS.map(([k, t]) => `<button data-ft="${k}" class="${filtroTk === k ? "activa" : ""}">${t} <span>${vis.filter((x) => pasa(x, k)).length}</span></button>`).join("")}</div>${selMes}</div>`;
     html += lista.length ? `<div class="tk-lista">${lista.map(tarjetaTk).join("")}</div>`
       : `<div class="mis-vacio"><b>${sol ? "No tienes solicitudes aquí" : "Nada por aquí"}</b>${sol ? "Usa “Nueva solicitud” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}</div>`;
+    if (!lista.length && qTk) html = html.replace(/<div class="mis-vacio">[\s\S]*$/, `<div class="mis-vacio"><b>Sin resultados</b>No encontramos tickets con “${esc(busTk)}”.</div>`);
     cont.innerHTML = html;
     cont.querySelectorAll("[data-per]").forEach((b) => (b.onclick = () => { personaTk = personaTk === b.dataset.per ? null : b.dataset.per; filtroTk = "todos"; pintarTickets(); }));
+    const ib = cont.querySelector("#tkBuscar"); ib.oninput = () => { busTk = ib.value; const pos = ib.selectionStart; pintarTickets(); const n = document.getElementById("tkBuscar"); n.focus(); n.setSelectionRange(pos, pos); };
     cont.querySelector("#tkMes").onchange = (e) => { mesTk = e.target.value; pintarTickets(); };
     cont.querySelectorAll("[data-ft]").forEach((b) => (b.onclick = () => { filtroTk = b.dataset.ft; pintarTickets(); }));
     cont.querySelectorAll(".tk").forEach((c) => (c.onclick = () => abrirTicket(+c.dataset.id)));
@@ -2088,7 +2119,7 @@
   function tarjetaTk(t) {
     const pr = TK_PRIO[t.prioridad], sol = esSolicitante();
     const quien = sol ? t.asignado : t.solicitante;
-    return `<button class="tk ${["urgente", "alta"].includes(t.prioridad) && !["entregado", "rechazado"].includes(t.estado) ? "p-fuerte" : ""}" data-id="${t.id}">
+    return `<button class="tk ${["urgente", "alta"].includes(t.prioridad) && !["entregado", "rechazado", "cancelado"].includes(t.estado) ? "p-fuerte" : ""}" data-id="${t.id}">
       <div class="tk-a">${quien ? `<i class="av tk-av" style="${fondoAv(quien)}">${letraAv(quien)}</i>` : `<i class="av tk-av vacio">?</i>`}<span class="tk-id">#${String(t.id).padStart(3, "0")}</span></div>
       <span class="tk-ir">${FLECHA}</span>
       <div class="tk-b">
@@ -2123,9 +2154,18 @@
     else if ((mio || jefa) && t.asignado && ["en_revision", "en_curso", "entregado"].includes(t.estado)) acciones = `
       <div class="tk-acc"><h4>Situación del ticket</h4>
         <div class="tk-pasos">${["en_revision", "en_curso", "entregado"].map((e) => `<button type="button" data-e="${e}" class="${t.estado === e ? "activa" : ""}">${TK_ESTADOS[e].t}</button>`).join("<span>→</span>")}</div>
+        <div class="tk-ent" hidden><label>Enlace del entregable *<input id="tkEntUrl" placeholder="https://drive.google.com/… (archivo final)" value="${esc(t.entregable || "")}" /></label><button class="nuevo-btn" id="tkEntOk">Marcar como entregado</button></div>
+        ${jefa ? `<details class="tk-editar"><summary>Editar ticket</summary>
+          <label>Prioridad<div class="tk-prios">${Object.entries(TK_PRIO).map(([k, v]) => `<button type="button" data-np="${k}" class="${t.prioridad === k ? "activa" : ""}">${v.t}</button>`).join("")}</div></label>
+          <label>Fecha de entrega<input type="date" id="tkNF" value="${t.fecha}" /></label>
+          <label>Asignado a<div class="tk-prios">${Object.keys(COLORES).map((n) => `<button type="button" data-na="${n}" class="${t.asignado === n ? "activa" : ""}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></label>
+          <button class="nuevo-btn" id="tkGuardar">Guardar cambios</button></details>` : ""}
         </div>`;
     else if (jefa && ["en_revision", "en_curso", "falta_info"].includes(t.estado)) acciones = `
       <div class="tk-acc"><h4>Seguimiento</h4><p class="tk-ayuda">${t.estado === "en_revision" ? `${t.asignado} está revisando la información del ticket.` : t.estado === "en_curso" ? `✓ ${t.asignado} revisó la información y ya está trabajando en el ticket.` : `Se pidió más información a ${esc(t.solicitante)}.`}</p></div>`;
+    else if (sol && ["revision_inicial", "en_revision", "en_curso"].includes(t.estado)) acciones = `
+      <div class="tk-acc tk-cancelar"><h4>¿Ya no lo necesitas?</h4><button class="cal-btn peligro" id="tkCancelar">Cancelar solicitud</button>
+        <textarea id="tkMotivo" placeholder="Cuéntale al equipo por qué lo cancelas…" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Confirmar cancelación</button></div>`;
     else if (sol && t.estado === "falta_info") acciones = `
       <div class="tk-acc"><h4>Te piden más información</h4><textarea id="tkResp" placeholder="Escribe tu respuesta…"></textarea><button class="nuevo-btn" id="tkResponder">Responder y reenviar</button></div>`;
     const bloque = (tit, cuerpo) => `<section class="tkd-b"><h4>${tit}</h4>${cuerpo}</section>`;
@@ -2140,9 +2180,13 @@
         <div class="tkd-k"><small>Asignado</small>${t.asignado ? `<span class="tk-asig"><i class="av" style="${fondoAv(t.asignado)}">${letraAv(t.asignado)}</i>${t.asignado}</span>` : `<span class="tk-asig vacio">Aún nadie</span>`}</div>
       </div>
       ${acciones}
+      ${t.entregable ? `<section class="tkd-b tkd-entregable"><h4>Entregable</h4><a class="tk-ent-link" href="${esc(t.entregable)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Ver archivo final</a></section>` : ""}
+      ${["rechazado", "cancelado"].includes(t.estado) ? (() => { const h = [...t.historial].reverse().find((x) => /Rechazó|Canceló/.test(x.txt)); return h ? bloque(t.estado === "rechazado" ? "Motivo del rechazo" : "Motivo de la cancelación", `<p class="tkd-cita">${esc(h.txt.replace(/^[^:]+:\s*/, ""))}</p><small class="tkd-por">${h.quien} | ${hace(h.at)}</small>`) : ""; })() : ""}
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
       ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Carpeta de ${esc(t.solicitante)} | busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
+      ${bloque(`Comentarios <span class="tkd-n">${(t.comentarios || []).length}</span>`, `<div class="tkc-lista">${(t.comentarios || []).map((c) => `<div class="tkc ${c.quien === yo ? "mio" : ""}"><i class="av" style="${fondoAv(c.quien)}">${letraAv(c.quien)}</i><div><b>${c.quien} <span>${hace(c.at)}</span></b><p>${esc(c.txt)}</p></div></div>`).join("") || '<p class="tkd-vacio">Aún no hay comentarios. Úsalos para dudas entre quien pide y quien lo hace.</p>'}</div>
+        ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Escribe un comentario…" /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} | último ${hace(t.historial.at(-1).at)}</span></summary>
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>| ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
@@ -2166,10 +2210,37 @@
     d.querySelector("#tkMotivoOk")?.addEventListener("click", () => {
       const v = d.querySelector("#tkMotivo").value.trim(); if (!v) return;
       if (modo === "info") { t.estado = "falta_info"; registrar(t, "Pidió más información: " + v); despues(`Se pidió más información a <b>${esc(t.solicitante)}</b>`); }
+      else if (modo === "cancelar") { t.estado = "cancelado"; registrar(t, "Canceló la solicitud: " + v); if (t.proyecto) mapaP.delete(t.proyecto); despues("Solicitud cancelada"); }
       else { t.estado = "rechazado"; registrar(t, "Rechazó el ticket: " + v); despues("Ticket rechazado"); }
+    });
+    d.querySelector("#tkCancelar")?.addEventListener("click", () => motivo("cancelar"));
+    // Entregable obligatorio al marcar Entregado
+    d.querySelector("#tkEntOk")?.addEventListener("click", () => {
+      const u = d.querySelector("#tkEntUrl").value.trim();
+      if (!/^https?:\/\//.test(u)) return avisar("Pega el enlace del archivo final (debe empezar con https://)");
+      t.entregable = u; t.estado = "entregado"; registrar(t, "Lo marcó como entregado y adjuntó el entregable");
+      if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = "listo"; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = true)); }
+      despues("✅ Ticket <b>entregado</b>");
+    });
+    // Comentarios
+    const enviarCom = () => { const i = d.querySelector("#tkComTxt"), v = i.value.trim(); if (!v) return; (t.comentarios ||= []).push({ quien: yo, txt: v, at: new Date().toISOString() }); despues("💬 Comentario enviado"); };
+    d.querySelector("#tkComOk")?.addEventListener("click", enviarCom);
+    d.querySelector("#tkComTxt")?.addEventListener("keydown", (e) => { if (e.key === "Enter") enviarCom(); });
+    // Edición (Hilary)
+    let nP = t.prioridad, nA = t.asignado;
+    d.querySelectorAll("[data-np]").forEach((b) => (b.onclick = () => { nP = b.dataset.np; d.querySelectorAll("[data-np]").forEach((x) => x.classList.toggle("activa", x === b)); }));
+    d.querySelectorAll("[data-na]").forEach((b) => (b.onclick = () => { nA = b.dataset.na; d.querySelectorAll("[data-na]").forEach((x) => x.classList.toggle("activa", x === b)); }));
+    d.querySelector("#tkGuardar")?.addEventListener("click", () => {
+      const nF = d.querySelector("#tkNF").value, cambios = [];
+      if (nP !== t.prioridad) cambios.push(`prioridad ${TK_PRIO[nP].t}`); if (nF && nF !== t.fecha) cambios.push(`entrega ${fmt(nF)}`); if (nA !== t.asignado) cambios.push(`asignado a ${nA}`);
+      if (!cambios.length) return avisar("No hay cambios que guardar");
+      t.prioridad = nP; if (nF) t.fecha = nF; t.asignado = nA;
+      if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.encargados = [nA]; p.fecha_limite = t.fecha; p.prioridad = nP === "urgente" ? "alta" : nP; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.encargado = nA)); }
+      registrar(t, "Editó el ticket: " + cambios.join(" | ")); despues("✏️ Ticket actualizado");
     });
     d.querySelectorAll("[data-e]").forEach((b) => (b.onclick = () => {
       if (b.dataset.e === t.estado) return;
+      if (b.dataset.e === "entregado") { const box = d.querySelector(".tk-ent"); box.hidden = false; box.querySelector("input").focus(); return; }
       const antes = t.estado; t.estado = b.dataset.e;
       registrar(t, t.estado === "entregado" ? "Lo marcó como entregado" : t.estado === "en_curso" ? (antes === "entregado" ? "Lo regresó a En curso" : "Revisó la información y lo pasó a En curso") : "Lo regresó a En revisión");
       if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = { entregado: "listo", en_curso: "en_curso", en_revision: "sin_empezar" }[t.estado]; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = t.estado === "entregado")); }
@@ -2256,42 +2327,51 @@
     ...Object.entries(SOLICITANTES).map(([n, a]) => ({ nombre: n, apellido: "", correo: n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") + "@ipartner.pe", area: a, rol: "solicitante", carpeta: carpetaDe(n), activa: n !== "Romano" })),
   ];
   const ROLES = { jefa: "Marketing | Jefa", equipo: "Equipo de marketing", solicitante: "Otra área" };
-  let filtroPer = "todas";
+  let filtroPer = "todas", busPer = "";
   const claveTemporal = () => { const L = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; return Array.from({ length: 10 }, () => L[Math.floor(Math.random() * L.length)]).join(""); };
   function pintarPersonas() {
     const cont = document.getElementById("vistaPersonas");
-    const pasa = (x) => filtroPer === "todas" || (filtroPer === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante");
+    const qP = busPer.trim().toLowerCase();
+    const pasa = (x) => (filtroPer === "todas" || (filtroPer === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")) && (!qP || [x.nombre, x.apellido, x.correo, x.area].join(" ").toLowerCase().includes(qP));
     const F = [["todas", "Todas"], ["equipo", "Equipo de marketing"], ["otras", "Otras áreas"]];
     cont.innerHTML = `<div class="mis-cab"><div><h2>Personas</h2><p>Cuentas con acceso a Rabbit. Solo el equipo de marketing puede crearlas.</p></div><button class="nuevo-btn tk-nuevo" id="perNueva">＋ Nueva persona</button></div>
-      <div class="ent-filtros">${F.map(([k, t]) => `<button data-fp="${k}" class="${filtroPer === k ? "activa" : ""}">${t} <span>${personas.filter((x) => k === "todas" || (k === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")).length}</span></button>`).join("")}</div>
-      <div class="per-lista">${personas.filter(pasa).map((x, i) => `
-        <div class="per">
+      <div class="tk-barra-f"><div class="ent-filtros">${F.map(([k, t]) => `<button data-fp="${k}" class="${filtroPer === k ? "activa" : ""}">${t} <span>${personas.filter((x) => k === "todas" || (k === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")).length}</span></button>`).join("")}</div><label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="perBuscar" placeholder="Buscar nombre, correo o área" value="${esc(busPer)}" /></label></div>
+      <div class="per-lista">${personas.filter(pasa).length ? "" : `<div class="mis-vacio"><b>Sin resultados</b>No encontramos personas con “${esc(busPer)}”.</div>`}${personas.filter(pasa).map((x, i) => `
+        <div class="per ${x.inactiva ? "inactiva" : ""}">
           <i class="av per-av" style="${fondoAv(x.nombre)}">${letraAv(x.nombre)}</i>
           <div class="per-nom"><b>${esc(x.nombre)} ${esc(x.apellido)}</b><small>${esc(x.correo)}</small></div>
           <div class="per-col"><small>Área</small><span class="tk-chip">${esc(x.area)}</span></div>
           <div class="per-col"><small>Rol</small><span class="per-rol r-${x.rol}">${ROLES[x.rol]}</span></div>
           <div class="per-col"><small>Referencias</small>${x.carpeta ? `<a class="tk-chip enl" href="#" onclick="return false">📁 Su carpeta</a>` : `<span class="per-nada">—</span>`}</div>
-          <div class="per-col"><small>Estado</small>${x.activa ? `<span class="per-est ok">● Activa</span>` : `<span class="per-est">● Aún no entra</span>`}</div>
-          <div class="per-acc">${x.activa ? "" : `<button class="cal-btn" data-reenviar="${personas.indexOf(x)}">Reenviar acceso</button>`}</div>
+          <div class="per-col"><small>Estado</small>${x.inactiva ? `<span class="per-est off">● Desactivada</span>` : x.activa ? `<span class="per-est ok">● Activa</span>` : `<span class="per-est">● Aún no entra</span>`}</div>
+          <div class="per-acc">${!x.activa && !x.inactiva ? `<button class="cal-btn" data-reenviar="${personas.indexOf(x)}">Reenviar acceso</button>` : ""}
+            <button class="per-ico" data-editar="${personas.indexOf(x)}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+            ${x.nombre === yo ? "" : `<button class="per-ico ${x.inactiva ? "" : "peligro"}" data-desact="${personas.indexOf(x)}" title="${x.inactiva ? "Reactivar cuenta" : "Desactivar cuenta"}">${x.inactiva ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg>'}</button>`}</div>
         </div>`).join("")}</div>`;
     cont.querySelectorAll("[data-fp]").forEach((b) => (b.onclick = () => { filtroPer = b.dataset.fp; pintarPersonas(); }));
     cont.querySelectorAll("[data-reenviar]").forEach((b) => (b.onclick = () => { const x = personas[+b.dataset.reenviar]; mostrarBienvenida(x, claveTemporal(), true); }));
-    cont.querySelector("#perNueva").onclick = abrirFormPersona;
+    cont.querySelector("#perNueva").onclick = () => abrirFormPersona();
+    cont.querySelectorAll("[data-editar]").forEach((b) => (b.onclick = () => abrirFormPersona(personas[+b.dataset.editar])));
+    cont.querySelectorAll("[data-desact]").forEach((b) => (b.onclick = () => {
+      const x = personas[+b.dataset.desact]; x.inactiva = !x.inactiva; pintarPersonas();
+      avisar(x.inactiva ? `<b>${esc(x.nombre)}</b> ya no podrá entrar a Rabbit. Su historial se conserva.` : `<b>${esc(x.nombre)}</b> puede volver a entrar a Rabbit`, () => { x.inactiva = !x.inactiva; pintarPersonas(); });
+    }));
+    const ip = cont.querySelector("#perBuscar"); ip.oninput = () => { busPer = ip.value; const pos = ip.selectionStart; pintarPersonas(); const n = document.getElementById("perBuscar"); n.focus(); n.setSelectionRange(pos, pos); };
   }
-  function abrirFormPersona() {
+  function abrirFormPersona(ed) {
     const d = document.getElementById("detalle");
     d.className = "detalle tk-det";
     let clave = claveTemporal();
-    d.innerHTML = `<div class="det-cab"><div><h2>Nueva persona</h2><p class="tk-sub">Le llegará un correo de bienvenida con su acceso.</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+    d.innerHTML = `<div class="det-cab"><div><h2>${ed ? "Editar persona" : "Nueva persona"}</h2><p class="tk-sub">${ed ? "Corrige sus datos o cambia su área." : "Le llegará un correo de bienvenida con su acceso."}</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <form class="tk-form" autocomplete="off">
         <div class="tk-dos"><label>Nombre *<input name="nombre" /></label><label>Apellido *<input name="apellido" /></label></div>
         <label>Correo *<input name="correo" type="email" placeholder="nombre@ipartner.pe" /></label>
         <label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label>
         <div class="per-aviso" id="perRol"></div>
         <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
-        <label>Contraseña temporal<div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></label>
+        <label ${ed ? "hidden" : ""}>Contraseña temporal<div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></label>
         <div class="mensaje tk-err"></div>
-        <button class="nuevo-btn" type="submit">Crear cuenta y enviar correo</button>
+        <button class="nuevo-btn" type="submit">${ed ? "Guardar cambios" : "Crear cuenta y enviar correo"}</button>
       </form><p class="det-nota">Vista previa: no se crea ninguna cuenta real.</p>`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     const f = d.querySelector("form");
@@ -2300,11 +2380,21 @@
       d.querySelector("#perRol").innerHTML = mk ? "👥 Será parte del <b>equipo de marketing</b>: verá Inicio, Mi entorno, Tickets y Personas." : "📨 Será de <b>otra área</b>: solo podrá enviar tickets y ver los suyos.";
       d.querySelector("#perCarpeta").hidden = mk;
     };
+    if (ed) { f.nombre.value = ed.nombre; f.apellido.value = ed.apellido || ""; f.correo.value = ed.correo; f.area.value = AREAS.includes(ed.area) ? ed.area : "Marketing"; f.carpeta.value = ed.carpeta || ""; }
     f.area.onchange = verRol; verRol();
     d.querySelector("#perOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#perClave").textContent = clave; };
     f.onsubmit = (e) => {
       e.preventDefault();
       const err = d.querySelector(".tk-err"), v = (k) => f[k].value.trim();
+      if (ed) {
+        if (!v("nombre") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa el nombre y un correo válido."; return; }
+        if (personas.some((x) => x !== ed && x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe otra cuenta con ese correo."; return; }
+        const mk = f.area.value === "Marketing";
+        Object.assign(ed, { apellido: v("apellido"), correo: v("correo"), area: f.area.value, carpeta: mk ? "" : (v("carpeta") || carpetaDe(ed.nombre)) });
+        if (ed.rol !== "jefa") ed.rol = mk ? "equipo" : "solicitante";
+        if (ed.rol === "solicitante") SOLICITANTES[ed.nombre] = ed.area; else delete SOLICITANTES[ed.nombre];
+        pintarPerfil(); pintarPersonas(); cerrarProyecto(); avisar(`✏️ Datos de <b>${esc(ed.nombre)}</b> actualizados`); return;
+      }
       if (!v("nombre") || !v("apellido") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa nombre, apellido y un correo válido."; return; }
       if (personas.some((x) => x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe una cuenta con ese correo."; return; }
       const mk = f.area.value === "Marketing";
@@ -2314,6 +2404,7 @@
       pintarPersonas();
       mostrarBienvenida(x, clave, false);
     };
+    if (ed) f.nombre.readOnly = true;
     document.body.classList.add("con-detalle");
     f.nombre.focus();
   }
@@ -2356,7 +2447,7 @@
     const hechas = tareas.filter((t) => t.hecha).length;
     // Solo cuentan los tickets ya entregados o los que ya pasaron su fecha sin entregarse
     const hoyISO = new Date().toISOString().slice(0, 10);
-    const tks = tickets.filter((t) => t.asignado === n && t.fecha.slice(0, 7) === mes && t.estado !== "rechazado" && (t.estado === "entregado" || t.fecha < hoyISO));
+    const tks = tickets.filter((t) => t.asignado === n && t.fecha.slice(0, 7) === mes && !["rechazado", "cancelado"].includes(t.estado) && (t.estado === "entregado" || t.fecha < hoyISO));
     const aTiempo = tks.filter((t) => { if (t.estado !== "entregado") return false; const h = [...t.historial].reverse().find((x) => /entregado/i.test(x.txt)); return !h || h.at.slice(0, 10) <= t.fecha; }).length;
     const m = (MANUAL[mes] ||= JSON.parse(JSON.stringify(ejemploManual)))[n] ||= { tardanzas: 0, vestimenta: 20 };
     const v = {
@@ -2512,6 +2603,7 @@
     });
   }
 
+  try { document.documentElement.style.setProperty("--conejo", `url(${CONEJO})`); } catch (e) {}
   const _armar = armar;
   armar = function () { _armar(); if (pagina === "mis") pintarMis(); };
 </script>
