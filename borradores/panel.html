@@ -1073,6 +1073,13 @@
   .toast-pie { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 12px 10px; font-size: .84rem; font-weight: 600; color: #0a0a0a; } .toast-pie svg { width: 16px; height: 16px; }
   @keyframes toast-in { from { transform: translateY(-130%); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes toast-out { to { transform: translateY(-130%); opacity: 0; } }
+  /* Tickets y formularios: ventana centrada en vez de panel lateral */
+  .detalle.tk-det { top: 50%; left: 50%; right: auto; bottom: auto; width: min(820px, calc(100vw - 32px)) !important; max-height: 88vh; border-radius: 28px; border: 0 !important; padding: 26px 30px;
+    box-shadow: 0 40px 100px rgba(10,10,10,.35) !important; transform: translate(-50%, -46%) scale(.97); opacity: 0; pointer-events: none; transition: transform .25s ease, opacity .2s ease; }
+  body.con-detalle .detalle.tk-det { transform: translate(-50%, -50%); opacity: 1; pointer-events: auto; }
+  body.con-detalle .velo { backdrop-filter: blur(4px); }
+  .detalle.tk-det .tkd-kpis { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 900px) { .detalle.tk-det .tk-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; } .detalle.tk-det .tk-form > :is(.tk-dos, .per-aviso, .tk-aviso, .tk-nota, .mensaje, .nuevo-btn, .tk-adj, label:has(textarea)) { grid-column: 1 / -1; } }
 </style>
 </head>
 <body>
