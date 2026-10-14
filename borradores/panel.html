@@ -1057,18 +1057,22 @@
   .nt-punto { position: absolute; right: 12px; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: #0a0a0a; }
   .nt-vacio { font-size: .8rem; color: var(--tenue); padding: 6px 10px; margin: 0; }
   .insignia { background: #e5484d !important; color: #fff !important; border: 2px solid #fff !important; min-width: 20px !important; height: 20px !important; padding: 0 4px !important; border-radius: 10px !important; font-size: .62rem !important; line-height: 1 !important; box-sizing: border-box !important; letter-spacing: -.02em; font-weight: 800 !important; top: -8px !important; right: -8px !important; }
-  /* Avisos emergentes */
-  #toasts { position: fixed; top: 16px; right: 16px; z-index: 60; display: flex; flex-direction: column; gap: 10px; width: min(370px, calc(100vw - 32px)); pointer-events: none; }
-  .toast { all: unset; box-sizing: border-box; pointer-events: auto; cursor: pointer; display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 20px;
-    background: rgba(255,255,255,.86); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(10,10,10,.06); box-shadow: 0 18px 40px rgba(10,10,10,.18);
-    animation: toast-in .45s cubic-bezier(.2,.9,.3,1.2) both; }
+  /* Avisos emergentes (tarjeta negra con franja verde) */
+  #toasts { position: fixed; top: 16px; right: 16px; z-index: 60; display: flex; flex-direction: column; gap: 14px; width: min(400px, calc(100vw - 32px)); }
+  .toast { border-radius: 26px; background: linear-gradient(180deg, #a6f05a, #7fdc3a); box-shadow: 0 22px 44px rgba(10,10,10,.28); animation: toast-in .5s cubic-bezier(.2,.9,.3,1.2) both; }
   .toast.fuera { animation: toast-out .35s ease forwards; }
-  .toast-app { width: 38px; height: 38px; flex: none; border-radius: 10px; background: #0a0a0a; display: grid; place-items: center; } .toast-app img { width: 26px; filter: invert(1); }
-  .toast-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
-  .toast-top { display: flex; justify-content: space-between; } .toast-top b { font-size: .68rem; letter-spacing: .04em; color: #737373; } .toast-top em { font-style: normal; font-size: .68rem; color: #a3a3a3; }
-  .toast-txt > b { font-size: .88rem; color: #0a0a0a; } .toast-txt small { font-size: .8rem; color: #525252; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  @keyframes toast-in { from { transform: translateY(-120%); opacity: 0; } to { transform: none; opacity: 1; } }
-  @keyframes toast-out { to { transform: translateY(-120%); opacity: 0; } }
+  .toast-card { background: radial-gradient(120% 120% at 70% 0%, #2a2a2a, #0a0a0a 60%); border-radius: 26px; padding: 18px 18px 16px; color: #fff; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+  .toast-top { display: flex; justify-content: space-between; align-items: center; font-size: .78rem; color: #a3a3a3; }
+  .toast-hora { display: inline-flex; align-items: center; gap: 5px; } .toast-hora svg { width: 15px; height: 15px; }
+  .toast-quien { display: flex; align-items: center; gap: 12px; } .toast-quien .av { width: 46px !important; height: 46px !important; flex: none; box-shadow: 0 0 0 3px #d4d4d4; }
+  .toast-quien b { display: block; font-size: 1.02rem; font-weight: 600; color: #fff; } .toast-quien small { display: flex; align-items: center; gap: 6px; font-size: .8rem; color: #a3a3a3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 280px; }
+  .toast-quien small i { width: 7px; height: 7px; border-radius: 50%; background: #7fdc3a; flex: none; }
+  .toast-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .toast-btns button { all: unset; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 10px; border-radius: 14px; font-size: .86rem; color: #fff; background: linear-gradient(180deg, #4a4a4a, #333); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); }
+  .toast-btns .tb-leida { background: linear-gradient(180deg, #333, #262626); } .toast-btns button:hover { filter: brightness(1.15); } .toast-btns svg { width: 16px; height: 16px; }
+  .toast-pie { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 12px 10px; font-size: .84rem; font-weight: 600; color: #0a0a0a; } .toast-pie svg { width: 16px; height: 16px; }
+  @keyframes toast-in { from { transform: translateY(-130%); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes toast-out { to { transform: translateY(-130%); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -1773,13 +1777,26 @@
   function mostrarToast(n) {
     let pila = document.getElementById("toasts");
     if (!pila) { pila = document.createElement("div"); pila.id = "toasts"; document.body.append(pila); }
-    const t = document.createElement("button");
+    const tks = (() => { try { return tickets; } catch (e) { return []; } })();
+    const tk = n.ir[0] === "tk" ? tks.find((x) => x.id === n.ir[1]) : null, pr = n.ir[0] === "p" ? mapaP.get(n.ir[1]) : null;
+    const quien = tk ? (SOLICITANTES[yo] ? tk.asignado || JEFA : n.id.startsWith("nt") ? tk.solicitante : JEFA) : pr ? pr.creado_por || JEFA : JEFA;
+    const cat = tk ? `Ticket #${String(tk.id).padStart(3, "0")}` : "Proyecto";
+    const hora = new Date().toLocaleTimeString("es-PE", { hour: "numeric", minute: "2-digit" });
+    const pie = n.ico === "⏰" ? "Organízate a tiempo" : n.id.startsWith("nt") ? "Decide prioridad y asígnalo" : SOLICITANTES[yo] ? "Sigue su avance en Rabbit" : "Nueva asignación para ti";
+    const t = document.createElement("div");
     t.className = "toast";
-    t.innerHTML = `<span class="toast-app"><img src="${CONEJO}" alt="" /></span><span class="toast-txt"><span class="toast-top"><b>RABBIT AI</b><em>ahora</em></span><b>${n.ico} ${esc(n.tit)}</b><small>${esc(n.txt)}</small></span>`;
+    t.innerHTML = `<div class="toast-card">
+        <div class="toast-top"><span>${cat}</span><span class="toast-hora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/></svg>${hora}</span></div>
+        <div class="toast-quien"><i class="av" style="${fondoAv(quien)}">${letraAv(quien)}</i><div><b>${esc(n.tit)}</b><small><i></i>${esc(n.txt)}</small></div></div>
+        <div class="toast-btns"><button class="tb-abrir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Abrir</button><button class="tb-leida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Marcar leída</button></div>
+      </div>
+      <div class="toast-pie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7Z"/></svg>${pie}</div>`;
     const cerrar = () => { t.classList.add("fuera"); setTimeout(() => t.remove(), 350); };
-    t.onclick = () => { cerrar(); LEIDAS[yo].add(n.id); pintarNotif(); if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1]); } };
+    t.querySelector(".tb-leida").onclick = () => { LEIDAS[yo].add(n.id); pintarNotif(); cerrar(); };
+    t.querySelector(".tb-abrir").onclick = () => { cerrar(); LEIDAS[yo].add(n.id); pintarNotif(); if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1]); } };
     pila.prepend(t);
-    setTimeout(cerrar, 6000);
+    let tm = setTimeout(cerrar, 7000);
+    t.onmouseenter = () => clearTimeout(tm); t.onmouseleave = () => (tm = setTimeout(cerrar, 3000));
   }
   // Vista previa: al entrar (o cambiar de persona) llega su notificación más reciente sin leer
   function avisoDemo() { setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, 1200); }
