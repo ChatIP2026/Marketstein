@@ -1395,6 +1395,15 @@
   @media (max-width: 900px) { .rb-nombre { display: none; } }
   .logo-caja .logo { translate: 0 var(--rb-dy, -4px); }
   .rb-nombre { translate: 0 -50%; }
+  .kpi[data-kf] { cursor: pointer; transition: transform .15s, box-shadow .15s, outline-color .15s; outline: 2px solid transparent; outline-offset: 2px; }
+  .kpi[data-kf]:hover { transform: translateY(-2px); }
+  .kpi.kpi-on { outline-color: #0a0a0a; }
+  .burbujas { align-items: stretch !important; } .burbujas > .bc { height: 100%; display: flex; flex-direction: column; } .burbujas > .bc .bc-ev { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .tk-lista { align-items: stretch !important; } .tk-lista > * { height: 100%; }
+  .kpis > .kpi { min-width: 0; }
+  @media (max-width: 1180px) { .kpis { grid-template-columns: repeat(2, 1fr) !important; } }
+  .rb-burbuja.abajo { left: 8px !important; top: calc(100% + 14px) !important; translate: 0 0; border-radius: 4px 12px 12px 12px !important; }
+  .rb-burbuja.abajo.pop { transform-origin: 0 0 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1714,11 +1723,26 @@
   addEventListener("resize", () => vistaActual === "kanban" && ajustarAltoColumnas());
 
   let animarAnillos = true;
+  function igualar() {
+    for (const sel of [".burbujas > .bc", ".tk-lista > *"]) {
+      const els = [...document.querySelectorAll(sel)].filter((e) => e.offsetParent);
+      els.forEach((e) => (e.style.minHeight = ""));
+      const m = Math.max(0, ...els.map((e) => e.getBoundingClientRect().height));
+      els.forEach((e) => (e.style.minHeight = m + "px"));
+    }
+  }
+  new MutationObserver(() => requestAnimationFrame(igualar)).observe(document.body, { childList: true, subtree: false });
+  for (const id of ["vistaMis", "vistaTickets"]) { const v = document.getElementById(id); if (v) new MutationObserver(() => requestAnimationFrame(igualar)).observe(v, { childList: true }); }
+  addEventListener("resize", () => requestAnimationFrame(igualar));
+  let kpiFiltro = null;
+  document.querySelectorAll(".kpi").forEach((k, i) => { k.dataset.kf = ["listos", "activos", "tok", "tpend"][i]; k.tabIndex = 0; k.title = "Clic para filtrar el tablero"; k.onclick = () => { kpiFiltro = kpiFiltro === k.dataset.kf ? null : k.dataset.kf; pintar(); }; k.onkeydown = (e) => { if (e.key === "Enter") k.click(); }; });
   function pintar() {
     pintarCarga();
     const q = document.getElementById("buscar").value.toLowerCase();
     const quien = filtroSel.value;
-    const visibles = proyectos.filter((p) => p.nombre.toLowerCase().includes(q) && (!quien || p.encargados.includes(quien)));
+    const KF = { listos: (p) => p.estado === "listo", activos: (p) => p.estado !== "listo", tok: (p) => p.hechas > 0, tpend: (p) => p.hechas < p.total };
+    const visibles = proyectos.filter((p) => p.nombre.toLowerCase().includes(q) && (!quien || p.encargados.includes(quien)) && (!kpiFiltro || KF[kpiFiltro](p)));
+    document.querySelectorAll(".kpi[data-kf]").forEach((k) => k.classList.toggle("kpi-on", k.dataset.kf === kpiFiltro));
 
     // Indicadores
     const total = proyectos.reduce((a, p) => a + p.total, 0), hechas = proyectos.reduce((a, p) => a + p.hechas, 0);
@@ -2049,6 +2073,7 @@
     let b = caja.querySelector(".rb-burbuja");
     if (!b) { b = document.createElement("span"); b.className = "det-burbuja rb-burbuja"; caja.append(b); }
     caja.classList.add("hablando"); clearTimeout(rbDecir.t);
+    { const nav = [...document.querySelectorAll("nav a")].find((x) => !x.hidden && x.offsetParent), cr = caja.getBoundingClientRect(); if (nav) { const esp = nav.getBoundingClientRect().left - cr.left - 62 - 10; b.classList.toggle("abajo", esp < 150); b.style.setProperty("max-width", (esp < 150 ? 240 : Math.min(240, esp)) + "px", "important"); } }
     setTimeout(() => { b.textContent = txt; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }, 250);
     rbDecir.t = setTimeout(() => caja.classList.remove("hablando"), 7700);
     rbMover("rb-salto");
@@ -2220,7 +2245,7 @@
   }
   function anilloMini(pct) {
     const r = 9, c = 2 * Math.PI * r;
-    return `<span class="bc-anillo"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="${r}" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="3"/><circle cx="12" cy="12" r="${r}" fill="none" stroke="#2ee6b0" stroke-width="3" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct / 100)}" transform="rotate(-90 12 12)"/></svg>${pct}%</span>`;
+    return `<span class="bc-anillo"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="${r}" fill="none" stroke="currentColor" stroke-opacity=".2" stroke-width="3"/><circle cx="12" cy="12" r="${r}" fill="none" stroke="#2ee6b0" stroke-width="3" stroke-linecap="round" ${pct ? "" : 'stroke-opacity="0"'} stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct / 100)}" transform="rotate(-90 12 12)"/></svg>${pct}%</span>`;
   }
   // "Tareas pendientes 3/5 | fecha": gris si falta mucho, blanco si está próxima, rojo con alarma si faltan 5 días o menos
   function resumenTarjeta(p, ts) {
