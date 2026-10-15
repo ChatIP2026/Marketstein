@@ -1111,6 +1111,7 @@
   .nt-leidas { margin: 10px -8px -10px; padding: 6px 8px 10px; background: #f5f5f5; border-top: 1px solid #e5e5e5; }
   .nt-leidas .nt { opacity: .75; } .nt-leidas .nt:hover { background: #ebebeb; opacity: 1; } .nt-leidas .nt-ico { background: #fff; }
   .nt-lista .mp-grupo span.gris { background: #d4d4d4; color: #525252; }
+  .det-nueva button { color: #fff !important; }
 </style>
 </head>
 <body>
@@ -1414,7 +1415,7 @@
     const tareas = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
     const hechas = tareas.filter((t) => t.hecha).length, pct = tareas.length ? Math.round((hechas / tareas.length) * 100) : 0;
     const d = document.getElementById("detalle");
-    d.className = "detalle a-" + p.estado;
+    d.className = "detalle a-" + p.estado + (pagina === "mis" ? " tk-det" : "");
     d.innerHTML = `
       <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<input class="det-nombre" value="${esc(p.nombre)}" maxlength="200" title="Haz clic para editar el nombre" /></div>
         <button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
