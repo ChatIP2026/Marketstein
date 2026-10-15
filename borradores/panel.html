@@ -1428,6 +1428,7 @@
   .bc.bcn.a-en_curso .bcn-ir { background: #fff; color: #0a0a0a; }
   .bcn-b { grid-column: 1 / -1; grid-row: 2; background: var(--card); border-radius: 0 22px 22px 22px; padding: 14px 20px 20px; display: flex; align-items: center; }
   .bcn-b .bc-ev { padding-left: 0 !important; flex: 1; } .bcn-b .bc-ev::before, .bcn-b .bc-ev::after { display: none !important; }
+  .rb-burbuja.chica { font-size: .64rem !important; padding: 4px 7px !important; line-height: 1.2 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2097,13 +2098,15 @@
     let b = caja.querySelector(".rb-burbuja");
     if (!b) { b = document.createElement("span"); b.className = "det-burbuja rb-burbuja"; caja.append(b); }
     caja.classList.add("hablando"); clearTimeout(rbDecir.t);
-    { const nav = [...document.querySelectorAll("nav a")].find((x) => !x.hidden && x.offsetParent), cr = caja.getBoundingClientRect(); if (nav) { const esp = nav.getBoundingClientRect().left - cr.left - 62 - 10; b.classList.toggle("abajo", esp < 150); b.style.setProperty("max-width", (esp < 150 ? 240 : Math.min(240, esp)) + "px", "important"); } }
+    { const nav = [...document.querySelectorAll("nav a")].find((x) => !x.hidden && x.offsetParent), cr = caja.getBoundingClientRect(); if (nav) { const esp = nav.getBoundingClientRect().left - cr.left - 62 - 10; if (esp < 140) { caja.classList.remove("hablando"); return; } b.classList.remove("abajo"); b.classList.toggle("chica", esp < 170); b.style.setProperty("max-width", Math.min(240, esp) + "px", "important"); } }
     setTimeout(() => { b.textContent = txt; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }, 250);
     rbDecir.t = setTimeout(() => caja.classList.remove("hablando"), 7700);
     rbMover("rb-salto");
   }
   const RB_ANIM = ["rb-salto", "rb-ladeo", "rb-orejas", "rb-mirar"];
   function rbMover(a) { const l = document.querySelector(".logo-caja .logo"); l.classList.remove(...RB_ANIM); void l.getBoundingClientRect(); l.classList.add(a || rbAzar(RB_ANIM)); }
+  function rbEspacio() { const caja = document.querySelector(".logo-caja"), nav = [...document.querySelectorAll("nav a")].find((x) => !x.hidden && x.offsetParent), n = caja && caja.querySelector(".rb-nombre"); if (!n || !nav) return; n.style.visibility = nav.getBoundingClientRect().left - caja.getBoundingClientRect().left - 62 < n.scrollWidth + 16 ? "hidden" : ""; }
+  addEventListener("resize", rbEspacio); setTimeout(rbEspacio, 300);
   let rbT1, rbT2;
   function rabbitHola() {
     clearInterval(rbT1); clearInterval(rbT2);
