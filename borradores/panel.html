@@ -1147,6 +1147,7 @@
   .det-i-solic .det-solic { margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: transparent !important; display: flex !important; flex-wrap: wrap; }
   .det-i-solic { border-left: 4px solid #0a0a0a; }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="app">
@@ -1170,6 +1171,7 @@
         <path d="M-1.05 -1.05l2.1 2.1M1.05 -1.05l-2.1 2.1" transform="translate(29.7 51.5) rotate(14) skewX(-8)" stroke-width="1.15"/>
       </g>
     </svg>
+    <span class="rb-nombre">rabbit ai</span>
     </div>
     <nav>
       <a class="activo" data-p="inicio"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Inicio</a><a data-p="mis"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Mi entorno</a><a data-p="tickets"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg><span class="nl">Tickets</span> <span class="nav-num" id="navTk"></span></a><a data-p="personas"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.2.6 3.5 2.4 3.5 5.2"/></svg>Personas</a><a data-p="dashboard"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg>Dashboard</a>
@@ -1388,6 +1390,9 @@
   .idc-stats div { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
   .idc-stats span { font-size: .66rem; color: #a3a3a3; } .idc-stats b { font-size: 1.1rem; } .idc-stats b small { font-size: .75rem; color: #737373; }
   .idc-pie { display: flex; justify-content: space-between; font-size: .72rem; color: #737373; letter-spacing: .06em; }
+  .rb-nombre { position: absolute; left: 62px; top: 50%; translate: 0 -50%; font-family: "Quicksand", "Comfortaa", system-ui, sans-serif; font-weight: 500; font-size: 1.45rem; letter-spacing: -.01em; color: #0a0a0a; white-space: nowrap; pointer-events: none; transition: opacity .25s ease, transform .25s ease; }
+  .logo-caja.hablando .rb-nombre { opacity: 0; transform: translateX(-6px); }
+  @media (max-width: 900px) { .rb-nombre { display: none; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2041,7 +2046,9 @@
     const caja = document.querySelector(".logo-caja");
     let b = caja.querySelector(".rb-burbuja");
     if (!b) { b = document.createElement("span"); b.className = "det-burbuja rb-burbuja"; caja.append(b); }
-    b.textContent = txt; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+    caja.classList.add("hablando"); clearTimeout(rbDecir.t);
+    setTimeout(() => { b.textContent = txt; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }, 250);
+    rbDecir.t = setTimeout(() => caja.classList.remove("hablando"), 7700);
     rbMover("rb-salto");
   }
   const RB_ANIM = ["rb-salto", "rb-ladeo", "rb-orejas", "rb-mirar"];
