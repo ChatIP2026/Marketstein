@@ -1305,6 +1305,15 @@
    .det-prios .dp-card.media.activa { background: #fff8e6; border-color: #f5b83d; color: #b7791f; }
    .det-prios .dp-card.baja.activa { background: #eef4ff; border-color: #7aa7f5; color: #2f6fdc; }
    .det-prios .dp-card.media.activa svg { animation: dp-giro 2.4s linear infinite; } @keyframes dp-giro { to { transform: rotate(360deg); } }
+  .pc-card { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 8px 14px; border-radius: 12px; border: 1.5px solid; font-size: .78rem; font-weight: 600; width: fit-content; }
+  .pc-card svg { width: 22px !important; height: 22px !important; flex: none; }
+  .pc-card.chico { flex-direction: row; gap: 6px; padding: 4px 10px; border-radius: 10px; } .pc-card.chico svg { width: 15px !important; height: 15px !important; }
+  .pc-card.urgente { background: #ffe9e9; border-color: #dc2626; color: #b91c1c; }
+  .pc-card.alta { background: #fff1f1; border-color: #f87171; color: #dc2626; }
+  .pc-card.media { background: #fff8e6; border-color: #f5b83d; color: #b7791f; }
+  .pc-card.baja { background: #eef4ff; border-color: #7aa7f5; color: #2f6fdc; }
+  .det-i-solic .det-solic { align-items: center; } .det-solic-tk { margin-left: auto; display: flex !important; flex-direction: column; align-items: center; gap: 2px; padding: 0 !important; background: none !important; color: #0a0a0a !important; font-size: .7rem; font-weight: 600; }
+  .det-solic-tk svg { width: 26px !important; height: 26px !important; transform: rotate(-8deg); }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1495,7 +1504,7 @@
         const tono = dd === null || p.estado === "listo" ? "ok" : dd <= 1 ? "rojo" : dd <= 5 ? "ambar" : "ok";
         return `<svg class="det-cal" viewBox="0 0 64 64" fill="none"><rect x="6" y="10" width="52" height="48" rx="10" fill="#262626" stroke="#525252" stroke-width="2"/><path d="M6 20a10 10 0 0 1 10-10h32a10 10 0 0 1 10 10v6H6z" fill="#fff"/><rect x="18" y="4" width="5" height="13" rx="2.5" fill="#a3a3a3"/><rect x="41" y="4" width="5" height="13" rx="2.5" fill="#a3a3a3"/><text x="32" y="50" text-anchor="middle" font-size="21" font-weight="700" fill="#fff" font-family="inherit">${p.fecha_limite ? +p.fecha_limite.slice(8) : "–"}</text></svg><div class="det-fecharow ${tono}"><div class="det-fechatxt"><b>${p.fecha_limite ? `${D[new Date(p.fecha_limite + "T12:00").getDay()]} ${fmt(p.fecha_limite)}` : "Sin fecha"}</b>${p.fecha_limite ? `<span class="det-rel">${rel}</span>` : ""}</div><div class="det-fechaacc"><label class="det-cambiar">${p.fecha_limite ? "Cambiar" : "Poner fecha"}<input type="date" class="det-fecha" value="${p.fecha_limite || ""}" /></label>${p.fecha_limite ? `<button type="button" class="det-link det-sinfecha">Quitar</button>` : ""}</div></div>`; })()}</div>
         <div class="det-i"><small>Prioridad</small><div class="det-prios">${[["alta",'<path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/>'],["media",'<path d="M12 3v3M12 18v3M4.6 6.6l2.1 2.1M17.3 15.3l2.1 2.1M3 12h3M18 12h3M4.6 17.4l2.1-2.1M17.3 8.7l2.1-2.1"/>'],["baja",'<path d="M3 5l6 6 4-4 8 8"/><path d="M21 10v5h-5"/>']].map(([x, ic]) => `<button type="button" class="dp-card ${x} ${p.prioridad === x ? "activa" : ""}" data-v="${x}"><svg width="26" height="26" style="width:26px;height:26px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg><span>${mayus(x)}</span></button>`).join("")}</div></div>
-        ${p.solicitado_por ? `<div class="det-i det-i-solic"><small>Solicitado por</small><div class="det-solic"><i class="av" style="${fondoAv(p.solicitado_por.nombre)}">${letraAv(p.solicitado_por.nombre)}</i><div><b>${esc(p.solicitado_por.nombre)}</b></div><span class="det-solic-area">${esc(p.solicitado_por.area)}</span><span class="det-solic-tk">📨 Ticket</span></div></div>` : ""}
+        ${p.solicitado_por ? `<div class="det-i det-i-solic"><small>Solicitado por</small><div class="det-solic"><i class="av" style="${fondoAv(p.solicitado_por.nombre)}">${letraAv(p.solicitado_por.nombre)}</i><div><b>${esc(p.solicitado_por.nombre)}</b></div><span class="det-solic-area">${esc(p.solicitado_por.area)}</span><span class="det-solic-tk"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v2M14 11v2M14 17v2"/></svg><span>Ticket</span></span></div></div>` : ""}
         <div class="det-i ${p.solicitado_por ? "" : "det-i-full"}"><small>Encargados</small><div class="det-personas">${Object.keys(COLORES).map((n) => `<button type="button" class="det-persona ${p.encargados.includes(n) ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></div>
       </div>
       <div class="det-prog"><span>${tareas.length ? `${hechas} de ${tareas.length} tareas hechas` : "Aún sin tareas"}</span><b>${tareas.length ? pct + "%" : ""}</b></div>
@@ -2121,6 +2130,8 @@
     en_curso: { t: "En curso", c: "#ffd45c" }, en_revision: { t: "En revisión", c: "#6aa6ff" },
     entregado: { t: "Entregado", c: "#2ee6b0" }, rechazado: { t: "Rechazado", c: "#ff7b80" }, cancelado: { t: "Cancelado", c: "#a3a3a3" },
   };
+  const PRIO_IC = { urgente: '<path d="M13 2 4 14h7l-1 8 9-12h-7Z"/>', alta: '<path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/>', media: '<path d="M12 3v3M12 18v3M4.6 6.6l2.1 2.1M17.3 15.3l2.1 2.1M3 12h3M18 12h3M4.6 17.4l2.1-2.1M17.3 8.7l2.1-2.1"/>', baja: '<path d="M3 5l6 6 4-4 8 8"/><path d="M21 10v5h-5"/>' };
+  const prioCard = (k, chico) => PRIO_IC[k] ? `<span class="pc-card ${k}${chico ? " chico" : ""}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${PRIO_IC[k]}</svg><span>${mayus(k)}</span></span>` : "";
   const TK_PRIO = { urgente: { t: "Urgente", c: "#ff6161" }, alta: { t: "Alta", c: "#ff9d42" }, media: { t: "Media", c: "#a9b8e8" }, baja: { t: "Baja", c: "#97a3b3" } };
   const TIPOS = { Post: ["Vertical (feed)", "Cuadrado", "Historia o reel"], Banner: ["Horizontal (web)", "Vertical", "Impreso"], "Presentación": ["Pantalla 16:9"],
     Flyer: ["A4 / impreso", "Digital vertical"], Mailing: ["Correo (600 px)"], Video: ["Horizontal", "Vertical (reel)", "Cuadrado"], Informe: ["Documento A4"], Otro: [] };
@@ -2208,7 +2219,7 @@
         <span class="tk-de">${sol ? (t.asignado ? `Lo hace ${t.asignado}` : "Esperando a Hilary") : `${esc(t.solicitante)} | ${esc(t.area)}`}</span>
         <div class="tk-fila">
           <div><small>Estado</small>${pillTk(t.estado)}</div>
-          <div class="der"><small>Prioridad</small>${pr ? `<span class="tk-prio" style="--c:${pr.c}">${pr.t}</span>` : `<span class="tk-prio sin">Sin definir</span>`}</div>
+          <div class="der"><small>Prioridad</small>${pr ? prioCard(t.prioridad, true) : `<span class="tk-prio sin">Sin definir</span>`}</div>
         </div>
         <div class="tk-fila">
           <div><small>Pieza</small><span class="tk-chip">${esc(t.tipo)}</span></div>
@@ -2257,7 +2268,7 @@
       <div class="tkd-quien"><i class="av" style="${fondoAv(t.solicitante)}">${letraAv(t.solicitante)}</i><div><b>${esc(t.solicitante)}</b><small>${esc(t.area)} | lo pidió ${hace(t.historial[0].at)}</small></div></div>
       <div class="tkd-kpis">
         <div class="tkd-k"><small>Entrega</small><b>${fmt(t.fecha)}</b><span class="tkd-rel">${t.estado === "entregado" ? "✓ Entregado" : ((d) => d < 0 ? `Atrasado ${-d} d` : d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `En ${d} días`)(diasHasta(t.fecha))}</span></div>
-        <div class="tkd-k"><small>Prioridad</small>${TK_PRIO[t.prioridad] ? `<span class="tk-prio" style="--c:${TK_PRIO[t.prioridad].c}">${TK_PRIO[t.prioridad].t}</span>` : `<span class="tk-prio sin">La define Hilary</span>`}</div>
+        <div class="tkd-k"><small>Prioridad</small>${TK_PRIO[t.prioridad] ? prioCard(t.prioridad) : `<span class="tk-prio sin">La define Hilary</span>`}</div>
         <div class="tkd-k"><small>Asignado</small>${t.asignado ? `<span class="tk-asig"><i class="av" style="${fondoAv(t.asignado)}">${letraAv(t.asignado)}</i>${t.asignado}</span>` : `<span class="tk-asig vacio">Aún nadie</span>`}</div>
       </div>
       ${acciones}
