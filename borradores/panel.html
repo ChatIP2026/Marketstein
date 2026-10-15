@@ -1108,6 +1108,9 @@
   .per-ico svg { width: 15px; height: 15px; } .per-ico:hover { background: #0a0a0a; color: #fff; border-color: #0a0a0a; } .per-ico.peligro:hover { background: #dc2626; border-color: #dc2626; }
   .per.inactiva { opacity: .5; } .per-est.off { color: #dc2626 !important; }
   .per:has(.r-jefa) .per-ico { background: transparent; border-color: rgba(255,255,255,.25); color: #fff; }
+  .nt-leidas { margin: 10px -8px -10px; padding: 6px 8px 10px; background: #f5f5f5; border-top: 1px solid #e5e5e5; }
+  .nt-leidas .nt { opacity: .75; } .nt-leidas .nt:hover { background: #ebebeb; opacity: 1; } .nt-leidas .nt-ico { background: #fff; }
+  .nt-lista .mp-grupo span.gris { background: #d4d4d4; color: #525252; }
 </style>
 </head>
 <body>
@@ -1801,7 +1804,7 @@
     const item = (n, nueva) => `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${n.ico}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small><em>${hace(n.at)}</em></span>${nueva ? '<i class="nt-punto"></i>' : ""}</button>`;
     menuNotif.innerHTML = `<div class="nt-cab"><b>Notificaciones</b>${nuevas.length ? '<button class="nt-todas">Marcar todas como leídas</button>' : ""}</div>
       <div class="nt-lista"><div class="mp-grupo">No leídas <span>${nuevas.length}</span></div>${nuevas.length ? nuevas.map((n) => item(n, true)).join("") : '<p class="nt-vacio">Estás al día 🎉</p>'}
-      <div class="mp-grupo">Leídas</div>${viejas.length ? viejas.map((n) => item(n, false)).join("") : '<p class="nt-vacio">Nada por aquí.</p>'}</div>`;
+      <div class="nt-leidas"><div class="mp-grupo">Leídas <span class="gris">${viejas.length}</span></div>${viejas.length ? viejas.map((n) => item(n, false)).join("") : '<p class="nt-vacio">Nada por aquí.</p>'}</div></div>`;
     menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
     menuNotif.querySelectorAll(".nt").forEach((b) => (b.onclick = () => {
       const n = L.find((x) => x.id === b.dataset.id); leidas.add(n.id); menuNotif.hidden = true; pintarNotif();
