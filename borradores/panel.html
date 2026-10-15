@@ -1382,7 +1382,7 @@
   .idc-cuerpo { display: flex; align-items: center; gap: 16px; }
   .idc-foto { width: 78px !important; height: 78px !important; border-radius: 20px !important; flex: none; box-shadow: 0 0 0 3px rgba(255,255,255,.15); font-size: 1.6rem !important; }
   .idc-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; } .idc-info b { font-size: 1.25rem; } .idc-info > small { color: #a3a3a3; font-size: .8rem; }
-  .idc-nota { display: flex; align-items: center; gap: 6px; margin-top: 6px; } .idc-nota svg { width: 24px; height: 24px; } .idc-nota b { font-size: 1.5rem; line-height: 1; }
+  .idc-nota { display: flex; align-items: center; gap: 6px; margin-top: 4px; } .idc-nota svg { width: 24px; height: 24px; } .idc-nota b { font-size: 1.5rem; line-height: 1; }
   .idc-nota span { font-size: .78rem; color: #a3a3a3; line-height: 1.1; } .idc-nota small { font-size: .66rem; }
   .idc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .idc-stats div { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
@@ -2079,7 +2079,7 @@
         <div class="idc-top"><span>RABBIT ID</span>${rbMini()}</div>
         <div class="idc-cuerpo">
           <i class="av idc-foto" style="${fondoAv(yo)}">${letraAv(yo)}</i>
-          <div class="idc-info"><b>${esc(yo)}${per ? " " + esc(per.apellido) : ""}</b><small>${ext ? esc(SOLICITANTES[yo]) : yo === JEFA ? "Marketing | Jefa" : "Equipo de marketing"}</small>${estrellas}</div>
+          <div class="idc-info"><b>${esc(yo)}${per ? " " + esc(per.apellido) : ""}</b>${estrellas}</div>
         </div>
         <div class="idc-stats">${stats.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("")}</div>
         <div class="idc-pie"><span>ID **** ${num}</span><span>${per ? esc(per.correo) : ""}</span></div>
