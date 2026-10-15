@@ -1378,7 +1378,7 @@
   .idc::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.07) 50%, transparent 60%); pointer-events: none; }
   @keyframes idc-in { from { opacity: 0; transform: scale(.85) rotate(-3deg) translateY(20px); } }
   .idc-top { display: flex; justify-content: space-between; align-items: center; font-size: .72rem; font-weight: 700; letter-spacing: .14em; color: #a3a3a3; }
-  .idc-top .saludo-rb { width: 30px; height: 30px; animation: none; }
+  .idc-top .saludo-rb { width: 46px; height: 46px; animation: none; margin: -8px -4px -8px 0; }
   .idc-cuerpo { display: flex; align-items: center; gap: 16px; }
   .idc-foto { width: 78px !important; height: 78px !important; border-radius: 20px !important; flex: none; box-shadow: 0 0 0 3px rgba(255,255,255,.15); font-size: 1.6rem !important; }
   .idc-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; } .idc-info b { font-size: 1.25rem; } .idc-info > small { color: #a3a3a3; font-size: .8rem; }
@@ -2071,7 +2071,7 @@
       const tks = tickets.filter((t) => t.asignado === yo && !["rechazado", "cancelado"].includes(t.estado));
       stats = [["Tareas", `${tareas.filter((t) => t.hecha).length}<small>/${tareas.length}</small>`], ["Proyectos", `${proys.filter((p) => p.estado === "listo").length}<small>/${proys.length}</small>`], ["Tickets", `${tks.filter((t) => t.estado === "entregado").length}<small>/${tks.length}</small>`]];
       const nota = Math.round((puntaje(yo, mes).final / 20) * 5 * 10) / 10;
-      estrellas = `<div class="idc-nota"><svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9Z" fill="#ffd45c"/></svg><b>${nota.toFixed(1)}</b><span>/ 5<br><small>Promedio del mes</small></span></div>`;
+      estrellas = `<div class="idc-nota"><svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9Z" fill="#ffd45c"/></svg><b>${nota.toFixed(1)} / 5</b></div>`;
     }
     const f = document.createElement("div");
     f.className = "idc-fondo";
