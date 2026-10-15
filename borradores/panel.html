@@ -1133,6 +1133,17 @@
   .det-burbuja { max-width: 210px; font-size: .78rem; font-weight: 600; color: #0a0a0a; background: #fff; border: 2px solid #0a0a0a; border-radius: 14px 14px 4px 14px; padding: 7px 10px; line-height: 1.3; box-shadow: 3px 3px 0 #0a0a0a; }
   @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
   .tk-det .det-titulo { padding-right: 280px; }
+  .det-rabbit img { width: 74px !important; }
+  .tk-det .det-rabbit { top: -14px !important; right: 50px !important; }
+  .det-burbuja.oculta { visibility: hidden; }
+  .det-burbuja.pop { transform-origin: 100% 100%; animation: burbuja 7.4s ease forwards; }
+  @keyframes burbuja { 0% { opacity: 0; transform: scale(.4) translateY(8px); } 5% { opacity: 1; transform: scale(1.08); } 8% { transform: scale(1); } 93% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.85) translateY(-6px); visibility: hidden; } }
+  .det-solic { display: inline-flex !important; align-items: center; gap: 10px; padding: 8px 14px 8px 8px !important; margin: 4px 0 14px !important; border-radius: 14px !important; background: #fff !important; border: 1px solid #e5e5e5; border-left: 4px solid #0a0a0a; box-shadow: 0 4px 12px rgba(10,10,10,.05); }
+  .det-solic .av { width: 34px; height: 34px; flex: none; }
+  .det-solic small { display: block; font-size: .68rem; color: #737373; text-transform: uppercase; letter-spacing: .04em; font-weight: 600; } .det-solic b { font-size: .95rem; color: #0a0a0a; }
+  .det-solic-area { font-size: .76rem; padding: 3px 10px; border-radius: 999px; background: #f5f5f5; border: 1px solid #e5e5e5; color: #525252; }
+  .det-solic-tk { font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #0a0a0a; color: #fff; }
+  .tk-det .det-nombre { font-size: 1.5rem !important; }
 </style>
 </head>
 <body>
@@ -1426,12 +1437,12 @@
 
   // Panel lateral con el detalle del proyecto
   let abiertoId = null;
-  function abrirProyecto(id) { abiertoId = id; pintarDetalle(); document.body.classList.add("con-detalle"); }
+  function abrirProyecto(id) { delete burbujaVista[id]; delete animoDe[id]; abiertoId = id; pintarDetalle(); document.body.classList.add("con-detalle"); }
   function cerrarProyecto() { abiertoId = null; document.body.classList.remove("con-detalle"); }
   // ===== Detalle del proyecto: se puede editar todo, borrar y asignar tareas =====
   const avMini = (n) => `<i class="av-mini" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
   const ANIMO = ["¡Tú puedes con esto! 💪", "Una tarea a la vez 🐰", "¡Vas muy bien, sigue así!", "Pequeños pasos, grandes logros ✨", "¡Hoy es un buen día para avanzar!", "Tachar tareas se siente genial ✅", "¡Ya casi lo tienes!", "Tu esfuerzo se nota 👏", "Respira, enfócate y dale 🚀", "¡Un empujoncito más!", "El equipo cuenta contigo 🤝", "Lo difícil se vuelve fácil haciéndolo", "¡Eres más rápido que un conejo! 🐇", "Termina una y celebra 🎉", "Cada tarea hecha suma ⭐", "¡Qué buen ritmo llevas!", "Hazlo simple, hazlo bien", "Tu yo del viernes te lo agradecerá 😉", "¡Modo enfoque activado! 🎯", "Lo estás haciendo increíble", "Paso a paso se llega lejos 🐾", "¡A darle con todo!", "Un café ☕ y a terminar", "Primero lo urgente, luego lo importante", "¡Confía en tu talento!", "Hoy avanzas, mañana brillas 🌟", "Nada como la satisfacción de terminar", "¡Que no te gane el plazo! ⏰", "Tienes todo para lograrlo", "¡Vamos, que ya falta poco!", "La constancia gana carreras 🏁", "Haz que hoy cuente", "¡Tu creatividad es tu superpoder! 🎨", "Divide y vencerás ✂️", "¡Un check más a la lista!", "Lo bien hecho no tiene apuro, pero sí fecha 😄", "¡Sigue así, crack!", "Cada avance te acerca a la meta 🥕", "¡Hoy se termina! 💥", "Orgulloso de tu trabajo 🐰💜"];
-  const animoDe = {};
+  const animoDe = {}, burbujaVista = {};
   function pintarDetalle() {
     const p = mapaP.get(abiertoId);
     if (!p) return cerrarProyecto();
@@ -1441,8 +1452,8 @@
     d.className = "detalle a-" + p.estado + (pagina === "mis" ? " tk-det" : "");
     d.innerHTML = `
       <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<input class="det-nombre" value="${esc(p.nombre)}" maxlength="200" title="Haz clic para editar el nombre" /></div>
-        <div class="det-rabbit"><span class="det-burbuja">${(animoDe[p.id] ??= ANIMO[Math.floor(Math.random() * ANIMO.length)])}</span><img src="${CONEJO}" alt="" /></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
-      ${p.solicitado_por ? `<div class="det-solic">📨 Solicitado por <b>${esc(p.solicitado_por.nombre)}</b> | ${esc(p.solicitado_por.area)}</div>` : ""}
+        <div class="det-rabbit"><span class="det-burbuja ${burbujaVista[p.id] ? "oculta" : "pop"}">${(animoDe[p.id] ??= ANIMO[Math.floor(Math.random() * ANIMO.length)])}</span><img src="${CONEJO}" alt="" /></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      ${p.solicitado_por ? `<div class="det-solic"><i class="av" style="${fondoAv(p.solicitado_por.nombre)}">${letraAv(p.solicitado_por.nombre)}</i><div><small>Solicitado por</small><b>${esc(p.solicitado_por.nombre)}</b></div><span class="det-solic-area">${esc(p.solicitado_por.area)}</span><span class="det-solic-tk">📨 Ticket</span></div>` : ""}
 
       <div class="det-info">
         <div class="det-i"><small>Fecha límite</small>${(() => { const dd = p.fecha_limite ? diasHasta(p.fecha_limite) : null, D = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -1459,6 +1470,7 @@
       <form class="det-nueva"><input placeholder="Añadir una tarea y pulsar Enter" /><button>Añadir</button></form>
       <div class="det-peligro"><button type="button" class="det-borrar">Eliminar proyecto</button></div>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
+    burbujaVista[p.id] = true;
 
     // Datos del proyecto
     const nom = d.querySelector(".det-nombre");
