@@ -1344,6 +1344,9 @@
   .tk-mes.abierto .tk-mes-menu { display: flex; flex-direction: column; }
   .tk-mes-menu button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: .85rem; color: #262626; white-space: nowrap; }
   .tk-mes-menu button:hover { background: #f5f5f5; } .tk-mes-menu button.activa { background: #0a0a0a; color: #fff; }
+  .detalle:not(.tk-det) .det-info { grid-template-columns: 1fr !important; }
+  .detalle:not(.tk-det) .det-info > .det-i { grid-column: auto !important; }
+  @media (max-width: 640px) { .det-info, .tkd-kpis { grid-template-columns: 1fr !important; } .det-info > .det-i { grid-column: auto !important; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
