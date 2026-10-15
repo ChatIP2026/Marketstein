@@ -2197,6 +2197,7 @@
     for (const e of ORDEN) {
       if (filtroEnt !== "todos" && filtroEnt !== e) continue;
       const grupo = lista.filter((p) => p.estado === e);
+      if (!grupo.length && filtroEnt === "todos") continue;
       html += `<section class="ent-div"><h3>${pill(e)} <span class="chip">${grupo.length}</span></h3>
         ${grupo.length ? `<div class="burbujas">${grupo.map(tarjetaChat).join("")}</div>` : `<div class="ent-vacia">No tienes proyectos ${{ sin_empezar: "sin empezar", en_curso: "en curso", listo: "listos" }[e]}.</div>`}</section>`;
     }
