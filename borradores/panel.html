@@ -1333,6 +1333,10 @@
   .toast-quien > div { min-width: 0; flex: 1; }
   .toast-quien small { display: -webkit-box !important; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal !important; max-width: none !important; line-height: 1.35; overflow: hidden; }
   .toast-quien small i { display: inline-block; margin-right: 6px; vertical-align: middle; }
+  .tpk-urgente { background: #dc2626 !important; border-color: #dc2626 !important; box-shadow: 0 6px 18px rgba(220,38,38,.3) !important; }
+  .tpk-urgente b, .tpk-urgente small { color: #fff !important; } .tpk-urgente .tpk-pill { background: #fff; color: #dc2626; }
+  .tpk-alta .tpk-pill { background: #fee2e2; color: #dc2626; }
+  .pc-card.urgente { background: #dc2626 !important; border-color: #dc2626 !important; color: #fff !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2151,7 +2155,7 @@
   };
   const PRIO_IC = { urgente: '<path d="M13 2 4 14h7l-1 8 9-12h-7Z"/>', alta: '<path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/>', media: '<path d="M12 3v3M12 18v3M4.6 6.6l2.1 2.1M17.3 15.3l2.1 2.1M3 12h3M18 12h3M4.6 17.4l2.1-2.1M17.3 8.7l2.1-2.1"/>', baja: '<path d="M3 5l6 6 4-4 8 8"/><path d="M21 10v5h-5"/>' };
   const prioCard = (k, chico) => PRIO_IC[k] ? `<span class="pc-card ${k}${chico ? " chico" : ""}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${PRIO_IC[k]}</svg><span>${mayus(k)}</span></span>` : "";
-  const TK_PRIO = { urgente: { t: "Urgente", c: "#ff6161" }, alta: { t: "Alta", c: "#ff9d42" }, media: { t: "Media", c: "#a9b8e8" }, baja: { t: "Baja", c: "#97a3b3" } };
+  const TK_PRIO = { urgente: { t: "Urgente", c: "#dc2626" }, alta: { t: "Alta", c: "#f87171" }, media: { t: "Media", c: "#a9b8e8" }, baja: { t: "Baja", c: "#97a3b3" } };
   const TIPOS = { Post: ["Vertical (feed)", "Cuadrado", "Historia o reel"], Banner: ["Horizontal (web)", "Vertical", "Impreso"], "Presentación": ["Pantalla 16:9"],
     Flyer: ["A4 / impreso", "Digital vertical"], Mailing: ["Correo (600 px)"], Video: ["Horizontal", "Vertical (reel)", "Cuadrado"], Informe: ["Documento A4"], Otro: [] };
   const DIAS_MIN = { Post: 2, Banner: 3, "Presentación": 3, Flyer: 3, Mailing: 3, Video: 5, Informe: 4, Otro: 3 };
@@ -2206,7 +2210,7 @@
     const titulo = sol ? `Hola, ${yo} 👋` : jefa ? "Bandeja de tickets" : "Mis tickets";
     const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
       : jefa ? "Revisa las solicitudes, decide la prioridad y asígnalas al equipo." : "Solicitudes de otras áreas que Hilary te asignó.";
-    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length; return `<div class="tpk" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
+    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length; return `<div class="tpk tpk-${k}" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
         const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
