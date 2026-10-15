@@ -1404,6 +1404,16 @@
   @media (max-width: 1180px) { .kpis { grid-template-columns: repeat(2, 1fr) !important; } }
   .rb-burbuja.abajo { left: 8px !important; top: calc(100% + 14px) !important; translate: 0 0; border-radius: 4px 12px 12px 12px !important; }
   .rb-burbuja.abajo.pop { transform-origin: 0 0 !important; }
+  .bc-simple { justify-content: center; position: relative; padding: 20px 20px 20px 22px !important; gap: 14px !important; }
+  .bc-simple .bc-ev { padding-left: 0 !important; display: block !important; flex: none !important; }
+  .bc-simple .bc-ev::before, .bc-simple .bc-ev::after { display: none !important; }
+  .bc-simple .bc-yo { padding: 6px 12px; font-size: .85rem; }
+  .bc-simple .bc-carpeta { padding-right: 64px; }
+  .bc-simple .bc-flecha { position: absolute !important; right: 18px; bottom: auto !important; top: 50%; translate: 0 -50%; margin: 0 !important; }
+  .bc-tkic { width: 70px; height: 54px; flex: none; display: grid; place-items: center; filter: drop-shadow(0 8px 14px rgba(10,10,10,.18)); }
+  .bc-tkic svg { width: 70px; height: 47px; transform: rotate(-6deg); }
+  .bc-tkic .tkic-f { fill: #0a0a0a; } .bc-tkic .tkic-l { stroke: #737373; } .bc-tkic .tkic-a { fill: #fff; } .bc-tkic .tkic-b { fill: #737373; }
+  .bc.a-en_curso .bc-tkic .tkic-f { fill: #f5f5f5; } .bc.a-en_curso .bc-tkic .tkic-a { fill: #0a0a0a; } .bc.a-en_curso .bc-tkic .tkic-l, .bc.a-en_curso .bc-tkic .tkic-b { stroke: #a3a3a3; fill: #a3a3a3; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2267,11 +2277,10 @@
     const msg = p.estado === "listo" ? "¡Proyecto terminado! Todas las tareas están listas 🎉"
       : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto ⏰" : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
       : "No tienes nada pendiente aquí por ahora.";
-    return `<article class="bc a-${p.estado}" data-id="${p.id}">
-      ${p.solicitado_por ? `<div class="bc-yo" title="Ticket aceptado"><span>Solicitado por</span>${av(p.solicitado_por.nombre)}<b>${esc(p.solicitado_por.nombre)}</b><small>${esc(p.solicitado_por.area)}</small></div>` : ""}
+    return `<article class="bc bc-simple a-${p.estado}" data-id="${p.id}">
+      ${p.solicitado_por ? `<div class="bc-yo" title="Ticket aceptado"><span>Solicitado por</span>${av(p.solicitado_por.nombre)}<b>${esc(p.solicitado_por.nombre)}</b></div>` : ""}
       <div class="bc-ev">
-        <p class="bc-msg"><img class="bc-conejo" src="${CONEJO}" alt="Rabbit" />${resumenTarjeta(p, ts)}</p>
-        <button class="bc-carpeta" title="Ver tareas"><span class="carpeta-azul c-${p.estado}"></span><span class="bc-info"><b>${esc(p.nombre)}</b>${anilloMini(ts.length ? Math.round(h / ts.length * 100) : 0)}</span></button>
+        <button class="bc-carpeta" title="Ver tareas">${p.solicitado_por ? `<span class="bc-tkic c-${p.estado}"><svg viewBox="0 0 72 48" fill="none"><path d="M6 4h60a4 4 0 0 1 4 4v9a7 7 0 0 0 0 14v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-9a7 7 0 0 0 0-14V8a4 4 0 0 1 4-4Z" class="tkic-f"/><path d="M50 8v4M50 18v4M50 28v4M50 38v2" class="tkic-l" stroke-width="2" stroke-linecap="round"/><rect x="12" y="13" width="28" height="5" rx="2.5" class="tkic-a"/><rect x="12" y="23" width="20" height="4" rx="2" class="tkic-b"/><rect x="12" y="31" width="14" height="4" rx="2" class="tkic-b"/></svg></span>` : `<span class="carpeta-azul c-${p.estado}"></span>`}<span class="bc-info"><b>${esc(p.nombre)}</b>${anilloMini(ts.length ? Math.round(h / ts.length * 100) : 0)}</span></button>
       </div>
       <button class="bc-flecha bc-abrir" title="Abrir proyecto" aria-label="Abrir proyecto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </article>`;
