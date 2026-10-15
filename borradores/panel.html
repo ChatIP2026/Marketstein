@@ -1112,15 +1112,14 @@
   .nt-leidas .nt { opacity: .75; } .nt-leidas .nt:hover { background: #ebebeb; opacity: 1; } .nt-leidas .nt-ico { background: #fff; }
   .nt-lista .mp-grupo span.gris { background: #d4d4d4; color: #525252; }
   .det-nueva button { color: #fff !important; }
-  /* Detalle de proyecto: fecha destacada */
-  .det-fechabox { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; border-radius: 18px; background: #0a0a0a; color: #fff; margin: 4px 0 16px; }
-  .det-fechabox small { display: block; font-size: .72rem; color: #a3a3a3; } .det-fechabox b { display: block; font-size: 1.35rem; color: #fff; margin: 2px 0; }
-  .det-rel { font-size: .82rem; font-weight: 600; color: #a3a3a3; } .det-fechabox.ok .det-rel { color: #5fe03a; } .det-fechabox.ambar .det-rel { color: #ffd45c; } .det-fechabox.rojo .det-rel { color: #ff8a8f; }
-  .det-fechaacc { display: flex; align-items: center; gap: 12px; }
-  .det-cambiar { position: relative; cursor: pointer; padding: 9px 14px; border-radius: 12px; background: #fff; color: #0a0a0a; font-size: .84rem; font-weight: 600; white-space: nowrap; }
-  .det-cambiar input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-  .det-fechabox .det-link { color: #a3a3a3 !important; }
-  .det-solic { font-size: .84rem; color: #525252; padding: 8px 12px; border-radius: 10px; background: #f5f5f5; margin: -4px 0 12px; align-self: flex-start; display: inline-block; }
+  /* Detalle de proyecto: fecha destacada (compacta) */
+  .det-fecharow { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; position: relative; }
+  .det-fechachip { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 12px; background: #0a0a0a; color: #fff; font-weight: 700; font-size: .95rem; }
+  .det-fechachip:hover { background: #262626; } .det-lapiz { font-style: normal; color: #737373; font-weight: 400; }
+  .det-rel { font-size: .8rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.1); color: #a3a3a3; }
+  .det-fechachip.ok .det-rel { color: #5fe03a; } .det-fechachip.ambar .det-rel { color: #ffd45c; } .det-fechachip.rojo .det-rel { color: #ff8a8f; }
+  .det-fecharow .det-fecha { position: absolute; left: 0; top: 100%; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .det-solic { font-size: .82rem; color: #525252; padding: 5px 10px; border-radius: 8px; background: #f5f5f5; margin: -6px 0 10px; align-self: flex-start; display: inline-block; }
   .det-npend { font-size: .72rem; font-weight: 700; background: #0a0a0a; color: #fff; padding: 2px 9px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
 </style>
 </head>
@@ -1433,8 +1432,7 @@
       ${(() => { const dd = p.fecha_limite ? diasHasta(p.fecha_limite) : null, D = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
         const rel = dd === null ? "Sin fecha límite" : p.estado === "listo" ? "✓ Proyecto listo" : dd < 0 ? `Atrasado ${-dd} día${dd === -1 ? "" : "s"}` : dd === 0 ? "Vence hoy" : dd === 1 ? "Vence mañana" : `Faltan ${dd} días`;
         const tono = dd === null || p.estado === "listo" ? "ok" : dd <= 1 ? "rojo" : dd <= 5 ? "ambar" : "ok";
-        return `<div class="det-fechabox ${tono}"><div><small>Fecha límite</small><b>${p.fecha_limite ? `${D[new Date(p.fecha_limite + "T12:00").getDay()]} ${fmt(p.fecha_limite)}` : "—"}</b><span class="det-rel">${dd !== null && dd <= 5 && p.estado !== "listo" ? "⏰ " : ""}${rel}</span></div>
-          <div class="det-fechaacc"><label class="det-cambiar">📅 ${p.fecha_limite ? "Cambiar" : "Poner fecha"}<input type="date" class="det-fecha" value="${p.fecha_limite || ""}" /></label>${p.fecha_limite ? `<button type="button" class="det-link det-sinfecha">Quitar</button>` : ""}</div></div>`; })()}
+        return `<div class="det-fecharow"><button type="button" class="det-fechachip ${tono}" title="Cambiar fecha límite">📅 ${p.fecha_limite ? `${D[new Date(p.fecha_limite + "T12:00").getDay()]} ${fmt(p.fecha_limite)}` : "Poner fecha límite"}${p.fecha_limite ? `<span class="det-rel">${dd <= 5 && p.estado !== "listo" ? "⏰ " : ""}${rel}</span>` : ""}<i class="det-lapiz">✎</i></button><input type="date" class="det-fecha" value="${p.fecha_limite || ""}" />${p.fecha_limite ? `<button type="button" class="det-link det-sinfecha">Quitar</button>` : ""}</div>`; })()}
       <dl class="det-datos">
         <dt>Encargados</dt><dd class="det-personas">${Object.keys(COLORES).map((n) => `<button type="button" class="det-persona ${p.encargados.includes(n) ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</dd>
         <dt>Prioridad</dt><dd class="det-prios">${["alta", "media", "baja"].map((x) => `<button type="button" class="mn-prio ${x} ${p.prioridad === x ? "activa" : ""}" data-v="${x}">${mayus(x)}</button>`).join("")}</dd>
@@ -1458,6 +1456,7 @@
       armar();
     }));
     d.querySelectorAll(".det-prios button").forEach((b) => (b.onclick = () => { p.prioridad = b.dataset.v; armar(); }));
+    d.querySelector(".det-fechachip")?.addEventListener("click", () => { const i = d.querySelector(".det-fecha"); try { i.showPicker(); } catch (e) { i.focus(); i.click(); } });
     d.querySelector(".det-fecha").onchange = (e) => { p.fecha_limite = e.target.value || null; armar(); };
     d.querySelector(".det-sinfecha")?.addEventListener("click", () => { p.fecha_limite = null; armar(); });
 
