@@ -1144,6 +1144,8 @@
   .det-solic-area { font-size: .76rem; padding: 3px 10px; border-radius: 999px; background: #f5f5f5; border: 1px solid #e5e5e5; color: #525252; }
   .det-solic-tk { font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #0a0a0a; color: #fff; }
   .tk-det .det-nombre { font-size: 1.5rem !important; }
+  .det-i-solic .det-solic { margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: transparent !important; display: flex !important; flex-wrap: wrap; }
+  .det-i-solic { border-left: 4px solid #0a0a0a; }
 </style>
 </head>
 <body>
@@ -1453,7 +1455,7 @@
     d.innerHTML = `
       <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<input class="det-nombre" value="${esc(p.nombre)}" maxlength="200" title="Haz clic para editar el nombre" /></div>
         <div class="det-rabbit"><span class="det-burbuja ${burbujaVista[p.id] ? "oculta" : "pop"}">${(animoDe[p.id] ??= ANIMO[Math.floor(Math.random() * ANIMO.length)])}</span><img src="${CONEJO}" alt="" /></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
-      ${p.solicitado_por ? `<div class="det-solic"><i class="av" style="${fondoAv(p.solicitado_por.nombre)}">${letraAv(p.solicitado_por.nombre)}</i><div><small>Solicitado por</small><b>${esc(p.solicitado_por.nombre)}</b></div><span class="det-solic-area">${esc(p.solicitado_por.area)}</span><span class="det-solic-tk">📨 Ticket</span></div>` : ""}
+
 
       <div class="det-info">
         <div class="det-i"><small>Fecha límite</small>${(() => { const dd = p.fecha_limite ? diasHasta(p.fecha_limite) : null, D = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -1461,7 +1463,8 @@
         const tono = dd === null || p.estado === "listo" ? "ok" : dd <= 1 ? "rojo" : dd <= 5 ? "ambar" : "ok";
         return `<div class="det-fecharow"><button type="button" class="det-fechachip ${tono}" title="Cambiar fecha límite">📅 ${p.fecha_limite ? `${D[new Date(p.fecha_limite + "T12:00").getDay()]} ${fmt(p.fecha_limite)}` : "Poner fecha límite"}${p.fecha_limite ? `<span class="det-rel">${dd <= 5 && p.estado !== "listo" ? "⏰ " : ""}${rel}</span>` : ""}<i class="det-lapiz">✎</i></button><input type="date" class="det-fecha" value="${p.fecha_limite || ""}" />${p.fecha_limite ? `<button type="button" class="det-link det-sinfecha">Quitar</button>` : ""}</div>`; })()}</div>
         <div class="det-i"><small>Prioridad</small><div class="det-prios">${["alta", "media", "baja"].map((x) => `<button type="button" class="mn-prio ${x} ${p.prioridad === x ? "activa" : ""}" data-v="${x}">${mayus(x)}</button>`).join("")}</div></div>
-        <div class="det-i det-i-full"><small>Encargados</small><div class="det-personas">${Object.keys(COLORES).map((n) => `<button type="button" class="det-persona ${p.encargados.includes(n) ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></div>
+        <div class="det-i ${p.solicitado_por ? "" : "det-i-full"}"><small>Encargados</small><div class="det-personas">${Object.keys(COLORES).map((n) => `<button type="button" class="det-persona ${p.encargados.includes(n) ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></div>
+        ${p.solicitado_por ? `<div class="det-i det-i-solic"><small>Solicitado por</small><div class="det-solic"><i class="av" style="${fondoAv(p.solicitado_por.nombre)}">${letraAv(p.solicitado_por.nombre)}</i><div><b>${esc(p.solicitado_por.nombre)}</b></div><span class="det-solic-area">${esc(p.solicitado_por.area)}</span><span class="det-solic-tk">📨 Ticket</span></div></div>` : ""}
       </div>
       <div class="det-prog"><span>${tareas.length ? `${hechas} de ${tareas.length} tareas hechas` : "Aún sin tareas"}</span><b>${tareas.length ? pct + "%" : ""}</b></div>
       <div class="fx-barra"><i style="width:${pct}%"></i></div>
