@@ -1274,6 +1274,27 @@
   .item.sel > div:not(.caja):not(.punto-rojo), .item.sel { }
   .pendiente.sel .caja, .item.sel .caja { background: var(--azul); border-color: var(--azul); }
   nav a { cursor: pointer; }
+  .det-i-fecha { background: #0a0a0a !important; border-color: #0a0a0a !important; color: #fff; }
+  .det-i-fecha > small { color: #a3a3a3 !important; }
+  .det-i-fecha .det-fecharow { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .det-fechatxt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .det-fechatxt b { font-size: 1.05rem; }
+  .det-fecharow .det-rel { font-size: .78rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.1); color: #d4d4d4; }
+  .det-fecharow.ambar .det-rel { color: #ffd45c; } .det-fecharow.rojo .det-rel { color: #ff8a8f; } .det-fecharow.ok .det-rel { color: #8ee86a; }
+  .det-fechaacc { display: flex; align-items: center; gap: 12px; }
+  .det-cambiar { position: relative; display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 10px; background: #fff; color: #0a0a0a; font-size: .82rem; font-weight: 600; cursor: pointer; overflow: hidden; }
+  .det-cambiar:hover { background: #e5e5e5; }
+  .det-fecharow .det-cambiar .det-fecha { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: auto; cursor: pointer; left: 0; top: 0; }
+  .det-cambiar .det-fecha::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; }
+  .det-i-fecha .det-sinfecha { color: #a3a3a3 !important; font-size: .82rem; } .det-i-fecha .det-sinfecha:hover { color: #fff !important; }
+  #toasts { width: min(340px, calc(100vw - 32px)); gap: 10px; }
+  .toast, .toast-card { border-radius: 18px; } .toast-card { padding: 12px 14px 12px; gap: 10px; }
+  .toast-quien { gap: 10px; } .toast-quien .av { width: 34px !important; height: 34px !important; box-shadow: 0 0 0 2px #d4d4d4; }
+  .toast-quien b { font-size: .9rem; } .toast-quien small { font-size: .75rem; max-width: 240px; }
+  .toast-btns { gap: 8px; } .toast-btns button { padding: 7px; border-radius: 10px; font-size: .78rem; } .toast-btns svg { width: 14px; height: 14px; }
+  .toast-pie { padding: 6px 10px 7px; font-size: .76rem; } .toast-pie svg { width: 13px; height: 13px; }
+  .toast-top { font-size: .72rem; } .toast-hora { gap: 6px; }
+  .toast-x { all: unset; cursor: pointer; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; margin-left: 4px; color: #a3a3a3; font-size: .75rem; background: rgba(255,255,255,.08); }
+  .toast-x:hover { color: #fff; background: rgba(255,255,255,.18); }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1439,7 +1460,8 @@
 
   // Panel lateral con el detalle del proyecto
   let abiertoId = null;
-  function abrirProyecto(id) { delete burbujaVista[id]; delete animoDe[id]; abiertoId = id; pintarDetalle(); document.body.classList.add("con-detalle"); }
+  let centrarDet = false;
+  function abrirProyecto(id, centrado) { centrarDet = !!centrado; delete burbujaVista[id]; delete animoDe[id]; abiertoId = id; pintarDetalle(); document.body.classList.add("con-detalle"); }
   function cerrarProyecto() { abiertoId = null; document.body.classList.remove("con-detalle"); }
   // ===== Detalle del proyecto: se puede editar todo, borrar y asignar tareas =====
   const avMini = (n) => `<i class="av-mini" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
@@ -1451,17 +1473,17 @@
     const tareas = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => (a.hecha - b.hecha) || a.created_at.localeCompare(b.created_at));
     const hechas = tareas.filter((t) => t.hecha).length, pct = tareas.length ? Math.round((hechas / tareas.length) * 100) : 0;
     const d = document.getElementById("detalle");
-    d.className = "detalle a-" + p.estado + (pagina === "mis" ? " tk-det" : "");
+    d.className = "detalle a-" + p.estado + (pagina === "mis" || centrarDet ? " tk-det" : "");
     d.innerHTML = `
       <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<input class="det-nombre" value="${esc(p.nombre)}" maxlength="200" title="Haz clic para editar el nombre" /></div>
         <div class="det-rabbit"><span class="det-burbuja ${burbujaVista[p.id] ? "oculta" : "pop"}">${(animoDe[p.id] ??= ANIMO[Math.floor(Math.random() * ANIMO.length)])}</span><img src="${CONEJO}" alt="" /></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
 
 
       <div class="det-info">
-        <div class="det-i"><small>Fecha límite</small>${(() => { const dd = p.fecha_limite ? diasHasta(p.fecha_limite) : null, D = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-        const rel = dd === null ? "Sin fecha límite" : p.estado === "listo" ? "✓ Proyecto listo" : dd < 0 ? `Atrasado ${-dd} día${dd === -1 ? "" : "s"}` : dd === 0 ? "Vence hoy" : dd === 1 ? "Vence mañana" : `Faltan ${dd} días`;
+        <div class="det-i det-i-fecha"><small>Fecha límite</small>${(() => { const dd = p.fecha_limite ? diasHasta(p.fecha_limite) : null, D = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+        const rel = dd === null ? "Sin fecha límite" : p.estado === "listo" ? "Proyecto listo" : dd < 0 ? `Atrasado ${-dd} día${dd === -1 ? "" : "s"}` : dd === 0 ? "Vence hoy" : dd === 1 ? "Vence mañana" : `Faltan ${dd} días`;
         const tono = dd === null || p.estado === "listo" ? "ok" : dd <= 1 ? "rojo" : dd <= 5 ? "ambar" : "ok";
-        return `<div class="det-fecharow"><button type="button" class="det-fechachip ${tono}" title="Cambiar fecha límite">📅 ${p.fecha_limite ? `${D[new Date(p.fecha_limite + "T12:00").getDay()]} ${fmt(p.fecha_limite)}` : "Poner fecha límite"}${p.fecha_limite ? `<span class="det-rel">${dd <= 5 && p.estado !== "listo" ? "⏰ " : ""}${rel}</span>` : ""}<i class="det-lapiz">✎</i></button><input type="date" class="det-fecha" value="${p.fecha_limite || ""}" />${p.fecha_limite ? `<button type="button" class="det-link det-sinfecha">Quitar</button>` : ""}</div>`; })()}</div>
+        return `<div class="det-fecharow ${tono}"><div class="det-fechatxt"><b>${p.fecha_limite ? `${D[new Date(p.fecha_limite + "T12:00").getDay()]} ${fmt(p.fecha_limite)}` : "Sin fecha"}</b>${p.fecha_limite ? `<span class="det-rel">${rel}</span>` : ""}</div><div class="det-fechaacc"><label class="det-cambiar">${p.fecha_limite ? "Cambiar" : "Poner fecha"}<input type="date" class="det-fecha" value="${p.fecha_limite || ""}" /></label>${p.fecha_limite ? `<button type="button" class="det-link det-sinfecha">Quitar</button>` : ""}</div></div>`; })()}</div>
         <div class="det-i"><small>Prioridad</small><div class="det-prios">${["alta", "media", "baja"].map((x) => `<button type="button" class="mn-prio ${x} ${p.prioridad === x ? "activa" : ""}" data-v="${x}">${mayus(x)}</button>`).join("")}</div></div>
         <div class="det-i ${p.solicitado_por ? "" : "det-i-full"}"><small>Encargados</small><div class="det-personas">${Object.keys(COLORES).map((n) => `<button type="button" class="det-persona ${p.encargados.includes(n) ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></div>
         ${p.solicitado_por ? `<div class="det-i det-i-solic"><small>Solicitado por</small><div class="det-solic"><i class="av" style="${fondoAv(p.solicitado_por.nombre)}">${letraAv(p.solicitado_por.nombre)}</i><div><b>${esc(p.solicitado_por.nombre)}</b></div><span class="det-solic-area">${esc(p.solicitado_por.area)}</span><span class="det-solic-tk">📨 Ticket</span></div></div>` : ""}
@@ -1486,7 +1508,7 @@
       armar();
     }));
     d.querySelectorAll(".det-prios button").forEach((b) => (b.onclick = () => { p.prioridad = b.dataset.v; armar(); }));
-    d.querySelector(".det-fechachip")?.addEventListener("click", () => { const i = d.querySelector(".det-fecha"); try { i.showPicker(); } catch (e) { i.focus(); i.click(); } });
+    d.querySelector(".det-fecha").addEventListener("click", (e) => { try { e.target.showPicker(); } catch (x) {} });
     d.querySelector(".det-fecha").onchange = (e) => { p.fecha_limite = e.target.value || null; armar(); };
     d.querySelector(".det-sinfecha")?.addEventListener("click", () => { p.fecha_limite = null; armar(); });
 
@@ -1853,7 +1875,7 @@
     menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
     menuNotif.querySelectorAll(".nt").forEach((b) => (b.onclick = () => {
       const n = L.find((x) => x.id === b.dataset.id); leidas.add(n.id); menuNotif.hidden = true; pintarNotif();
-      if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1]); }
+      if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1], true); }
     }));
   }
   // Aviso emergente tipo celular: baja desde arriba, dura unos segundos y desaparece
@@ -1869,14 +1891,15 @@
     const t = document.createElement("div");
     t.className = "toast";
     t.innerHTML = `<div class="toast-card">
-        <div class="toast-top"><span>${cat}</span><span class="toast-hora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/></svg>${hora}</span></div>
+        <div class="toast-top"><span>${cat}</span><span class="toast-hora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/></svg>${hora}<button class="toast-x" title="Cerrar">✕</button></span></div>
         <div class="toast-quien"><i class="av" style="${fondoAv(quien)}">${letraAv(quien)}</i><div><b>${esc(n.tit)}</b><small><i></i>${esc(n.txt)}</small></div></div>
         <div class="toast-btns"><button class="tb-abrir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Abrir</button><button class="tb-leida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Marcar leída</button></div>
       </div>
       <div class="toast-pie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7Z"/></svg>${pie}</div>`;
     const cerrar = () => { t.classList.add("fuera"); setTimeout(() => t.remove(), 350); };
+    t.querySelector(".toast-x").onclick = cerrar;
     t.querySelector(".tb-leida").onclick = () => { LEIDAS[yo].add(n.id); pintarNotif(); cerrar(); };
-    t.querySelector(".tb-abrir").onclick = () => { cerrar(); LEIDAS[yo].add(n.id); pintarNotif(); if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1]); } };
+    t.querySelector(".tb-abrir").onclick = () => { cerrar(); LEIDAS[yo].add(n.id); pintarNotif(); if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1], true); } };
     pila.prepend(t);
     let tm = setTimeout(cerrar, 7000);
     t.onmouseenter = () => clearTimeout(tm); t.onmouseleave = () => (tm = setTimeout(cerrar, 3000));
