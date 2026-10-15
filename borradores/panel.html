@@ -948,9 +948,9 @@
   .bc.a-en_curso :is(b, span, div, .bc-ir) { color: #fff; } .bc.a-en_curso small, .bc.a-en_curso .bc-f.lejos { color: #a3a3a3 !important; }
   .bc.a-en_curso .bc-flecha { background: #fff !important; color: #0a0a0a !important; }
   /* Personas: fila de la jefa en negro */
-  .per:has(.r-jefa) { background: #0a0a0a !important; filter: none; box-shadow: 0 14px 30px rgba(10,10,10,.22); }
-  .per:has(.r-jefa) :is(b, span, div) { color: #fff; } .per:has(.r-jefa) small { color: #a3a3a3 !important; }
-  .per:has(.r-jefa) .tk-chip { background: rgba(255,255,255,.1) !important; border-color: rgba(255,255,255,.15) !important; }
+  .per.sel { background: #0a0a0a !important; filter: none; box-shadow: 0 14px 30px rgba(10,10,10,.22); }
+  .per.sel :is(b, span, div) { color: #fff; } .per.sel small { color: #a3a3a3 !important; }
+  .per.sel .tk-chip { background: rgba(255,255,255,.1) !important; border-color: rgba(255,255,255,.15) !important; }
   .ec-lado .ec-prox { background: transparent !important; } .ec-lado .bc-f.lejos, .ec-lado .bc-f.proxima { color: #d4d4d4 !important; }
   .ec-dia.sel { background: #0a0a0a !important; border-color: #0a0a0a !important; } .ec-dia.sel .ec-num { background: #fff !important; color: #0a0a0a !important; } .ec-dia.sel .ec-ev { background: rgba(255,255,255,.12) !important; color: #fff !important; }
   /* Carpetas: negras en fondo claro, blancas con gris en fondo negro */
@@ -1107,7 +1107,7 @@
   .per-acc { gap: 6px; } .per-ico { all: unset; cursor: pointer; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; border: 1px solid #e5e5e5; background: #fff; color: #525252; }
   .per-ico svg { width: 15px; height: 15px; } .per-ico:hover { background: #0a0a0a; color: #fff; border-color: #0a0a0a; } .per-ico.peligro:hover { background: #dc2626; border-color: #dc2626; }
   .per.inactiva { opacity: .5; } .per-est.off { color: #dc2626 !important; }
-  .per:has(.r-jefa) .per-ico { background: transparent; border-color: rgba(255,255,255,.25); color: #fff; }
+  .per.sel .per-ico { background: transparent; border-color: rgba(255,255,255,.25); color: #fff; }
   .nt-leidas { margin: 10px -8px -10px; padding: 6px 8px 10px; background: #f5f5f5; border-top: 1px solid #e5e5e5; }
   .nt-leidas .nt { opacity: .75; } .nt-leidas .nt:hover { background: #ebebeb; opacity: 1; } .nt-leidas .nt-ico { background: #fff; }
   .nt-lista .mp-grupo span.gris { background: #d4d4d4; color: #525252; }
@@ -1366,6 +1366,7 @@
   @media (prefers-reduced-motion: reduce) { .logo[class*="rb-"] { animation: none !important; } }
   .rb-burbuja { left: 62px !important; top: 50% !important; translate: 0 -50%; max-width: 200px !important; font-size: .72rem !important; padding: 6px 9px !important; border-radius: 12px 12px 12px 4px !important; box-shadow: 2px 2px 0 #0a0a0a !important; }
   .rb-burbuja.pop { transform-origin: 0 50% !important; }
+  .per[data-sel] { cursor: pointer; transition: background .2s, box-shadow .2s; } .per[data-sel]:not(.sel):hover { box-shadow: 0 0 0 1.5px #d4d4d4; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2522,6 +2523,7 @@
   const ROLES = { jefa: "Marketing | Jefa", equipo: "Equipo de marketing", solicitante: "Otra área" };
   let filtroPer = "todas", busPer = "";
   const claveTemporal = () => { const L = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; return Array.from({ length: 10 }, () => L[Math.floor(Math.random() * L.length)]).join(""); };
+  let perSel = null;
   function pintarPersonas() {
     const cont = document.getElementById("vistaPersonas");
     const qP = busPer.trim().toLowerCase();
@@ -2530,7 +2532,7 @@
     cont.innerHTML = `<div class="mis-cab"><div><h2>Personas</h2><p>Cuentas con acceso a Rabbit. Solo el equipo de marketing puede crearlas.</p></div><button class="nuevo-btn tk-nuevo" id="perNueva">＋ Nueva persona</button></div>
       <div class="tk-barra-f"><div class="ent-filtros">${F.map(([k, t]) => `<button data-fp="${k}" class="${filtroPer === k ? "activa" : ""}">${t} <span>${personas.filter((x) => k === "todas" || (k === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")).length}</span></button>`).join("")}</div><label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="perBuscar" placeholder="Buscar nombre, correo o área" value="${esc(busPer)}" /></label></div>
       <div class="per-lista">${personas.filter(pasa).length ? "" : `<div class="mis-vacio"><b>Sin resultados</b>No encontramos personas con “${esc(busPer)}”.</div>`}${personas.filter(pasa).map((x, i) => `
-        <div class="per ${x.inactiva ? "inactiva" : ""}">
+        <div class="per ${x.inactiva ? "inactiva" : ""} ${perSel === x.correo ? "sel" : ""}" data-sel="${esc(x.correo)}">
           <i class="av per-av" style="${fondoAv(x.nombre)}">${letraAv(x.nombre)}</i>
           <div class="per-nom"><b>${esc(x.nombre)} ${esc(x.apellido)}</b><small>${esc(x.correo)}</small></div>
           <div class="per-col"><small>Área</small><span class="tk-chip">${esc(x.area)}</span></div>
@@ -2542,6 +2544,7 @@
             ${x.nombre === yo ? "" : `<button class="per-ico ${x.inactiva ? "" : "peligro"}" data-desact="${personas.indexOf(x)}" title="${x.inactiva ? "Reactivar cuenta" : "Desactivar cuenta"}">${x.inactiva ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg>'}</button>`}</div>
         </div>`).join("")}</div>`;
     cont.querySelectorAll("[data-fp]").forEach((b) => (b.onclick = () => { filtroPer = b.dataset.fp; pintarPersonas(); }));
+    cont.querySelectorAll("[data-sel]").forEach((r) => (r.onclick = (e) => { if (e.target.closest("button, a")) return; perSel = perSel === r.dataset.sel ? null : r.dataset.sel; cont.querySelectorAll(".per").forEach((x) => x.classList.toggle("sel", x.dataset.sel === perSel)); }));
     cont.querySelectorAll("[data-reenviar]").forEach((b) => (b.onclick = () => { const x = personas[+b.dataset.reenviar]; mostrarBienvenida(x, claveTemporal(), true); }));
     cont.querySelector("#perNueva").onclick = () => abrirFormPersona();
     cont.querySelectorAll("[data-editar]").forEach((b) => (b.onclick = () => abrirFormPersona(personas[+b.dataset.editar])));
