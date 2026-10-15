@@ -1367,6 +1367,27 @@
   .rb-burbuja { left: 62px !important; top: 50% !important; translate: 0 -50%; max-width: 200px !important; font-size: .72rem !important; padding: 6px 9px !important; border-radius: 12px 12px 12px 4px !important; box-shadow: 2px 2px 0 #0a0a0a !important; }
   .rb-burbuja.pop { transform-origin: 0 50% !important; }
   .per[data-sel] { cursor: pointer; transition: background .2s, box-shadow .2s; } .per[data-sel]:not(.sel):hover { box-shadow: 0 0 0 1.5px #d4d4d4; }
+  .saludo-h { display: inline-flex; align-items: center; gap: 10px; }
+  .saludo-rb { width: 38px; height: 38px; flex: none; transform-origin: 50% 90%; animation: rb-hola 1.6s ease-in-out .3s 2, parpadeo 5s infinite; }
+  @keyframes rb-hola { 0%,100% { transform: rotate(0); } 20% { transform: rotate(-12deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(5deg); } }
+  .idc-fondo { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; background: rgba(10,10,10,.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: idc-f .25s ease; }
+  .idc-fondo.fuera { animation: idc-f .25s ease reverse forwards; }
+  @keyframes idc-f { from { opacity: 0; } }
+  .idc { width: min(440px, 100%); aspect-ratio: 1.6; border-radius: 26px; padding: 22px 24px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+    background: radial-gradient(120% 140% at 85% 0%, #3a3a3a 0%, #161616 45%, #0a0a0a 100%); box-shadow: 0 30px 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12); animation: idc-in .45s cubic-bezier(.2,.9,.3,1.15); position: relative; overflow: hidden; }
+  .idc::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.07) 50%, transparent 60%); pointer-events: none; }
+  @keyframes idc-in { from { opacity: 0; transform: scale(.85) rotate(-3deg) translateY(20px); } }
+  .idc-top { display: flex; justify-content: space-between; align-items: center; font-size: .72rem; font-weight: 700; letter-spacing: .14em; color: #a3a3a3; }
+  .idc-top .saludo-rb { width: 30px; height: 30px; animation: none; }
+  .idc-cuerpo { display: flex; align-items: center; gap: 16px; }
+  .idc-foto { width: 78px !important; height: 78px !important; border-radius: 20px !important; flex: none; box-shadow: 0 0 0 3px rgba(255,255,255,.15); font-size: 1.6rem !important; }
+  .idc-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; } .idc-info b { font-size: 1.25rem; } .idc-info > small { color: #a3a3a3; font-size: .8rem; }
+  .idc-nota { display: flex; align-items: center; gap: 6px; margin-top: 6px; } .idc-nota svg { width: 24px; height: 24px; } .idc-nota b { font-size: 1.5rem; line-height: 1; }
+  .idc-nota span { font-size: .78rem; color: #a3a3a3; line-height: 1.1; } .idc-nota small { font-size: .66rem; }
+  .idc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .idc-stats div { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .idc-stats span { font-size: .66rem; color: #a3a3a3; } .idc-stats b { font-size: 1.1rem; } .idc-stats b small { font-size: .75rem; color: #737373; }
+  .idc-pie { display: flex; justify-content: space-between; font-size: .72rem; color: #737373; letter-spacing: .06em; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1882,6 +1903,7 @@
   let yo = "Ariana";
   try { yo = localStorage.getItem("rabbit-yo") || yo; } catch (e) {}
   const menuPerfil = document.getElementById("menuPerfil");
+  const rbMini = () => document.querySelector(".logo-caja .logo").outerHTML.replace(/class="logo[^"]*"/, 'class="saludo-rb"').replace(/aria-label="[^"]*"/, 'aria-hidden="true"');
   function pintarPerfil() {
     document.getElementById("perfilBtn").innerHTML = `<span class="avatar-yo" style="${fondoAv(yo)}" title="${yo}">${letraAv(yo)}</span>`;
     const op = (n, rol) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i><span>${n}<small>${rol}</small></span>${n === yo ? '<span class="ok">✓</span>' : ""}</button>`;
@@ -1894,9 +1916,14 @@
     const ext = !!SOLICITANTES[yo];
     document.getElementById("mpCab").innerHTML = `<div class="mp-yo"><i style="${fondoAv(yo)}">${letraAv(yo)}</i><div><b>${yo}</b><small>${ext ? SOLICITANTES[yo] : yo === JEFA ? "Marketing | Jefa" : "Marketing"}</small></div></div>`;
     const IC = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
-    document.getElementById("mpAcc").innerHTML = (ext ? `<button class="mp-acc" id="mpMisTk">${IC('<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/>')}Mis tickets (historial completo)</button>` : "")
+    document.getElementById("mpAcc").innerHTML = `<button class="mp-acc" id="mpId">${IC('<rect x="2" y="5" width="20" height="14" rx="3"/><circle cx="8" cy="12" r="2.5"/><path d="M13 10h5M13 14h3"/>')}Mi ID card</button>`
+      + (ext ? `<button class="mp-acc" id="mpMisTk">${IC('<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/>')}Mis tickets</button>`
+        : `<button class="mp-acc" id="mpMis">${IC('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>')}Mi entorno</button>` + (yo === JEFA ? `<button class="mp-acc" id="mpDash">${IC('<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/>')}Dashboard</button>` : ""))
       + `<button class="mp-acc salir" id="mpSalir">${IC('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>')}Cerrar sesión</button>`;
     document.getElementById("mpMisTk")?.addEventListener("click", () => { menuPerfil.hidden = true; mesTk = "todos"; filtroTk = "todos"; irA("tickets"); });
+    document.getElementById("mpMis")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("mis"); });
+    document.getElementById("mpDash")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("dashboard"); });
+    document.getElementById("mpId").onclick = () => { menuPerfil.hidden = true; abrirIdCard(); };
     document.getElementById("mpSalir").onclick = () => { location.href = "login.html"; };
   }
   document.getElementById("perfilBtn").onclick = (e) => { e.stopPropagation(); document.getElementById("menuNotif").hidden = true; menuPerfil.hidden = !menuPerfil.hidden; };
@@ -2026,6 +2053,43 @@
     rbT1 = setInterval(() => rbMover(), 9000);
     rbT2 = setInterval(() => { if (!document.hidden) rbDecir(rbFrase()); }, 40000);
   }
+
+  // ===== Mi ID card: tarjeta personal al centro con el fondo desenfocado =====
+  function abrirIdCard() {
+    document.querySelector(".idc-fondo")?.remove();
+    const ext = !!SOLICITANTES[yo], mes = new Date().toISOString().slice(0, 7);
+    const per = personas.find((x) => x.nombre === yo);
+    const num = String((personas.indexOf(per) + 1) * 37 + 1000).slice(-4);
+    let stats, estrellas = "";
+    if (ext) {
+      const mios = tickets.filter((t) => t.solicitante === yo);
+      const aprob = mios.filter((t) => !["revision_inicial", "falta_info", "rechazado", "cancelado"].includes(t.estado)).length;
+      stats = [["Tickets enviados", mios.length], ["Aprobados", aprob], ["Entregados", mios.filter((t) => t.estado === "entregado").length]];
+    } else {
+      const tareas = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
+      const proys = misProyectos();
+      const tks = tickets.filter((t) => t.asignado === yo && !["rechazado", "cancelado"].includes(t.estado));
+      stats = [["Tareas", `${tareas.filter((t) => t.hecha).length}<small>/${tareas.length}</small>`], ["Proyectos", `${proys.filter((p) => p.estado === "listo").length}<small>/${proys.length}</small>`], ["Tickets", `${tks.filter((t) => t.estado === "entregado").length}<small>/${tks.length}</small>`]];
+      const nota = Math.round((puntaje(yo, mes).final / 20) * 5 * 10) / 10;
+      estrellas = `<div class="idc-nota"><svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9Z" fill="#ffd45c"/></svg><b>${nota.toFixed(1)}</b><span>/ 5<br><small>Promedio del mes</small></span></div>`;
+    }
+    const f = document.createElement("div");
+    f.className = "idc-fondo";
+    f.innerHTML = `<div class="idc" role="dialog" aria-label="Mi ID card">
+        <div class="idc-top"><span>RABBIT ID</span>${rbMini()}</div>
+        <div class="idc-cuerpo">
+          <i class="av idc-foto" style="${fondoAv(yo)}">${letraAv(yo)}</i>
+          <div class="idc-info"><b>${esc(yo)}${per ? " " + esc(per.apellido) : ""}</b><small>${ext ? esc(SOLICITANTES[yo]) : yo === JEFA ? "Marketing | Jefa" : "Equipo de marketing"}</small>${estrellas}</div>
+        </div>
+        <div class="idc-stats">${stats.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("")}</div>
+        <div class="idc-pie"><span>ID **** ${num}</span><span>${per ? esc(per.correo) : ""}</span></div>
+      </div>`;
+    document.body.append(f);
+    const cerrar = () => { f.classList.add("fuera"); setTimeout(() => f.remove(), 250); document.removeEventListener("keydown", esc_); };
+    const esc_ = (e) => { if (e.key === "Escape") cerrar(); };
+    f.onclick = (e) => { if (e.target === f) cerrar(); };
+    document.addEventListener("keydown", esc_);
+  }
   function avisoDemo() { setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, 1200); }
   document.getElementById("campanaBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = true; pintarNotif(); menuNotif.hidden = !menuNotif.hidden; };
 
@@ -2110,7 +2174,7 @@
     const misT = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
     const pend = misT.filter((t) => !t.hecha);
     const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
-    let html = `<div class="mis-cab"><div><h2>${saludo}, ${yo} 👋</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div></div>`;
+    let html = `<div class="mis-cab"><div><h2 class="saludo-h">${saludo}, ${yo} ${rbMini()}</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div></div>`;
     if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.</div>`; return; }
     // Filtros y divisiones por estado
     const ORDEN = ["en_curso", "sin_empezar", "listo"];
@@ -2286,7 +2350,7 @@
     const estadoF = (t) => t.estado !== "falta_info" ? t.estado : t.asignado ? "en_revision" : "revision_inicial";
     const pasa = (t, f) => f === "todos" ? true : f === "activos" ? (sol ? ["en_curso", "en_revision", "revision_inicial", "falta_info"].includes(t.estado) : ["en_curso", "en_revision", "falta_info"].includes(t.estado)) : f === "rechazado" ? ["rechazado", "cancelado"].includes(t.estado) : estadoF(t) === f;
     const lista = vis.filter((t) => pasa(t, filtroTk)).sort((a, b) => (TK_PRIO[a.prioridad] ? Object.keys(TK_PRIO).indexOf(a.prioridad) : 9) - (TK_PRIO[b.prioridad] ? Object.keys(TK_PRIO).indexOf(b.prioridad) : 9) || a.fecha.localeCompare(b.fecha));
-    const titulo = sol ? `Hola, ${yo} 👋` : jefa ? "Bandeja de tickets" : "Mis tickets";
+    const titulo = sol ? `<span class="saludo-h">Hola, ${yo} ${rbMini()}</span>` : jefa ? "Bandeja de tickets" : "Mis tickets";
     const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
       : jefa ? "Revisa las solicitudes, decide la prioridad y asígnalas al equipo." : "Solicitudes de otras áreas que Hilary te asignó.";
     let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Nueva solicitud</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length; return `<div class="tpk tpk-${k}" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
