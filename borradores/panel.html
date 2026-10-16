@@ -2342,11 +2342,13 @@
   }
   pintarPerfil();
   // Cada rol ve un panel distinto: otras áreas solo ven Tickets (sus solicitudes)
+  const VEN_PERSONAS = ["Hilary", "Carlos"]; // solo ellos administran las cuentas
   function aplicarRol() {
     filtroTk = null; busTk = ""; personaTk = null;
     const sol = esSolicitante();
     document.body.classList.toggle("rol-solicitante", sol);
-    document.querySelectorAll("nav a").forEach((a) => (a.hidden = sol && a.dataset.p !== "tickets"));
+    document.querySelectorAll("nav a").forEach((a) => (a.hidden = (sol && a.dataset.p !== "tickets") || (a.dataset.p === "personas" && !VEN_PERSONAS.includes(yo))));
+    if (!sol && pagina === "personas" && !VEN_PERSONAS.includes(yo)) irA("inicio");
     document.querySelector('nav a[data-p="tickets"] .nl').textContent = sol ? "Mis solicitudes" : "Tickets";
     if (sol) irA("tickets"); else if (pagina === "mis") pintarMis(); else if (pagina === "tickets") pintarTickets();
     contarTickets();
