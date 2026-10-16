@@ -1477,6 +1477,9 @@
   .nt-cl { display: none; position: absolute; bottom: 0; left: -18px; width: 18px; height: 18px; background: radial-gradient(circle at 0 0, transparent 17.5px, #fff 18px); }
   .nt-tab.activa:not(:first-child) .nt-cl { display: block; }
   .nt-tab.activa:last-child::before { display: none; }
+  .nt-tabs { margin-top: 10px !important; }
+  .nt-pie { all: unset; cursor: pointer; display: block; text-align: center; margin: 0 10px 10px; padding: 9px; border-radius: 12px; font-size: .8rem; font-weight: 600; color: #525252; }
+  .nt-pie:hover { background: #ececec; color: #0a0a0a; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2071,9 +2074,8 @@
     const item = (n) => { const nueva = !leidas.has(n.id); return `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${ntIco(n.ico)}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small></span><span class="nt-der"><em>${hace(n.at)}</em>${nueva ? '<i class="nt-punto"></i>' : ""}</span></button>`; };
     const lista = ntTab === "nuevas" ? nuevas : ntTab === "leidas" ? viejas : [...nuevas, ...viejas];
     const TABS = [["todas", "Todas", L.length], ["nuevas", "No leídas", nuevas.length], ["leidas", "Leídas", viejas.length]];
-    menuNotif.innerHTML = `<div class="nt-cab"><b>Notificaciones</b>${nuevas.length ? '<button class="nt-todas">Marcar todas como leídas</button>' : ""}</div>
-      <div class="nt-tabs">${TABS.map(([k, t, c]) => `<button class="nt-tab ${ntTab === k ? "activa" : ""}" data-tab="${k}"><i class="nt-cl"></i>${t}<span>${c}</span></button>`).join("")}</div>
-      <div class="nt-lista nt-panel">${lista.length ? lista.map(item).join("") : `<p class="nt-vacio">${ntTab === "leidas" ? "Nada por aquí." : "Estás al día."}</p>`}</div>`;
+    menuNotif.innerHTML = `<div class="nt-tabs">${TABS.map(([k, t, c]) => `<button class="nt-tab ${ntTab === k ? "activa" : ""}" data-tab="${k}"><i class="nt-cl"></i>${t}<span>${c}</span></button>`).join("")}</div>
+      <div class="nt-lista nt-panel">${lista.length ? lista.map(item).join("") : `<p class="nt-vacio">${ntTab === "leidas" ? "Nada por aquí." : "Estás al día."}</p>`}</div>${nuevas.length ? '<button class="nt-todas nt-pie">Marcar todas como leídas</button>' : ""}`;
     menuNotif.querySelectorAll(".nt-tab").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); ntTab = b.dataset.tab; pintarNotif(); }));
     menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
     menuNotif.querySelectorAll(".nt").forEach((b) => (b.onclick = () => {
