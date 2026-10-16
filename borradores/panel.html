@@ -2461,6 +2461,13 @@
   }
   pintarPerfil();
   // Cada rol ve un panel distinto: otras áreas solo ven Tickets (sus solicitudes)
+  async function cargarPersonas() {
+    const { data, error } = await sb.from("perfiles").select("*").order("created_at");
+    if (error) return;
+    personas.length = 0;
+    data.forEach((p) => personas.push({ id: p.id, nombre: p.nombre, apellido: p.apellido, usuario: p.usuario, correo: p.correo, area: p.area, rol: p.rol, admin: p.admin_personas, carpeta: p.carpeta || "", activa: !p.debe_cambiar_clave, inactiva: !p.activa }));
+    if (pagina === "personas") pintarPersonas();
+  }
   const VEN_PERSONAS = ["Hilary", "Carlos"]; // solo ellos administran las cuentas
   function aplicarRol() {
     filtroTk = null; busTk = ""; personaTk = null;
@@ -2782,9 +2789,10 @@
       const { data: p } = await sb.from("perfiles").select("*").eq("id", data.session.user.id).single();
       if (!p || !p.activa || p.debe_cambiar_clave) { await sb.auth.signOut(); return (location.href = "login.html"); }
       window.miPerfil = p;
-      if (p.admin_personas || p.rol === "jefa") { if (!VEN_PERSONAS.includes(p.nombre)) VEN_PERSONAS.push(p.nombre); }
+      VEN_PERSONAS.length = 0; if (p.admin_personas || p.rol === "jefa") VEN_PERSONAS.push(p.nombre);
       if (p.rol === "solicitante") SOLICITANTES[p.nombre] = p.area;
       yo = p.nombre;
+      await cargarPersonas();
       menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); rabbitHola();
     });
     document.addEventListener("click", async (e) => { if (e.target.closest("#mpSalir")) { e.preventDefault(); e.stopImmediatePropagation(); await sb.auth.signOut(); location.href = "login.html"; } }, true);
@@ -2826,12 +2834,14 @@
         </div>`).join("")}</div>`;
     cont.querySelectorAll("[data-fp]").forEach((b) => (b.onclick = () => { filtroPer = b.dataset.fp; pintarPersonas(); }));
     cont.querySelectorAll("[data-sel]").forEach((r) => (r.onclick = (e) => { if (e.target.closest("button, a")) return; perSel = perSel === r.dataset.sel ? null : r.dataset.sel; cont.querySelectorAll(".per").forEach((x) => x.classList.toggle("sel", x.dataset.sel === perSel)); }));
-    cont.querySelectorAll("[data-reenviar]").forEach((b) => (b.onclick = () => { const x = personas[+b.dataset.reenviar]; mostrarBienvenida(x, claveTemporal(), true); }));
+    cont.querySelectorAll("[data-reenviar]").forEach((b) => (b.onclick = () => { const x = personas[+b.dataset.reenviar]; if (window.sb) return restablecerClave(x); mostrarBienvenida(x, claveTemporal(), true); }));
     cont.querySelector("#perNueva").onclick = () => abrirFormPersona();
     cont.querySelectorAll("[data-reset]").forEach((b) => (b.onclick = () => restablecerClave(personas[+b.dataset.reset])));
     cont.querySelectorAll("[data-editar]").forEach((b) => (b.onclick = () => abrirFormPersona(personas[+b.dataset.editar])));
     cont.querySelectorAll("[data-desact]").forEach((b) => (b.onclick = () => {
-      const x = personas[+b.dataset.desact]; x.inactiva = !x.inactiva; pintarPersonas();
+      const x = personas[+b.dataset.desact];
+      if (window.sb) { sb.rpc("activar_persona", { p_id: x.id, p_activa: !!x.inactiva }).then(({ error }) => { if (error) avisar("No se pudo cambiar: " + esc(error.message)); else cargarPersonas().then(() => avisar(x.inactiva ? `<b>${esc(x.nombre)}</b> puede volver a entrar a Rabbit` : `<b>${esc(x.nombre)}</b> ya no podrá entrar a Rabbit`)); }); return; }
+      x.inactiva = !x.inactiva; pintarPersonas();
       avisar(x.inactiva ? `<b>${esc(x.nombre)}</b> ya no podrá entrar a Rabbit. Su historial se conserva.` : `<b>${esc(x.nombre)}</b> puede volver a entrar a Rabbit`, () => { x.inactiva = !x.inactiva; pintarPersonas(); });
     }));
     const ip = cont.querySelector("#perBuscar"); ip.oninput = () => { busPer = ip.value; const pos = ip.selectionStart; pintarPersonas(); const n = document.getElementById("perBuscar"); n.focus(); n.setSelectionRange(pos, pos); };
@@ -2846,31 +2856,46 @@
         <div class="tk-dos"><label>Correo *<input name="correo" type="email" placeholder="nombre@gmail.com" /></label><label>Usuario *<input name="usuario" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /><small class="per-usu-ayuda">Con este usuario entrará a Rabbit. Solo minúsculas, números, punto o guion bajo.</small></label></div>
         <label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label>
         <div class="per-aviso" id="perRol"></div>
+        <label class="tk-check" id="perAdminL"><input type="checkbox" name="admin" /> Puede administrar Personas (crear cuentas y restablecer contraseñas)</label>
         <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
         <label ${ed ? "hidden" : ""}>Contraseña temporal<div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></label>
         <div class="mensaje tk-err"></div>
-        <button class="nuevo-btn" type="submit">${ed ? "Guardar cambios" : "Crear cuenta y enviar correo"}</button>
-      </form><p class="det-nota">Vista previa: no se crea ninguna cuenta real.</p>`;
+        <button class="nuevo-btn" type="submit">${ed ? "Guardar cambios" : (window.sb ? "Crear cuenta" : "Crear cuenta y enviar correo")}</button>
+      </form>${window.sb ? "" : '<p class="det-nota">Vista previa: no se crea ninguna cuenta real.</p>'}`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     const f = d.querySelector("form");
     const verRol = () => {
       const mk = f.area.value === "Marketing";
       d.querySelector("#perRol").innerHTML = mk ? "👥 Será parte del <b>equipo de marketing</b>: verá Inicio, Mi entorno, Tickets y Dashboard." : "📨 Será de <b>otra área</b>: solo podrá enviar tickets y ver los suyos.";
-      d.querySelector("#perCarpeta").hidden = mk;
+      d.querySelector("#perCarpeta").hidden = mk; d.querySelector("#perAdminL").hidden = !mk;
     };
     let usuTocado = !!ed;
     const sugerir = () => { if (!usuTocado) f.usuario.value = usuarioDe({ nombre: f.nombre.value.trim(), apellido: f.apellido.value.trim() }); };
     f.nombre.addEventListener("input", sugerir); f.apellido.addEventListener("input", sugerir);
     f.usuario.addEventListener("input", () => { usuTocado = true; f.usuario.value = f.usuario.value.toLowerCase().replace(/[^a-z0-9._]/g, ""); });
-    if (ed) { f.usuario.value = usuarioDe(ed); f.nombre.value = ed.nombre; f.apellido.value = ed.apellido || ""; f.correo.value = ed.correo; f.area.value = AREAS.includes(ed.area) ? ed.area : "Marketing"; f.carpeta.value = ed.carpeta || ""; }
+    if (ed) { f.admin.checked = !!ed.admin; f.usuario.value = usuarioDe(ed); f.nombre.value = ed.nombre; f.apellido.value = ed.apellido || ""; f.correo.value = ed.correo; f.area.value = AREAS.includes(ed.area) ? ed.area : "Marketing"; f.carpeta.value = ed.carpeta || ""; }
     f.area.onchange = verRol; verRol();
     d.querySelector("#perOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#perClave").textContent = clave; };
-    f.onsubmit = (e) => {
+    f.onsubmit = async (e) => {
       e.preventDefault();
       const err = d.querySelector(".tk-err"), v = (k) => f[k].value.trim();
       const usu = v("usuario");
       if (!/^[a-z0-9._]{3,20}$/.test(usu)) { err.className = "mensaje error tk-err"; err.textContent = "El usuario debe tener entre 3 y 20 caracteres: minúsculas, números, punto o guion bajo."; return; }
       if (personas.some((x) => x !== ed && usuarioDe(x) === usu)) { err.className = "mensaje error tk-err"; err.textContent = `El usuario «${usu}» ya está en uso.`; return; }
+      if (window.sb) {
+        const mkV = f.area.value === "Marketing", rolV = ed && ed.rol === "jefa" ? "jefa" : mkV ? "equipo" : "solicitante", carp = mkV ? null : (v("carpeta") || null);
+        if (!v("nombre") || !v("apellido") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa nombre, apellido y un correo válido."; return; }
+        const btn = f.querySelector('[type="submit"]'); btn.disabled = true; btn.textContent = "Guardando…";
+        const { error: e2 } = ed
+          ? await sb.rpc("editar_persona", { p_id: ed.id, p_apellido: v("apellido"), p_usuario: usu, p_correo: v("correo"), p_area: f.area.value, p_rol: rolV, p_admin: mkV && f.admin.checked, p_carpeta: carp })
+          : await sb.rpc("crear_persona", { p_nombre: v("nombre"), p_apellido: v("apellido"), p_usuario: usu, p_correo: v("correo"), p_area: f.area.value, p_rol: rolV, p_clave: clave, p_admin: mkV && f.admin.checked, p_carpeta: carp });
+        btn.disabled = false; btn.textContent = ed ? "Guardar cambios" : "Crear cuenta";
+        if (e2) { err.className = "mensaje error tk-err"; err.textContent = /correo/i.test(e2.message) ? "Ya existe una cuenta con ese correo." : /usuario/i.test(e2.message) ? "Ese usuario ya está en uso." : "No se pudo guardar: " + e2.message; return; }
+        await cargarPersonas();
+        if (ed) { cerrarProyecto(); avisar(`Datos de <b>${esc(ed.nombre)}</b> actualizados`); }
+        else mostrarAcceso({ nombre: v("nombre"), apellido: v("apellido"), usuario: usu }, clave, "nueva");
+        return;
+      }
       if (ed) {
         if (!v("nombre") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa el nombre y un correo válido."; return; }
         if (personas.some((x) => x !== ed && x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe otra cuenta con ese correo."; return; }
@@ -2895,23 +2920,27 @@
   }
   // Vista previa del correo de bienvenida que recibiría la persona
   const usuarioDe = (x) => x.usuario || (x.apellido ? (x.nombre || "")[0] + x.apellido.split(" ")[0] : x.nombre || "").toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
-  function restablecerClave(x) {
+  function restablecerClave(x) { mostrarAcceso(x, null, "reset"); }
+  function mostrarAcceso(x, claveDada, modo) {
     const d = document.getElementById("detalle");
     d.className = "detalle tk-det";
-    let clave = claveTemporal();
-    d.innerHTML = `<div class="det-cab"><div><h2>Restablecer contraseña</h2><p class="tk-sub">${esc(x.nombre)} ${esc(x.apellido || "")}</p></div><button class="det-cerrar" title="Cerrar">✕</button></div>
+    let clave = claveDada || claveTemporal();
+    const aplicar = () => (window.sb && modo === "reset" ? sb.rpc("restablecer_clave", { p_id: x.id, p_clave: clave }) : Promise.resolve({}));
+    d.innerHTML = `<div class="det-cab"><div><h2>${modo === "nueva" ? "Cuenta creada" : "Restablecer contraseña"}</h2><p class="tk-sub">${esc(x.nombre)} ${esc(x.apellido || "")}</p></div><button class="det-cerrar" title="Cerrar">✕</button></div>
       <div class="rc-caja"><div class="rc-dos"><div class="rc-t"><small>Usuario</small><code>${esc(usuarioDe(x))}</code></div><div class="rc-t"><small>Nueva contraseña temporal</small><code id="rcClave">${clave}</code></div></div>
-        <div class="rc-acc"><button class="cal-btn" id="rcOtra">Generar otra</button><button class="nuevo-btn" id="rcCopiar">Copiar mensaje</button></div></div>
-      <p class="rc-txt">Pásasela a ${esc(x.nombre)} por WhatsApp o en persona. Al entrar con ella, Rabbit le pedirá crear su propia contraseña. La contraseña anterior deja de funcionar.</p>
-      <p class="det-nota">Vista previa: no se cambia ninguna contraseña real.</p>`;
+        <div class="rc-acc">${modo === "nueva" ? "" : '<button class="cal-btn" id="rcOtra">Generar otra</button>'}<button class="nuevo-btn" id="rcCopiar">Copiar mensaje</button></div></div>
+      <p class="rc-txt">Pásale estos datos a ${esc(x.nombre)} por WhatsApp o en persona. Entra en <b>rabbit-ipartner.vercel.app</b> y, al entrar, Rabbit le pedirá crear su propia contraseña.${modo === "reset" ? " La contraseña anterior deja de funcionar." : ""}</p>
+      ${window.sb ? "" : '<p class="det-nota">Vista previa: no se cambia ninguna contraseña real.</p>'}`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
-    d.querySelector("#rcOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#rcClave").textContent = clave; };
+    const aviso = (er) => { if (er && er.error) d.querySelector(".rc-txt").innerHTML = `<b style="color:#dc2626">No se pudo cambiar la contraseña: ${esc(er.error.message)}</b>`; };
+    aplicar().then(aviso);
+    d.querySelector("#rcOtra")?.addEventListener("click", () => { clave = claveTemporal(); d.querySelector("#rcClave").textContent = clave; aplicar().then(aviso); });
     d.querySelector("#rcCopiar").onclick = (e) => {
-      const msg = `Hola ${x.nombre}, restablecí tu acceso a Rabbit.\nUsuario: ${usuarioDe(x)}\nContraseña temporal: ${clave}\nAl entrar te pedirá crear tu propia contraseña.`;
+      const msg = `Hola ${x.nombre}, ${modo === "nueva" ? "ya tienes cuenta en Rabbit" : "restablecí tu acceso a Rabbit"}.\nEntra en: https://rabbit-ipartner.vercel.app\nUsuario: ${usuarioDe(x)}\nContraseña temporal: ${clave}\nAl entrar te pedirá crear tu propia contraseña.`;
       (navigator.clipboard ? navigator.clipboard.writeText(msg) : Promise.reject()).catch(() => {}).finally(() => { e.target.textContent = "¡Copiado!"; setTimeout(() => (e.target.textContent = "Copiar mensaje"), 1600); });
     };
     document.body.classList.add("con-detalle");
-    avisar(`Se generó una contraseña nueva para <b>${esc(x.nombre)}</b>`);
+    if (modo === "reset") avisar(`Se generó una contraseña nueva para <b>${esc(x.nombre)}</b>`);
   }
   function mostrarBienvenida(x, clave, reenvio) {
     const d = document.getElementById("detalle");
