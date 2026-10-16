@@ -1512,6 +1512,7 @@
   .per-usu-ayuda { display: block; margin-top: 5px; font-size: .7rem; font-weight: 400; color: #a3a3a3; }
   .per-usu { font-weight: 600; color: #404040; } .per.sel .per-usu { color: #fff; }
   body.en-vivo .mp-demo { display: none !important; }
+  .det-burbuja, .rb-burbuja, .toast-quien small, .mis-vacio, .ent-vacia, h2, h3 { text-wrap: balance; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1685,6 +1686,7 @@
   const ANIMO = ["¡Tú puedes con esto! 💪", "Una tarea a la vez 🐰", "¡Vas muy bien, sigue así!", "Pequeños pasos, grandes logros ✨", "¡Hoy es un buen día para avanzar!", "Tachar tareas se siente genial ✅", "¡Ya casi lo tienes!", "Tu esfuerzo se nota 👏", "Respira, enfócate y dale 🚀", "¡Un empujoncito más!", "El equipo cuenta contigo 🤝", "Lo difícil se vuelve fácil haciéndolo", "¡Eres más rápido que un conejo! 🐇", "Termina una y celebra 🎉", "Cada tarea hecha suma ⭐", "¡Qué buen ritmo llevas!", "Hazlo simple, hazlo bien", "Tu yo del viernes te lo agradecerá 😉", "¡Modo enfoque activado! 🎯", "Lo estás haciendo increíble", "Paso a paso se llega lejos 🐾", "¡A darle con todo!", "Un café ☕ y a terminar", "Primero lo urgente, luego lo importante", "¡Confía en tu talento!", "Hoy avanzas, mañana brillas 🌟", "Nada como la satisfacción de terminar", "¡Que no te gane el plazo! ⏰", "Tienes todo para lograrlo", "¡Vamos, que ya falta poco!", "La constancia gana carreras 🏁", "Haz que hoy cuente", "¡Tu creatividad es tu superpoder! 🎨", "Divide y vencerás ✂️", "¡Un check más a la lista!", "Lo bien hecho no tiene apuro, pero sí fecha 😄", "¡Sigue así, crack!", "Cada avance te acerca a la meta 🥕", "¡Hoy se termina! 💥", "Orgulloso de tu trabajo 🐰💜"];
   const animoDe = {}, burbujaVista = {};
   function pintarDetalle() {
+    requestAnimationFrame(() => document.querySelectorAll("#detalle .det-burbuja").forEach(ajustarGlobo));
     const p = mapaP.get(abiertoId);
     if (!p) return cerrarProyecto();
     const tareas = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => (a.hecha - b.hecha) || a.created_at.localeCompare(b.created_at));
@@ -2175,13 +2177,19 @@
     const [g, x] = grupo ? ops.find((o) => o[0] === grupo) || rbAzar(ops) : rbAzar(ops);
     return fill(rbAzar(RB[g]), x);
   }
+  // Encoge el globo al ancho justo de sus líneas (sin palabras solas ni espacio vacío)
+  function ajustarGlobo(b) {
+    b.style.width = ""; const h = b.offsetHeight; let lo = 60, hi = b.offsetWidth;
+    while (hi - lo > 2) { const m = (lo + hi) >> 1; b.style.width = m + "px"; if (b.offsetHeight > h) lo = m; else hi = m; }
+    b.style.width = hi + "px";
+  }
   function rbDecir(txt) {
     const caja = document.querySelector(".logo-caja");
     let b = caja.querySelector(".rb-burbuja");
     if (!b) { b = document.createElement("span"); b.className = "det-burbuja rb-burbuja"; caja.append(b); }
     caja.classList.add("hablando"); clearTimeout(rbDecir.t);
     { const nav = [...document.querySelectorAll("nav a")].find((x) => !x.hidden && x.offsetParent), cr = caja.getBoundingClientRect(); if (nav) { const esp = nav.getBoundingClientRect().left - cr.left - 62 - 10; if (esp < 140) { caja.classList.remove("hablando"); return; } b.classList.remove("abajo"); b.classList.toggle("chica", esp < 170); b.style.setProperty("max-width", Math.min(240, esp) + "px", "important"); } }
-    setTimeout(() => { b.textContent = txt; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }, 250);
+    setTimeout(() => { b.textContent = txt; ajustarGlobo(b); b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }, 250);
     rbDecir.t = setTimeout(() => caja.classList.remove("hablando"), 7700);
     rbMover("rb-salto");
   }
