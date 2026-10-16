@@ -1,0 +1,6 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/", "destination": "/borradores/login", "permanent": false }
+  ]
+}
