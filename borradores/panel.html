@@ -1486,6 +1486,20 @@
   .ficha .cn-top .cx-prio.baja { background: #dbeafe !important; color: #2f6fdc !important; border: 1px solid #93c5fd !important; }
   #buscar { padding-left: 36px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: 12px 50% !important; background-size: 16px !important; }
   .bc-reloj { width: 14px; height: 14px; vertical-align: -2px; margin-right: 3px; }
+  .tk-subir { display: flex; flex-direction: column; gap: 8px; } .tk-subir-t { font-size: .85rem; font-weight: 600; } .tk-subir-t small { font-weight: 400; color: #737373; }
+  .tk-drop { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 14px; border: 1.5px dashed #d4d4d4; border-radius: 14px; background: #fafafa; text-align: center; transition: .15s; }
+  .tk-drop:hover, .tk-drop.encima { border-color: #0a0a0a; background: #f5f5f5; }
+  .tk-drop svg { width: 26px; height: 26px; color: #525252; } .tk-drop b { font-size: .88rem; } .tk-drop small { font-size: .74rem; color: #737373; }
+  .tk-miniaturas { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
+  .tk-miniaturas:empty { display: none; }
+  .tk-mini { all: unset; box-sizing: border-box; position: relative; display: flex; flex-direction: column; gap: 4px; min-width: 0; cursor: default; }
+  .tk-mini img, .tk-mini-doc { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; border: 1px solid #e5e5e5; display: grid; place-items: center; background: #f5f5f5; font-weight: 700; font-size: .8rem; color: #dc2626; }
+  .tk-mini small { font-size: .66rem; color: #737373; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tk-mini button { all: unset; cursor: pointer; position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; border-radius: 50%; background: #0a0a0a; color: #fff; font-size: .65rem; display: grid; place-items: center; }
+  .tk-mini.ver { cursor: zoom-in; } .tk-mini.ver:hover img { filter: brightness(.92); }
+  .tk-visor { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 24px; background: rgba(10,10,10,.7); backdrop-filter: blur(6px); cursor: zoom-out; }
+  .tk-visor img, .tk-visor iframe { max-width: 92vw; max-height: 86vh; border-radius: 14px; background: #fff; box-shadow: 0 30px 70px rgba(0,0,0,.5); }
+  .tk-visor iframe { width: 80vw; height: 86vh; border: 0; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2562,6 +2576,7 @@
       ${["rechazado", "cancelado"].includes(t.estado) ? (() => { const h = [...t.historial].reverse().find((x) => /Rechazó|Canceló/.test(x.txt)); return h ? bloque(t.estado === "rechazado" ? "Motivo del rechazo" : "Motivo de la cancelación", `<p class="tkd-cita">${esc(h.txt.replace(/^[^:]+:\s*/, ""))}</p><small class="tkd-por">${h.quien} | ${hace(h.at)}</small>`) : ""; })() : ""}
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
+      ${(t.archivos || []).length ? bloque(`Archivos adjuntos <span class="tkd-n">${t.archivos.length}</span>`, `<div class="tk-miniaturas">${t.archivos.map((a, i) => `<button type="button" class="tk-mini ver" data-ver="${i}" title="${esc(a.n)}">${a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<span class="tk-mini-doc">PDF</span>`}<small>${esc(a.n)}</small></button>`).join("")}</div>`) : ""}
       ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Carpeta de ${esc(t.solicitante)} | busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
       ${bloque(`Comentarios <span class="tkd-n">${(t.comentarios || []).length}</span>`, `<div class="tkc-lista">${(t.comentarios || []).map((c) => `<div class="tkc ${c.quien === yo ? "mio" : ""}"><i class="av" style="${fondoAv(c.quien)}">${letraAv(c.quien)}</i><div><b>${c.quien} <span>${hace(c.at)}</span></b><p>${esc(c.txt)}</p></div></div>`).join("") || '<p class="tkd-vacio">Aún no hay comentarios. Úsalos para dudas entre quien pide y quien lo hace.</p>'}</div>
         ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Escribe un comentario…" /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
@@ -2569,6 +2584,7 @@
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>| ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
+    d.querySelectorAll("[data-ver]").forEach((b) => (b.onclick = () => { const a = t.archivos[+b.dataset.ver], v = document.createElement("div"); v.className = "tk-visor"; v.innerHTML = a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<iframe src="${a.url}" title="PDF"></iframe>`; v.onclick = () => v.remove(); document.body.append(v); }));
     let prio = t.prioridad || "media", asig = t.asignado || null, modo = null;
     d.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => { prio = b.dataset.p; d.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("activa", x === b)); }));
     d.querySelectorAll("[data-a]").forEach((b) => (b.onclick = () => { asig = b.dataset.a; d.querySelectorAll("[data-a]").forEach((x) => x.classList.toggle("activa", x === b)); }));
@@ -2648,7 +2664,9 @@
         <label>Texto que debe ir en la pieza<textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
         <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
         <label>Referencias <small>(opcional, un link por línea)</small><textarea name="refs" placeholder="Drive, Pinterest, web…"></textarea></label>
-        <div class="tk-adj"><button type="button" class="cal-btn" id="tkAdjuntar">📎 Adjuntar referencia</button><span id="tkAdjTxt">Se abrirá tu carpeta personal: <b>Referencias – ${esc(yo)}</b></span></div>
+        <div class="tk-subir"><span class="tk-subir-t">Fotos y archivos <small>(opcional, hasta 10 | máx. 10 MB c/u)</small></span>
+          <label class="tk-drop" id="tkDrop"><input type="file" id="tkArch" multiple accept="image/*,.pdf" hidden /><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><b>Arrastra tus fotos aquí</b><small>o haz clic para elegirlas | JPG, PNG o PDF</small></label>
+          <div class="tk-miniaturas" id="tkMinis"></div></div>
         <label>¿Para cuándo lo necesitas? *<input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
@@ -2672,12 +2690,24 @@
       aviso.textContent = `⏰ Un ${f.tipo.value.toLowerCase()} suele necesitar al menos ${min} días. Puedes enviarlo igual; Hilary verá si es posible.`;
     };
     f.fecha.onchange = revisarFecha;
-    let adjunto = false;
-    d.querySelector("#tkAdjuntar").onclick = () => {
-      adjunto = true; // aquí se abrirá la carpeta de la persona: window.open(perfil.carpeta_url)
-      d.querySelector("#tkAdjuntar").classList.add("activa");
-      d.querySelector("#tkAdjTxt").innerHTML = `✓ Se abrió <b>Referencias – ${esc(yo)}</b>. Sube tus archivos y envía el ticket: Rabbit les pondrá el número del ticket.`;
+    const archivos = [], drop = d.querySelector("#tkDrop"), inp = d.querySelector("#tkArch"), minis = d.querySelector("#tkMinis");
+    const pintarMinis = () => {
+      minis.innerHTML = archivos.map((a, i) => `<div class="tk-mini" title="${esc(a.n)}">${a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<span class="tk-mini-doc">PDF</span>`}<button type="button" data-q="${i}" aria-label="Quitar">✕</button><small>${esc(a.n)}</small></div>`).join("");
+      minis.querySelectorAll("[data-q]").forEach((b) => (b.onclick = () => { archivos.splice(+b.dataset.q, 1); pintarMinis(); }));
     };
+    const sumar = (lista) => {
+      const err = d.querySelector(".tk-err");
+      [...lista].forEach((fl) => {
+        if (archivos.length >= 10) { err.className = "mensaje error tk-err"; err.textContent = "Máximo 10 archivos por solicitud."; return; }
+        if (fl.size > 10 * 1024 * 1024) { err.className = "mensaje error tk-err"; err.textContent = `«${fl.name}» pesa más de 10 MB.`; return; }
+        if (!/^image\/|pdf$/.test(fl.type)) return;
+        const rd = new FileReader(); rd.onload = () => { archivos.push({ n: fl.name, tipo: fl.type, url: rd.result }); pintarMinis(); }; rd.readAsDataURL(fl);
+      });
+    };
+    inp.onchange = () => { sumar(inp.files); inp.value = ""; };
+    drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("encima"); };
+    drop.ondragleave = () => drop.classList.remove("encima");
+    drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("encima"); sumar(e.dataTransfer.files); };
     f.onsubmit = (e) => {
       e.preventDefault();
       const err = d.querySelector(".tk-err");
@@ -2685,7 +2715,7 @@
       const id = Math.max(...tickets.map((t) => t.id)) + 1;
       tickets.push({ id, titulo: f.titulo.value.trim(), solicitante: yo, area: SOLICITANTES[yo], tipo: f.tipo.value === "Otro" ? (f.otro.value.trim() || "Otro") : f.tipo.value,
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
-        refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), adjuntos: adjunto, fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
+        refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
         historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió la solicitud" }] });
       cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets();
       avisar(`📨 Solicitud <b>#${String(id).padStart(3, "0")}</b> enviada a marketing`);
