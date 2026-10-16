@@ -1220,7 +1220,7 @@
           <h3>Todos los proyectos</h3>
           <div class="vistas"><span class="vista activa" data-v="kanban"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.6"/></svg>Por estado</span><span class="vista" data-v="calendario"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendario</span></div>
           <div class="acciones">
-            <input id="buscar" class="buscar" placeholder="⌕  Buscar…" />
+            <input id="buscar" class="buscar" placeholder="Buscar proyecto…" />
             <select id="filtro" class="filtro"><option value="">Todos</option></select>
             <button class="nuevo-btn" id="nuevoBtn">＋ Nuevo proyecto</button>
           </div>
@@ -1484,6 +1484,7 @@
   .ficha .cn-top .cx-prio { opacity: 1 !important; filter: none !important; font-weight: 700; }
   .ficha .cn-top .cx-prio.alta { background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #f87171 !important; }
   .ficha .cn-top .cx-prio.baja { background: #dbeafe !important; color: #2f6fdc !important; border: 1px solid #93c5fd !important; }
+  #buscar { padding-left: 36px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: 12px 50% !important; background-size: 16px !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
