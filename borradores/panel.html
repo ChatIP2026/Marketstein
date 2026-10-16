@@ -1507,6 +1507,8 @@
   .rc-acc { display: flex; gap: 8px; } .rc-acc .cal-btn { background: rgba(255,255,255,.1) !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
   .rc-acc .nuevo-btn { background: #fff !important; color: #0a0a0a !important; }
   .rc-txt { font-size: .86rem; color: #525252; line-height: 1.5; }
+  .per-usu-ayuda { display: block; margin-top: 5px; font-size: .7rem; font-weight: 400; color: #a3a3a3; }
+  .per-usu { font-weight: 600; color: #404040; } .per.sel .per-usu { color: #fff; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2748,14 +2750,14 @@
   function pintarPersonas() {
     const cont = document.getElementById("vistaPersonas");
     const qP = busPer.trim().toLowerCase();
-    const pasa = (x) => (filtroPer === "todas" || (filtroPer === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")) && (!qP || [x.nombre, x.apellido, x.correo, x.area].join(" ").toLowerCase().includes(qP));
+    const pasa = (x) => (filtroPer === "todas" || (filtroPer === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")) && (!qP || [x.nombre, x.apellido, x.correo, x.area, usuarioDe(x)].join(" ").toLowerCase().includes(qP));
     const F = [["todas", "Todas"], ["equipo", "Equipo de marketing"], ["otras", "Otras áreas"]];
     cont.innerHTML = `<div class="mis-cab"><div><h2>Personas</h2><p>Cuentas con acceso a Rabbit. Solo el equipo de marketing puede crearlas.</p></div><button class="nuevo-btn tk-nuevo" id="perNueva">＋ Nueva persona</button></div>
-      <div class="tk-barra-f"><div class="ent-filtros">${F.map(([k, t]) => `<button data-fp="${k}" class="${filtroPer === k ? "activa" : ""}">${t} <span>${personas.filter((x) => k === "todas" || (k === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")).length}</span></button>`).join("")}</div><label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="perBuscar" placeholder="Buscar nombre, correo o área" value="${esc(busPer)}" /></label></div>
+      <div class="tk-barra-f"><div class="ent-filtros">${F.map(([k, t]) => `<button data-fp="${k}" class="${filtroPer === k ? "activa" : ""}">${t} <span>${personas.filter((x) => k === "todas" || (k === "equipo" ? x.rol !== "solicitante" : x.rol === "solicitante")).length}</span></button>`).join("")}</div><label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="perBuscar" placeholder="Buscar nombre, usuario, correo o área" value="${esc(busPer)}" /></label></div>
       <div class="per-lista">${personas.filter(pasa).length ? "" : `<div class="mis-vacio"><b>Sin resultados</b>No encontramos personas con “${esc(busPer)}”.</div>`}${personas.filter(pasa).map((x, i) => `
         <div class="per ${x.inactiva ? "inactiva" : ""} ${perSel === x.correo ? "sel" : ""}" data-sel="${esc(x.correo)}">
           <i class="av per-av" style="${fondoAv(x.nombre)}">${letraAv(x.nombre)}</i>
-          <div class="per-nom"><b>${esc(x.nombre)} ${esc(x.apellido)}</b><small>${esc(x.correo)}</small></div>
+          <div class="per-nom"><b>${esc(x.nombre)} ${esc(x.apellido)}</b><small><span class="per-usu">@${esc(usuarioDe(x))}</span> | ${esc(x.correo)}</small></div>
           <div class="per-col"><small>Área</small><span class="tk-chip">${esc(x.area)}</span></div>
           <div class="per-col"><small>Rol</small><span class="per-rol r-${x.rol}">${ROLES[x.rol]}</span></div>
           <div class="per-col"><small>Referencias</small>${x.carpeta ? `<a class="tk-chip enl" href="#" onclick="return false">📁 Su carpeta</a>` : `<span class="per-nada">—</span>`}</div>
@@ -2784,7 +2786,7 @@
     d.innerHTML = `<div class="det-cab"><div><h2>${ed ? "Editar persona" : "Nueva persona"}</h2><p class="tk-sub">${ed ? "Corrige sus datos o cambia su área." : "Le llegará un correo de bienvenida con su acceso."}</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <form class="tk-form" autocomplete="off">
         <div class="tk-dos"><label>Nombre *<input name="nombre" /></label><label>Apellido *<input name="apellido" /></label></div>
-        <label>Correo *<input name="correo" type="email" placeholder="nombre@ipartner.pe" /></label>
+        <div class="tk-dos"><label>Correo *<input name="correo" type="email" placeholder="nombre@gmail.com" /></label><label>Usuario *<input name="usuario" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /><small class="per-usu-ayuda">Con este usuario entrará a Rabbit. Solo minúsculas, números, punto o guion bajo.</small></label></div>
         <label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label>
         <div class="per-aviso" id="perRol"></div>
         <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
@@ -2796,20 +2798,27 @@
     const f = d.querySelector("form");
     const verRol = () => {
       const mk = f.area.value === "Marketing";
-      d.querySelector("#perRol").innerHTML = mk ? "👥 Será parte del <b>equipo de marketing</b>: verá Inicio, Mi entorno, Tickets y Personas." : "📨 Será de <b>otra área</b>: solo podrá enviar tickets y ver los suyos.";
+      d.querySelector("#perRol").innerHTML = mk ? "👥 Será parte del <b>equipo de marketing</b>: verá Inicio, Mi entorno, Tickets y Dashboard." : "📨 Será de <b>otra área</b>: solo podrá enviar tickets y ver los suyos.";
       d.querySelector("#perCarpeta").hidden = mk;
     };
-    if (ed) { f.nombre.value = ed.nombre; f.apellido.value = ed.apellido || ""; f.correo.value = ed.correo; f.area.value = AREAS.includes(ed.area) ? ed.area : "Marketing"; f.carpeta.value = ed.carpeta || ""; }
+    let usuTocado = !!ed;
+    const sugerir = () => { if (!usuTocado) f.usuario.value = usuarioDe({ nombre: f.nombre.value.trim(), apellido: f.apellido.value.trim() }); };
+    f.nombre.addEventListener("input", sugerir); f.apellido.addEventListener("input", sugerir);
+    f.usuario.addEventListener("input", () => { usuTocado = true; f.usuario.value = f.usuario.value.toLowerCase().replace(/[^a-z0-9._]/g, ""); });
+    if (ed) { f.usuario.value = usuarioDe(ed); f.nombre.value = ed.nombre; f.apellido.value = ed.apellido || ""; f.correo.value = ed.correo; f.area.value = AREAS.includes(ed.area) ? ed.area : "Marketing"; f.carpeta.value = ed.carpeta || ""; }
     f.area.onchange = verRol; verRol();
     d.querySelector("#perOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#perClave").textContent = clave; };
     f.onsubmit = (e) => {
       e.preventDefault();
       const err = d.querySelector(".tk-err"), v = (k) => f[k].value.trim();
+      const usu = v("usuario");
+      if (!/^[a-z0-9._]{3,20}$/.test(usu)) { err.className = "mensaje error tk-err"; err.textContent = "El usuario debe tener entre 3 y 20 caracteres: minúsculas, números, punto o guion bajo."; return; }
+      if (personas.some((x) => x !== ed && usuarioDe(x) === usu)) { err.className = "mensaje error tk-err"; err.textContent = `El usuario «${usu}» ya está en uso.`; return; }
       if (ed) {
         if (!v("nombre") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa el nombre y un correo válido."; return; }
         if (personas.some((x) => x !== ed && x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe otra cuenta con ese correo."; return; }
         const mk = f.area.value === "Marketing";
-        Object.assign(ed, { apellido: v("apellido"), correo: v("correo"), area: f.area.value, carpeta: mk ? "" : (v("carpeta") || carpetaDe(ed.nombre)) });
+        Object.assign(ed, { apellido: v("apellido"), correo: v("correo"), usuario: usu, area: f.area.value, carpeta: mk ? "" : (v("carpeta") || carpetaDe(ed.nombre)) });
         if (ed.rol !== "jefa") ed.rol = mk ? "equipo" : "solicitante";
         if (ed.rol === "solicitante") SOLICITANTES[ed.nombre] = ed.area; else delete SOLICITANTES[ed.nombre];
         pintarPerfil(); pintarPersonas(); cerrarProyecto(); avisar(`✏️ Datos de <b>${esc(ed.nombre)}</b> actualizados`); return;
@@ -2817,7 +2826,7 @@
       if (!v("nombre") || !v("apellido") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa nombre, apellido y un correo válido."; return; }
       if (personas.some((x) => x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe una cuenta con ese correo."; return; }
       const mk = f.area.value === "Marketing";
-      const x = { nombre: v("nombre"), apellido: v("apellido"), correo: v("correo"), area: f.area.value, rol: mk ? "equipo" : "solicitante", carpeta: mk ? "" : (v("carpeta") || carpetaDe(v("nombre"))), activa: false };
+      const x = { nombre: v("nombre"), apellido: v("apellido"), correo: v("correo"), usuario: usu, area: f.area.value, rol: mk ? "equipo" : "solicitante", carpeta: mk ? "" : (v("carpeta") || carpetaDe(v("nombre"))), activa: false };
       personas.push(x);
       if (!mk) { SOLICITANTES[x.nombre] = x.area; pintarPerfil(); }
       pintarPersonas();
