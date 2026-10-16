@@ -1460,6 +1460,23 @@
   .nt-panel:not(:has(.nueva)) .nt-txt b, .nt-panel .nt:not(.nueva) .nt-txt b { color: #525252; }
   .nt-der { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; } .nt-der em { font-style: normal; font-size: .7rem; color: #a3a3a3; }
   .nt-der .nt-punto { position: static !important; width: 8px; height: 8px; border-radius: 50%; background: #e5484d; display: block; }
+  .nt-tabs { margin: 4px 10px 0; padding: 0 !important; background: #ececec !important; border-top: 0 !important; border-radius: 18px 18px 0 0; display: flex; }
+  .nt-tab { flex: 1; justify-content: center; padding: 14px 8px 14px !important; margin: 0 !important; font-size: .95rem !important; font-weight: 600; color: #404040 !important; border-radius: 18px 18px 0 0 !important; }
+  .nt-tab span { background: transparent !important; color: #a3a3a3 !important; padding: 0 !important; font-size: .78rem !important; }
+  .nt-tab.activa { background: #fff !important; color: #0a0a0a !important; padding-top: 14px !important; margin: 0 !important; z-index: 1; }
+  .nt-tab.activa::after { left: 50% !important; right: auto !important; width: 54%; translate: -50% 0; bottom: 7px !important; height: 3px !important; }
+  .nt-tab.activa::before { content: ""; position: absolute; bottom: 0; width: 18px; height: 18px; right: -18px; background: radial-gradient(circle at 100% 0, transparent 17.5px, #fff 18px); }
+  .nt-tab.activa:not(:first-child) { box-shadow: -18px 18px 0 -0px transparent; }
+  .nt-tab.activa:not(:first-child)::after { }
+  .nt-tab.activa span { background: transparent !important; color: #737373 !important; }
+  .nt-tab.activa:last-child::before { right: auto; left: -18px; background: radial-gradient(circle at 0 0, transparent 17.5px, #fff 18px); }
+  .nt-panel { margin: 0 10px 10px; border-radius: 0 0 18px 18px; box-shadow: 0 10px 24px rgba(10,10,10,.06); }
+  .nt-tabs:has(.nt-tab.activa:not(:first-child)) + .nt-panel { border-top-left-radius: 18px; }
+  .nt-tabs:has(.nt-tab.activa:not(:last-child)) + .nt-panel { border-top-right-radius: 18px; }
+  #menuNotif { background: #f7f7f7 !important; }
+  .nt-cl { display: none; position: absolute; bottom: 0; left: -18px; width: 18px; height: 18px; background: radial-gradient(circle at 0 0, transparent 17.5px, #fff 18px); }
+  .nt-tab.activa:not(:first-child) .nt-cl { display: block; }
+  .nt-tab.activa:last-child::before { display: none; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2055,7 +2072,7 @@
     const lista = ntTab === "nuevas" ? nuevas : ntTab === "leidas" ? viejas : [...nuevas, ...viejas];
     const TABS = [["todas", "Todas", L.length], ["nuevas", "No leídas", nuevas.length], ["leidas", "Leídas", viejas.length]];
     menuNotif.innerHTML = `<div class="nt-cab"><b>Notificaciones</b>${nuevas.length ? '<button class="nt-todas">Marcar todas como leídas</button>' : ""}</div>
-      <div class="nt-tabs">${TABS.map(([k, t, c]) => `<button class="nt-tab ${ntTab === k ? "activa" : ""}" data-tab="${k}">${t}<span>${c}</span></button>`).join("")}</div>
+      <div class="nt-tabs">${TABS.map(([k, t, c]) => `<button class="nt-tab ${ntTab === k ? "activa" : ""}" data-tab="${k}"><i class="nt-cl"></i>${t}<span>${c}</span></button>`).join("")}</div>
       <div class="nt-lista nt-panel">${lista.length ? lista.map(item).join("") : `<p class="nt-vacio">${ntTab === "leidas" ? "Nada por aquí." : "Estás al día."}</p>`}</div>`;
     menuNotif.querySelectorAll(".nt-tab").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); ntTab = b.dataset.tab; pintarNotif(); }));
     menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
