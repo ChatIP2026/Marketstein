@@ -1529,6 +1529,8 @@
   .rc-t { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); min-width: 0; }
   .rc-t code { font-size: 1.35rem !important; overflow-wrap: anywhere; }
   @media (max-width: 560px) { .rc-dos { grid-template-columns: 1fr; } }
+  .tkc-ayuda { margin: -4px 0 10px; font-size: .8rem; color: #737373; }
+  .nt-panel .nt-txt b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-wrap: nowrap; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2124,11 +2126,15 @@
       [...mapaP.values()].filter((p) => p.encargados.includes(yo) && p.creado_por && p.creado_por !== yo && !p.solicitado_por).forEach((p) => add("ap" + p.id, "📁", "Te asignaron un proyecto", `${p.nombre} | por ${p.creado_por}`, p.created_at, ["p", p.id]));
       [...mapaT.values()].filter((t) => t.encargado === yo && !t.hecha && mapaP.has(t.proyecto_id)).slice(0, 4).forEach((t, i) => add("as" + t.id, "☑️", "Te asignaron una tarea", `${t.texto} | ${mapaP.get(t.proyecto_id).nombre}`, t.created_at || haceDias(i + 1), ["p", t.proyecto_id]));
     }
+    // Mensajes del chat de un ticket que te escribió otra persona
+    tks.filter((t) => t.solicitante === yo || t.asignado === yo || (yo === JEFA && !t.asignado)).forEach((t) => (t.comentarios || []).forEach((c, i) => {
+      if (c.quien !== yo) add(`cm${t.id}_${i}`, "💬", `${c.quien} te escribió`, `#${String(t.id).padStart(3, "0")} ${t.titulo}`, c.at, ["tk", t.id]);
+    }));
     // Ejemplo: algunas ya leídas al inicio para mostrar los dos grupos
     if (!LEIDAS[yo]) LEIDAS[yo] = new Set(L.sort((a, b) => b.at.localeCompare(a.at)).slice(Math.ceil(L.length / 2)).map((n) => n.id));
     return L.sort((a, b) => b.at.localeCompare(a.at));
   }
-  const NT_IC = { "⏰": '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/>', "📨": '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>', "🎫": '<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/>', "📁": '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>', "☑️": '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>', "👀": '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>', "✅": '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>', "🎉": '<path d="m4 20 5-14 9 9Z"/><path d="M15 4v2M19 8h2M17 6l2-2"/>' };
+  const NT_IC = { "💬": '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7M8.5 14.5h4"/>', "⏰": '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/>', "📨": '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>', "🎫": '<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/>', "📁": '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>', "☑️": '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>', "👀": '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>', "✅": '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>', "🎉": '<path d="m4 20 5-14 9 9Z"/><path d="M15 4v2M19 8h2M17 6l2-2"/>' };
   const ntIco = (e) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NT_IC[e] || NT_IC["📨"]}</svg>`;
   let ntTab = "todas";
   function pintarNotif() {
@@ -2143,7 +2149,7 @@
     menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
     menuNotif.querySelectorAll(".nt").forEach((b) => (b.onclick = () => {
       const n = L.find((x) => x.id === b.dataset.id); leidas.add(n.id); menuNotif.hidden = true; pintarNotif();
-      if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1], true); }
+      if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); if (n.ico === "💬") setTimeout(() => document.querySelector("#detalle .tkc-ayuda")?.scrollIntoView({ behavior: "smooth", block: "start" }), 300); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1], true); }
     }));
   }
   // Aviso emergente tipo celular: baja desde arriba, dura unos segundos y desaparece
@@ -2155,7 +2161,7 @@
     const quien = tk ? (SOLICITANTES[yo] ? tk.asignado || JEFA : n.id.startsWith("nt") ? tk.solicitante : JEFA) : pr ? pr.creado_por || JEFA : JEFA;
     const cat = tk ? `Ticket #${String(tk.id).padStart(3, "0")}` : "Proyecto";
     const hora = new Date().toLocaleTimeString("es-PE", { hour: "numeric", minute: "2-digit" });
-    const pie = n.ico === "⏰" ? "Organízate a tiempo" : n.id.startsWith("nt") ? "Decide prioridad y asígnalo" : SOLICITANTES[yo] ? "Sigue su avance en Rabbit" : "Nueva asignación para ti";
+    const pie = n.ico === "💬" ? "Toca Abrir para responder" : n.ico === "⏰" ? "Organízate a tiempo" : n.id.startsWith("nt") ? "Decide prioridad y asígnalo" : SOLICITANTES[yo] ? "Sigue su avance en Rabbit" : "Nueva asignación para ti";
     const t = document.createElement("div");
     t.className = "toast";
     t.innerHTML = `<div class="toast-card">
@@ -2167,7 +2173,7 @@
     const cerrar = () => { t.classList.add("fuera"); setTimeout(() => t.remove(), 350); };
     t.querySelector(".toast-x").onclick = cerrar;
     t.querySelector(".tb-leida").onclick = () => { LEIDAS[yo].add(n.id); pintarNotif(); cerrar(); };
-    t.querySelector(".tb-abrir").onclick = () => { cerrar(); LEIDAS[yo].add(n.id); pintarNotif(); if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1], true); } };
+    t.querySelector(".tb-abrir").onclick = () => { cerrar(); LEIDAS[yo].add(n.id); pintarNotif(); if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); if (n.ico === "💬") setTimeout(() => document.querySelector("#detalle .tkc-ayuda")?.scrollIntoView({ behavior: "smooth", block: "start" }), 300); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1], true); } };
     pila.prepend(t);
     let tm = setTimeout(cerrar, 7000);
     t.onmouseenter = () => clearTimeout(tm); t.onmouseleave = () => (tm = setTimeout(cerrar, 3000));
@@ -2270,7 +2276,7 @@
     f.onclick = (e) => { if (e.target === f) cerrar(); };
     document.addEventListener("keydown", esc_);
   }
-  function avisoDemo() { setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, 1200); }
+  function avisoDemo(espera = 1200) { setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, espera); }
   document.getElementById("campanaBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = true; pintarNotif(); menuNotif.hidden = !menuNotif.hidden; };
 
   // ===== Navegación entre pestañas =====
@@ -2520,6 +2526,7 @@
     const d = diasHasta(t.fecha), txt = d < 0 ? `Atrasado ${-d} d` : d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(t.fecha);
     return `<span class="bc-f ${d <= 2 ? "urgente" : d <= 7 ? "proxima" : "lejos"}">${d <= 2 ? '<svg class="bc-reloj" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/></svg>' : ""}${txt}</span>`;
   };
+  { const t4 = tickets.find((t) => t.id === 4); if (t4 && !(t4.comentarios || []).length) t4.comentarios = [{ quien: t4.solicitante, txt: "¿Podemos usar el logo en blanco? Va sobre fondo oscuro.", at: haceDias(0.02) }]; }
   function pintarTickets() {
     const cont = document.getElementById("vistaTickets");
     const sol = esSolicitante(), jefa = yo === JEFA;
@@ -2634,8 +2641,8 @@
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
       ${(t.archivos || []).length ? bloque(`Archivos adjuntos <span class="tkd-n">${t.archivos.length}</span>`, `<div class="tk-miniaturas">${t.archivos.map((a, i) => `<button type="button" class="tk-mini ver" data-ver="${i}" title="${esc(a.n)}">${a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<span class="tk-mini-doc">PDF</span>`}<small>${esc(a.n)}</small></button>`).join("")}</div>`) : ""}
       ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Carpeta de ${esc(t.solicitante)} | busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
-      ${bloque(`Comentarios <span class="tkd-n">${(t.comentarios || []).length}</span>`, `<div class="tkc-lista">${(t.comentarios || []).map((c) => `<div class="tkc ${c.quien === yo ? "mio" : ""}"><i class="av" style="${fondoAv(c.quien)}">${letraAv(c.quien)}</i><div><b>${c.quien} <span>${hace(c.at)}</span></b><p>${esc(c.txt)}</p></div></div>`).join("") || '<p class="tkd-vacio">Aún no hay comentarios. Úsalos para dudas entre quien pide y quien lo hace.</p>'}</div>
-        ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Escribe un comentario…" /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
+      ${bloque(`Chat del ticket <span class="tkd-n">${(t.comentarios || []).length}</span>`, `<p class="tkc-ayuda">Escribe aquí indicaciones extra, dudas o cambios. Le llegará una notificación a ${t.solicitante === yo ? (t.asignado || "marketing") : esc(t.solicitante)}.</p><div class="tkc-lista">${(t.comentarios || []).map((c) => `<div class="tkc ${c.quien === yo ? "mio" : ""}"><i class="av" style="${fondoAv(c.quien)}">${letraAv(c.quien)}</i><div><b>${c.quien} <span>${hace(c.at)}</span></b><p>${esc(c.txt)}</p></div></div>`).join("") || '<p class="tkd-vacio">Aún no hay mensajes. Por ejemplo: <i>«El texto final te lo paso el jueves»</i> o <i>«¿Podemos usar el logo en blanco?»</i></p>'}</div>
+        ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Ej.: ¿Podemos usar el logo en blanco? Va sobre fondo oscuro." /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} | último ${hace(t.historial.at(-1).at)}</span></summary>
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>| ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
@@ -2778,7 +2785,7 @@
     };
     document.body.classList.add("con-detalle");
   }
-  aplicarRol(); pintarNotif(); avisoDemo(); rabbitHola();
+  aplicarRol(); pintarNotif(); avisoDemo(60000); rabbitHola();
 
   // ===== Conexión real (solo en la web publicada) =====
   if (/vercel\.app$/.test(location.hostname) && window.supabase) {
