@@ -158,7 +158,8 @@
   const H = new Date().getHours(), SALUDO = H < 12 ? "Buenos días" : H < 19 ? "Buenas tardes" : "Buenas noches";
   const IDLE = [`¡${SALUDO}! ¿Listos para avanzar?`, "El equipo te está esperando", "Hoy es un buen día para cerrar pendientes", "Entra y revisamos juntos qué toca hoy", "Un paso a la vez, y llegamos"];
   let iIdle = 0, tIdle;
-  function decir(t) { globo.textContent = t; globo.style.animation = "none"; void globo.offsetWidth; globo.style.animation = ""; }
+  function ajustar(b) { b.style.width = ""; const h = b.offsetHeight; let lo = 60, hi = b.offsetWidth; while (hi - lo > 2) { const m = (lo + hi) >> 1; b.style.width = m + "px"; if (b.offsetHeight > h) lo = m; else hi = m; } b.style.width = hi + "px"; }
+  function decir(t) { globo.textContent = t; ajustar(globo); globo.style.animation = "none"; void globo.offsetWidth; globo.style.animation = ""; }
   function mover(c) { rb.classList.remove("salto", "ladeo", "no", "feliz"); void rb.getBoundingClientRect(); if (c) rb.classList.add(c); }
   function idle() { clearInterval(tIdle); tIdle = setInterval(() => { if (document.activeElement.tagName === "INPUT") return; iIdle = (iIdle + 1) % IDLE.length; decir(IDLE[iIdle]); mover(iIdle % 2 ? "ladeo" : "salto"); }, 7000); }
   decir(IDLE[0]); setTimeout(() => mover("salto"), 400); idle();
