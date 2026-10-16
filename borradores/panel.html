@@ -1259,7 +1259,7 @@
 
     <div class="mn-campo"><span>Encargados <small>(puedes elegir varios)</small></span><div class="mn-opciones" id="mnPersonas"></div></div>
 
-    <label class="mn-campo"><span>Fecha límite</span><input type="date" name="fecha" /></label>
+    <label class="mn-campo"><span>Fecha límite</span><input type="date" name="fecha" /><div class="f-rapida"><button type="button" data-d="0">Hoy</button><button type="button" data-d="1">Mañana</button><button type="button" data-d="7">En 1 semana</button><button type="button" data-d="14">En 2 semanas</button><button type="button" data-d="30">En 1 mes</button></div></label>
 
     <div class="mn-campo"><span>Tareas <small>(opcional)</small></span>
       <div class="mn-tarea"><input id="mnTareaTxt" placeholder="Escribe una tarea y pulsa Enter" /><button type="button" id="mnTareaBtn" class="cal-btn">Añadir</button></div>
@@ -1516,6 +1516,13 @@
   /* Sin palabras sueltas en ninguna parte: todo el texto evita dejar una palabra sola al final */
   body { text-wrap: pretty; }
   h1, h2, h3, h4, b, strong, .sub, .burbuja, .det-burbuja, .rb-burbuja, .tk-sub, small, label, .mensaje, .pie, .cx-titulo { text-wrap: balance; }
+  .mn-opciones .mn-prio.alta.activa { background: #dc2626 !important; color: #fff !important; border-color: #dc2626 !important; box-shadow: 0 6px 14px rgba(220,38,38,.3); }
+  .mn-opciones .mn-prio.media.activa { background: #f59e0b !important; color: #fff !important; border-color: #f59e0b !important; box-shadow: 0 6px 14px rgba(245,158,11,.3); }
+  .mn-opciones .mn-prio.baja.activa { background: #2f6fdc !important; color: #fff !important; border-color: #2f6fdc !important; box-shadow: 0 6px 14px rgba(47,111,220,.3); }
+  input[type="date"] { cursor: pointer; }
+  .f-rapida { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .f-rapida button { all: unset; cursor: pointer; font-size: .76rem; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: #f5f5f5; border: 1px solid #e5e5e5; color: #404040; }
+  .f-rapida button:hover { border-color: #a3a3a3; } .f-rapida button.activa { background: #0a0a0a; color: #fff; border-color: #0a0a0a; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1847,6 +1854,19 @@
   new MutationObserver(() => requestAnimationFrame(igualar)).observe(document.body, { childList: true, subtree: false });
   for (const id of ["vistaMis", "vistaTickets"]) { const v = document.getElementById(id); if (v) new MutationObserver(() => requestAnimationFrame(igualar)).observe(v, { childList: true }); }
   addEventListener("resize", () => requestAnimationFrame(igualar));
+  // Fechas: al tocar el campo se abre el calendario; atajos rápidos debajo
+  document.addEventListener("click", (e) => {
+    const inp = e.target.closest('input[type="date"]');
+    if (inp && !inp.disabled) { try { inp.showPicker(); } catch (x) {} }
+    const b = e.target.closest(".f-rapida button");
+    if (b) {
+      e.preventDefault();
+      const campo = b.closest("label").querySelector('input[type="date"]'), d = new Date(); d.setDate(d.getDate() + +b.dataset.d);
+      campo.value = d.toISOString().slice(0, 10); campo.dispatchEvent(new Event("change", { bubbles: true }));
+      b.parentElement.querySelectorAll("button").forEach((x) => x.classList.toggle("activa", x === b));
+    }
+  });
+  document.addEventListener("change", (e) => { if (e.target.matches('input[type="date"]')) e.target.closest("label")?.querySelectorAll(".f-rapida button").forEach((x) => x.classList.remove("activa")); }, true);
   let kpiFiltro = null;
   document.querySelectorAll(".kpi").forEach((k, i) => { k.dataset.kf = ["listos", "activos", "tok", "tpend"][i]; k.tabIndex = 0; k.title = "Clic para filtrar el tablero"; k.onclick = () => { kpiFiltro = kpiFiltro === k.dataset.kf ? null : k.dataset.kf; pintar(); }; k.onkeydown = (e) => { if (e.key === "Enter") k.click(); }; });
   function pintar() {
@@ -2690,7 +2710,7 @@
         <div class="tk-subir"><span class="tk-subir-t">Fotos y archivos <small>(opcional, hasta 10 | máx. 10 MB c/u)</small></span>
           <label class="tk-drop" id="tkDrop"><input type="file" id="tkArch" multiple accept="image/*,.pdf" hidden /><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><b>Arrastra tus referencias aquí</b><small>o haz clic para elegirlas | JPG, PNG o PDF</small></label>
           <div class="tk-miniaturas" id="tkMinis"></div></div>
-        <label class="tk-full">¿Para cuándo lo necesitas? *<input type="date" name="fecha" /></label>
+        <label class="tk-full">¿Para cuándo lo necesitas? *<input type="date" name="fecha" /><div class="f-rapida"><button type="button" data-d="1">Mañana</button><button type="button" data-d="7">En 1 semana</button><button type="button" data-d="14">En 2 semanas</button><button type="button" data-d="30">En 1 mes</button></div></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
         <div class="mensaje tk-err"></div>
