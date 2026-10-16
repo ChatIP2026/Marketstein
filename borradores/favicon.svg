@@ -1,0 +1,18 @@
+<svg viewBox="14 10 46 54" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#ffffff" stroke="#000000" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+        <!-- oreja izquierda -->
+        <path d="M21.6 15.9c.4-1.2 1.6-1.7 2.8-1.3l8.4 3.5c.7.3 1.2.8 1.5 1.4l5.1 11.3-11.2 2.5-6.5-13.5c-.4-.9-.5-2.2-.1-3.9Z"/>
+        <!-- cabeza -->
+        <path d="M22.1 42.3c0-2.4 1.4-4.6 3.6-5.7l7.6-3.7c2.6-1.3 5.6-1.3 8.2.1l9.7 5.3c2.1 1.2 3.4 3.4 3.4 5.8v7.4c0 2.5-1.4 4.7-3.6 5.8l-7.5 3.7c-2.7 1.3-5.9 1.3-8.6 0l-9.2-4.5c-2.2-1.1-3.6-3.3-3.6-5.8Z"/>
+        <!-- oreja derecha (por delante de la cabeza) -->
+        <path d="M43.3 18.5c0-1.4 1.4-2.2 2.6-1.6.5.3.9.6 1.2 1l5.9 6.6c.5.6.8 1.3.8 2.1v14.4c0 1.5-1.6 2.4-2.9 1.6l-6.4-4.2c-.8-.5-1.2-1.3-1.2-2.2Z"/>
+      </g>
+      <!-- cara -->
+      <g fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round">
+        <g>
+          <path d="M22.4 46.2c1.2.4 2 1.6 2.4 3"/>
+          <path d="M34.2 53.9c1.6-3 5.4-3.6 8.2-.3"/>
+        </g>
+        <path d="M-1.05 -1.05l2.1 2.1M1.05 -1.05l-2.1 2.1" transform="translate(29.7 51.5) rotate(14) skewX(-8)" stroke-width="2.2"/>
+      </g>
+    </svg>
