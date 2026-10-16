@@ -1443,6 +1443,23 @@
   .cn-avs { display: inline-flex; } .cn-avs i { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .7rem; font-weight: 700; box-shadow: 0 0 0 2px #fff; background-size: cover; }
   .cn-avs i + i { margin-left: -8px; } .cn-avs i.mas { background: #262626; color: #fff; } .cn-avs em { font-size: .74rem; color: #a3a3a3; font-style: normal; }
   .cargando .cn-barra i { animation: cn-llenar 1.1s cubic-bezier(.2,.8,.2,1) both; } @keyframes cn-llenar { from { width: 0; } }
+  #menuNotif { padding: 0 !important; overflow: hidden; }
+  .nt-tabs { display: flex; gap: 0; padding: 0 12px; background: #f5f5f5; border-top: 1px solid #ececec; }
+  .nt-tab { all: unset; cursor: pointer; position: relative; padding: 11px 14px 12px; font-size: .84rem; font-weight: 600; color: #737373; border-radius: 14px 14px 0 0; display: inline-flex; align-items: center; gap: 6px; }
+  .nt-tab span { font-size: .68rem; padding: 1px 7px; border-radius: 99px; background: rgba(10,10,10,.08); color: #525252; }
+  .nt-tab.activa { background: #fff; color: #0a0a0a; margin-top: 6px; padding-top: 8px; }
+  .nt-tab.activa::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 6px; height: 2.5px; border-radius: 2px; background: #0a0a0a; }
+  .nt-tab.activa span { background: #0a0a0a; color: #fff; }
+  .nt-panel { background: #fff; padding: 4px 14px 10px !important; }
+  .nt-panel .nt { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 4px; border-bottom: 1px solid #ececec; background: none !important; opacity: 1 !important; }
+  .nt-panel .nt:last-child { border-bottom: 0; } .nt-panel .nt:hover { background: #fafafa !important; }
+  .nt-panel .nt-ico { width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0 !important; color: #0a0a0a; }
+  .nt-panel .nt.nueva .nt-ico { background: #0a0a0a !important; color: #fff; }
+  .nt-panel .nt-ico svg { width: 18px; height: 18px; }
+  .nt-panel .nt-txt { flex: 1; min-width: 0; } .nt-panel .nt-txt b { display: block; font-size: .9rem; } .nt-panel .nt-txt small { display: block; font-size: .76rem; color: #a3a3a3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nt-panel:not(:has(.nueva)) .nt-txt b, .nt-panel .nt:not(.nueva) .nt-txt b { color: #525252; }
+  .nt-der { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; } .nt-der em { font-style: normal; font-size: .7rem; color: #a3a3a3; }
+  .nt-der .nt-punto { position: static !important; width: 8px; height: 8px; border-radius: 50%; background: #e5484d; display: block; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2028,13 +2045,19 @@
     if (!LEIDAS[yo]) LEIDAS[yo] = new Set(L.sort((a, b) => b.at.localeCompare(a.at)).slice(Math.ceil(L.length / 2)).map((n) => n.id));
     return L.sort((a, b) => b.at.localeCompare(a.at));
   }
+  const NT_IC = { "⏰": '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/>', "📨": '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>', "🎫": '<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/>', "📁": '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>', "☑️": '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>', "👀": '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>', "✅": '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>', "🎉": '<path d="m4 20 5-14 9 9Z"/><path d="M15 4v2M19 8h2M17 6l2-2"/>' };
+  const ntIco = (e) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NT_IC[e] || NT_IC["📨"]}</svg>`;
+  let ntTab = "todas";
   function pintarNotif() {
     const L = notificaciones(), leidas = LEIDAS[yo], nuevas = L.filter((n) => !leidas.has(n.id)), viejas = L.filter((n) => leidas.has(n.id));
     const badge = document.getElementById("nNotif"); badge.textContent = nuevas.length > 99 ? "99+" : nuevas.length; badge.hidden = !nuevas.length;
-    const item = (n, nueva) => `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${n.ico}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small><em>${hace(n.at)}</em></span>${nueva ? '<i class="nt-punto"></i>' : ""}</button>`;
+    const item = (n) => { const nueva = !leidas.has(n.id); return `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${ntIco(n.ico)}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small></span><span class="nt-der"><em>${hace(n.at)}</em>${nueva ? '<i class="nt-punto"></i>' : ""}</span></button>`; };
+    const lista = ntTab === "nuevas" ? nuevas : ntTab === "leidas" ? viejas : [...nuevas, ...viejas];
+    const TABS = [["todas", "Todas", L.length], ["nuevas", "No leídas", nuevas.length], ["leidas", "Leídas", viejas.length]];
     menuNotif.innerHTML = `<div class="nt-cab"><b>Notificaciones</b>${nuevas.length ? '<button class="nt-todas">Marcar todas como leídas</button>' : ""}</div>
-      <div class="nt-lista"><div class="mp-grupo">No leídas <span>${nuevas.length}</span></div>${nuevas.length ? nuevas.map((n) => item(n, true)).join("") : '<p class="nt-vacio">Estás al día 🎉</p>'}
-      <div class="nt-leidas"><div class="mp-grupo">Leídas <span class="gris">${viejas.length}</span></div>${viejas.length ? viejas.map((n) => item(n, false)).join("") : '<p class="nt-vacio">Nada por aquí.</p>'}</div></div>`;
+      <div class="nt-tabs">${TABS.map(([k, t, c]) => `<button class="nt-tab ${ntTab === k ? "activa" : ""}" data-tab="${k}">${t}<span>${c}</span></button>`).join("")}</div>
+      <div class="nt-lista nt-panel">${lista.length ? lista.map(item).join("") : `<p class="nt-vacio">${ntTab === "leidas" ? "Nada por aquí." : "Estás al día."}</p>`}</div>`;
+    menuNotif.querySelectorAll(".nt-tab").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); ntTab = b.dataset.tab; pintarNotif(); }));
     menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
     menuNotif.querySelectorAll(".nt").forEach((b) => (b.onclick = () => {
       const n = L.find((x) => x.id === b.dataset.id); leidas.add(n.id); menuNotif.hidden = true; pintarNotif();
