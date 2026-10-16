@@ -1513,6 +1513,9 @@
   .per-usu { font-weight: 600; color: #404040; } .per.sel .per-usu { color: #fff; }
   body.en-vivo .mp-demo { display: none !important; }
   .det-burbuja, .rb-burbuja, .toast-quien small, .mis-vacio, .ent-vacia, h2, h3 { text-wrap: balance; }
+  /* Sin palabras sueltas en ninguna parte: todo el texto evita dejar una palabra sola al final */
+  body { text-wrap: pretty; }
+  h1, h2, h3, h4, b, strong, .sub, .burbuja, .det-burbuja, .rb-burbuja, .tk-sub, small, label, .mensaje, .pie, .cx-titulo { text-wrap: balance; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
