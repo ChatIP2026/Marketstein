@@ -1855,11 +1855,11 @@
         const r = 5.5, cir = 2 * Math.PI * r;
         const sp = (mapaP.get(p.id) || {}).solicitado_por, dd = diasF;
         const tonoF = c.id === "listo" || dd === null ? "" : dd <= 1 ? "rojo" : dd <= 5 ? "ambar" : "";
-        const eq = p.encargados.slice(0, 3);
+        const eq = p.encargados.slice(0, p.encargados.length > 4 ? 3 : 4);
         f.innerHTML = `
           <div class="cn-top"><div class="cn-tit"><b>${esc(p.nombre)}</b><small>${sp ? `Pedido por ${esc(sp.nombre)} | ${esc(sp.area)}` : "Proyecto del equipo"}</small></div><span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span></div>
           <div class="cn-prog"><div class="cn-prog-t"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Progreso</span><b>${p.hechas}/${p.total}</b></div><div class="cn-barra"><i class="anillo-prog" style="width:${pct}%"></i></div></div>
-          <div class="cn-pie"><span class="cn-fecha ${tonoF}">${p.fecha ? fmt(p.fecha) : "Sin fecha"}</span><span class="cn-avs">${eq.length ? eq.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("") + (p.encargados.length > 3 ? `<i class="mas">+${p.encargados.length - 3}</i>` : "") : `<em>Sin encargado</em>`}</span></div>`;
+          <div class="cn-pie"><span class="cn-fecha ${tonoF}">${p.fecha ? fmt(p.fecha) : "Sin fecha"}</span><span class="cn-avs">${eq.length ? eq.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("") + (p.encargados.length > 4 ? `<i class="mas">+${p.encargados.length - 3}</i>` : "") : `<em>Sin encargado</em>`}</span></div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
         f.onclick = () => abrirProyecto(p.id);
         f.onkeydown = (e) => { if (e.key === "Enter") abrirProyecto(p.id); };
