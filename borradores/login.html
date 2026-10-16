@@ -105,13 +105,12 @@
         <p class="mensaje" id="mensaje"></p>
       </form>
       <p class="pie">¿No tienes cuenta? Pídela al equipo de marketing.</p>
-      <p class="nota">Vista previa: no se conecta a ninguna cuenta real.</p>
     </div>
 
     <div class="vista" id="vistaOlvido" hidden>
       <a class="link volver" data-ir="entrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Volver</a>
       <h1>Recupera tu acceso</h1>
-      <p class="sub">Escribe tu usuario y te enviaremos un código de 6 números al correo que registró marketing.</p>
+      <p class="sub">Escribe tu usuario y te enviaremos un código al correo que registró marketing.</p>
       <form id="formOlvido" novalidate>
         <label for="oCorreo">Usuario</label>
         <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><input id="oCorreo" type="text" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /></div>
@@ -128,9 +127,23 @@
         <p class="pie" id="oReenviar" hidden>¿No te llegó? <a class="link" id="oReenviarA">Reenviar código</a></p>
       </form>
     </div>
+    <div class="vista" id="vistaNueva" hidden>
+      <h1>Crea tu contraseña</h1>
+      <p class="sub" id="nuevaSub">Es tu primera vez en Rabbit. Elige una contraseña que solo tú sepas.</p>
+      <form id="formNueva" novalidate>
+        <label for="nClave">Nueva contraseña</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="nClave" class="secreta" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" /><button type="button" class="ver" aria-label="Mostrar contraseña">OJO</button></div>
+        <label for="nClave2">Repite la contraseña</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="nClave2" class="secreta" type="password" placeholder="Igual a la anterior" autocomplete="new-password" /></div>
+        <button class="boton" id="nBoton">Guardar y entrar</button>
+        <p class="mensaje" id="mensajeN"></p>
+      </form>
+    </div>
   </section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
+  const sb = supabase.createClient("https://aqjmdlrafjjzdrqnogid.supabase.co", "sb_publishable_EYSGo1Od8olfwv79ItxRzg_WDLfk1zf");
   const OJO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
   const OJO_NO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.8M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
   document.querySelectorAll(".ver").forEach((b) => (b.innerHTML = OJO));
@@ -158,7 +171,8 @@
   }));
 
   // Cambiar de vista
-  const vistas = { entrar: document.getElementById("vistaEntrar"), olvido: document.getElementById("vistaOlvido") };
+  const vistas = { entrar: document.getElementById("vistaEntrar"), olvido: document.getElementById("vistaOlvido"), nueva: document.getElementById("vistaNueva") };
+  const mostrar = (k) => { for (const x in vistas) vistas[x].hidden = x !== k; };
   const pasoCodigo = document.getElementById("pasoCodigo"), oBoton = document.getElementById("oBoton"), digitos = [...document.querySelectorAll(".codigo input")];
   document.querySelectorAll("[data-ir]").forEach((a) => (a.onclick = (e) => {
     e.preventDefault();
@@ -167,36 +181,64 @@
     else { decir(IDLE[0]); mover("salto"); }
   }));
 
-  // Entrar (vista previa)
-  document.getElementById("form").onsubmit = (e) => {
+  // ===== Entrar de verdad (Supabase) =====
+  const irPanel = () => (location.href = "panel.html");
+  async function despuesDeEntrar() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const { data: p } = await sb.from("perfiles").select("nombre, debe_cambiar_clave, activa").eq("id", user.id).single();
+    if (!p || !p.activa) { await sb.auth.signOut(); mostrar("entrar"); mensaje.className = "mensaje error"; mensaje.textContent = "Tu cuenta está desactivada. Habla con el equipo de marketing."; decir("Mmm, algo no está bien"); mover("no"); return; }
+    if (p.debe_cambiar_clave) { mostrar("nueva"); document.getElementById("nuevaSub").textContent = `Hola, ${p.nombre}. Es tu primera vez en Rabbit: elige una contraseña que solo tú sepas.`; decir(`¡Hola, ${p.nombre}! Crea tu contraseña`); mover("salto"); setTimeout(() => document.getElementById("nClave").focus(), 60); return; }
+    decir(`¡Bienvenido de vuelta, ${p.nombre}!`); mover("feliz"); setTimeout(irPanel, 900);
+  }
+  document.getElementById("form").onsubmit = async (e) => {
     e.preventDefault();
-    const err = (t, g) => { mensaje.className = "mensaje error"; mensaje.textContent = t; decir(g); mover("no"); };
+    const err = (t, g) => { mensaje.className = "mensaje error"; mensaje.textContent = t; decir(g); mover("no"); b.disabled = false; b.firstChild.textContent = "Entrar"; };
+    const b = document.getElementById("entrar");
     if (!correo.value.trim() || !clave.value) return err("Escribe tu usuario y tu contraseña.", "Te falta algo…");
-    if (clave.value.length < 6) return err("Usuario o contraseña incorrectos.", "Mmm, esa no es");
-    const b = document.getElementById("entrar"); b.disabled = true; b.firstChild.textContent = "Entrando…";
-    mensaje.className = "mensaje ok"; mensaje.textContent = "¡Listo! Te llevamos a tu panel…";
-    decir("¡Bienvenido de vuelta!"); mover("feliz");
-    setTimeout(() => (location.href = "panel.html"), 1300);
+    b.disabled = true; b.firstChild.textContent = "Entrando…"; mensaje.textContent = "";
+    const { data: email } = await sb.rpc("correo_de_usuario", { u: correo.value.trim() });
+    if (!email) return err("Usuario o contraseña incorrectos.", "Mmm, esa no es");
+    const { error } = await sb.auth.signInWithPassword({ email, password: clave.value });
+    if (error) return err("Usuario o contraseña incorrectos.", "Mmm, esa no es");
+    mensaje.className = "mensaje ok"; mensaje.textContent = "¡Listo! Entrando…";
+    b.disabled = false; b.firstChild.textContent = "Entrar";
+    despuesDeEntrar();
   };
-  document.querySelectorAll(".social").forEach((b) => (b.onclick = () => {
-    mensaje.className = "mensaje ok"; mensaje.textContent = `Aquí se abrirá la ventana de ${b.dataset.p} para elegir tu cuenta.`;
-    decir(`¡Vamos con ${b.dataset.p}!`); mover("salto");
-  }));
 
-  // Recuperar contraseña (vista previa)
+  // Crear contraseña (primer ingreso o recuperación)
+  document.getElementById("formNueva").onsubmit = async (e) => {
+    e.preventDefault();
+    const m = document.getElementById("mensajeN"), c1 = document.getElementById("nClave").value, c2 = document.getElementById("nClave2").value;
+    const error = (t, g) => { m.className = "mensaje error"; m.textContent = t; decir(g); mover("no"); };
+    if (c1.length < 8) return error("La contraseña debe tener al menos 8 caracteres.", "Un poquito más larga");
+    if (c1 !== c2) return error("Las contraseñas no coinciden.", "No son iguales");
+    const { error: e1 } = await sb.auth.updateUser({ password: c1 });
+    if (e1) return error(/same|different/i.test(e1.message) ? "Elige una contraseña distinta a la temporal." : "No se pudo guardar. Intenta de nuevo.", "Algo salió mal");
+    await sb.rpc("clave_cambiada");
+    m.className = "mensaje ok"; m.textContent = "¡Contraseña guardada! Entrando a tu panel…"; decir("¡De vuelta al trabajo!"); mover("feliz");
+    setTimeout(irPanel, 1100);
+  };
+
+  // Recuperar contraseña: código de 6 números al correo
+  let correoRec = "";
   digitos.forEach((d, i) => {
     d.addEventListener("input", () => { d.value = d.value.replace(/\D/g, "").slice(-1); if (d.value && digitos[i + 1]) digitos[i + 1].focus(); });
     d.addEventListener("keydown", (e) => { if (e.key === "Backspace" && !d.value && digitos[i - 1]) digitos[i - 1].focus(); });
     d.addEventListener("paste", (e) => { const t = (e.clipboardData.getData("text").match(/\d/g) || []).slice(0, 6); if (t.length) { e.preventDefault(); t.forEach((n, k) => digitos[k] && (digitos[k].value = n)); digitos[Math.min(t.length, 5)].focus(); } });
     d.addEventListener("focus", () => decir("Copia el código del correo"));
   });
-  function enviarCodigo(v) {
-    const m = document.getElementById("mensajeO"); m.className = "mensaje ok"; m.textContent = `Enviamos un código al correo de ${v}. Revisa también spam.`;
+  async function enviarCodigo(u) {
+    const m = document.getElementById("mensajeO");
+    const { data: email } = await sb.rpc("correo_de_usuario", { u });
+    // Por seguridad, el mensaje es el mismo exista o no el usuario
+    if (email) { correoRec = email; await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); }
+    m.className = "mensaje ok"; m.textContent = "Si el usuario existe, enviamos un código a su correo. Revisa también spam.";
     pasoCodigo.hidden = false; oBoton.textContent = "Cambiar contraseña"; document.getElementById("oReenviar").hidden = false;
     decir("¡Revisa tu correo!"); mover("salto"); setTimeout(() => digitos[0].focus(), 60);
   }
   document.getElementById("oReenviarA").onclick = (e) => { e.preventDefault(); enviarCodigo(document.getElementById("oCorreo").value.trim()); };
-  document.getElementById("formOlvido").onsubmit = (e) => {
+  document.getElementById("formOlvido").onsubmit = async (e) => {
     e.preventDefault();
     const m = document.getElementById("mensajeO"), v = document.getElementById("oCorreo").value.trim();
     const error = (t, g) => { m.className = "mensaje error"; m.textContent = t; decir(g); mover("no"); };
@@ -206,9 +248,19 @@
     if (cod.length < 6) return error("Escribe los 6 números del código.", "Te faltan números");
     if (c1.length < 8) return error("La contraseña debe tener al menos 8 caracteres.", "Un poquito más larga");
     if (c1 !== c2) return error("Las contraseñas no coinciden.", "No son iguales");
+    const { error: ev } = await sb.auth.verifyOtp({ email: correoRec, token: cod, type: "recovery" });
+    if (ev) return error("El código no es válido o ya venció. Pide uno nuevo.", "Ese código no sirve");
+    const { error: eu } = await sb.auth.updateUser({ password: c1 });
+    if (eu) return error("No se pudo cambiar la contraseña. Intenta de nuevo.", "Algo salió mal");
+    await sb.rpc("clave_cambiada");
     m.className = "mensaje ok"; m.textContent = "¡Contraseña cambiada! Entrando a tu panel…"; decir("¡De vuelta al trabajo!"); mover("feliz");
-    setTimeout(() => (location.href = "panel.html"), 1300);
+    setTimeout(irPanel, 1100);
   };
+
+  // Si llega desde el enlace del correo de recuperación, pide la nueva contraseña
+  sb.auth.onAuthStateChange((ev) => { if (ev === "PASSWORD_RECOVERY") { mostrar("nueva"); document.getElementById("nuevaSub").textContent = "Elige tu nueva contraseña."; } });
+  // Si ya tiene sesión abierta, entra directo
+  sb.auth.getSession().then(({ data }) => { if (data.session && !/type=recovery/.test(location.hash)) despuesDeEntrar(); });
 </script>
 </body>
 </html>
