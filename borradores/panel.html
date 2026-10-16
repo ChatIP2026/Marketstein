@@ -1480,6 +1480,10 @@
   .nt-tabs { margin-top: 10px !important; }
   .nt-pie { all: unset; cursor: pointer; display: block; text-align: center; margin: 0 10px 10px; padding: 9px; border-radius: 12px; font-size: .8rem; font-weight: 600; color: #525252; }
   .nt-pie:hover { background: #ececec; color: #0a0a0a; }
+  .cn-fecha { display: inline-flex; align-items: center; gap: 6px; } .cn-fecha svg { width: 14px; height: 14px; flex: none; }
+  .ficha .cn-top .cx-prio { opacity: 1 !important; filter: none !important; font-weight: 700; }
+  .ficha .cn-top .cx-prio.alta { background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #f87171 !important; }
+  .ficha .cn-top .cx-prio.baja { background: #dbeafe !important; color: #2f6fdc !important; border: 1px solid #93c5fd !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1859,7 +1863,7 @@
         f.innerHTML = `
           <div class="cn-top"><div class="cn-tit"><b>${esc(p.nombre)}</b><small>${sp ? `Pedido por ${esc(sp.nombre)} | ${esc(sp.area)}` : "Proyecto del equipo"}</small></div><span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span></div>
           <div class="cn-prog"><div class="cn-prog-t"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Progreso</span><b>${p.hechas}/${p.total}</b></div><div class="cn-barra"><i class="anillo-prog" style="width:${pct}%"></i></div></div>
-          <div class="cn-pie"><span class="cn-fecha ${tonoF}">${p.fecha ? fmt(p.fecha) : "Sin fecha"}</span><span class="cn-avs">${eq.length ? eq.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("") + (p.encargados.length > 4 ? `<i class="mas">+${p.encargados.length - 3}</i>` : "") : `<em>Sin encargado</em>`}</span></div>`;
+          <div class="cn-pie"><span class="cn-fecha ${tonoF}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>${p.fecha ? fmt(p.fecha) : "Sin fecha"}</span><span class="cn-avs">${eq.length ? eq.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("") + (p.encargados.length > 4 ? `<i class="mas">+${p.encargados.length - 3}</i>` : "") : `<em>Sin encargado</em>`}</span></div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
         f.onclick = () => abrirProyecto(p.id);
         f.onkeydown = (e) => { if (e.key === "Enter") abrirProyecto(p.id); };
