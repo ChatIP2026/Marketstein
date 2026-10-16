@@ -2135,7 +2135,7 @@
   armar();
 
   // ===== Persona actual (luego vendrá del inicio de sesión) =====
-  const JEFA = "Hilary";
+  let JEFA = "Hilary";
   const SOLICITANTES = { Romano: "Comercial", Mario: "Ventas", "Lucía": "Finanzas", Rosa: "Recursos Humanos" };
   const esSolicitante = () => yo in SOLICITANTES;
   let yo = "Ariana";
@@ -2203,6 +2203,7 @@
       if (c.quien !== yo) add(`cm${t.id}_${i}`, "💬", `${c.quien} te escribió`, `#${String(t.id).padStart(3, "0")} ${t.titulo}`, c.at, ["tk", t.id]);
     }));
     // Ejemplo: algunas ya leídas al inicio para mostrar los dos grupos
+    if (!LEIDAS[yo] && window.sb) { try { LEIDAS[yo] = new Set(JSON.parse(localStorage.getItem("rabbit_leidas_" + yo) || "null") || L.map((n) => n.id)); } catch (e) { LEIDAS[yo] = new Set(L.map((n) => n.id)); } }
     if (!LEIDAS[yo]) LEIDAS[yo] = new Set(L.sort((a, b) => b.at.localeCompare(a.at)).slice(Math.ceil(L.length / 2)).map((n) => n.id));
     return L.sort((a, b) => b.at.localeCompare(a.at));
   }
@@ -2210,6 +2211,7 @@
   const ntIco = (e) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NT_IC[e] || NT_IC["📨"]}</svg>`;
   let ntTab = "todas";
   function pintarNotif() {
+    if (window.sb && LEIDAS[yo]) try { localStorage.setItem("rabbit_leidas_" + yo, JSON.stringify([...LEIDAS[yo]])); } catch (e) {}
     const L = notificaciones(), leidas = LEIDAS[yo], nuevas = L.filter((n) => !leidas.has(n.id)), viejas = L.filter((n) => leidas.has(n.id));
     const badge = document.getElementById("nNotif"); badge.textContent = nuevas.length > 99 ? "99+" : nuevas.length; badge.hidden = !nuevas.length;
     const item = (n) => { const nueva = !leidas.has(n.id); return `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${ntIco(n.ico)}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small></span><span class="nt-der"><em>${hace(n.at)}</em>${nueva ? '<i class="nt-punto"></i>' : ""}</span></button>`; };
@@ -2544,7 +2546,80 @@
     if (error) return;
     personas.length = 0;
     data.forEach((p) => personas.push({ id: p.id, nombre: p.nombre, apellido: p.apellido, usuario: p.usuario, correo: p.correo, area: p.area, rol: p.rol, admin: p.admin_personas, carpeta: p.carpeta || "", activa: !p.debe_cambiar_clave, inactiva: !p.activa }));
+    // Nombres ↔ cuentas reales, equipo de marketing, otras áreas y jefa
+    for (const k in ID_DE) delete ID_DE[k]; for (const k in NOMBRE_DE) delete NOMBRE_DE[k];
+    data.forEach((p) => { ID_DE[p.nombre] = p.id; NOMBRE_DE[p.id] = p.nombre; });
+    const PAL = ["#f4a6c1", "#9fd3f0", "#c3b5f7", "#f7d38b", "#a8e6cf", "#ffc9a3", "#b5d8ff"];
+    for (const k in COLORES) delete COLORES[k]; for (const k in SOLICITANTES) delete SOLICITANTES[k];
+    data.filter((p) => p.activa && p.rol !== "solicitante").forEach((p, i) => (COLORES[p.nombre] = PAL[i % PAL.length]));
+    data.filter((p) => p.rol === "solicitante").forEach((p) => (SOLICITANTES[p.nombre] = p.area));
+    const j = data.find((p) => p.rol === "jefa"); if (j) JEFA = j.nombre;
     if (pagina === "personas") pintarPersonas();
+  }
+  const ID_DE = {}, NOMBRE_DE = {};
+
+  // ===== Tickets reales (Supabase) =====
+  const BD_TK = new Map(), enviandoTk = new Set();
+  const aBd = (t) => ({ titulo: t.titulo, solicitante: ID_DE[t.solicitante], tipo: t.tipo, formato: t.formato || "", detalle: t.detalle || "", destino: t.destino || "",
+    texto: t.texto || "", sin_texto: !!t.sinTexto, refs: t.refs || [], archivos: (t.archivos || []).map((a) => ({ n: a.n, tipo: a.tipo, ruta: a.ruta })), fecha: t.fecha,
+    estado: t.estado, prioridad: t.prioridad || null, asignado: t.asignado ? ID_DE[t.asignado] || null : null, entregable: t.entregable || null,
+    historial: t.historial || [], comentarios: t.comentarios || [] });
+  const deBd = (r) => ({ id: r.id, titulo: r.titulo, solicitante: NOMBRE_DE[r.solicitante] || "Alguien", area: (personas.find((x) => x.id === r.solicitante) || {}).area || "",
+    tipo: r.tipo, formato: r.formato, detalle: r.detalle, destino: r.destino, texto: r.texto, sinTexto: r.sin_texto, refs: r.refs || [], archivos: r.archivos || [], adjuntos: false,
+    fecha: r.fecha, estado: r.estado, prioridad: r.prioridad, asignado: r.asignado ? NOMBRE_DE[r.asignado] || null : null, entregable: r.entregable,
+    historial: r.historial || [], comentarios: r.comentarios || [], creado: r.created_at });
+  async function cargarTickets(avisarNuevos) {
+    const { data, error } = await sb.from("tickets").select("*").order("created_at", { ascending: false });
+    if (error) return;
+    const antes = avisarNuevos ? new Set(notificaciones().map((n) => n.id)) : null;
+    const urls = {}; tickets.forEach((t) => (t.archivos || []).forEach((a) => a.ruta && a.url && (urls[a.ruta] = a.url)));
+    tickets.length = 0; BD_TK.clear();
+    data.forEach((r) => { const t = deBd(r); t.archivos.forEach((a) => (a.url = urls[a.ruta])); tickets.push(t); BD_TK.set(t.id, JSON.stringify(aBd(t))); });
+    const faltan = tickets.flatMap((t) => t.archivos.filter((a) => a.ruta && !a.url));
+    if (faltan.length) { const { data: f } = await sb.storage.from("adjuntos").createSignedUrls(faltan.map((a) => a.ruta), 60 * 60 * 6); (f || []).forEach((x, i) => (faltan[i].url = x.signedUrl)); }
+    contarTickets(); pintarNotif();
+    if (pagina === "tickets") pintarTickets();
+    const abierto = document.body.classList.contains("con-detalle") && tickets.some((t) => t.id === tkAbierto);
+    if (abierto && !(document.activeElement && document.activeElement.closest("#detalle input, #detalle textarea"))) abrirTicket(tkAbierto);
+    if (antes) { const n = notificaciones().find((x) => !antes.has(x.id) && !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }
+  }
+  async function subirArchivos(t) {
+    for (const a of t.archivos || []) {
+      if (a.ruta || !a.url) continue;
+      const blob = await (await fetch(a.url)).blob(), ruta = `${crypto.randomUUID()}-${a.n.replace(/[^\w.\-]/g, "_")}`;
+      const { error } = await sb.storage.from("adjuntos").upload(ruta, blob, { contentType: a.tipo });
+      if (!error) a.ruta = ruta;
+    }
+  }
+  async function sincronizarTickets() {
+    for (const t of tickets) {
+      if (enviandoTk.has(t)) continue;
+      if (!BD_TK.has(t.id)) {
+        enviandoTk.add(t); const viejo = t.id;
+        await subirArchivos(t);
+        const { data, error } = await sb.from("tickets").insert(aBd(t)).select("id, created_at").single();
+        enviandoTk.delete(t);
+        if (error) { avisar("No se pudo enviar la solicitud: " + esc(error.message)); tickets.splice(tickets.indexOf(t), 1); pintarTickets(); continue; }
+        t.id = data.id; t.creado = data.created_at; BD_TK.set(t.id, JSON.stringify(aBd(t)));
+        if (tkAbierto === viejo) tkAbierto = t.id;
+        if (pagina === "tickets") pintarTickets();
+      } else {
+        const j = JSON.stringify(aBd(t));
+        if (j !== BD_TK.get(t.id)) {
+          BD_TK.set(t.id, j); enviandoTk.add(t);
+          await subirArchivos(t);
+          const { error } = await sb.from("tickets").update(aBd(t)).eq("id", t.id);
+          enviandoTk.delete(t);
+          if (error) avisar("No se pudo guardar el cambio: " + esc(error.message));
+        }
+      }
+    }
+  }
+  function iniciarTicketsVivos() {
+    tickets.length = 0;
+    cargarTickets(false);
+    setInterval(sincronizarTickets, 1200);
+    let t0; sb.channel("tickets-vivos").on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, () => { clearTimeout(t0); t0 = setTimeout(() => cargarTickets(true), 600); }).subscribe();
   }
   const VEN_PERSONAS = ["Hilary", "Carlos"]; // solo ellos administran las cuentas
   function aplicarRol() {
@@ -2872,6 +2947,7 @@
       if (p.rol === "solicitante") SOLICITANTES[p.nombre] = p.area;
       yo = p.nombre;
       await cargarPersonas();
+      iniciarTicketsVivos();
       menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); rabbitHola();
     });
     document.addEventListener("click", async (e) => { if (e.target.closest("#mpSalir")) { e.preventDefault(); e.stopImmediatePropagation(); await sb.auth.signOut(); location.href = "login.html"; } }, true);
