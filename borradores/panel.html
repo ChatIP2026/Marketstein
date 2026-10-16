@@ -1943,6 +1943,10 @@
     }
   });
   document.addEventListener("change", (e) => { if (e.target.matches('input[type="date"]')) e.target.closest("label")?.querySelectorAll(".f-rapida button").forEach((x) => x.classList.remove("activa")); }, true);
+  // En celular el menú vive fuera de la caja del panel para quedar siempre fijo abajo
+  { const nav = document.querySelector("nav"), casa = nav.parentElement, ref = nav.nextSibling, mq = matchMedia("(max-width: 760px)");
+    const ubicar = () => { if (mq.matches) document.body.append(nav); else if (nav.parentElement !== casa) casa.insertBefore(nav, ref); };
+    mq.addEventListener("change", ubicar); ubicar(); }
   let kpiFiltro = null;
   document.querySelectorAll(".kpi").forEach((k, i) => { k.dataset.kf = ["listos", "activos", "tok", "tpend"][i]; k.tabIndex = 0; k.title = "Clic para filtrar el tablero"; k.onclick = () => { kpiFiltro = kpiFiltro === k.dataset.kf ? null : k.dataset.kf; pintar(); }; k.onkeydown = (e) => { if (e.key === "Enter") k.click(); }; });
   function pintar() {
