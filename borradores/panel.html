@@ -1525,6 +1525,10 @@
   .f-rapida button:hover { border-color: #a3a3a3; } .f-rapida button.activa { background: #0a0a0a; color: #fff; border-color: #0a0a0a; }
   input[type="date"] { padding-right: 44px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right 14px center !important; background-size: 20px !important; }
   input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0; cursor: pointer; }
+  .rc-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .rc-t { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); min-width: 0; }
+  .rc-t code { font-size: 1.35rem !important; overflow-wrap: anywhere; }
+  @media (max-width: 560px) { .rc-dos { grid-template-columns: 1fr; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2895,8 +2899,8 @@
     const d = document.getElementById("detalle");
     d.className = "detalle tk-det";
     let clave = claveTemporal();
-    d.innerHTML = `<div class="det-cab"><div><h2>Restablecer contraseña</h2><p class="tk-sub">${esc(x.nombre)} ${esc(x.apellido || "")} | usuario <b>${esc(usuarioDe(x))}</b></p></div><button class="det-cerrar" title="Cerrar">✕</button></div>
-      <div class="rc-caja"><small>Nueva contraseña temporal</small><code id="rcClave">${clave}</code>
+    d.innerHTML = `<div class="det-cab"><div><h2>Restablecer contraseña</h2><p class="tk-sub">${esc(x.nombre)} ${esc(x.apellido || "")}</p></div><button class="det-cerrar" title="Cerrar">✕</button></div>
+      <div class="rc-caja"><div class="rc-dos"><div class="rc-t"><small>Usuario</small><code>${esc(usuarioDe(x))}</code></div><div class="rc-t"><small>Nueva contraseña temporal</small><code id="rcClave">${clave}</code></div></div>
         <div class="rc-acc"><button class="cal-btn" id="rcOtra">Generar otra</button><button class="nuevo-btn" id="rcCopiar">Copiar mensaje</button></div></div>
       <p class="rc-txt">Pásasela a ${esc(x.nombre)} por WhatsApp o en persona. Al entrar con ella, Rabbit le pedirá crear su propia contraseña. La contraseña anterior deja de funcionar.</p>
       <p class="det-nota">Vista previa: no se cambia ninguna contraseña real.</p>`;
