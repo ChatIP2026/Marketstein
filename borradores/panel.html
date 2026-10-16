@@ -1502,6 +1502,11 @@
   .tk-visor iframe { width: 80vw; height: 86vh; border: 0; }
   .tk-form > .tk-subir, .tk-form > .tk-full { grid-column: 1 / -1 !important; }
   .tk-form > .nuevo-btn, .tk-form button[type=submit] { display: flex !important; justify-content: center !important; align-items: center; text-align: center !important; }
+  .rc-caja { margin: 8px 0 14px; padding: 18px; border-radius: 16px; background: #0a0a0a; color: #fff; display: flex; flex-direction: column; gap: 10px; }
+  .rc-caja small { color: #a3a3a3; font-size: .75rem; } .rc-caja code { font-size: 1.6rem; font-weight: 700; letter-spacing: .12em; }
+  .rc-acc { display: flex; gap: 8px; } .rc-acc .cal-btn { background: rgba(255,255,255,.1) !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
+  .rc-acc .nuevo-btn { background: #fff !important; color: #0a0a0a !important; }
+  .rc-txt { font-size: .86rem; color: #525252; line-height: 1.5; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2756,6 +2761,7 @@
           <div class="per-col"><small>Referencias</small>${x.carpeta ? `<a class="tk-chip enl" href="#" onclick="return false">📁 Su carpeta</a>` : `<span class="per-nada">—</span>`}</div>
           <div class="per-col"><small>Estado</small>${x.inactiva ? `<span class="per-est off">● Desactivada</span>` : x.activa ? `<span class="per-est ok">● Activa</span>` : `<span class="per-est">● Aún no entra</span>`}</div>
           <div class="per-acc">${!x.activa && !x.inactiva ? `<button class="cal-btn" data-reenviar="${personas.indexOf(x)}">Reenviar acceso</button>` : ""}
+            <button class="per-ico" data-reset="${personas.indexOf(x)}" title="Restablecer contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7M17 6l2.5 2.5M14.5 8.5 16 10"/></svg></button>
             <button class="per-ico" data-editar="${personas.indexOf(x)}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
             ${x.nombre === yo ? "" : `<button class="per-ico ${x.inactiva ? "" : "peligro"}" data-desact="${personas.indexOf(x)}" title="${x.inactiva ? "Reactivar cuenta" : "Desactivar cuenta"}">${x.inactiva ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg>'}</button>`}</div>
         </div>`).join("")}</div>`;
@@ -2763,6 +2769,7 @@
     cont.querySelectorAll("[data-sel]").forEach((r) => (r.onclick = (e) => { if (e.target.closest("button, a")) return; perSel = perSel === r.dataset.sel ? null : r.dataset.sel; cont.querySelectorAll(".per").forEach((x) => x.classList.toggle("sel", x.dataset.sel === perSel)); }));
     cont.querySelectorAll("[data-reenviar]").forEach((b) => (b.onclick = () => { const x = personas[+b.dataset.reenviar]; mostrarBienvenida(x, claveTemporal(), true); }));
     cont.querySelector("#perNueva").onclick = () => abrirFormPersona();
+    cont.querySelectorAll("[data-reset]").forEach((b) => (b.onclick = () => restablecerClave(personas[+b.dataset.reset])));
     cont.querySelectorAll("[data-editar]").forEach((b) => (b.onclick = () => abrirFormPersona(personas[+b.dataset.editar])));
     cont.querySelectorAll("[data-desact]").forEach((b) => (b.onclick = () => {
       const x = personas[+b.dataset.desact]; x.inactiva = !x.inactiva; pintarPersonas();
@@ -2821,6 +2828,25 @@
     f.nombre.focus();
   }
   // Vista previa del correo de bienvenida que recibiría la persona
+  const usuarioDe = (x) => x.usuario || (x.apellido ? (x.nombre || "")[0] + x.apellido.split(" ")[0] : x.nombre || "").toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
+  function restablecerClave(x) {
+    const d = document.getElementById("detalle");
+    d.className = "detalle tk-det";
+    let clave = claveTemporal();
+    d.innerHTML = `<div class="det-cab"><div><h2>Restablecer contraseña</h2><p class="tk-sub">${esc(x.nombre)} ${esc(x.apellido || "")} | usuario <b>${esc(usuarioDe(x))}</b></p></div><button class="det-cerrar" title="Cerrar">✕</button></div>
+      <div class="rc-caja"><small>Nueva contraseña temporal</small><code id="rcClave">${clave}</code>
+        <div class="rc-acc"><button class="cal-btn" id="rcOtra">Generar otra</button><button class="nuevo-btn" id="rcCopiar">Copiar mensaje</button></div></div>
+      <p class="rc-txt">Pásasela a ${esc(x.nombre)} por WhatsApp o en persona. Al entrar con ella, Rabbit le pedirá crear su propia contraseña. La contraseña anterior deja de funcionar.</p>
+      <p class="det-nota">Vista previa: no se cambia ninguna contraseña real.</p>`;
+    d.querySelector(".det-cerrar").onclick = cerrarProyecto;
+    d.querySelector("#rcOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#rcClave").textContent = clave; };
+    d.querySelector("#rcCopiar").onclick = (e) => {
+      const msg = `Hola ${x.nombre}, restablecí tu acceso a Rabbit.\nUsuario: ${usuarioDe(x)}\nContraseña temporal: ${clave}\nAl entrar te pedirá crear tu propia contraseña.`;
+      (navigator.clipboard ? navigator.clipboard.writeText(msg) : Promise.reject()).catch(() => {}).finally(() => { e.target.textContent = "¡Copiado!"; setTimeout(() => (e.target.textContent = "Copiar mensaje"), 1600); });
+    };
+    document.body.classList.add("con-detalle");
+    avisar(`Se generó una contraseña nueva para <b>${esc(x.nombre)}</b>`);
+  }
   function mostrarBienvenida(x, clave, reenvio) {
     const d = document.getElementById("detalle");
     d.className = "detalle tk-det";
@@ -2829,9 +2855,9 @@
         <div class="cp-logo"><img src="${CONEJO}" alt="" /></div>
         <h3>¡Hola, ${esc(x.nombre)}! 👋</h3>
         <p>${x.rol === "solicitante" ? "Ya tienes acceso a <b>RABBIT AI</b>, donde puedes pedir piezas al equipo de marketing y seguir su avance." : "Ya eres parte de <b>RABBIT AI</b>, el panel del equipo de marketing."}</p>
-        <div class="cp-cred"><div><small>Correo</small><b>${esc(x.correo)}</b></div><div><small>Contraseña temporal</small><b class="mono">${esc(clave)}</b></div></div>
+        <div class="cp-cred"><div><small>Usuario</small><b>${esc(usuarioDe(x))}</b></div><div><small>Contraseña temporal</small><b class="mono">${esc(clave)}</b></div></div>
         <a class="cp-btn" href="#" onclick="return false">Entrar a Rabbit</a>
-        <p class="cp-chico">Por seguridad, al entrar por primera vez te pediremos crear tu propia contraseña. También puedes entrar con tu cuenta de Google o Microsoft usando este mismo correo.</p>
+        <p class="cp-chico">Por seguridad, al entrar por primera vez te pediremos crear tu propia contraseña.</p>
       </div>
       <p class="det-nota">Vista previa: no se envía ningún correo real.</p>`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
