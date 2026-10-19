@@ -1674,6 +1674,11 @@
   .sb-pill { display: inline-block; align-self: flex-start; font-size: .64rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: #0a0a0a; color: #fff; padding: 3px 8px; border-radius: 999px; margin-bottom: 4px; }
   .en-standby { opacity: .55; filter: grayscale(.7); }
   .en-standby:hover { opacity: .85; }
+  .det-peligro .det-borrar, .det-peligro .det-standby { display: inline-flex; align-items: center; font-weight: 600; font-size: .86rem; padding: 9px 14px; border-radius: 10px; }
+  .det-peligro .det-borrar { color: #dc2626; background: #fef2f2; border: 1px solid #fca5a5; }
+  .det-peligro .det-borrar:hover { background: #fee2e2; }
+  .det-peligro .det-standby:not(.on) { color: #18181b; background: #fff; border: 1px solid #a1a1aa; }
+  .det-peligro .det-standby:not(.on):hover { background: #f4f4f5; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1879,7 +1884,7 @@
       <h3 class="det-sub">Tareas <span class="det-npend">${tareas.length - hechas} pendiente${tareas.length - hechas === 1 ? "" : "s"}</span> <small>doble clic en una tarea para renombrarla</small></h3>
       <div class="det-tareas"></div>
       <form class="det-nueva"><input placeholder="Añadir una tarea y pulsar Enter" /><button>Añadir</button></form>
-      <div class="det-peligro"><button type="button" class="det-borrar">Eliminar proyecto</button><button type="button" class="det-standby ${p.standby ? "on" : ""}">${p.standby ? "Quitar standby" : "Standby"}</button></div>
+      <div class="det-peligro"><button type="button" class="det-borrar"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Eliminar proyecto</button><button type="button" class="det-standby ${p.standby ? "on" : ""}">${p.standby ? `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v14l11-7Z"/></svg>Quitar standby` : `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Standby`}</button></div>
       <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
     burbujaVista[p.id] = true;
 
