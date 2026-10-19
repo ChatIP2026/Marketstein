@@ -1659,6 +1659,7 @@
   .tk-acc .nuevo-btn:hover, .tk-form .nuevo-btn:hover, .tk-nuevo:hover { background: #262626 !important; }
   .ico-in { width: 1.05em; height: 1.05em; vertical-align: -.17em; margin-right: .35em; flex: none; display: inline-block; }
   .dk-kpis { margin-bottom: 18px; } .kpi-de { font-size: .55em; font-weight: 600; opacity: .55; margin-left: 2px; }
+  .per-acc > * { flex: none; } .per-acc [data-reenviar] { white-space: nowrap; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2219,6 +2220,7 @@
 
   // ===== Persona actual (luego vendrá del inicio de sesión) =====
   let JEFA = "Hilary";
+  const VEN_PERSONAS = ["Hilary", "Carlos"]; // solo ellos administran las cuentas
   const SOLICITANTES = { Romano: "Comercial", Mario: "Ventas", "Lucía": "Finanzas", Rosa: "Recursos Humanos" };
   const esSolicitante = () => yo in SOLICITANTES;
   let yo = "Ariana";
@@ -2240,10 +2242,12 @@
     document.getElementById("mpAcc").innerHTML = `<button class="mp-acc" id="mpId">${IC('<rect x="2" y="5" width="20" height="14" rx="3"/><circle cx="8" cy="12" r="2.5"/><path d="M13 10h5M13 14h3"/>')}Mi ID card</button>`
       + (ext ? `<button class="mp-acc" id="mpMisTk">${IC('<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/>')}Mis tickets</button>`
         : `<button class="mp-acc" id="mpMis">${IC('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>')}Mi entorno</button>` + (yo === JEFA ? `<button class="mp-acc" id="mpDash">${IC('<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/>')}Dashboard</button>` : ""))
+      + (VEN_PERSONAS.includes(yo) ? `<button class="mp-acc" id="mpPer">${IC('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c2 .6 3.5 2.4 3.5 5.4"/>')}Personas</button>` : "")
       + `<button class="mp-acc salir" id="mpSalir">${IC('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>')}Cerrar sesión</button>`;
     document.getElementById("mpMisTk")?.addEventListener("click", () => { menuPerfil.hidden = true; mesTk = "todos"; filtroTk = "todos"; irA("tickets"); });
     document.getElementById("mpMis")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("mis"); });
     document.getElementById("mpDash")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("dashboard"); });
+    document.getElementById("mpPer")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("personas"); });
     document.getElementById("mpId").onclick = () => { menuPerfil.hidden = true; abrirIdCard(); };
     document.getElementById("mpSalir").onclick = () => { location.href = "login.html"; };
   }
@@ -2724,12 +2728,11 @@
     addEventListener("beforeunload", (e) => { if (tickets.some((t) => enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id))) { e.preventDefault(); e.returnValue = ""; } });
     let t0; sb.channel("tickets-vivos").on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, () => { clearTimeout(t0); t0 = setTimeout(() => cargarTickets(true), 600); }).subscribe();
   }
-  const VEN_PERSONAS = ["Hilary", "Carlos"]; // solo ellos administran las cuentas
   function aplicarRol() {
     if (aplicarRol.yaUsado) { filtroTk = null; busTk = ""; personaTk = null; } aplicarRol.yaUsado = true;
     const sol = esSolicitante();
     document.body.classList.toggle("rol-solicitante", sol);
-    document.querySelectorAll("nav a").forEach((a) => (a.hidden = (sol && a.dataset.p !== "tickets") || (a.dataset.p === "personas" && !VEN_PERSONAS.includes(yo))));
+    document.querySelectorAll("nav a").forEach((a) => (a.hidden = (sol && a.dataset.p !== "tickets") || a.dataset.p === "personas"));
     if (!sol && pagina === "personas" && !VEN_PERSONAS.includes(yo)) irA("inicio");
     document.querySelector('nav a[data-p="tickets"] .nl').textContent = sol ? "Mis solicitudes" : "Tickets";
     if (sol) irA("tickets"); else if (pagina === "mis") pintarMis(); else if (pagina === "tickets") pintarTickets();
