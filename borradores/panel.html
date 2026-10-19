@@ -1618,6 +1618,36 @@
   .vg-dash { margin: 0 0 18px; padding: 26px 20px; }
   /* Deslizar para cerrar (celular) */
   @media (max-width: 760px) { .detalle::before { content: ""; display: block; width: 44px; height: 5px; border-radius: 99px; background: #d4d4d4; margin: -6px auto 12px; } }
+  /* Ticket impreso al enviar solicitud */
+  .te-fondo { position: fixed; inset: 0; z-index: 400; background: rgba(245,245,247,.82); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; animation: teFondo .3s ease both; cursor: pointer; }
+  .te-fondo.sale { animation: teFuera .45s ease forwards; }
+  .te-ranura { width: 360px; max-width: calc(100vw - 32px); height: 12px; border-radius: 999px; background: #0a0a0a; box-shadow: inset 0 -3px 6px rgba(255,255,255,.18), 0 6px 18px rgba(0,0,0,.18); position: relative; z-index: 2; }
+  .te-salida { width: 320px; max-width: calc(100vw - 56px); margin-top: -6px; overflow: hidden; padding: 0 0 30px; }
+  .te { background: #fff; border-radius: 0 0 18px 18px; box-shadow: 0 18px 40px rgba(0,0,0,.12); padding: 26px 24px 18px; animation: teImprime 1.5s cubic-bezier(.3,.7,.3,1) .25s both; position: relative;
+    -webkit-mask: radial-gradient(circle 12px at 0 var(--c), transparent 98%, #000) , radial-gradient(circle 12px at 100% var(--c), transparent 98%, #000); -webkit-mask-composite: source-in; mask-composite: intersect; --c: 168px; }
+  .te-top { text-align: center; }
+  .te-rb .saludo-rb { width: 54px; height: 54px; animation: teSalto .6s ease 1.7s both; }
+  .te-top h3 { margin: 8px 0 4px; font-size: 1.3rem; letter-spacing: -.02em; }
+  .te-top p { margin: 0 auto; color: #6b6b72; font-size: .86rem; max-width: 220px; text-wrap: balance; }
+  .te-corte { border-top: 2px dashed #e2e2e6; margin: 18px -4px 16px; }
+  .te-datos { display: grid; grid-template-columns: 1fr auto; gap: 12px 10px; }
+  .te-datos div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .te-datos .der { text-align: right; }
+  .te-datos .te-full { grid-column: 1 / -1; }
+  .te-datos small { color: #8a8a92; font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; }
+  .te-datos b { font-size: .92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .te-quien { display: flex; align-items: center; gap: 10px; background: #f4f4f6; border-radius: 12px; padding: 10px 12px; margin-top: 16px; }
+  .te-quien .av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; flex: none; }
+  .te-quien div { display: flex; flex-direction: column; } .te-quien small { color: #8a8a92; font-size: .76rem; }
+  .te-corte2 { border-top: 2px dashed #e2e2e6; margin: 18px -24px 14px; }
+  .te-barras { display: flex; justify-content: center; align-items: stretch; gap: 2px; height: 48px; }
+  .te-barras i { background: #0a0a0a; display: block; }
+  .te-cod { text-align: center; font: 600 .66rem/1 ui-monospace, monospace; letter-spacing: .25em; color: #555; margin-top: 6px; }
+  @keyframes teImprime { from { transform: translateY(-102%); } to { transform: translateY(0); } }
+  @keyframes teFondo { from { opacity: 0; } }
+  @keyframes teFuera { to { opacity: 0; transform: translateY(-14px); } }
+  @keyframes teSalto { 0%,100% { transform: translateY(0); } 45% { transform: translateY(-8px) rotate(-6deg); } }
+  @media (prefers-reduced-motion: reduce) { .te, .te-rb .saludo-rb { animation: none; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2920,6 +2950,31 @@
   }
   function despues(msg) { armar(); pintarTickets(); contarTickets(); abrirTicket(tkAbierto); avisar(msg); }
 
+  // Animación: el ticket sale impreso al enviar la solicitud; al terminar, vuelve a Mis solicitudes
+  function ticketEnviado(t) {
+    return new Promise((fin) => {
+      const num = String(t.id).padStart(3, "0"), sem = Array.from(`RB${num}${t.fecha}${t.titulo}`).map((c) => c.charCodeAt(0));
+      const barras = Array.from({ length: 46 }, (_, i) => `<i style="width:${1 + ((sem[i % sem.length] + i * 7) % 3)}px"></i>`).join("");
+      const fe = new Date(t.fecha + "T12:00").toLocaleDateString("es-PE", { day: "numeric", month: "short", year: "numeric" });
+      const ahora = new Date(), hora = ahora.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+      const o = document.createElement("div");
+      o.className = "te-fondo";
+      o.innerHTML = `<div class="te-ranura"></div><div class="te-salida"><div class="te">
+        <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Solicitud enviada!</h3><p>Marketing ya la recibió. Hilary la revisará pronto.</p></div>
+        <div class="te-corte"></div>
+        <div class="te-datos"><div><small>N.° de ticket</small><b>#${num}</b></div><div class="der"><small>Entrega</small><b>${fe}</b></div>
+          <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div><div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
+        <div class="te-quien"><span class="av" style="${fondoAv(yo)}">${letraAv(yo)}</span><div><b>${esc(yo)}</b><small>${esc(t.area || "")}</small></div></div>
+        <div class="te-corte2"></div>
+        <div class="te-barras">${barras}</div><div class="te-cod">RB-${num}-${t.fecha.replace(/-/g, "")}</div>
+      </div></div>`;
+      document.body.appendChild(o);
+      let listo = false;
+      const cerrar = () => { if (listo) return; listo = true; o.classList.add("sale"); setTimeout(() => { o.remove(); fin(); }, 450); };
+      o.onclick = cerrar;
+      setTimeout(cerrar, 3600);
+    });
+  }
   // ===== Formulario de nueva solicitud (solo otras áreas) =====
   function abrirFormTicket() {
     const d = document.getElementById("detalle");
@@ -2989,8 +3044,7 @@
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
         refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
         historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió la solicitud" }] });
-      cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets();
-      avisar(`Solicitud <b>#${String(id).padStart(3, "0")}</b> enviada a marketing`);
+      ticketEnviado(tickets.find((t) => t.id === id)).then(() => { cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets(); });
     };
     document.body.classList.add("con-detalle");
   }
