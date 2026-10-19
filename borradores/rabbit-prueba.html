@@ -1231,13 +1231,12 @@
       </section>
     </main>
     <!-- Columna lateral -->
-    <aside class="lateral vidrio">
+    <aside class="lateral vidrio" id="lateral">
       <div>
         <div class="tit"><h3>Vence pronto <span class="chip" id="nPronto">0</span></h3></div>
         <div id="listaPronto"></div>
       </div>
-      <hr />
-      <div>
+      <div hidden>
         <div class="tit"><h3>Carga del equipo</h3></div>
         <div id="listaCarga"></div>
       </div>
@@ -1743,6 +1742,26 @@
   .gp-bloques i.on { background: linear-gradient(#34d399, #10b981) !important; border-color: #10b981 !important; box-shadow: 0 0 10px rgba(16,185,129,.3) !important; }
   .gp-res div { background: #f6f6f7 !important; border-color: #ececef !important; color: #52525b !important; }
   .gp-res b { color: #0a0a0a !important; }
+  /* Lateral de Inicio más liviano */
+  #lateral { align-self: start; }
+  #lateral :is(h3, h4, b, span, small, div) { color: #0a0a0a !important; }
+  #lateral .tit h3 { color: #0a0a0a !important; }
+  #lateral > div:not([hidden]) { background: #fff !important; border: 1px solid #e4e4e7; box-shadow: 0 6px 18px rgba(10,10,10,.04); }
+  #lateral .chip { background: #f4f4f5 !important; color: #52525b !important; }
+  #lateral .pronto { background: transparent !important; border: 0 !important; border-bottom: 1px solid #f0f0f2 !important; all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 6px; border-radius: 12px; border-bottom: 1px solid #f0f0f2; }
+  #lateral .pronto:last-child { border-bottom: 0; }
+  #lateral .pronto:hover { background: #f6f6f7; }
+  #lateral .pronto::before { display: none !important; }
+  #lateral .pr-fecha, #lateral .pr-fecha * { color: #3f3f46 !important; }
+  #lateral .pronto.urgente .pr-fecha, #lateral .pronto.urgente .pr-fecha * { color: #dc2626 !important; }
+  #lateral .pr-fecha { width: 42px; height: 46px; border-radius: 11px; background: #f4f4f5; display: flex !important; flex-direction: column; align-items: center; justify-content: center; flex: none; color: #3f3f46 !important; }
+  #lateral .pr-fecha b { font-size: 1.05rem; line-height: 1; color: inherit !important; } .pr-fecha small { font-size: .62rem; text-transform: uppercase; letter-spacing: .05em; color: inherit !important; opacity: .8; }
+  #lateral .pronto.urgente .pr-fecha { background: #fee2e2; color: #dc2626 !important; }
+  #lateral .pr-txt { display: flex !important; flex-direction: column; gap: 2px; min-width: 0; }
+  #lateral .pr-txt b { font-size: .86rem; color: #0a0a0a !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #lateral .pr-txt small { font-size: .74rem; color: #71717a !important; }
+  #lateral .pronto.urgente .pr-txt small { color: #dc2626 !important; font-weight: 600; }
+  #lateral .pronto-ok { color: #71717a !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -1906,8 +1925,9 @@
       const cuando = dias < 0 ? `Venció hace ${-dias} día${dias === -1 ? "" : "s"}` : dias === 0 ? "Vence hoy" : dias === 1 ? "Vence mañana" : `Vence en ${dias} días`;
       const it = document.createElement("button");
       it.className = "pronto a-" + p.estado + (dias <= 1 ? " urgente" : "");
-      it.innerHTML = `<b>${esc(p.nombre)}</b><small>${cuando} | ${fmt(p.fecha_limite)}</small>`;
-      it.onclick = () => abrirProyecto(p.id);
+      const [, mm, dd] = p.fecha_limite.split("-");
+      it.innerHTML = `<span class="pr-fecha"><b>${+dd}</b><small>${["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"][+mm - 1]}</small></span><span class="pr-txt"><b>${esc(p.nombre)}</b><small>${cuando}</small></span>`;
+      it.onclick = () => abrirProyecto(p.id, true);
       listaPronto.append(it);
     }
   }
