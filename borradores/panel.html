@@ -1687,6 +1687,51 @@
   .en-standby :is(progress, .barra > i, .cn-barra > i, [class*="barra"] > span) { background: #38bdf8 !important; }
   .sb-pill { display: inline-flex !important; align-items: center; gap: 4px; background: #0284c7 !important; color: #fff !important; }
   .sb-pill svg { width: 12px; height: 12px; }
+  /* Gestión de proyectos */
+  .gp { margin: 0 0 18px; }
+  .gp-top { background: #0a0a0a; color: #fff; border-radius: 20px; padding: 20px 22px; box-shadow: 0 14px 30px rgba(10,10,10,.18); }
+  .gp-tt { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .gp-tt small { text-transform: uppercase; letter-spacing: .12em; font-size: .7rem; color: #a1a1aa; font-weight: 700; }
+  .gp-tt span { font-size: .85rem; color: #d4d4d8; }
+  .gp-fila { display: flex; align-items: center; gap: 18px; margin: 10px 0 16px; }
+  .gp-pct { font-size: 3rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+  .gp-bloques { flex: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; }
+  .gp-bloques i { height: 36px; border-radius: 8px; background: #1c1c1f; border: 1px solid #27272a; }
+  .gp-bloques i.on { background: linear-gradient(#34d399, #10b981); border-color: #34d399; box-shadow: 0 0 12px rgba(16,185,129,.45); }
+  .gp-res { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .gp-res div { display: flex; align-items: center; gap: 8px; background: #161618; border: 1px solid #27272a; border-radius: 12px; padding: 10px 14px; font-size: .84rem; color: #d4d4d8; }
+  .gp-res b { font-size: 1.4rem; color: #fff; }
+  .gp-res i { width: 8px; height: 8px; border-radius: 50%; } .d-listo { background: #34d399; } .d-curso { background: #fbbf24; } .d-pend { background: #71717a; }
+  .gp-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+  .gp-col { background: #fff; border: 1px solid #e4e4e7; border-radius: 18px; padding: 16px; align-self: start; }
+  .gp-ccab { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f2; }
+  .gp-ccab h4 { margin: 0; font-size: 1rem; flex: 1; }
+  .gp-cico { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; } .gp-cico svg { width: 18px; height: 18px; }
+  .p-alta .gp-cico { background: #fee2e2; color: #dc2626; } .p-media .gp-cico { background: #fef3c7; color: #b45309; } .p-baja .gp-cico { background: #e0f2fe; color: #0369a1; }
+  .gp-cnum { font-size: .76rem; color: #71717a; font-weight: 600; }
+  .gp-proy { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 10px; padding: 10px 12px 12px; border-radius: 12px; background: #f6f6f7; border: 1px solid #ececef; margin-bottom: 8px; transition: background .15s; }
+  .gp-proy:hover, .gp-proy.abierto { background: #eeeef0; }
+  .gp-nom { font-size: .86rem; font-weight: 600; overflow-wrap: anywhere; } .gp-proy b { font-size: .86rem; }
+  .gp-est { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #a1a1aa; }
+  .gp-proy.e-listo .gp-est { background: #10b981 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/11px no-repeat; border-color: #10b981; }
+  .gp-proy.e-en_curso .gp-est { border-color: #f59e0b; border-style: dashed; }
+  .gp-proy.sb { background: #e0f2fe; border-color: #bae6fd; }
+  .gp-barra { grid-column: 1 / -1; height: 4px; background: #e4e4e7; border-radius: 4px; overflow: hidden; }
+  .gp-barra i { display: block; height: 100%; background: #0a0a0a; border-radius: 4px; }
+  .gp-proy.e-listo .gp-barra i { background: #10b981; } .gp-proy.e-en_curso .gp-barra i { background: #f59e0b; }
+  .gp-tareas { margin: -2px 0 10px; padding: 10px 12px; border-left: 2px solid #e4e4e7; margin-left: 18px; }
+  .gp-tcab { display: flex; justify-content: space-between; gap: 8px; font-size: .76rem; color: #52525b; font-weight: 600; margin-bottom: 6px; }
+  .gp-abrir { cursor: pointer; color: #0a0a0a; text-decoration: underline; white-space: nowrap; }
+  .gp-t { display: flex; align-items: center; gap: 8px; font-size: .82rem; padding: 4px 0; }
+  .gp-t small { margin-left: auto; color: #a1a1aa; font-size: .72rem; }
+  .gp-t.ok { color: #a1a1aa; text-decoration: line-through; }
+  .gp-ck { width: 13px; height: 13px; border-radius: 4px; border: 1.5px solid #a1a1aa; flex: none; }
+  .gp-t.ok .gp-ck { background: #10b981; border-color: #10b981; }
+  .gp-t.vacio { color: #a1a1aa; }
+  .gp-nada { color: #a1a1aa; font-size: .82rem; margin: 4px 0; }
+  .gp-ayuda { font-size: .75rem; color: #a1a1aa; margin: 8px 2px 0; }
+  @media (max-width: 1000px) { .gp-cols { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .gp-pct { font-size: 2.2rem; } .gp-bloques i { height: 24px; } .gp-res { grid-template-columns: 1fr; } .gp-fila { gap: 12px; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3341,6 +3386,34 @@
     for (let d = 1; d <= dias; d++) { v += (azar() - 0.5) * 2.4 + (fin - v) * (d / dias) * 0.35; v = Math.max(4, Math.min(20, v)); out.push(d === dias ? fin : r2(v)); }
     return out;
   }
+  // ===== Gestión de proyectos (Dashboard): efectividad y proyectos por prioridad =====
+  function gestionProyectos() {
+    const ps = [...mapaP.values()], tot = ps.length, hechos = ps.filter((p) => p.estado === "listo").length;
+    const pct = tot ? Math.round((hechos / tot) * 100) : 0;
+    const bloques = Array.from({ length: tot }, (_, i) => `<i class="${i < hechos ? "on" : ""}"></i>`).join("");
+    const cuenta = (e) => ps.filter((p) => p.estado === e).length;
+    const PRI = [["alta", "Prioridad alta", '<path d="M12 3 2 20h20Z"/><path d="M12 10v4M12 17h.01"/>'], ["media", "Prioridad media", '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/>'], ["baja", "Prioridad baja", '<path d="m4 7 6 6 4-4 6 6"/><path d="M20 10v5h-5"/>']];
+    const ESTO = { listo: "Listo", en_curso: "En curso", sin_empezar: "Sin empezar" };
+    const col = ([k, t, svg]) => {
+      const lista = ps.filter((p) => p.prioridad === k).sort((a, b) => ["en_curso", "sin_empezar", "listo"].indexOf(a.estado) - ["en_curso", "sin_empezar", "listo"].indexOf(b.estado));
+      const filas = lista.map((p) => {
+        const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id), h = ts.filter((t) => t.hecha).length;
+        const pc = ts.length ? Math.round((h / ts.length) * 100) : p.estado === "listo" ? 100 : 0;
+        return `<button class="gp-proy e-${p.estado}${p.standby ? " sb" : ""}" type="button"><span class="gp-est" title="${ESTO[p.estado]}"></span><span class="gp-nom">${esc(p.nombre)}</span><b>${pc}%</b><span class="gp-barra"><i style="width:${pc}%"></i></span></button>
+          <div class="gp-tareas" hidden><div class="gp-tcab"><span>${h} de ${ts.length} tareas completadas</span><a class="gp-abrir" data-id="${p.id}">Abrir proyecto</a></div>
+            ${ts.length ? ts.map((t) => `<div class="gp-t ${t.hecha ? "ok" : ""}"><span class="gp-ck"></span>${esc(t.texto)}${t.encargado ? `<small>${esc(t.encargado)}</small>` : ""}</div>`).join("") : `<div class="gp-t vacio">Este proyecto no tiene tareas.</div>`}</div>`;
+      }).join("");
+      const hl = lista.filter((p) => p.estado === "listo").length;
+      return `<div class="gp-col p-${k}"><div class="gp-ccab"><span class="gp-cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></span><h4>${t}</h4><span class="gp-cnum">${hl}/${lista.length} listos</span></div>
+        ${filas || `<p class="gp-nada">No hay proyectos con esta prioridad.</p>`}</div>`;
+    };
+    return `<section class="gp">
+      <div class="gp-top"><div class="gp-tt"><small>Efectividad de ejecución</small><span>${hechos} de ${tot} proyectos terminados</span></div>
+        <div class="gp-fila"><b class="gp-pct">${pct}%</b><div class="gp-bloques">${bloques}</div></div>
+        <div class="gp-res"><div><i class="d-listo"></i><b>${hechos}</b> Terminados</div><div><i class="d-curso"></i><b>${cuenta("en_curso")}</b> En proceso</div><div><i class="d-pend"></i><b>${cuenta("sin_empezar")}</b> Pendientes</div></div></div>
+      <div class="gp-cols">${PRI.map(col).join("")}</div>
+      <p class="gp-ayuda">Toca un proyecto para ver sus tareas.</p></section>`;
+  }
   function pintarDash() {
     const cont = document.getElementById("vistaDash"), jefa = yo === JEFA;
     const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -3388,6 +3461,7 @@
           <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div></div>
       <div class="kpis dk-kpis">${[["t-listo", "listo", "Proyectos completados", "kListos"], ["t-en_curso", "en_curso", "Proyectos activos", "kActivos"], ["t-listo", "listo", "Tareas completadas", "kTareasOk"], ["t-sin_empezar", "sin_empezar", "Tareas pendientes", "kPend"]].map(([c, ico, t, id]) => `
         <div class="kpi ${c}"><div class="kpi-ico">${ICONOS[ico]}</div><div class="kpi-txt">${t}</div><div class="kpi-num">${document.getElementById(id).textContent}</div></div>`).join("")}</div>
+      ${gestionProyectos()}
       ${vistaTabla && jefa ? `
       <div class="dt-caja"><table class="dt">
         <thead><tr><th rowspan="2">Colaborador</th><th colspan="3" class="p1">Proyectos del mes (30%)</th><th colspan="3" class="p2">Tickets a tiempo (30%)</th><th colspan="2" class="p3">Puntualidad (20%)</th><th class="p4">Vestimenta (20%)</th><th colspan="2" class="pf">Evaluación final</th></tr>
@@ -3424,6 +3498,8 @@
           <div class="dm-box"><h5>${t}</h5>${EVALUADOS.map((n) => { const r = res.find((x) => x.n === n); return `
             <div class="dm-fila"><span class="dm-nom"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</span>
               <input type="number" min="0" max="${max}" value="${MANUAL[mesDash][n][c]}" data-n="${n}" data-c="${c}" /><em class="t-${tono(r.v[k])}">${r.v[k].toFixed(1)} pts</em></div>`; }).join("")}</div>`).join("")}</div></div></section>` : ""}`;
+    cont.querySelectorAll(".gp-proy").forEach((b) => (b.onclick = () => { b.classList.toggle("abierto"); b.nextElementSibling.hidden = !b.classList.contains("abierto"); }));
+    cont.querySelectorAll(".gp-abrir").forEach((b) => (b.onclick = () => abrirProyecto(+b.dataset.id, true)));
     cont.querySelector("#dashMes").onchange = (e) => { mesDash = e.target.value; pintarDash(); };
     cont.querySelector("#dashVista")?.addEventListener("click", () => { vistaTabla = !vistaTabla; pintarDash(); });
     const menuD = cont.querySelector(".dash-menu");
