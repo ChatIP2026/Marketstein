@@ -1679,6 +1679,7 @@
   .det-peligro .det-borrar:hover { background: #fee2e2; }
   .det-peligro .det-standby:not(.on) { color: #18181b; background: #fff; border: 1px solid #a1a1aa; }
   .det-peligro .det-standby:not(.on):hover { background: #f4f4f5; }
+  .cal-item[data-id] { cursor: pointer; transition: transform .15s, box-shadow .15s; } .cal-item[data-id]:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.08); }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2221,7 +2222,7 @@
     const delDia = lista.filter((p) => p.fecha === diaSel);
     const fechaSel = new Date(diaSel + "T00:00").toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" });
     const lateral = delDia.length
-      ? delDia.map((p) => `<div class="cal-item a-${p.estado}"><b>${esc(p.nombre)}</b>${pill(p.estado)}
+      ? delDia.map((p) => `<div class="cal-item a-${p.estado}" data-id="${p.id}" title="Abrir proyecto"><b>${esc(p.nombre)}</b>${pill(p.estado)}
           <small>${p.encargados.join(", ") || "Sin encargado"} | Prioridad ${p.prioridad}</small></div>`).join("")
       : `<div class="cal-vacio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Sin proyectos que venzan este día</div>`;
 
@@ -2236,6 +2237,7 @@
       <aside class="cal-lado"><h4>${mayus(fechaSel)}</h4>${lateral}</aside>
     </div>`;
     cont.querySelectorAll(".cal-dia").forEach((b) => (b.onclick = () => { diaSel = b.dataset.iso; pintar(); }));
+    cont.querySelectorAll(".cal-item[data-id]").forEach((it) => (it.onclick = () => abrirProyecto(+it.dataset.id, true)));
     calPrev.onclick = () => { mesCal.setMonth(mesCal.getMonth() - 1); pintar(); };
     calNext.onclick = () => { mesCal.setMonth(mesCal.getMonth() + 1); pintar(); };
     calHoy.onclick = () => { mesCal = new Date(); mesCal.setDate(1); diaSel = HOY; pintar(); };
