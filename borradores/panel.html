@@ -1732,6 +1732,7 @@
   .gp-ayuda { font-size: .75rem; color: #a1a1aa; margin: 8px 2px 0; }
   @media (max-width: 1000px) { .gp-cols { grid-template-columns: 1fr; } }
   @media (max-width: 760px) { .gp-pct { font-size: 2.2rem; } .gp-bloques i { height: 24px; } .gp-res { grid-template-columns: 1fr; } .gp-fila { gap: 12px; } }
+  .dash-cab { margin-top: 34px !important; padding-top: 26px; border-top: 1px solid #ececef; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3412,7 +3413,7 @@
         <div class="gp-fila"><b class="gp-pct">${pct}%</b><div class="gp-bloques">${bloques}</div></div>
         <div class="gp-res"><div><i class="d-listo"></i><b>${hechos}</b> Terminados</div><div><i class="d-curso"></i><b>${cuenta("en_curso")}</b> En proceso</div><div><i class="d-pend"></i><b>${cuenta("sin_empezar")}</b> Pendientes</div></div></div>
       <div class="gp-cols">${PRI.map(col).join("")}</div>
-      <p class="gp-ayuda">Toca un proyecto para ver sus tareas.</p></section>`;
+      </section>`;
   }
   function pintarDash() {
     const cont = document.getElementById("vistaDash"), jefa = yo === JEFA;
@@ -3455,13 +3456,14 @@
           <text x="${gx + (gw - 2) / 2}" y="${BH - 8}" class="dg-t" text-anchor="middle">Sem ${k + 1}</text></g>`; }).join("");
     const defs = `<defs><pattern id="rayas" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/></pattern>${SERIES_B.map(([k, , c]) => `<linearGradient id="bg-${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}"/><stop offset=".55" stop-color="${c}" stop-opacity=".9"/><stop offset="1" stop-color="${c}" stop-opacity=".12"/></linearGradient>`).join("")}</defs>`;
     cont.innerHTML = `
-      <div class="mis-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
-        <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg></span>Vista gráfica` : `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></span>Vista detallada`}</button>` : ""}
-          <div class="dash-desc"><button class="cal-btn" id="dashDesc"><span class="desc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><g class="desc-toque"><g class="desc-flecha"><path d="M12 5v10M7.5 10.5 12 15l4.5-4.5"/></g></g><path class="desc-suelo" d="M5 20h14"/></svg></span>Descargar</button><div class="dash-menu" hidden><button data-d="pdf">PDF (para imprimir o enviar)</button><button data-d="csv">Excel (.csv)</button></div></div>
-          <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div></div>
+      <div class="mis-cab"><div><h2>Gestión de proyectos</h2><p>Avance de todos los proyectos del equipo | toca uno para ver sus tareas.</p></div></div>
       <div class="kpis dk-kpis">${[["t-listo", "listo", "Proyectos completados", "kListos"], ["t-en_curso", "en_curso", "Proyectos activos", "kActivos"], ["t-listo", "listo", "Tareas completadas", "kTareasOk"], ["t-sin_empezar", "sin_empezar", "Tareas pendientes", "kPend"]].map(([c, ico, t, id]) => `
         <div class="kpi ${c}"><div class="kpi-ico">${ICONOS[ico]}</div><div class="kpi-txt">${t}</div><div class="kpi-num">${document.getElementById(id).textContent}</div></div>`).join("")}</div>
       ${gestionProyectos()}
+      <div class="mis-cab dash-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
+        <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg></span>Vista gráfica` : `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></span>Vista detallada`}</button>` : ""}
+          <div class="dash-desc"><button class="cal-btn" id="dashDesc"><span class="desc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><g class="desc-toque"><g class="desc-flecha"><path d="M12 5v10M7.5 10.5 12 15l4.5-4.5"/></g></g><path class="desc-suelo" d="M5 20h14"/></svg></span>Descargar</button><div class="dash-menu" hidden><button data-d="pdf">PDF (para imprimir o enviar)</button><button data-d="csv">Excel (.csv)</button></div></div>
+          <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div></div>
       ${vistaTabla && jefa ? `
       <div class="dt-caja"><table class="dt">
         <thead><tr><th rowspan="2">Colaborador</th><th colspan="3" class="p1">Proyectos del mes (30%)</th><th colspan="3" class="p2">Tickets a tiempo (30%)</th><th colspan="2" class="p3">Puntualidad (20%)</th><th class="p4">Vestimenta (20%)</th><th colspan="2" class="pf">Evaluación final</th></tr>
@@ -3539,7 +3541,7 @@
       g.onmouseleave = () => { g.classList.remove("on"); btip.hidden = true; };
     });
     { const act = [...mapaT.values()].filter((t) => mapaP.has(t.proyecto_id) && (mapaP.get(t.proyecto_id).fecha_limite || "").slice(0, 7) === mesDash).length + tickets.filter((t) => t.fecha.slice(0, 7) === mesDash).length;
-      if (!act) cont.querySelector(".mis-cab")?.insertAdjacentHTML("afterend", `<div class="vacio-grande vg-dash"><span class="vg-rb">${rbMini()}</span><b>Aún no hay actividad este mes</b><p>Los puntajes se calculan con las tareas y los tickets del mes. Mientras no haya, todos parten en 20.</p></div>`); }
+      if (!act) cont.querySelector(".dash-cab")?.insertAdjacentHTML("afterend", `<div class="vacio-grande vg-dash"><span class="vg-rb">${rbMini()}</span><b>Aún no hay actividad este mes</b><p>Los puntajes se calculan con las tareas y los tickets del mes. Mientras no haya, todos parten en 20.</p></div>`); }
   }
 
   try { document.documentElement.style.setProperty("--conejo", `url(${CONEJO})`); } catch (e) {}
