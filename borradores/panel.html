@@ -1657,10 +1657,13 @@
   .te-datos .te-full b { white-space: normal; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .det-cab h2 { overflow-wrap: anywhere; }
   .tk-acc .nuevo-btn:hover, .tk-form .nuevo-btn:hover, .tk-nuevo:hover { background: #262626 !important; }
+  .ico-in { width: 1.05em; height: 1.05em; vertical-align: -.17em; margin-right: .35em; flex: none; display: inline-block; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
   // nada de lo que hagas aquí se guarda ni afecta a la página real.
+  const ICI = {"ok": "<path d=\"M20 6 9 17l-5-5\"/>", "chat": "<path d=\"M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12Z\"/>", "lapiz": "<path d=\"M4 20h4L19 9l-4-4L4 16v4Z\"/><path d=\"m13.5 6.5 4 4\"/>", "correo": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"m3 7 9 6 9-6\"/>", "reloj": "<circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2.5 2M5 3 2 6M19 3l3 3\"/>", "carpeta": "<path d=\"M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z\"/>", "enlace": "<path d=\"M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1\"/><path d=\"M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1\"/>", "equipo": "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5\"/><path d=\"M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c2 .6 3.5 2.4 3.5 5.4\"/>", "trofeo": "<path d=\"M8 4h8v5a4 4 0 0 1-8 0Z\"/><path d=\"M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8\"/>"};
+  const ic = (n) => `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICI[n]}</svg>`;
   const HOY = new Date().toISOString().slice(0, 10);
   const COLORES = { Ariana: "#f4a6c1", Carlos: "#9fd3f0", Pierina: "#c3b5f7", Hilary: "#f7d38b" };
   // Fotos del equipo (quien no tiene foto muestra su inicial sobre su color)
@@ -1761,7 +1764,7 @@
       it.title = "Marcar como hecha";
       it.innerHTML = `<div class="caja"></div><div style="flex:1;min-width:0"><span class="t-texto">${esc(t.texto)}</span>
         <span class="sub">${pr ? esc(pr.nombre) : ""}${plazo !== null ? ` | <span class="${plazo <= 1 ? "rojo-txt" : ""}">${textoPlazo(plazo)}</span>` : ""}</span></div>${t.encargado ? avMini(t.encargado) : ""}`;
-      it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); armar(); }); }; // solo en esta vista previa
+      it.onclick = () => { t.hecha = true; ajustarEstado(t.proyecto_id); armar(); avisar(`${ic("ok")}<b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); armar(); }); }; // solo en esta vista previa
       cont.append(it);
     }
     // Completadas: se pueden desmarcar si se marcaron por error
@@ -1831,7 +1834,7 @@
   function cerrarProyecto() { abiertoId = null; document.body.classList.remove("con-detalle"); }
   // ===== Detalle del proyecto: se puede editar todo, borrar y asignar tareas =====
   const avMini = (n) => `<i class="av-mini" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
-  const ANIMO = ["¡Tú puedes con esto! 💪", "Una tarea a la vez 🐰", "¡Vas muy bien, sigue así!", "Pequeños pasos, grandes logros ✨", "¡Hoy es un buen día para avanzar!", "Tachar tareas se siente genial ✅", "¡Ya casi lo tienes!", "Tu esfuerzo se nota 👏", "Respira, enfócate y dale 🚀", "¡Un empujoncito más!", "El equipo cuenta contigo 🤝", "Lo difícil se vuelve fácil haciéndolo", "¡Eres más rápido que un conejo! 🐇", "Termina una y celebra 🎉", "Cada tarea hecha suma ⭐", "¡Qué buen ritmo llevas!", "Hazlo simple, hazlo bien", "Tu yo del viernes te lo agradecerá 😉", "¡Modo enfoque activado! 🎯", "Lo estás haciendo increíble", "Paso a paso se llega lejos 🐾", "¡A darle con todo!", "Un café ☕ y a terminar", "Primero lo urgente, luego lo importante", "¡Confía en tu talento!", "Hoy avanzas, mañana brillas 🌟", "Nada como la satisfacción de terminar", "¡Que no te gane el plazo! ⏰", "Tienes todo para lograrlo", "¡Vamos, que ya falta poco!", "La constancia gana carreras 🏁", "Haz que hoy cuente", "¡Tu creatividad es tu superpoder! 🎨", "Divide y vencerás ✂️", "¡Un check más a la lista!", "Lo bien hecho no tiene apuro, pero sí fecha 😄", "¡Sigue así, crack!", "Cada avance te acerca a la meta 🥕", "¡Hoy se termina! 💥", "Orgulloso de tu trabajo 🐰💜"];
+  const ANIMO = ["¡Tú puedes con esto!", "Una tarea a la vez", "¡Vas muy bien, sigue así!", "Pequeños pasos, grandes logros", "¡Hoy es un buen día para avanzar!", "Tachar tareas se siente genial", "¡Ya casi lo tienes!", "Tu esfuerzo se nota", "Respira, enfócate y dale", "¡Un empujoncito más!", "El equipo cuenta contigo", "Lo difícil se vuelve fácil haciéndolo", "¡Eres más rápido que un conejo!", "Termina una y celebra", "Cada tarea hecha suma", "¡Qué buen ritmo llevas!", "Hazlo simple, hazlo bien", "Tu yo del viernes te lo agradecerá", "¡Modo enfoque activado!", "Lo estás haciendo increíble", "Paso a paso se llega lejos", "¡A darle con todo!", "Un café y a terminar", "Primero lo urgente, luego lo importante", "¡Confía en tu talento!", "Hoy avanzas, mañana brillas", "Nada como la satisfacción de terminar", "¡Que no te gane el plazo!", "Tienes todo para lograrlo", "¡Vamos, que ya falta poco!", "La constancia gana carreras", "Haz que hoy cuente", "¡Tu creatividad es tu superpoder!", "Divide y vencerás", "¡Un check más a la lista!", "Lo bien hecho no tiene apuro, pero sí fecha", "¡Sigue así, crack!", "Cada avance te acerca a la meta", "¡Hoy se termina!", "Orgulloso de tu trabajo"];
   const animoDe = {}, burbujaVista = {};
   function pintarDetalle() {
     requestAnimationFrame(() => document.querySelectorAll("#detalle .det-burbuja").forEach(ajustarGlobo));
@@ -2457,7 +2460,7 @@
     if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else if (p === "personas") pintarPersonas(); else if (p === "dashboard") pintarDash(); else armar();
   }
   document.querySelectorAll("nav a").forEach((a) => (a.onclick = () => {
-    if (a.dataset.p === "pronto") return avisar(`<b>${a.dataset.n}</b> estará disponible pronto 🐰`);
+    if (a.dataset.p === "pronto") return avisar(`<b>${a.dataset.n}</b> estará disponible pronto`);
     irA(a.dataset.p);
   }));
   document.querySelector(".logo-caja").onclick = () => irA("inicio");
@@ -2508,7 +2511,7 @@
         <h4>${titDia}</h4>
         ${delDia.length ? delDia.map(fila).join("") : `<div class="pronto-ok">Nada vence este día.</div>`}
         <h4 class="ec-sub">Próximos vencimientos</h4>
-        ${prox.length ? prox.map((p) => { const d = diasHasta(p.fecha_limite); return `<div class="ec-prox"><span class="bc-f ${d <= 5 ? "urgente" : d <= 14 ? "proxima" : "lejos"}">${d <= 5 ? "⏰ " : ""}${d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(p.fecha_limite)}</span>${fila(p)}</div>`; }).join("") : `<div class="pronto-ok">No hay vencimientos próximos.</div>`}
+        ${prox.length ? prox.map((p) => { const d = diasHasta(p.fecha_limite); return `<div class="ec-prox"><span class="bc-f ${d <= 5 ? "urgente" : d <= 14 ? "proxima" : "lejos"}">${d <= 5 ? ic("reloj") : ""}${d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(p.fecha_limite)}</span>${fila(p)}</div>`; }).join("") : `<div class="pronto-ok">No hay vencimientos próximos.</div>`}
       </aside></div>`;
   }
   let entornoSel = null, filtroMis = "pendientes";
@@ -2571,7 +2574,7 @@
     else if (p.fecha_limite) {
       const d = diasHasta(p.fecha_limite);
       const txt = d < 0 ? "Vencido" : d === 0 ? "Hoy" : d === 1 ? "Mañana" : fmt(p.fecha_limite);
-      fecha = d <= 5 ? `<span class="bc-f urgente">⏰ ${txt}</span>` : d <= 14 ? `<span class="bc-f proxima">${txt}</span>` : `<span class="bc-f lejos">${txt}</span>`;
+      fecha = d <= 5 ? `<span class="bc-f urgente">${ic("reloj")}${txt}</span>` : d <= 14 ? `<span class="bc-f proxima">${txt}</span>` : `<span class="bc-f lejos">${txt}</span>`;
     }
     return `Tareas pendientes <b>${pend}/${ts.length}</b> <span class="bc-sep">|</span> ${fecha}`;
   }
@@ -2580,8 +2583,8 @@
     const h = ts.filter((t) => t.hecha).length;
     const mias = ts.filter((t) => t.encargado === yo && !t.hecha).length;
     const ult = ts.filter((t) => t.hecha).sort((a, b) => (b.hecha_at || "").localeCompare(a.hecha_at || ""))[0];
-    const msg = p.estado === "listo" ? "¡Proyecto terminado! Todas las tareas están listas 🎉"
-      : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto ⏰" : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
+    const msg = p.estado === "listo" ? "¡Proyecto terminado! Todas las tareas están listas"
+      : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto." : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
       : "No tienes nada pendiente aquí por ahora.";
     return `<article class="bc bcn a-${p.estado}" data-id="${p.id}">
       <div class="bcn-a">${p.solicitado_por ? `<div class="bc-yo" title="Ticket aceptado"><span>Solicitado por</span>${av(p.solicitado_por.nombre)}<b>${esc(p.solicitado_por.nombre)}</b></div>` : `<div class="bc-yo bc-equipo" title="Proyecto interno del equipo"><span>Proyecto del equipo</span><span class="bc-avs">${(p.encargados.length ? p.encargados : [p.creado_por || JEFA]).map((n) => av(n)).join("")}</span>${p.encargados.length === 1 ? `<b>${esc(p.encargados[0])}</b>` : p.encargados.length ? "" : "<b>Sin encargado</b>"}</div>`}</div>
@@ -2606,7 +2609,7 @@
     box.innerHTML = `
       <div class="feed-cab"><div><h3>${esc(p.nombre)}</h3><p>${p.fecha_limite ? `Vence el ${fmt(p.fecha_limite)}` : "Sin fecha límite"}</p></div><button class="cal-btn" id="feedAbrir">Ver proyecto</button></div>
       <div class="feed-mias"><h4>Te toca a ti <span class="chip">${mias.length}</span></h4>
-        ${mias.length ? mias.map((t) => `<div class="mt" data-id="${t.id}"><button class="mt-check" title="Marcar como hecha"></button><span class="mt-texto">${esc(t.texto)}</span></div>`).join("") : `<div class="pronto-ok">No tienes tareas pendientes en este proyecto. 🎉</div>`}
+        ${mias.length ? mias.map((t) => `<div class="mt" data-id="${t.id}"><button class="mt-check" title="Marcar como hecha"></button><span class="mt-texto">${esc(t.texto)}</span></div>`).join("") : `<div class="pronto-ok">No tienes tareas pendientes en este proyecto.</div>`}
         ${misHechas.length ? `<details class="hechas"><summary>Completadas <span>${misHechas.length}</span></summary>${misHechas.map((t) => `<div class="mt hecha" data-id="${t.id}"><button class="mt-check ok" title="Desmarcar">✓</button><span class="mt-texto">${esc(t.texto)}</span></div>`).join("")}</details>` : ""}</div>
       <h4 class="feed-sub">Actividad</h4>
       <div class="linea">${ev.map((e) => `
@@ -2626,7 +2629,7 @@
       t.hecha = true; t.hecha_at = new Date().toISOString(); ajustarEstado(t.proyecto_id);
       fila.classList.add("hecha"); fila.style.opacity = .4;
       setTimeout(pintarMis, 400);
-      avisar(`✅ <b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); pintarMis(); });
+      avisar(`${ic("ok")}<b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; ajustarEstado(t.proyecto_id); pintarMis(); });
     }));
   }
   pintarPerfil();
@@ -2886,7 +2889,7 @@
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
       ${(t.archivos || []).length ? bloque(`Archivos adjuntos <span class="tkd-n">${t.archivos.length}</span>`, `<div class="tk-miniaturas">${t.archivos.map((a, i) => `<button type="button" class="tk-mini ver" data-ver="${i}" title="${esc(a.n)}">${a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<span class="tk-mini-doc">PDF</span>`}<small>${esc(a.n)}</small></button>`).join("")}</div>`) : ""}
-      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">📁 Carpeta de ${esc(t.solicitante)} | busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">🔗 ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
+      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">${ic("carpeta")}Carpeta de ${esc(t.solicitante)} | busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">${ic("enlace")} ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
       ${bloque(`Chat del ticket${(t.comentarios || []).length ? ` <span class="tkd-n">${t.comentarios.length}</span>` : ""}`, `<p class="tkc-ayuda">Escribe aquí indicaciones extra, dudas o cambios. Le llegará una notificación a ${t.solicitante === yo ? (t.asignado || "marketing") : esc(t.solicitante)}.</p><div class="tkc-lista">${(t.comentarios || []).map((c) => `<div class="tkc ${c.quien === yo ? "mio" : ""}"><i class="av" style="${fondoAv(c.quien)}">${letraAv(c.quien)}</i><div><b>${c.quien} <span>${hace(c.at)}</span></b><p>${esc(c.txt)}</p></div></div>`).join("") || '<div class="tkc-vacio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg><span>Aún no hay mensajes. Escribe el primero.</span></div>'}</div>
         ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Ej.: ¿Podemos usar el logo en blanco? Va sobre fondo oscuro." /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} | último ${hace(t.historial.at(-1).at)}</span></summary>
@@ -2905,7 +2908,7 @@
       const pid = Date.now();
       mapaP.set(pid, { id: pid, nombre: t.titulo, estado: "sin_empezar", prioridad: prio === "urgente" ? "alta" : prio, encargados: [asig], fecha_limite: t.fecha, created_at: new Date().toISOString(), creado_por: JEFA, solicitado_por: { nombre: t.solicitante, area: t.area }, ticket: t.id });
       mapaT.set(pid + 1, { id: pid + 1, proyecto_id: pid, texto: `Entregar: ${t.titulo}`, hecha: false, encargado: asig, created_at: new Date().toISOString() });
-      t.proyecto = pid; despues(`✅ Ticket aceptado y asignado a <b>${asig}</b>`);
+      t.proyecto = pid; despues(`${ic("ok")}Ticket aceptado y asignado a <b>${asig}</b>`);
     });
     const motivo = (m) => { modo = m; d.querySelector("#tkMotivo").hidden = false; d.querySelector("#tkMotivoOk").hidden = false; d.querySelector("#tkMotivo").placeholder = m === "info" ? "¿Qué información falta?" : "¿Por qué se rechaza?"; d.querySelector("#tkMotivo").focus(); };
     d.querySelector("#tkInfo")?.addEventListener("click", () => motivo("info"));
@@ -2925,10 +2928,10 @@
       if (!/^https?:\/\//.test(u)) return avisar("Pega el enlace del archivo final (debe empezar con https://)");
       t.entregable = u; t.estado = "entregado"; registrar(t, "Lo marcó como entregado y adjuntó el entregable");
       if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = "listo"; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = true)); }
-      despues("✅ Ticket <b>entregado</b>");
+      despues(`${ic("ok")}Ticket <b>entregado</b>`);
     });
     // Comentarios
-    const enviarCom = () => { const i = d.querySelector("#tkComTxt"), v = i.value.trim(); if (!v) return; (t.comentarios ||= []).push({ quien: yo, txt: v, at: new Date().toISOString() }); despues("💬 Comentario enviado"); };
+    const enviarCom = () => { const i = d.querySelector("#tkComTxt"), v = i.value.trim(); if (!v) return; (t.comentarios ||= []).push({ quien: yo, txt: v, at: new Date().toISOString() }); despues(ic("chat") + "Comentario enviado"); };
     d.querySelector("#tkComOk")?.addEventListener("click", enviarCom);
     d.querySelector("#tkComTxt")?.addEventListener("keydown", (e) => { if (e.key === "Enter") enviarCom(); });
     // Edición (Hilary)
@@ -2941,7 +2944,7 @@
       if (!cambios.length) return avisar("No hay cambios que guardar");
       t.prioridad = nP; if (nF) t.fecha = nF; t.asignado = nA;
       if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.encargados = [nA]; p.fecha_limite = t.fecha; p.prioridad = nP === "urgente" ? "alta" : nP; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.encargado = nA)); }
-      registrar(t, "Editó el ticket: " + cambios.join(" | ")); despues("✏️ Ticket actualizado");
+      registrar(t, "Editó el ticket: " + cambios.join(" | ")); despues(`${ic("lapiz")}Ticket actualizado`);
     });
     d.querySelectorAll("[data-e]").forEach((b) => (b.onclick = () => {
       if (b.dataset.e === t.estado) return;
@@ -3025,7 +3028,7 @@
       if (!f.fecha.value || !min) return (aviso.hidden = true);
       const dd = diasHasta(f.fecha.value);
       aviso.hidden = dd >= min;
-      aviso.textContent = `⏰ Un ${f.tipo.value.toLowerCase()} suele necesitar al menos ${min} días. Puedes enviarlo igual; Hilary verá si es posible.`;
+      aviso.innerHTML = `${ic("reloj")}Un ${f.tipo.value.toLowerCase()} suele necesitar al menos ${min} días. Puedes enviarlo igual; Hilary verá si es posible.`;
     };
     f.fecha.onchange = revisarFecha;
     const archivos = [], drop = d.querySelector("#tkDrop"), inp = d.querySelector("#tkArch"), minis = d.querySelector("#tkMinis");
@@ -3112,7 +3115,7 @@
           <div class="per-nom"><b>${esc(x.nombre)} ${esc(x.apellido)}</b><small><span class="per-usu">@${esc(usuarioDe(x))}</span> | ${esc(x.correo)}</small></div>
           <div class="per-col"><small>Área</small><span class="tk-chip">${esc(x.area)}</span></div>
           <div class="per-col"><small>Rol</small><span class="per-rol r-${x.rol}">${ROLES[x.rol]}</span></div>
-          <div class="per-col"><small>Referencias</small>${x.carpeta ? `<a class="tk-chip enl" href="#" onclick="return false">📁 Su carpeta</a>` : `<span class="per-nada">—</span>`}</div>
+          <div class="per-col"><small>Referencias</small>${x.carpeta ? `<a class="tk-chip enl" href="#" onclick="return false">${ic("carpeta")}Su carpeta</a>` : `<span class="per-nada">—</span>`}</div>
           <div class="per-col"><small>Estado</small>${x.inactiva ? `<span class="per-est off">● Desactivada</span>` : x.activa ? `<span class="per-est ok">● Activa</span>` : `<span class="per-est">● Aún no entra</span>`}</div>
           <div class="per-acc">${!x.activa && !x.inactiva ? `<button class="cal-btn" data-reenviar="${personas.indexOf(x)}">Reenviar acceso</button>` : ""}
             <button class="per-ico" data-reset="${personas.indexOf(x)}" title="Restablecer contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7M17 6l2.5 2.5M14.5 8.5 16 10"/></svg></button>
@@ -3154,7 +3157,7 @@
     const f = d.querySelector("form");
     const verRol = () => {
       const mk = f.area.value === "Marketing";
-      d.querySelector("#perRol").innerHTML = mk ? "👥 Será parte del <b>equipo de marketing</b>: verá Inicio, Mi entorno, Tickets y Dashboard." : "📨 Será de <b>otra área</b>: solo podrá enviar tickets y ver los suyos.";
+      d.querySelector("#perRol").innerHTML = mk ? ic("equipo") + "Será parte del <b>equipo de marketing</b>: verá Inicio, Mi entorno, Tickets y Dashboard." : ic("correo") + "Será de <b>otra área</b>: solo podrá enviar tickets y ver los suyos.";
       d.querySelector("#perCarpeta").hidden = mk; d.querySelector("#perAdminL").hidden = !mk;
     };
     let usuTocado = !!ed;
@@ -3191,7 +3194,7 @@
         Object.assign(ed, { apellido: v("apellido"), correo: v("correo"), usuario: usu, area: f.area.value, carpeta: mk ? "" : (v("carpeta") || carpetaDe(ed.nombre)) });
         if (ed.rol !== "jefa") ed.rol = mk ? "equipo" : "solicitante";
         if (ed.rol === "solicitante") SOLICITANTES[ed.nombre] = ed.area; else delete SOLICITANTES[ed.nombre];
-        pintarPerfil(); pintarPersonas(); cerrarProyecto(); avisar(`✏️ Datos de <b>${esc(ed.nombre)}</b> actualizados`); return;
+        pintarPerfil(); pintarPersonas(); cerrarProyecto(); avisar(`${ic("lapiz")}Datos de <b>${esc(ed.nombre)}</b> actualizados`); return;
       }
       if (!v("nombre") || !v("apellido") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa nombre, apellido y un correo válido."; return; }
       if (personas.some((x) => x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe una cuenta con ese correo."; return; }
@@ -3236,7 +3239,7 @@
     d.innerHTML = `<div class="det-cab"><div><span class="per-est ok">✓ ${reenvio ? "Acceso reenviado" : "Cuenta creada"}</span><h2 style="margin-top:8px">Correo enviado a ${esc(x.nombre)}</h2><p class="tk-sub">Así le llegará a ${esc(x.correo)}</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <div class="correo-prev">
         <div class="cp-logo"><img src="${CONEJO}" alt="" /></div>
-        <h3>¡Hola, ${esc(x.nombre)}! 👋</h3>
+        <h3>¡Hola, ${esc(x.nombre)}!</h3>
         <p>${x.rol === "solicitante" ? "Ya tienes acceso a <b>RABBIT AI</b>, donde puedes pedir piezas al equipo de marketing y seguir su avance." : "Ya eres parte de <b>RABBIT AI</b>, el panel del equipo de marketing."}</p>
         <div class="cp-cred"><div><small>Usuario</small><b>${esc(usuarioDe(x))}</b></div><div><small>Contraseña temporal</small><b class="mono">${esc(clave)}</b></div></div>
         <a class="cp-btn" href="#" onclick="return false">Entrar a Rabbit</a>
@@ -3245,7 +3248,7 @@
       <p class="det-nota">Vista previa: no se envía ningún correo real.</p>`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     document.body.classList.add("con-detalle");
-    avisar(`📧 Correo de bienvenida enviado a <b>${esc(x.nombre)}</b>`);
+    avisar(`${ic("correo")}Correo de bienvenida enviado a <b>${esc(x.nombre)}</b>`);
   }
 
   // ===== Dashboard: rendimiento mensual del equipo (escala 0 a 20 por pilar) =====
@@ -3356,7 +3359,7 @@
         <tbody>${[...res].sort((a, b) => b.final - a.final).map((r) => { const mx = Math.max(...res.map((x) => x.final)), c = (v) => `<td class="dt-n t-${tono(v)}">${v.toFixed(2)}</td>`; return `<tr>
           <td><span class="dm-nom"><i class="av" style="${fondoAv(r.n)}">${letraAv(r.n)}</i>${r.n}</span></td>
           <td>${r.raw.tareas}</td><td>${r.raw.hechas}</td>${c(r.v.proy)}<td>${r.raw.tks}</td><td>${r.raw.aTiempo}</td>${c(r.v.tick)}<td>${r.m.tardanzas}</td>${c(r.v.punt)}${c(r.v.vest)}
-          <td class="dt-n dt-final t-${tono(r.final)}">${r.final.toFixed(2)}</td><td>${r.final === mx ? `<span class="dt-gan">🏆 Ganador</span>` : "Finalista"}</td></tr>`; }).join("")}</tbody>
+          <td class="dt-n dt-final t-${tono(r.final)}">${r.final.toFixed(2)}</td><td>${r.final === mx ? `<span class="dt-gan">${ic("trofeo")}Ganador</span>` : "Finalista"}</td></tr>`; }).join("")}</tbody>
         <tfoot><tr><td>Promedio del equipo</td><td colspan="3"><span class="dt-prom">${prom("proy").toFixed(2)}</span></td><td colspan="3"><span class="dt-prom">${prom("tick").toFixed(2)}</span></td><td colspan="2"><span class="dt-prom">${prom("punt").toFixed(2)}</span></td><td><span class="dt-prom">${prom("vest").toFixed(2)}</span></td><td colspan="2"><span class="dt-prom dt-prom-final">${(res.reduce((a, r) => a + r.final, 0) / res.length).toFixed(2)}</span></td></tr></tfoot>
       </table></div>
 ` : `
