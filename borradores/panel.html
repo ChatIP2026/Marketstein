@@ -1784,7 +1784,8 @@
   #lateral .ev-form-f { display: flex; gap: 8px; } #lateral .ev-form-f > * { flex: 1; }
   #lateral .ev-form .nuevo-btn { justify-content: center; }
   #lateral .ev-form-f.col { flex-direction: column; }
-  @media (min-width: 761px) { #vistaInicio, #vistaInicio .principal, #vistaInicio .tablero-caja, #vistaInicio #tablero, #vistaInicio .columna { height: auto !important; max-height: none !important; min-height: 0 !important; } #vistaInicio, #vistaInicio .tablero-caja, #vistaInicio #tablero, #vistaInicio .columna { flex: none !important; } #vistaInicio .lateral { overflow: visible !important; height: auto !important; max-height: none !important; } #vistaInicio .lateral { align-self: start; } }
+  @media (min-width: 761px) { #vistaInicio, #vistaInicio .principal, #vistaInicio .tablero-caja, #vistaInicio #tablero, #vistaInicio .columna { height: auto !important; max-height: none !important; min-height: 0 !important; } #vistaInicio, #vistaInicio .tablero-caja, #vistaInicio #tablero, #vistaInicio .columna { flex: none !important; } #vistaInicio .lateral { overflow: visible !important; max-height: none !important; } }
+  @media (min-width: 761px) { #vistaInicio #lateral { align-self: stretch !important; display: flex !important; flex-direction: column; } #vistaInicio #lateral > div:not([hidden]) { flex: none; } #vistaInicio #lateral > .ev-caja { flex: 1 1 0 !important; min-height: 0; overflow-y: auto; scrollbar-width: thin; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2141,6 +2142,9 @@
       c.parentElement.querySelector(".mas")?.remove();
       if (c.scrollHeight > c.clientHeight + 2) c.insertAdjacentHTML("afterend", `<div class="mas">↕ Desliza para ver más</div>`);
     });
+    // El lateral termina a la misma altura que el tablero; Próximos eventos se desliza si no cabe
+    const lat = document.getElementById("lateral"), pri = document.querySelector("#vistaInicio .principal");
+    if (lat && pri) lat.style.height = innerWidth > 760 ? pri.offsetHeight + "px" : "";
   }
   addEventListener("resize", () => vistaActual === "kanban" && ajustarAltoColumnas());
 
