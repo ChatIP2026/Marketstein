@@ -1659,6 +1659,13 @@
   .ico-in { width: 1.05em; height: 1.05em; vertical-align: -.17em; margin-right: .35em; flex: none; display: inline-block; }
   .dk-kpis { margin-bottom: 18px; } .kpi-de { font-size: .55em; font-weight: 600; opacity: .55; margin-left: 2px; }
   .per-acc > * { flex: none; } .per-acc [data-reenviar] { white-space: nowrap; }
+  /* Separación clara entre categorías de Mi entorno */
+  .ent-div { margin-bottom: 22px !important; padding: 16px 18px 18px; border-radius: 20px; background: #f6f6f7; border: 1px solid #ececef; }
+  .ent-div h3 { border-bottom: 0 !important; padding-bottom: 0 !important; margin-bottom: 14px !important; }
+  .ent-div h3 .chip { background: #fff; }
+  .ent-div.e-en_curso { background: rgba(245,158,11,.07); border-color: rgba(245,158,11,.25); }
+  .ent-div.e-listo { background: rgba(16,185,129,.06); border-color: rgba(16,185,129,.22); }
+  @media (max-width: 760px) { .ent-div { padding: 12px; border-radius: 16px; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2554,7 +2561,7 @@
       if (filtroEnt !== "todos" && filtroEnt !== e) continue;
       const grupo = lista.filter((p) => p.estado === e);
       if (!grupo.length && filtroEnt === "todos") continue;
-      html += `<section class="ent-div"><h3>${pill(e)} <span class="chip">${grupo.length}</span></h3>
+      html += `<section class="ent-div e-${e}"><h3>${pill(e)} <span class="chip">${grupo.length}</span></h3>
         ${grupo.length ? `<div class="burbujas">${grupo.map(tarjetaChat).join("")}</div>` : `<div class="ent-vacia">No tienes proyectos ${{ sin_empezar: "sin empezar", en_curso: "en curso", listo: "listos" }[e]}.</div>`}</section>`;
     }
     cont.innerHTML = html;
