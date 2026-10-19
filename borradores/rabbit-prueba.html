@@ -1657,6 +1657,7 @@
   .det-cab h2 { overflow-wrap: anywhere; }
   .tk-acc .nuevo-btn:hover, .tk-form .nuevo-btn:hover, .tk-nuevo:hover { background: #262626 !important; }
   .ico-in { width: 1.05em; height: 1.05em; vertical-align: -.17em; margin-right: .35em; flex: none; display: inline-block; }
+  .dk-kpis { margin-bottom: 18px; } .kpi-de { font-size: .55em; font-weight: 600; opacity: .55; margin-left: 2px; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3347,9 +3348,8 @@
         <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg></span>Vista gráfica` : `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></span>Vista detallada`}</button>` : ""}
           <div class="dash-desc"><button class="cal-btn" id="dashDesc"><span class="desc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><g class="desc-toque"><g class="desc-flecha"><path d="M12 5v10M7.5 10.5 12 15l4.5-4.5"/></g></g><path class="desc-suelo" d="M5 20h14"/></svg></span>Descargar</button><div class="dash-menu" hidden><button data-d="pdf">PDF (para imprimir o enviar)</button><button data-d="csv">Excel (.csv)</button></div></div>
           <label class="tk-mes"><select id="dashMes" title="Mes evaluado">${meses.map((m) => `<option value="${m}" ${m === mesDash ? "selected" : ""}>${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}</option>`).join("")}</select></label></div></div>
-      <div class="dk-grid">${PILARES.map((p) => { const v = prom(p.k); return `
-        <div class="dk" title="Promedio del equipo sobre 20 | ${p.auto ? "automático" : "manual"} | peso ${Math.round(p.peso * 100)}%"><div class="dk-cab"><span>${p.t}</span></div>
-          <div class="dk-num"><b>${v.toFixed(1)}</b><small>/ 20</small></div><small class="dk-pie">Promedio del equipo</small></div>`; }).join("")}</div>
+      <div class="kpis dk-kpis">${PILARES.map((p, i) => { const v = prom(p.k); return `
+        <div class="kpi ${["t-listo", "t-en_curso", "t-listo", "t-sin_empezar"][i]}" title="Promedio del equipo sobre 20 | ${p.auto ? "automático" : "manual"} | peso ${Math.round(p.peso * 100)}%"><div class="kpi-ico">${ICO_PILAR[p.k]}</div><div class="kpi-txt">${p.t}</div><div class="kpi-num">${v.toFixed(1)}<small class="kpi-de">/20</small></div></div>`; }).join("")}</div>
       ${vistaTabla && jefa ? `
       <div class="dt-caja"><table class="dt">
         <thead><tr><th rowspan="2">Colaborador</th><th colspan="3" class="p1">Proyectos del mes (30%)</th><th colspan="3" class="p2">Tickets a tiempo (30%)</th><th colspan="2" class="p3">Puntualidad (20%)</th><th class="p4">Vestimenta (20%)</th><th colspan="2" class="pf">Evaluación final</th></tr>
