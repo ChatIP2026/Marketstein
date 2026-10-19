@@ -1732,6 +1732,10 @@
   @media (max-width: 1000px) { .gp-cols { grid-template-columns: 1fr; } }
   @media (max-width: 760px) { .gp-pct { font-size: 2.2rem; } .gp-bloques i { height: 24px; } .gp-res { grid-template-columns: 1fr; } .gp-fila { gap: 12px; } }
   .dash-cab { margin-top: 34px !important; padding-top: 26px; border-top: 1px solid #ececef; }
+  .gp-zona { background: #f4f4f6; border: 1px solid #e4e4e7; border-radius: 24px; padding: 22px 22px 6px; }
+  .gp-zona .mis-cab { margin-top: 0; }
+  .dash-cab { border-top: 0 !important; padding-top: 0 !important; margin-top: 40px !important; }
+  @media (max-width: 760px) { .gp-zona { padding: 14px 12px 2px; border-radius: 18px; margin: 0 -6px; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3454,10 +3458,12 @@
           <text x="${gx + (gw - 2) / 2}" y="${BH - 8}" class="dg-t" text-anchor="middle">Sem ${k + 1}</text></g>`; }).join("");
     const defs = `<defs><pattern id="rayas" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/></pattern>${SERIES_B.map(([k, , c]) => `<linearGradient id="bg-${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}"/><stop offset=".55" stop-color="${c}" stop-opacity=".9"/><stop offset="1" stop-color="${c}" stop-opacity=".12"/></linearGradient>`).join("")}</defs>`;
     cont.innerHTML = `
+      <section class="gp-zona">
       <div class="mis-cab"><div><h2>Gestión de proyectos</h2><p>Avance de todos los proyectos del equipo | toca uno para ver sus tareas.</p></div></div>
       <div class="kpis dk-kpis">${[["t-listo", "listo", "Proyectos completados", "kListos"], ["t-en_curso", "en_curso", "Proyectos activos", "kActivos"], ["t-listo", "listo", "Tareas completadas", "kTareasOk"], ["t-sin_empezar", "sin_empezar", "Tareas pendientes", "kPend"]].map(([c, ico, t, id]) => `
         <div class="kpi ${c}"><div class="kpi-ico">${ICONOS[ico]}</div><div class="kpi-txt">${t}</div><div class="kpi-num">${document.getElementById(id).textContent}</div></div>`).join("")}</div>
       ${gestionProyectos()}
+      </section>
       <div class="mis-cab dash-cab"><div><h2>Dashboard</h2><p>Rendimiento del equipo de marketing | escala de 0 a 20 puntos.</p></div>
         <div class="dash-acc">${jefa ? `<button class="cal-btn" id="dashVista">${vistaTabla ? `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg></span>Vista gráfica` : `<span class="mas-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></span>Vista detallada`}</button>` : ""}
           <div class="dash-desc"><button class="cal-btn" id="dashDesc"><span class="desc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><g class="desc-toque"><g class="desc-flecha"><path d="M12 5v10M7.5 10.5 12 15l4.5-4.5"/></g></g><path class="desc-suelo" d="M5 20h14"/></svg></span>Descargar</button><div class="dash-menu" hidden><button data-d="pdf">PDF (para imprimir o enviar)</button><button data-d="csv">Excel (.csv)</button></div></div>
