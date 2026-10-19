@@ -2990,7 +2990,7 @@
         refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
         historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió la solicitud" }] });
       cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets();
-      avisar(`📨 Solicitud <b>#${String(id).padStart(3, "0")}</b> enviada a marketing`);
+      avisar(`Solicitud <b>#${String(id).padStart(3, "0")}</b> enviada a marketing`);
     };
     document.body.classList.add("con-detalle");
   }
