@@ -1623,10 +1623,10 @@
   .te-fondo.sale { animation: teFuera .45s ease forwards; }
   .te-ranura { width: 360px; max-width: calc(100vw - 32px); height: 12px; border-radius: 999px; background: #0a0a0a; box-shadow: inset 0 -3px 6px rgba(255,255,255,.18), 0 6px 18px rgba(0,0,0,.18); position: relative; z-index: 2; }
   .te-salida { width: 320px; max-width: calc(100vw - 56px); margin-top: -6px; overflow: hidden; padding: 0 0 30px; }
-  .te { background: #fff; border-radius: 0 0 18px 18px; box-shadow: 0 18px 40px rgba(0,0,0,.12); padding: 26px 24px 18px; animation: teImprime 1.5s cubic-bezier(.3,.7,.3,1) .25s both; position: relative;
+  .te { background: #fff; border-radius: 0 0 18px 18px; box-shadow: 0 18px 40px rgba(0,0,0,.12); padding: 26px 24px 18px; animation: teImprime 2.6s cubic-bezier(.25,.6,.3,1) .3s both; position: relative;
     -webkit-mask: radial-gradient(circle 12px at 0 var(--c), transparent 98%, #000) , radial-gradient(circle 12px at 100% var(--c), transparent 98%, #000); -webkit-mask-composite: source-in; mask-composite: intersect; --c: 168px; }
   .te-top { text-align: center; }
-  .te-rb .saludo-rb { width: 54px; height: 54px; animation: teSalto .6s ease 1.7s both; }
+  .te-rb .saludo-rb { width: 54px; height: 54px; animation: teSalto .6s ease 2.9s both; }
   .te-top h3 { margin: 8px 0 4px; font-size: 1.3rem; letter-spacing: -.02em; }
   .te-top p { margin: 0 auto; color: #6b6b72; font-size: .86rem; max-width: 220px; text-wrap: balance; }
   .te-corte { border-top: 2px dashed #e2e2e6; margin: 18px -4px 16px; }
@@ -1648,6 +1648,15 @@
   @keyframes teFuera { to { opacity: 0; transform: translateY(-14px); } }
   @keyframes teSalto { 0%,100% { transform: translateY(0); } 45% { transform: translateY(-8px) rotate(-6deg); } }
   @media (prefers-reduced-motion: reduce) { .te, .te-rb .saludo-rb { animation: none; } }
+  .tk-form .req { color: #e5484d; font-weight: 700; }
+  .tk-cuenta { display: block; text-align: right; color: #9a9aa2; font-size: .72rem; margin-top: 4px; }
+  .tk-form .falta { border-color: #e5484d !important; box-shadow: 0 0 0 3px rgba(229,72,77,.18) !important; animation: tkFalta .9s ease 2; }
+  @keyframes tkFalta { 50% { box-shadow: 0 0 0 6px rgba(229,72,77,.28); } }
+  .tk-err.error { color: #e5484d; font-weight: 600; font-size: .9rem; text-align: center; }
+  .tk-tit { overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .te-datos .te-full b { white-space: normal; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .det-cab h2 { overflow-wrap: anywhere; }
+  .tk-acc .nuevo-btn:hover, .tk-form .nuevo-btn:hover, .tk-nuevo:hover { background: #262626 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2960,7 +2969,7 @@
       const o = document.createElement("div");
       o.className = "te-fondo";
       o.innerHTML = `<div class="te-ranura"></div><div class="te-salida"><div class="te">
-        <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Solicitud enviada!</h3><p>Marketing ya la recibió. Hilary la revisará pronto.</p></div>
+        <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Solicitud enviada!</h3><p>Marketing ya la recibió.</p></div>
         <div class="te-corte"></div>
         <div class="te-datos"><div><small>N.° de ticket</small><b>#${num}</b></div><div class="der"><small>Entrega</small><b>${fe}</b></div>
           <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div><div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
@@ -2972,7 +2981,7 @@
       let listo = false;
       const cerrar = () => { if (listo) return; listo = true; o.classList.add("sale"); setTimeout(() => { o.remove(); fin(); }, 450); };
       o.onclick = cerrar;
-      setTimeout(cerrar, 3600);
+      setTimeout(cerrar, 4800);
     });
   }
   // ===== Formulario de nueva solicitud (solo otras áreas) =====
@@ -2982,11 +2991,11 @@
     d.innerHTML = `
       <div class="det-cab"><div><h2>Nueva solicitud</h2><p class="tk-sub">${yo} | ${SOLICITANTES[yo]}</p></div><button class="det-cerrar" type="button">✕</button></div>
       <form class="tk-form" novalidate>
-        <label>Nombre del pedido *<input name="titulo" placeholder="Ej.: Post de LinkedIn para el webinar" /></label>
-        <div class="mn-doble"><label>Tipo de pieza *<select name="tipo"><option value="">Selecciona…</option>${Object.keys(TIPOS).map((k) => `<option>${k}</option>`).join("")}</select></label>
+        <label><span>Nombre del pedido <span class="req">*</span></span><input name="titulo" maxlength="60" placeholder="Ej.: Post de LinkedIn para el webinar" /><small class="tk-cuenta">0/60</small></label>
+        <div class="mn-doble"><label><span>Tipo de pieza <span class="req">*</span></span><select name="tipo"><option value="">Selecciona…</option>${Object.keys(TIPOS).map((k) => `<option>${k}</option>`).join("")}</select></label>
           <label>Formato<select name="formato" disabled><option value="">Elige el tipo primero</option></select></label></div>
         <label class="tk-otro" hidden>¿Qué tipo de pieza es?<input name="otro" placeholder="Ej.: Firma de correo, invitación…" /></label>
-        <label>Detalla el pedido *<textarea name="detalle" placeholder="De qué se trata, el objetivo y el mensaje principal."></textarea></label>
+        <label><span>Detalla el pedido <span class="req">*</span></span><textarea name="detalle" placeholder="De qué se trata, el objetivo y el mensaje principal."></textarea></label>
         <label>¿A quién va dirigido? <small>(opcional)</small><input name="destino" placeholder="Ej.: clientes, seguidores de LinkedIn" /></label>
         <label>Texto que debe ir en la pieza<textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
         <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
@@ -2994,7 +3003,7 @@
         <div class="tk-subir"><span class="tk-subir-t">Fotos y archivos <small>(opcional, hasta 10 | máx. 10 MB c/u)</small></span>
           <label class="tk-drop" id="tkDrop"><input type="file" id="tkArch" multiple accept="image/*,.pdf" hidden /><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><b>Arrastra tus referencias aquí</b><small>o haz clic para elegirlas | JPG, PNG o PDF</small></label>
           <div class="tk-miniaturas" id="tkMinis"></div></div>
-        <label class="tk-full">¿Para cuándo lo necesitas? *<input type="date" name="fecha" /></label>
+        <label class="tk-full"><span>¿Para cuándo lo necesitas? <span class="req">*</span></span><input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
         <div class="mensaje tk-err"></div>
@@ -3003,6 +3012,8 @@
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     const f = d.querySelector("form"), aviso = d.querySelector(".tk-aviso");
     f.fecha.min = HOY;
+    f.titulo.oninput = () => { d.querySelector(".tk-cuenta").textContent = `${f.titulo.value.length}/60`; };
+    f.addEventListener("input", (e) => e.target.classList.remove("falta")); f.addEventListener("change", (e) => e.target.classList.remove("falta"));
     f.tipo.onchange = () => {
       const ops = TIPOS[f.tipo.value] || [];
       f.formato.innerHTML = ops.length ? ops.map((o) => `<option>${o}</option>`).join("") : `<option value="">No aplica</option>`;
@@ -3038,7 +3049,8 @@
     f.onsubmit = (e) => {
       e.preventDefault();
       const err = d.querySelector(".tk-err");
-      if (!f.titulo.value.trim() || !f.tipo.value || !f.detalle.value.trim() || !f.fecha.value) { err.className = "mensaje error tk-err"; err.textContent = "Completa los campos con *."; return; }
+      const faltan = [f.titulo, f.tipo, f.detalle, f.fecha].filter((x) => !x.value.trim());
+      if (faltan.length) { faltan.forEach((x) => { x.classList.remove("falta"); void x.offsetWidth; x.classList.add("falta"); }); faltan[0].focus(); err.className = "mensaje error tk-err"; err.textContent = "Completa los campos marcados en rojo."; return; }
       const id = Math.max(...tickets.map((t) => t.id)) + 1;
       tickets.push({ id, titulo: f.titulo.value.trim(), solicitante: yo, area: SOLICITANTES[yo], tipo: f.tipo.value === "Otro" ? (f.otro.value.trim() || "Otro") : f.tipo.value,
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
