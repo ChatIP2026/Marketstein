@@ -1210,7 +1210,7 @@
     <!-- Contenido principal -->
     <main class="principal">
 
-      <div class="kpis">
+      <div class="kpis" hidden>
         <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div class="kpi-txt">Proyectos completados</div><div class="kpi-num" id="kListos">0</div></div>
         <div class="kpi t-en_curso"><div class="kpi-ico" data-ico="en_curso"></div><div class="kpi-txt">Proyectos activos</div><div class="kpi-num" id="kActivos">0</div></div>
         <div class="kpi t-listo"><div class="kpi-ico" data-ico="listo"></div><div class="kpi-txt">Tareas completadas</div><div class="kpi-num" id="kTareasOk">0</div></div>
@@ -3227,7 +3227,7 @@
     };
     document.body.classList.add("con-detalle");
   }
-  ({ filtroTk = null, mesTk = null, personaTk = null, busTk = "", filtroEnt = "todos", kpiFiltro = null } = MEM);
+  ({ filtroTk = null, mesTk = null, personaTk = null, busTk = "", filtroEnt = "todos" } = MEM); kpiFiltro = null;
   if (MEM.b) document.getElementById("buscar").value = MEM.b;
   addEventListener("pagehide", guardarFiltros); document.addEventListener("visibilitychange", guardarFiltros);
   aplicarRol(); pintarNotif(); avisoDemo(60000); rabbitHola();
