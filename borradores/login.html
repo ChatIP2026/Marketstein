@@ -87,6 +87,7 @@
     .burbuja::before { top: -9px; left: 50%; transform: translateX(-50%) rotate(45deg); }
   }
   @media (max-width: 820px) { .rb-zona { order: 1; } .burbuja { order: 3; } .lado-rb .sombra { display: none; } .marca { order: 0; } }
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
@@ -136,21 +137,17 @@
     <div class="vista" id="vistaOlvido" hidden>
       <a class="link volver" data-ir="entrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Volver</a>
       <h1>Recupera tu acceso</h1>
-      <p class="sub">Escribe tu usuario y te enviaremos un código al correo que registró marketing.</p>
+      <p class="sub" id="oSub">Escribe tu usuario y te enviaremos un código al correo que registró marketing.</p>
       <form id="formOlvido" novalidate>
-        <label for="oCorreo">Usuario</label>
-        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><input id="oCorreo" type="text" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /></div>
+        <div id="pasoUsuario"><label for="oCorreo">Usuario</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><input id="oCorreo" type="text" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /></div></div>
         <div id="pasoCodigo" hidden>
           <label>Código</label>
           <div class="codigo"><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /></div>
-          <label for="oClave">Nueva contraseña</label>
-          <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="oClave" class="secreta" type="password" placeholder="Mínimo 8 caracteres" /><button type="button" class="ver" aria-label="Mostrar contraseña">OJO</button></div>
-          <label for="oClave2">Repite la contraseña</label>
-          <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="oClave2" class="secreta" type="password" placeholder="Igual a la anterior" /></div>
         </div>
         <button class="boton" id="oBoton">Enviar código</button>
         <p class="mensaje" id="mensajeO"></p>
-        <p class="pie" id="oReenviar" hidden>¿No te llegó? <a class="link" id="oReenviarA">Reenviar código</a></p>
+        <p class="pie" id="oReenviar" hidden>¿No te llegó? <a class="link" id="oReenviarA">Reenviar código</a> | <a class="link" id="oOtro">Cambiar usuario</a></p>
       </form>
     </div>
     <div class="vista" id="vistaNueva" hidden>
@@ -200,11 +197,11 @@
   // Cambiar de vista
   const vistas = { entrar: document.getElementById("vistaEntrar"), olvido: document.getElementById("vistaOlvido"), nueva: document.getElementById("vistaNueva") };
   const mostrar = (k) => { for (const x in vistas) vistas[x].hidden = x !== k; };
-  const pasoCodigo = document.getElementById("pasoCodigo"), oBoton = document.getElementById("oBoton"), digitos = [...document.querySelectorAll(".codigo input")];
+  const pasoCodigo = document.getElementById("pasoCodigo"), pasoUsuario = document.getElementById("pasoUsuario"), oSub = document.getElementById("oSub"), SUB_OLVIDO = oSub.textContent, oBoton = document.getElementById("oBoton"), digitos = [...document.querySelectorAll(".codigo input")];
   document.querySelectorAll("[data-ir]").forEach((a) => (a.onclick = (e) => {
     e.preventDefault();
     for (const k in vistas) vistas[k].hidden = k !== a.dataset.ir;
-    if (a.dataset.ir === "olvido") { pasoCodigo.hidden = true; oBoton.textContent = "Enviar código"; document.getElementById("oReenviar").hidden = true; digitos.forEach((d) => (d.value = "")); document.getElementById("mensajeO").textContent = ""; const o = document.getElementById("oCorreo"); o.value = correo.value.trim(); setTimeout(() => o.focus(), 50); decir("Tranquilo, le pasa a cualquiera"); mover("ladeo"); }
+    if (a.dataset.ir === "olvido") { pasoCodigo.hidden = true; pasoUsuario.hidden = false; oSub.textContent = SUB_OLVIDO; oBoton.hidden = false; oBoton.textContent = "Enviar código"; document.getElementById("oReenviar").hidden = true; digitos.forEach((d) => (d.value = "")); document.getElementById("mensajeO").textContent = ""; const o = document.getElementById("oCorreo"); o.value = correo.value.trim(); setTimeout(() => o.focus(), 50); decir("Tranquilo, le pasa a cualquiera"); mover("ladeo"); }
     else { decir(IDLE[0]); mover("salto"); }
   }));
 
@@ -252,42 +249,51 @@
   digitos.forEach((d, i) => {
     d.addEventListener("input", () => { d.value = d.value.replace(/\D/g, "").slice(-1); if (d.value && digitos[i + 1]) digitos[i + 1].focus(); });
     d.addEventListener("keydown", (e) => { if (e.key === "Backspace" && !d.value && digitos[i - 1]) digitos[i - 1].focus(); });
-    d.addEventListener("paste", (e) => { const t = (e.clipboardData.getData("text").match(/\d/g) || []).slice(0, 6); if (t.length) { e.preventDefault(); t.forEach((n, k) => digitos[k] && (digitos[k].value = n)); digitos[Math.min(t.length, 5)].focus(); } });
+    d.addEventListener("paste", (e) => { const t = (e.clipboardData.getData("text").match(/\d/g) || []).slice(0, 6); if (t.length) { e.preventDefault(); t.forEach((n, k) => digitos[k] && (digitos[k].value = n)); digitos[Math.min(t.length, 5)].focus(); validarCodigo(); } });
     d.addEventListener("focus", () => decir("Copia el código del correo"));
   });
+  const ocultar = (c) => c.replace(/^(.{2})[^@]*(@.*)$/, (_, x, y) => x + "•••" + y);
   async function enviarCodigo(u) {
     const m = document.getElementById("mensajeO");
     const { data: email } = await sb.rpc("correo_de_usuario", { u });
     // Por seguridad, el mensaje es el mismo exista o no el usuario
     if (email) { correoRec = email; await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); }
-    m.className = "mensaje ok"; m.textContent = "Si el usuario existe, enviamos un código a su correo. Revisa también spam.";
-    pasoCodigo.hidden = false; oBoton.textContent = "Cambiar contraseña"; document.getElementById("oReenviar").hidden = false;
-    decir("¡Revisa tu correo!"); mover("salto"); setTimeout(() => digitos[0].focus(), 60);
+    m.className = "mensaje"; m.textContent = "";
+    oSub.textContent = email ? `Escribe el código de 6 números que enviamos a ${ocultar(email)}. Revisa también spam.` : "Si el usuario existe, le enviamos un código de 6 números. Revisa también spam.";
+    pasoUsuario.hidden = true; pasoCodigo.hidden = false; oBoton.hidden = true; document.getElementById("oReenviar").hidden = false;
+    digitos.forEach((d) => (d.value = "")); decir("¡Revisa tu correo!"); mover("salto"); setTimeout(() => digitos[0].focus(), 60);
   }
   document.getElementById("oReenviarA").onclick = (e) => { e.preventDefault(); enviarCodigo(document.getElementById("oCorreo").value.trim()); };
+  document.getElementById("oOtro").onclick = (e) => { e.preventDefault(); pasoCodigo.hidden = true; pasoUsuario.hidden = false; oBoton.hidden = false; document.getElementById("oReenviar").hidden = true; oSub.textContent = SUB_OLVIDO; document.getElementById("mensajeO").textContent = ""; document.getElementById("oCorreo").focus(); };
+  // Al completar los 6 números se valida solo
+  let validando = false, recuperando = false;
+  async function validarCodigo() {
+    const cod = digitos.map((d) => d.value).join(""), m = document.getElementById("mensajeO");
+    if (cod.length < 6 || validando) return;
+    validando = true; m.className = "mensaje"; m.textContent = "Revisando el código…"; recuperando = true;
+    const { error } = correoRec ? await sb.auth.verifyOtp({ email: correoRec, token: cod, type: "recovery" }) : { error: true };
+    validando = false;
+    if (error) { recuperando = false; m.className = "mensaje error"; m.textContent = "El código no es válido o ya venció. Revísalo o pide uno nuevo."; decir("Ese código no sirve"); mover("no"); digitos.forEach((d) => (d.value = "")); digitos[0].focus(); return; }
+    m.textContent = ""; mostrarNuevaRec();
+  }
+  function mostrarNuevaRec() {
+    mostrar("nueva"); vistas.nueva.querySelector("h1").textContent = "Nueva contraseña";
+    document.getElementById("nuevaSub").textContent = "Código correcto. Ahora elige tu nueva contraseña.";
+    decir("¡Código correcto!"); mover("feliz"); setTimeout(() => document.getElementById("nClave").focus(), 60);
+  }
+  digitos.forEach((d) => d.addEventListener("input", validarCodigo));
   document.getElementById("formOlvido").onsubmit = async (e) => {
     e.preventDefault();
     const m = document.getElementById("mensajeO"), v = document.getElementById("oCorreo").value.trim();
-    const error = (t, g) => { m.className = "mensaje error"; m.textContent = t; decir(g); mover("no"); };
-    if (!v) return error("Escribe tu usuario.", "Te falta tu usuario");
-    if (pasoCodigo.hidden) return enviarCodigo(v);
-    const cod = digitos.map((d) => d.value).join(""), c1 = document.getElementById("oClave").value, c2 = document.getElementById("oClave2").value;
-    if (cod.length < 6) return error("Escribe los 6 números del código.", "Te faltan números");
-    if (c1.length < 8) return error("La contraseña debe tener al menos 8 caracteres.", "Un poquito más larga");
-    if (c1 !== c2) return error("Las contraseñas no coinciden.", "No son iguales");
-    const { error: ev } = await sb.auth.verifyOtp({ email: correoRec, token: cod, type: "recovery" });
-    if (ev) return error("El código no es válido o ya venció. Pide uno nuevo.", "Ese código no sirve");
-    const { error: eu } = await sb.auth.updateUser({ password: c1 });
-    if (eu) return error("No se pudo cambiar la contraseña. Intenta de nuevo.", "Algo salió mal");
-    await sb.rpc("clave_cambiada");
-    m.className = "mensaje ok"; m.textContent = "¡Contraseña cambiada! Entrando a tu panel…"; decir("¡De vuelta al trabajo!"); mover("feliz");
-    setTimeout(irPanel, 1100);
+    if (!pasoCodigo.hidden) return validarCodigo();
+    if (!v) { m.className = "mensaje error"; m.textContent = "Escribe tu usuario."; decir("Te falta tu usuario"); mover("no"); return; }
+    enviarCodigo(v);
   };
 
   // Si llega desde el enlace del correo de recuperación, pide la nueva contraseña
-  sb.auth.onAuthStateChange((ev) => { if (ev === "PASSWORD_RECOVERY") { mostrar("nueva"); document.getElementById("nuevaSub").textContent = "Elige tu nueva contraseña."; } });
+  sb.auth.onAuthStateChange((ev) => { if (ev === "PASSWORD_RECOVERY" && !recuperando) { recuperando = true; mostrarNuevaRec(); } });
   // Si ya tiene sesión abierta, entra directo
-  sb.auth.getSession().then(({ data }) => { if (data.session && !/type=recovery/.test(location.hash)) despuesDeEntrar(); });
+  sb.auth.getSession().then(({ data }) => { if (data.session && !recuperando && !/type=recovery/.test(location.hash)) despuesDeEntrar(); });
 </script>
 </body>
 </html>
