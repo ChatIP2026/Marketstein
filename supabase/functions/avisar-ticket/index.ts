@@ -1,5 +1,5 @@
 // Envía un correo a quien pidió el ticket cuando:
-//  1) Hilary lo aprueba (se le asigna a alguien de marketing)
+//  1) La jefa lo aprueba (se le asigna a alguien de marketing)
 //  2) Marketing lo marca como Entregado
 // Se dispara desde un Database Webhook de Supabase sobre la tabla tickets (UPDATE).
 // El correo sale desde una cuenta de Gmail a través de Google Apps Script (por HTTPS):
@@ -21,22 +21,17 @@ const PRIO: Record<string, [string, string, string]> = {
 const LOGO = `${PANEL}/borradores/rabbit-correo.png`;
 
 // Correo con forma de ticket: cabecera negra con Rabbit, estado, datos y avance (Enviado > Aprobado > Entregado)
-function plantilla(o: { listo: boolean; id: number; titulo: string; persona: string; pieza: string; prioridad?: string; entrega?: string; entregado?: string; aTiempo?: boolean }) {
+function plantilla(o: { listo: boolean; id: number; titulo: string; pieza: string; prioridad?: string; entrega?: string; entregado?: string; aTiempo?: boolean }) {
   const color = o.listo ? "#10b981" : "#0a0a0a";
   const pr = PRIO[o.prioridad || ""];
   const chip = (t: string, bg: string, c: string) => `<span style="display:inline-block;background:${bg};color:${c};font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;margin:0">${t}</span>`;
   const celda = (k: string, v: string, der = false) => `<td style="padding:12px 0 0;width:50%" align="${der ? "right" : "left"}"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a1a1aa">${k}</div><div style="font-size:16px;font-weight:700;color:#0a0a0a;margin-top:3px">${v}</div></td>`;
-  const fila = (k: string, v: string) => `<tr><td style="padding:10px 0;color:#71717a;font-size:13px;border-top:1px dashed #e4e4e7">${k}</td><td align="right" style="padding:10px 0;font-size:14px;font-weight:700;color:#0a0a0a;border-top:1px dashed #e4e4e7">${v}</td></tr>`;
   // Cada paso ocupa un tercio: media línea a cada lado del círculo, así las líneas se unen sin cortes
   const media = (h: boolean | null) => `<td style="padding:0"><div style="height:1.5px;line-height:1.5px;font-size:1px;background:${h === null ? "transparent" : h ? color : "#e4e4e7"}"></div></td>`;
   const nodo = (t: string, h: boolean, izq: boolean | null, der: boolean | null) => `<td width="33%" align="center" style="width:33%;padding:0">
       <table width="100%" cellpadding="0" cellspacing="0"><tr>${media(izq)}${bola(h)}${media(der)}</tr></table>
       <div style="padding-top:6px;font-size:11px;color:${h ? "#0a0a0a" : "#a1a1aa"};font-weight:${h ? 700 : 400}">${t}</div></td>`;
   const bola = (h: boolean) => `<td align="center" width="26" style="width:26px"><div style="width:26px;height:26px;line-height:26px;border-radius:50%;background:${h ? color : "#e4e4e7"};color:#fff;font-size:14px;font-weight:700;text-align:center">${h ? "&#10003;" : ""}</div></td>`;
-  const linea = (h: boolean) => `<td style="padding:0"><div style="height:3px;border-radius:3px;background:${h ? color : "#e4e4e7"}"></div></td>`;
-  const etq = (t: string, h: boolean) => `<td align="center" style="padding-top:6px;font-size:11px;white-space:nowrap;color:${h ? "#0a0a0a" : "#a1a1aa"};font-weight:${h ? 700 : 400}">${t}</td>`;
-  const paso = (t: string, hecho: boolean) => `<td align="center" style="width:33%;font-size:11px;color:${hecho ? "#0a0a0a" : "#a1a1aa"};font-weight:${hecho ? 700 : 400}">
-      <div style="width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto 6px;background:${hecho ? color : "#e4e4e7"};color:#fff;font-size:14px;font-weight:700">${hecho ? "&#10003;" : ""}</div>${t}</td>`;
   return `<!doctype html><html><body style="margin:0;background:#f4f4f5">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:28px 12px;font-family:Arial,Helvetica,sans-serif"><tr><td align="center">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e7">
@@ -78,12 +73,10 @@ Deno.serve(async (req) => {
   const { data: u } = await sb.auth.admin.getUserById(t.solicitante);
   const para = u?.user?.email;
   if (!para) return new Response("sin correo");
-  const { data: quien } = t.asignado ? await sb.from("perfiles").select("nombre").eq("id", t.asignado).single() : { data: null };
-  const encargado = quien?.nombre || "marketing";
 
   const asunto = aprobado ? `Tu ticket ${num(t.id)} fue aprobado` : `Tu ticket ${num(t.id)} está listo`;
   const hoy = new Date().toLocaleDateString("en-CA", { timeZone: "America/Lima" });
-  const html = plantilla({ listo: !aprobado, id: t.id, titulo: esc(t.titulo), persona: esc(encargado), pieza: esc([t.tipo, t.formato].filter(Boolean).join(" | ")),
+  const html = plantilla({ listo: !aprobado, id: t.id, titulo: esc(t.titulo), pieza: esc([t.tipo, t.formato].filter(Boolean).join(" | ")),
     prioridad: t.prioridad, entrega: fecha(t.fecha), entregado: aprobado ? undefined : fecha(hoy), aTiempo: hoy <= t.fecha });
 
   const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para, asunto, html }) });
