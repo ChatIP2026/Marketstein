@@ -1826,6 +1826,10 @@
     #toasts .toast-pie { font-size: .7rem !important; padding: 5px 8px !important; }
     #toasts .toast-pie svg { width: 12px !important; height: 12px !important; }
   }
+  .tk-peso { margin-top: 8px; font-size: .78rem; color: #52525b; } .tk-peso span { display: block; margin-bottom: 5px; }
+  .tk-peso i { display: block; height: 5px; border-radius: 5px; background: #0a0a0a; max-width: 100%; box-shadow: 0 0 0 999px transparent; }
+  .tk-peso { background: linear-gradient(#e4e4e7, #e4e4e7) bottom / 100% 5px no-repeat; }
+  .tk-form [name=drive] { width: 100%; box-sizing: border-box; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3196,6 +3200,25 @@
       setTimeout(cerrar, 4800);
     });
   }
+  // Fotos: se reducen a 1600 px y JPEG antes de subir (ahorra espacio); los PDF pasan tal cual
+  function reducirFoto(fl) {
+    return new Promise((ok) => {
+      const rd = new FileReader();
+      rd.onload = () => {
+        if (!/^image\/(jpeg|png|webp)$/.test(fl.type)) return ok({ url: rd.result, peso: fl.size });
+        const img = new Image();
+        img.onload = () => {
+          const k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+          c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+          const url = fl.type === "image/png" && fl.size < 400000 ? rd.result : c.toDataURL("image/jpeg", 0.82);
+          ok({ url, peso: Math.round((url.length - url.indexOf(",") - 1) * 0.75) });
+        };
+        img.onerror = () => ok({ url: rd.result, peso: fl.size });
+        img.src = rd.result;
+      };
+      rd.readAsDataURL(fl);
+    });
+  }
   // ===== Formulario de nueva solicitud (solo otras áreas) =====
   function abrirFormTicket() {
     const d = document.getElementById("detalle");
@@ -3212,9 +3235,10 @@
         <label>Texto que debe ir en la pieza<textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
         <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
         <label>Referencias <small>(opcional, un link por línea)</small><textarea name="refs" placeholder="Drive, Pinterest, web…"></textarea></label>
-        <div class="tk-subir"><span class="tk-subir-t">Fotos y archivos <small>(opcional, hasta 10 | máx. 10 MB c/u)</small></span>
+        <div class="tk-subir"><span class="tk-subir-t">Fotos y archivos <small>(opcional, hasta 5 archivos | 10 MB en total)</small></span>
           <label class="tk-drop" id="tkDrop"><input type="file" id="tkArch" multiple accept="image/*,.pdf" hidden /><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><b>Arrastra tus referencias aquí</b><small>o haz clic para elegirlas | JPG, PNG o PDF</small></label>
-          <div class="tk-miniaturas" id="tkMinis"></div></div>
+          <div class="tk-miniaturas" id="tkMinis"></div><div class="tk-peso" id="tkPeso" hidden></div></div>
+        <label class="tk-full">¿Tus archivos pesan más de 10 MB? Déjanos un link <small>(opcional)</small><input name="drive" type="url" placeholder="Link de Google Drive con acceso para ver" /></label>
         <label class="tk-full"><span>¿Para cuándo lo necesitas? <span class="req">*</span></span><input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
@@ -3242,16 +3266,20 @@
     f.fecha.onchange = revisarFecha;
     const archivos = [], drop = d.querySelector("#tkDrop"), inp = d.querySelector("#tkArch"), minis = d.querySelector("#tkMinis");
     const pintarMinis = () => {
+      const tot = archivos.reduce((a, x) => a + x.peso, 0), pe = d.querySelector("#tkPeso");
+      pe.hidden = !archivos.length; pe.innerHTML = `<span><b>${(tot / 1048576).toFixed(1)} MB</b> de 10 MB | ${archivos.length} de 5 archivos</span><i style="width:${Math.min(100, (tot / 10485760) * 100)}%"></i>`;
       minis.innerHTML = archivos.map((a, i) => `<div class="tk-mini" title="${esc(a.n)}">${a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<span class="tk-mini-doc">PDF</span>`}<button type="button" data-q="${i}" aria-label="Quitar">✕</button><small>${esc(a.n)}</small></div>`).join("");
       minis.querySelectorAll("[data-q]").forEach((b) => (b.onclick = () => { archivos.splice(+b.dataset.q, 1); pintarMinis(); }));
     };
     const sumar = (lista) => {
       const err = d.querySelector(".tk-err");
       [...lista].forEach((fl) => {
-        if (archivos.length >= 10) { err.className = "mensaje error tk-err"; err.textContent = "Máximo 10 archivos por solicitud."; return; }
-        if (fl.size > 10 * 1024 * 1024) { err.className = "mensaje error tk-err"; err.textContent = `«${fl.name}» pesa más de 10 MB.`; return; }
         if (!/^image\/|pdf$/.test(fl.type)) return;
-        const rd = new FileReader(); rd.onload = () => { archivos.push({ n: fl.name, tipo: fl.type, url: rd.result }); pintarMinis(); }; rd.readAsDataURL(fl);
+        if (archivos.length >= 5) { err.className = "mensaje error tk-err"; err.textContent = "Máximo 5 archivos por solicitud. Para más, usa el link de Drive."; return; }
+        reducirFoto(fl).then(({ url, peso }) => {
+          if (archivos.reduce((a, x) => a + x.peso, 0) + peso > 10 * 1024 * 1024) { err.className = "mensaje error tk-err"; err.textContent = `«${fl.name}» supera los 10 MB en total. Súbelo a Drive y pega el link abajo.`; d.querySelector("[name=drive]").classList.add("falta"); return; }
+          err.textContent = ""; archivos.push({ n: fl.name, tipo: url.startsWith("data:image/jpeg") && fl.type !== "image/png" ? "image/jpeg" : fl.type, url, peso }); pintarMinis();
+        });
       });
     };
     inp.onchange = () => { sumar(inp.files); inp.value = ""; };
@@ -3266,7 +3294,7 @@
       const id = Math.max(...tickets.map((t) => t.id)) + 1;
       tickets.push({ id, titulo: f.titulo.value.trim(), solicitante: yo, area: SOLICITANTES[yo], tipo: f.tipo.value === "Otro" ? (f.otro.value.trim() || "Otro") : f.tipo.value,
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
-        refs: f.refs.value.split(/\s+/).filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
+        refs: [f.drive.value.trim(), ...f.refs.value.split(/\s+/)].filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
         historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió la solicitud" }] });
       ticketEnviado(tickets.find((t) => t.id === id)).then(() => { cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets(); });
     };
