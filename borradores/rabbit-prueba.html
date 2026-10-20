@@ -2265,10 +2265,12 @@
     if (!fichas.length) return;
     const alto = Math.max(...fichas.map((f) => f.offsetHeight));
     document.querySelectorAll("#tablero .col-lista").forEach((c) => {
-      if (innerWidth > 760) { const f4 = [...c.querySelectorAll(".ficha")].slice(0, 4); c.style.minHeight = ""; c.style.height = (f4.length ? f4.reduce((a, f) => a + f.offsetHeight, 0) + 12 * (f4.length - 1) + 4 : alto) + "px"; c.style.flex = "none"; }
+      const nF = c.querySelectorAll(".ficha").length;
+      if (innerWidth > 760 && nF <= 4) { c.style.height = ""; c.style.flex = "none"; c.style.minHeight = ""; c.style.overflow = "visible"; }
+      else if (innerWidth > 760) { c.style.overflow = ""; const f4 = [...c.querySelectorAll(".ficha")].slice(0, 4); c.style.minHeight = ""; c.style.height = (f4.length ? f4.reduce((a, f) => a + f.offsetHeight, 0) + 12 * (f4.length - 1) + 4 : alto) + "px"; c.style.flex = "none"; }
       else { c.style.height = ""; c.style.flex = ""; }
       c.parentElement.querySelector(".mas")?.remove();
-      if (c.scrollHeight > c.clientHeight + 2) c.insertAdjacentHTML("afterend", `<div class="mas">↕ Desliza para ver más</div>`);
+      if (nF > 4 && c.scrollHeight > c.clientHeight + 2) c.insertAdjacentHTML("afterend", `<div class="mas">↕ Desliza para ver más</div>`);
     });
     // El lateral termina a la misma altura que el tablero; Próximos eventos se desliza si no cabe
     const lat = document.getElementById("lateral"), pri = document.querySelector("#vistaInicio .principal");
