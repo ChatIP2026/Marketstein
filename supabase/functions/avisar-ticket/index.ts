@@ -10,6 +10,7 @@ const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SE
 const CORREO_URL = Deno.env.get("CORREO_URL")!; // URL de la app web de Apps Script
 const CORREO_CLAVE = Deno.env.get("CORREO_CLAVE")!; // misma clave que en el Apps Script
 const PANEL = "https://rabbit-ipartner.vercel.app";
+const esc = (x: string) => String(x ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 const num = (id: number) => "#" + String(id).padStart(3, "0");
 const fecha = (f: string) => new Date(f + "T12:00").toLocaleDateString("es-PE", { day: "numeric", month: "long" });
 
@@ -42,8 +43,8 @@ Deno.serve(async (req) => {
 
   const asunto = aprobado ? `Tu ticket ${num(t.id)} fue aprobado` : `Tu ticket ${num(t.id)} está listo`;
   const html = aprobado
-    ? plantilla("¡Tu ticket fue aprobado!", `${t.titulo}`, [["Ticket", num(t.id)], ["Lo hará", encargado], ["Prioridad", t.prioridad || "—"], ["Entrega", fecha(t.fecha)]])
-    : plantilla("¡Tu ticket está listo!", `${t.titulo}`, [["Ticket", num(t.id)], ["Lo hizo", encargado]]);
+    ? plantilla("¡Tu ticket fue aprobado!", esc(t.titulo), [["Ticket", num(t.id)], ["Lo hará", esc(encargado)], ["Prioridad", t.prioridad || "—"], ["Entrega", fecha(t.fecha)]])
+    : plantilla("¡Tu ticket está listo!", esc(t.titulo), [["Ticket", num(t.id)], ["Lo hizo", esc(encargado)]]);
 
   const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para, asunto, html }) });
   const txt = await r.text();
