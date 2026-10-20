@@ -1851,6 +1851,7 @@
   .nt-tk { width: 64px; height: 36px; margin-left: auto; margin-right: 14px; transform: rotate(-8deg); filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); flex: none; }
   @media (max-width: 420px) { .nt-tk { width: 48px; height: 27px; margin-right: 8px; } }
   .bc-yo b { white-space: nowrap; } .bc-yo .bc-sin { color: #71717a !important; font-weight: 600; }
+  .ct-ico { width: 18px; height: 18px; margin-right: 7px; vertical-align: -4px; flex: none; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3033,7 +3034,7 @@
     const titulo = sol ? `<span class="saludo-h">Hola, ${yo} ${rbMini()}</span>` : jefa ? "Bandeja de tickets" : "Mis tickets";
     const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
       : jefa ? "Revisa los tickets, decide la prioridad y asígnalos al equipo." : "Tickets de otras áreas que Hilary te asignó.";
-    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo">＋ Crear ticket</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length; return `<div class="tpk tpk-${k}" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
+    let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo"><svg class="ct-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Crear ticket</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length; return `<div class="tpk tpk-${k}" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
         const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
