@@ -1892,6 +1892,12 @@
   .cola-fila i.yo::before { background: #0a0a0a; }
   .cola-fila span { font-size: .74rem; color: #a1a1aa; margin-left: 4px; }
   .te-turno b { color: #b45309 !important; }
+  .te-datos .te-cola { flex-direction: row !important; align-items: center; gap: 12px !important; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 12px; padding: 10px 12px; }
+  .te-cola-n { width: 46px; height: 46px; border-radius: 10px; background: #0a0a0a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: none; }
+  .te-datos .te-cola-n small { color: #a1a1aa !important; font-size: .55rem !important; } .te-datos .te-cola-n b { color: #fff !important; font-size: 1.35rem !important; line-height: 1; }
+  .te-cola-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .te-datos .te-cola-t b { white-space: normal !important; font-size: .86rem !important; color: #0a0a0a !important; }
+  .te-datos .te-cola-t small { text-transform: none !important; letter-spacing: 0 !important; color: #92400e !important; font-size: .72rem !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3339,7 +3345,7 @@
         <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Ticket enviado!</h3><p>Marketing ya lo recibió.</p></div>
         <div class="te-corte"></div>
         <div class="te-datos"><div><small>N.° de ticket</small><b>#${num}</b></div><div class="der"><small>Entrega</small><b>${fe}</b></div>
-          <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div>${turnoDe(t) ? `<div class="te-full te-turno"><small>Tu turno</small><b>${turnoDe(t).n} | ${textoAntes(turnoDe(t).antes)}</b></div>` : ""}<div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
+          <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div>${turnoDe(t) ? `<div class="te-full te-cola"><span class="te-cola-n"><small>Turno</small><b>${turnoDe(t).n}</b></span><span class="te-cola-t"><b>${turnoDe(t).antes ? `Hay ${turnoDe(t).antes} ticket${turnoDe(t).antes === 1 ? "" : "s"} antes que el tuyo` : "¡Eres el siguiente!"}</b><small>Hilary los revisa en orden de llegada</small></span></div>` : ""}<div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
         <div class="te-quien"><span class="av" style="${fondoAv(yo)}">${letraAv(yo)}</span><div><b>${esc(yo)}</b><small>${esc(t.area || "")}</small></div></div>
         <div class="te-corte2"></div>
         <div class="te-barras">${barras}</div><div class="te-cod">RB-${num}-${t.fecha.replace(/-/g, "")}</div>
