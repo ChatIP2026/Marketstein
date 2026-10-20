@@ -1848,6 +1848,9 @@
   .nt-rb .saludo-rb { width: 34px !important; height: 34px !important; margin: 0 !important; }
   .nt-cab h2 { margin: 0 !important; line-height: 1.15; }
   .nt-cab .tk-sub { margin: 2px 0 0 !important; }
+  .nt-cab { align-items: center !important; }
+  .nt-tk { width: 64px; height: 36px; margin-left: auto; margin-right: 14px; transform: rotate(-8deg); filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); flex: none; }
+  @media (max-width: 420px) { .nt-tk { width: 48px; height: 27px; margin-right: 8px; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3243,7 +3246,7 @@
     const d = document.getElementById("detalle");
     d.className = "detalle tk-det";
     d.innerHTML = `
-      <div class="det-cab nt-cab"><div class="nt-cab-in"><span class="nt-rb">${rbMini()}</span><div><h2>Nuevo ticket</h2><p class="tk-sub">Cuéntale a marketing lo que necesitas</p></div></div><button class="det-cerrar" type="button">✕</button></div>
+      <div class="det-cab nt-cab"><div class="nt-cab-in"><span class="nt-rb">${rbMini()}</span><div><h2>Nuevo ticket</h2><p class="tk-sub">Cuéntale a marketing lo que necesitas</p></div></div><svg class="nt-tk" viewBox="0 0 120 64" aria-hidden="true"><path d="M8 4h104a6 6 0 0 1 6 6v12a10 10 0 0 0 0 20v12a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V42a10 10 0 0 0 0-20V10a6 6 0 0 1 6-6Z" fill="#0a0a0a"/><path d="M84 10v44" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-dasharray="4 4"/><rect x="18" y="20" width="46" height="7" rx="3.5" fill="#fff" fill-opacity=".85"/><rect x="18" y="33" width="30" height="7" rx="3.5" fill="#fff" fill-opacity=".45"/></svg><button class="det-cerrar" type="button">✕</button></div>
       <form class="tk-form" novalidate>
         <label><span><em class="tk-n">1.</em> Nombre del pedido <span class="req">*</span></span><input name="titulo" maxlength="60" placeholder="Ej.: Post de LinkedIn para el webinar" /><small class="tk-cuenta">0/60</small></label>
         <div class="mn-doble"><label><span><em class="tk-n">2.</em> Tipo de pieza <span class="req">*</span></span><select name="tipo"><option value="">Selecciona…</option>${Object.keys(TIPOS).map((k) => `<option>${k}</option>`).join("")}</select></label>
