@@ -24,7 +24,8 @@ const LOGO = `${PANEL}/borradores/rabbit-correo.png`;
 function plantilla(o: { listo: boolean; id: number; titulo: string; persona: string; pieza: string; prioridad?: string; entrega?: string; entregado?: string; aTiempo?: boolean }) {
   const color = o.listo ? "#10b981" : "#0a0a0a";
   const pr = PRIO[o.prioridad || ""];
-  const chip = (t: string, bg: string, c: string) => `<span style="display:inline-block;background:${bg};color:${c};font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;margin:3px">${t}</span>`;
+  const chip = (t: string, bg: string, c: string) => `<span style="display:inline-block;background:${bg};color:${c};font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;margin:0">${t}</span>`;
+  const celda = (k: string, v: string, der = false) => `<td style="padding:12px 0 0;width:50%" align="${der ? "right" : "left"}"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a1a1aa">${k}</div><div style="font-size:16px;font-weight:700;color:#0a0a0a;margin-top:3px">${v}</div></td>`;
   const fila = (k: string, v: string) => `<tr><td style="padding:10px 0;color:#71717a;font-size:13px;border-top:1px dashed #e4e4e7">${k}</td><td align="right" style="padding:10px 0;font-size:14px;font-weight:700;color:#0a0a0a;border-top:1px dashed #e4e4e7">${v}</td></tr>`;
   const paso = (t: string, hecho: boolean) => `<td align="center" style="width:33%;font-size:11px;color:${hecho ? "#0a0a0a" : "#a1a1aa"};font-weight:${hecho ? 700 : 400}">
       <div style="width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto 6px;background:${hecho ? color : "#e4e4e7"};color:#fff;font-size:14px;font-weight:700">${hecho ? "&#10003;" : ""}</div>${t}</td>`;
@@ -42,12 +43,15 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
       <div style="width:56px;height:56px;border-radius:50%;background:${color};margin:0 auto;text-align:center"><img src="${PANEL}/borradores/${o.listo ? "check" : "reloj"}-correo.png" width="28" height="28" alt="" style="display:inline-block;margin-top:14px"></div>
       <h1 style="margin:16px 0 0;font-size:22px;color:#0a0a0a">${o.listo ? "¡Tu ticket está listo!" : "¡Tu ticket fue aprobado!"}</h1>
     </td></tr>
-    <tr><td style="padding:20px 24px 4px">
-      <div style="border:2px dashed #e4e4e7;border-radius:16px;padding:16px 18px;text-align:center">
-        <div style="font-size:17px;font-weight:700;color:#0a0a0a;margin-bottom:12px">${o.titulo}</div>
-        ${[chip(`${o.listo ? "Lo hizo" : "Lo hará"} ${o.persona}`, "#f4f4f5", "#0a0a0a"),
-           pr ? chip(`Prioridad ${pr[0]}`, pr[2], pr[1]) : "",
-           o.listo ? chip(o.aTiempo ? "A tiempo" : "Con retraso", o.aTiempo ? "#d1fae5" : "#fee2e2", o.aTiempo ? "#047857" : "#b91c1c") : (o.entrega ? chip(`Entrega ${o.entrega}`, "#f4f4f5", "#0a0a0a") : "")].join("")}
+    <tr><td style="padding:22px 24px 4px">
+      <div style="border-top:2px dashed #e4e4e7;border-bottom:2px dashed #e4e4e7;padding:6px 0 8px">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>${celda("N.° de ticket", num(o.id))}${celda(o.listo ? "Entregado" : "Entrega", o.listo ? (o.entregado || "") : (o.entrega || ""), true)}</tr>
+          <tr><td colspan="2" style="padding:12px 0 0"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a1a1aa">Pedido</div><div style="font-size:16px;font-weight:700;color:#0a0a0a;margin-top:3px">${o.titulo}</div></td></tr>
+          <tr>${celda(o.listo ? "Lo hizo" : "Lo hará", o.persona)}${celda(o.listo ? "Resultado" : "Prioridad",
+            o.listo ? chip(o.aTiempo ? "A tiempo" : "Con retraso", o.aTiempo ? "#d1fae5" : "#fee2e2", o.aTiempo ? "#047857" : "#b91c1c")
+                    : (pr ? chip(pr[0], pr[2], pr[1]) : "—"), true)}</tr>
+        </table>
       </div>
     </td></tr>
     <tr><td style="padding:22px 24px 6px"><table width="100%" cellpadding="0" cellspacing="0"><tr>${paso("Enviado", true)}${paso("Aprobado", true)}${paso("Entregado", o.listo)}</tr></table></td></tr>
