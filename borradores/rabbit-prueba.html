@@ -3234,15 +3234,14 @@
           <label><span><em class="tk-n">3.</em> Formato</span><select name="formato" disabled><option value="">Elige el tipo primero</option></select></label></div>
         <label class="tk-otro" hidden>¿Qué tipo de pieza es?<input name="otro" placeholder="Ej.: Firma de correo, invitación…" /></label>
         <label><span><em class="tk-n">4.</em> Detalla el pedido <span class="req">*</span></span><textarea name="detalle" placeholder="De qué se trata, el objetivo y el mensaje principal."></textarea></label>
-        <label><span><em class="tk-n">5.</em> ¿A quién va dirigido?</span> <small>(opcional)</small><input name="destino" placeholder="Ej.: clientes, seguidores de LinkedIn" /></label>
+        <label><span><em class="tk-n">5.</em> ¿A quién va dirigido? <small>(opcional)</small></span><input name="destino" placeholder="Ej.: clientes, seguidores de LinkedIn" /></label>
         <label><span><em class="tk-n">6.</em> Texto que debe ir en la pieza</span><textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
         <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
-        <label><span><em class="tk-n">7.</em> Referencias</span> <small>(opcional, un link por línea)</small><textarea name="refs" placeholder="Drive, Pinterest, web…"></textarea></label>
-        <div class="tk-subir"><span class="tk-subir-t"><em class="tk-n">8.</em> Fotos y archivos <small>(opcional, hasta 5 archivos | 10 MB en total)</small></span>
+        <div class="tk-subir"><span class="tk-subir-t"><em class="tk-n">7.</em> Fotos y archivos <small>(opcional, hasta 5 archivos | 10 MB en total)</small></span>
           <label class="tk-drop" id="tkDrop"><input type="file" id="tkArch" multiple accept="image/*,.pdf" hidden /><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><b>Arrastra tus referencias aquí</b><small>o haz clic para elegirlas | JPG, PNG o PDF</small></label>
           <div class="tk-miniaturas" id="tkMinis"></div><div class="tk-peso" id="tkPeso" hidden></div></div>
-        <label class="tk-full"><span><em class="tk-n">9.</em> ¿Tus archivos pesan más de 10 MB? Déjanos un link de Drive</span> <small>(opcional | compártelo como "Cualquier persona con el enlace")</small><input name="drive" type="url" placeholder="Link de Google Drive con acceso para ver" /></label>
-        <label class="tk-full"><span><em class="tk-n">10.</em> ¿Para cuándo lo necesitas? <span class="req">*</span></span><input type="date" name="fecha" /></label>
+        <label class="tk-full"><span><em class="tk-n">8.</em> ¿Tus archivos pesan más de 10 MB? Déjanos un link de Drive <small>(opcional)</small></span><input name="drive" type="url" placeholder="Pega el link y compártelo como «Cualquier persona con el enlace»" /></label>
+        <label class="tk-full"><span><em class="tk-n">9.</em> ¿Para cuándo lo necesitas? <span class="req">*</span></span><input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define Hilary, jefa de marketing, al revisar tu solicitud.</p>
         <div class="mensaje tk-err"></div>
@@ -3297,7 +3296,7 @@
       const id = Math.max(...tickets.map((t) => t.id)) + 1;
       tickets.push({ id, titulo: f.titulo.value.trim(), solicitante: yo, area: SOLICITANTES[yo], tipo: f.tipo.value === "Otro" ? (f.otro.value.trim() || "Otro") : f.tipo.value,
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
-        refs: [f.drive.value.trim(), ...f.refs.value.split(/\s+/)].filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
+        refs: [f.drive.value.trim()].filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
         historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió la solicitud" }] });
       ticketEnviado(tickets.find((t) => t.id === id)).then(() => { cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets(); });
     };
