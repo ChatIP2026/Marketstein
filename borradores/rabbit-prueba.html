@@ -3164,7 +3164,7 @@
     if (!FILTROS.some((f) => f[0] === filtroTk)) filtroTk = FILTROS[0][0];
     // Sin filtro "Falta info": esos tickets se ven donde esperan (por revisar si no tiene asignado, en revisión si ya lo tiene)
     const estadoF = (t) => t.estado !== "falta_info" ? t.estado : t.asignado ? "en_revision" : "revision_inicial";
-    const pasa = (t, f) => f === "todos" ? true : f === "activos" ? (sol ? ["en_curso", "en_revision", "revision_inicial", "falta_info"].includes(t.estado) : ["en_curso", "en_revision", "falta_info"].includes(t.estado)) : f === "rechazado" ? ["rechazado", "cancelado"].includes(t.estado) : estadoF(t) === f;
+    const pasa = (t, f) => f === "todos" ? !["rechazado", "cancelado"].includes(t.estado) : f === "activos" ? (sol ? ["en_curso", "en_revision", "revision_inicial", "falta_info"].includes(t.estado) : ["en_curso", "en_revision", "falta_info"].includes(t.estado)) : f === "rechazado" ? ["rechazado", "cancelado"].includes(t.estado) : estadoF(t) === f;
     const lista = vis.filter((t) => pasa(t, filtroTk)).sort((a, b) => (TK_PRIO[a.prioridad] ? Object.keys(TK_PRIO).indexOf(a.prioridad) : 9) - (TK_PRIO[b.prioridad] ? Object.keys(TK_PRIO).indexOf(b.prioridad) : 9) || a.fecha.localeCompare(b.fecha));
     const titulo = sol ? `<span class="saludo-h">Hola, ${yo} ${rbMini()}</span>` : jefa ? "Bandeja de tickets" : "Mis tickets";
     const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
