@@ -2438,6 +2438,7 @@
       encargados: [...fNuevo.querySelectorAll(".mn-persona.activa")].map((b) => b.dataset.n),
       fecha_limite: fNuevo.fecha.value || null,
       created_at: new Date().toISOString(),
+      creado_por: yo,
     });
     tareasNuevas.forEach((texto, k) => mapaT.set(id + k + 1, { id: id + k + 1, proyecto_id: id, texto, hecha: false, encargado: mapaP.get(id).encargados.length === 1 ? mapaP.get(id).encargados[0] : null, created_at: new Date(Date.now() + k).toISOString() }));
     cerrarNuevo();
@@ -2966,7 +2967,7 @@
     data.forEach((r) => { const t = deBd(r); t.archivos.forEach((a) => (a.url = urls[a.ruta])); tickets.push(t); BD_TK.set(t.id, JSON.stringify(aBd(t))); });
     const faltan = tickets.flatMap((t) => t.archivos.filter((a) => a.ruta && !a.url));
     if (faltan.length) { const { data: f } = await sb.storage.from("adjuntos").createSignedUrls(faltan.map((a) => a.ruta), 60 * 60 * 6); (f || []).forEach((x, i) => (faltan[i].url = x.signedUrl)); }
-    contarTickets(); pintarNotif();
+    contarTickets(); pintarNotif(); enlazarSolicitados();
     if (pagina === "tickets") pintarTickets();
     const abierto = document.body.classList.contains("con-detalle") && tickets.some((t) => t.id === tkAbierto);
     if (abierto && !(document.activeElement && document.activeElement.closest("#detalle input, #detalle textarea"))) abrirTicket(tkAbierto);
@@ -3011,11 +3012,87 @@
       }
     }
   }
+
+  // ===== Proyectos y tareas reales (Supabase) =====
+  // Igual que los tickets: el panel trabaja en mapaP/mapaT y cada 1,2 s se comparan con lo guardado (BD_P/BD_T)
+  // para crear, actualizar o borrar en Supabase lo que haya cambiado.
+  const BD_P = new Map(), BD_T = new Map();
+  let sincP = false;
+  const pAbd = (p) => ({ nombre: p.nombre, estado: p.estado, prioridad: p.prioridad || "media", encargados: (p.encargados || []).map((n) => ID_DE[n]).filter(Boolean),
+    fecha_limite: p.fecha_limite || null, creado_por: ID_DE[p.creado_por] || null, ticket_id: p.ticket || null, standby: !!p.standby });
+  const tAbd = (t) => ({ proyecto_id: t.proyecto_id, texto: t.texto, encargado: t.encargado ? ID_DE[t.encargado] || null : null, hecha: !!t.hecha, hecha_at: t.hecha_at || null });
+  const pDeBd = (r) => ({ id: r.id, nombre: r.nombre, estado: r.estado, prioridad: r.prioridad, encargados: (r.encargados || []).map((u) => NOMBRE_DE[u]).filter(Boolean),
+    fecha_limite: r.fecha_limite, created_at: r.created_at, creado_por: NOMBRE_DE[r.creado_por] || null, ticket: r.ticket_id, standby: !!r.standby });
+  const tDeBd = (r) => ({ id: r.id, proyecto_id: r.proyecto_id, texto: r.texto, encargado: r.encargado ? NOMBRE_DE[r.encargado] || null : null, hecha: r.hecha, hecha_at: r.hecha_at, created_at: r.created_at });
+  // Los proyectos que vienen de un ticket muestran quién lo pidió
+  function enlazarSolicitados() {
+    for (const p of mapaP.values()) { const t = p.ticket && tickets.find((x) => x.id === p.ticket); if (t) { p.solicitado_por = { nombre: t.solicitante, area: t.area }; t.proyecto = p.id; } }
+  }
+  const hayPendientes = () => [...mapaP.values()].some((p) => BD_P.get(p.id) !== JSON.stringify(pAbd(p))) || [...mapaT.values()].some((t) => BD_T.get(t.id) !== JSON.stringify(tAbd(t)))
+    || [...BD_P.keys()].some((id) => !mapaP.has(id)) || [...BD_T.keys()].some((id) => !mapaT.has(id));
+  async function cargarProyectos() {
+    if (sincP || hayPendientes()) return; // primero se guarda lo pendiente; el siguiente aviso vuelve a cargar
+    const [{ data: ps, error: e1 }, { data: ts, error: e2 }] = await Promise.all([sb.from("proyectos").select("*"), sb.from("tareas").select("*")]);
+    if (e1 || e2 || sincP || hayPendientes()) return;
+    mapaP.clear(); mapaT.clear(); BD_P.clear(); BD_T.clear();
+    ps.forEach((r) => { const p = pDeBd(r); mapaP.set(p.id, p); BD_P.set(p.id, JSON.stringify(pAbd(p))); });
+    ts.forEach((r) => { const t = tDeBd(r); mapaT.set(t.id, t); BD_T.set(t.id, JSON.stringify(tAbd(t))); });
+    enlazarSolicitados(); armar();
+    if (pagina === "dashboard") pintarDash();
+    const escribiendo = document.activeElement && document.activeElement.closest("#detalle input, #detalle textarea");
+    if (abiertoId && mapaP.has(abiertoId) && !escribiendo) pintarDetalle();
+  }
+  async function sincronizarProyectos() {
+    if (sincP) return; sincP = true;
+    try {
+      for (const p of [...mapaP.values()]) {
+        const j = JSON.stringify(pAbd(p));
+        if (!BD_P.has(p.id)) {
+          estadoGuardado("guardando");
+          const { data, error } = await sb.from("proyectos").insert(pAbd(p)).select("id, created_at").single();
+          if (error) { estadoGuardado("error"); continue; }
+          const viejo = p.id; mapaP.delete(viejo); p.id = data.id; p.created_at = data.created_at; mapaP.set(p.id, p);
+          for (const t of mapaT.values()) if (t.proyecto_id === viejo) t.proyecto_id = p.id;
+          for (const t of tickets) if (t.proyecto === viejo) t.proyecto = p.id;
+          if (abiertoId === viejo) abiertoId = p.id;
+          BD_P.set(p.id, JSON.stringify(pAbd(p))); estadoGuardado("ok");
+        } else if (j !== BD_P.get(p.id)) {
+          estadoGuardado("guardando");
+          const { error } = await sb.from("proyectos").update(pAbd(p)).eq("id", p.id);
+          if (error) { estadoGuardado("error"); continue; }
+          BD_P.set(p.id, j); estadoGuardado("ok");
+        }
+      }
+      for (const id of [...BD_P.keys()]) if (!mapaP.has(id)) { const { error } = await sb.from("proyectos").delete().eq("id", id); if (!error) BD_P.delete(id); }
+      for (const t of [...mapaT.values()]) {
+        if (!BD_P.has(t.proyecto_id)) continue; // su proyecto aún no está guardado
+        const j = JSON.stringify(tAbd(t));
+        if (!BD_T.has(t.id)) {
+          const { data, error } = await sb.from("tareas").insert(tAbd(t)).select("id, created_at").single();
+          if (error) { estadoGuardado("error"); continue; }
+          mapaT.delete(t.id); t.id = data.id; t.created_at = data.created_at; mapaT.set(t.id, t); BD_T.set(t.id, JSON.stringify(tAbd(t)));
+        } else if (j !== BD_T.get(t.id)) {
+          const { error } = await sb.from("tareas").update(tAbd(t)).eq("id", t.id);
+          if (!error) BD_T.set(t.id, j); else estadoGuardado("error");
+        }
+      }
+      for (const id of [...BD_T.keys()]) if (!mapaT.has(id)) { const { error } = await sb.from("tareas").delete().eq("id", id); if (!error) BD_T.delete(id); }
+    } finally { sincP = false; }
+  }
+  function iniciarProyectosVivos() {
+    mapaP.clear(); mapaT.clear();
+    cargarProyectos();
+    setInterval(sincronizarProyectos, 1200);
+    let t1; sb.channel("proyectos-vivos")
+      .on("postgres_changes", { event: "*", schema: "public", table: "proyectos" }, () => { clearTimeout(t1); t1 = setTimeout(cargarProyectos, 700); })
+      .on("postgres_changes", { event: "*", schema: "public", table: "tareas" }, () => { clearTimeout(t1); t1 = setTimeout(cargarProyectos, 700); })
+      .subscribe();
+  }
   function iniciarTicketsVivos() {
     tickets.length = 0;
     cargarTickets(false);
     setInterval(sincronizarTickets, 1200);
-    addEventListener("beforeunload", (e) => { if (tickets.some((t) => enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id))) { e.preventDefault(); e.returnValue = ""; } });
+    addEventListener("beforeunload", (e) => { if ((mapaP.size && typeof hayPendientes === "function" && BD_P.size + BD_T.size && hayPendientes()) || tickets.some((t) => enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id))) { e.preventDefault(); e.returnValue = ""; } });
     let t0; sb.channel("tickets-vivos").on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, () => { clearTimeout(t0); t0 = setTimeout(() => cargarTickets(true), 600); }).subscribe();
   }
 
@@ -3487,6 +3564,7 @@
       yo = p.nombre;
       await cargarPersonas();
       iniciarTicketsVivos();
+      if (p.rol !== "solicitante") iniciarProyectosVivos();
       menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); rabbitHola(); quizasTutorial();
     });
     document.addEventListener("click", async (e) => { if (e.target.closest("#mpSalir")) { e.preventDefault(); e.stopImmediatePropagation(); await sb.auth.signOut(); location.href = "login.html"; } }, true);
