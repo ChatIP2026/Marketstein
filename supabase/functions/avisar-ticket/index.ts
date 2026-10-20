@@ -24,6 +24,7 @@ const LOGO = `${PANEL}/borradores/rabbit-correo.png`;
 function plantilla(o: { listo: boolean; id: number; titulo: string; persona: string; pieza: string; prioridad?: string; entrega?: string; entregado?: string; aTiempo?: boolean }) {
   const color = o.listo ? "#10b981" : "#0a0a0a";
   const pr = PRIO[o.prioridad || ""];
+  const chip = (t: string, bg: string, c: string) => `<span style="display:inline-block;background:${bg};color:${c};font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;margin:3px">${t}</span>`;
   const fila = (k: string, v: string) => `<tr><td style="padding:10px 0;color:#71717a;font-size:13px;border-top:1px dashed #e4e4e7">${k}</td><td align="right" style="padding:10px 0;font-size:14px;font-weight:700;color:#0a0a0a;border-top:1px dashed #e4e4e7">${v}</td></tr>`;
   const paso = (t: string, hecho: boolean) => `<td align="center" style="width:33%;font-size:11px;color:${hecho ? "#0a0a0a" : "#a1a1aa"};font-weight:${hecho ? 700 : 400}">
       <div style="width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto 6px;background:${hecho ? color : "#e4e4e7"};color:#fff;font-size:14px;font-weight:700">${hecho ? "&#10003;" : ""}</div>${t}</td>`;
@@ -37,21 +38,16 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
         <td align="right"><span style="display:inline-block;background:#ffffff;color:#0a0a0a;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px">${num(o.id)}</span></td>
       </tr></table>
     </td></tr>
-    <tr><td style="padding:26px 24px 6px">
-      <span style="display:inline-block;background:${o.listo ? "#d1fae5" : "#f4f4f5"};color:${o.listo ? "#047857" : "#0a0a0a"};font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px">${o.listo ? "&#10003; Entregado" : "&#10003; Aprobado"}</span>
-      <h1 style="margin:14px 0 6px;font-size:22px;line-height:1.25;color:#0a0a0a">${o.listo ? "¡Tu ticket está listo!" : "¡Tu ticket fue aprobado!"}</h1>
-      <p style="margin:0;font-size:14px;color:#52525b;line-height:1.5">${o.listo ? `${o.persona} terminó tu pedido. Ya puedes revisarlo en Rabbit.` : `${o.persona} ya está trabajando en tu pedido.`}</p>
+    <tr><td align="center" style="padding:30px 24px 4px">
+      <div style="width:56px;height:56px;line-height:56px;border-radius:50%;background:${color};color:#ffffff;font-size:28px;font-weight:700;margin:0 auto">&#10003;</div>
+      <h1 style="margin:16px 0 0;font-size:22px;color:#0a0a0a">${o.listo ? "¡Tu ticket está listo!" : "¡Tu ticket fue aprobado!"}</h1>
     </td></tr>
-    <tr><td style="padding:18px 24px 4px">
-      <div style="background:#fafafa;border:1px solid #f0f0f2;border-radius:14px;padding:4px 16px">
-        <table width="100%" cellpadding="0" cellspacing="0">
-          <tr><td colspan="2" style="padding:12px 0 10px;font-size:16px;font-weight:700;color:#0a0a0a">${o.titulo}</td></tr>
-          ${fila(o.listo ? "Lo hizo" : "Lo hará", o.persona)}
-          ${fila("Pieza", o.pieza)}
-          ${pr ? fila("Prioridad", `<span style="background:${pr[2]};color:${pr[1]};padding:3px 9px;border-radius:999px;font-size:12px">${pr[0]}</span>`) : ""}
-          ${o.entrega ? fila(o.listo ? "Fecha pedida" : "Entrega", o.entrega) : ""}
-          ${o.entregado ? fila("Entregado", `${o.entregado} <span style="background:${o.aTiempo ? "#d1fae5" : "#fee2e2"};color:${o.aTiempo ? "#047857" : "#b91c1c"};padding:3px 9px;border-radius:999px;font-size:12px;margin-left:4px">${o.aTiempo ? "A tiempo" : "Con retraso"}</span>`) : ""}
-        </table>
+    <tr><td style="padding:20px 24px 4px">
+      <div style="border:2px dashed #e4e4e7;border-radius:16px;padding:16px 18px;text-align:center">
+        <div style="font-size:17px;font-weight:700;color:#0a0a0a;margin-bottom:12px">${o.titulo}</div>
+        ${[chip(`${o.listo ? "Lo hizo" : "Lo hará"} ${o.persona}`, "#f4f4f5", "#0a0a0a"),
+           pr ? chip(`Prioridad ${pr[0]}`, pr[2], pr[1]) : "",
+           o.listo ? chip(o.aTiempo ? "A tiempo" : "Con retraso", o.aTiempo ? "#d1fae5" : "#fee2e2", o.aTiempo ? "#047857" : "#b91c1c") : (o.entrega ? chip(`Entrega ${o.entrega}`, "#f4f4f5", "#0a0a0a") : "")].join("")}
       </div>
     </td></tr>
     <tr><td style="padding:22px 24px 6px"><table width="100%" cellpadding="0" cellspacing="0"><tr>${paso("Enviado", true)}${paso("Aprobado", true)}${paso("Entregado", o.listo)}</tr></table></td></tr>
