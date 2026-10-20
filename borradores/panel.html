@@ -1877,6 +1877,8 @@
   .tuto-luz { transition: top .12s ease, left .12s ease, width .12s ease, height .12s ease !important; } .tuto-globo { transition: top .12s ease, left .12s ease !important; }
   body.tuto-on #detalle, body.tuto-on #detalle * , body.tuto-on .menu-notif { animation: none !important; transition: none !important; }
   .tuto-capa.cambiando .tuto-globo { opacity: 0; } .tuto-capa.cambiando .tuto-luz { transition: none !important; box-shadow: 0 0 0 9999px rgba(10,10,10,.62); outline-color: transparent; background: transparent; } .tuto-globo { transition: top .12s ease, left .12s ease, opacity .12s ease !important; }
+  .vacio-crear { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 11px 18px; border-radius: 12px; background: #0a0a0a; color: #fff; font-weight: 600; font-size: .9rem; box-shadow: 0 10px 22px rgba(10,10,10,.18); transition: transform .15s; } .vacio-crear:hover { transform: translateY(-2px); } .vacio-crear svg { width: 18px; height: 18px; }
+  .vacio-crear-c { display: block; width: 100%; text-align: center; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3149,7 +3151,7 @@
     const selMes = `<label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="tkBuscar" placeholder="Buscar ticket, persona o #número" value="${esc(busTk)}" /></label>${(() => { const TI = `<svg class="tk-mes-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M15 5v2M15 11v2M15 17v2" stroke-linecap="round"/></svg>`, ops = [...meses.map((m) => [m, `${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}`, todosVis.filter((t) => mesDe(t) === m).length]), ["todos", "Todos los meses", todosVis.length]], act = ops.find((o) => o[0] === mesTk) || ops[0]; return `<div class="tk-mes" id="tkMes"><button type="button" class="tk-mes-btn" title="Mes de entrega">${act[1]} | ${act[2]} ${TI}<svg class="tk-mes-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="tk-mes-menu">${ops.map((o) => `<button type="button" data-m="${o[0]}" class="${o[0] === act[0] ? "activa" : ""}">${o[1]} | ${o[2]} ${TI}</button>`).join("")}</div></div>`; })()}`;
     html += `<div class="tk-barra-f"><div class="ent-filtros">${FILTROS.map(([k, t]) => `<button data-ft="${k}" class="${filtroTk === k ? "activa" : ""}">${t} <span>${vis.filter((x) => pasa(x, k)).length}</span></button>`).join("")}</div>${selMes}</div>`;
     html += lista.length ? `<div class="tk-lista">${lista.map(tarjetaTk).join("")}</div>`
-      : `<div class="mis-vacio"><b>${sol ? "No tienes tickets aquí" : "Nada por aquí"}</b>${sol ? "Usa “Crear ticket” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}</div>`;
+      : `<div class="mis-vacio"><b>${sol ? "No tienes tickets aquí" : "Nada por aquí"}</b>${sol ? "Usa “Crear ticket” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}${sol && !tickets.some((t) => t.solicitante === yo && t.id > 0) ? `<div class="vacio-crear-c"><button type="button" class="vacio-crear" id="tkPrimero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Crear mi primer ticket</button></div>` : ""}</div>`;
     if (!lista.length && qTk) html = html.replace(/<div class="mis-vacio">[\s\S]*$/, `<div class="mis-vacio"><b>Sin resultados</b>No encontramos tickets con “${esc(busTk)}”.</div>`);
     cont.innerHTML = html;
     cont.querySelectorAll("[data-per]").forEach((b) => (b.onclick = () => { personaTk = personaTk === b.dataset.per ? null : b.dataset.per; filtroTk = "todos"; pintarTickets(); }));
@@ -3158,6 +3160,7 @@
     cont.querySelectorAll("[data-ft]").forEach((b) => (b.onclick = () => { filtroTk = b.dataset.ft; pintarTickets(); }));
     cont.querySelectorAll(".tk").forEach((c) => (c.onclick = () => abrirTicket(+c.dataset.id)));
     cont.querySelector("#tkNuevo")?.addEventListener("click", abrirFormTicket);
+    cont.querySelector("#tkPrimero")?.addEventListener("click", abrirFormTicket);
   }
   const FLECHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>';
   function tarjetaTk(t) {
