@@ -38,3 +38,25 @@ s = s[:s.rindex("</body>")] + extra + s[s.rindex("</body>"):]
 i = s.rindex("</body>")
 s = s[:i] + banner + s[i + 7:]
 open("rabbit-prueba.html", "w").write(s)
+
+# Versión "persona nueva": otra área, sin tickets, tutorial al entrar
+n = open("panel.html").read()
+for a, b in [
+    ('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>\n', ''),
+    ('let yo = "Ariana";\n  try { yo = localStorage.getItem("rabbit-yo") || yo; } catch (e) {}', 'let yo = "Ana";'),
+    ('const SOLICITANTES = { Romano: "Comercial",', 'const SOLICITANTES = { Ana: "Legal", Romano: "Comercial",'),
+    ('const WEB_REAL = /vercel\\.app$/.test(location.hostname);', 'const WEB_REAL = true;'),
+    ('document.getElementById("mpSalir").onclick = () => { location.href = "login.html"; };',
+     'document.getElementById("mpSalir").onclick = () => { menuPerfil.hidden = true; avisar("Vista de prueba: no hay sesión que cerrar"); };'),
+    ('<title>', '<title>Persona nueva | '),
+]:
+    assert a in n, a
+    n = n.replace(a, b, 1)
+n = n.replace("rabbit_filtros", "rabbit_nuevo_filtros").replace('localStorage.setItem("rabbit-yo", yo)', "0")
+n = n.replace('aplicarRol(); pintarNotif(); avisoDemo(60000); rabbitHola();',
+              'try { localStorage.removeItem("rabbit_tuto_Ana"); } catch (e) {} aplicarRol(); pintarNotif(); rabbitHola(); quizasTutorial();', 1)
+i = n.rindex("</body>")
+n = n[:i] + '''<style>.mp-demo{display:none!important}</style>
+<button onclick="try{localStorage.removeItem('rabbit_tuto_Ana')}catch(e){};iniciarTutorial()" style="position:fixed;left:16px;bottom:16px;z-index:350;background:#0a0a0a;color:#fff;border:0;border-radius:12px;padding:10px 14px;font:600 .8rem Inter,system-ui,sans-serif;cursor:pointer">Repetir tutorial</button>
+''' + n[i:]
+open("rabbit-nuevo.html", "w").write(n)

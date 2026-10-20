@@ -2999,17 +2999,20 @@
     document.querySelector(".tuto-capa")?.remove();
     const primerTk = () => { const c = document.querySelector(".tk-lista > *:first-child"); return c ? +(c.querySelector("[data-id]")?.dataset.id || c.dataset.id || 0) : 0; };
     const cerrarTodo = () => { cerrarProyecto(); menuNotif.hidden = true; };
+    // Si la persona aún no tiene tickets, se usa uno de ejemplo solo para mostrar el chat
+    const quitarEjemplo = () => { const k = tickets.findIndex((t) => t.id === -1); if (k >= 0) tickets.splice(k, 1); };
+    const ticketEjemplo = () => { quitarEjemplo(); tickets.push({ id: -1, titulo: "Ticket de ejemplo", solicitante: yo, area: SOLICITANTES[yo] || "", tipo: "Post", formato: "", detalle: "Así se verá cada ticket que envíes.", destino: "", texto: "", refs: [], adjuntos: false, archivos: [], fecha: HOY, estado: "en_curso", asignado: "Ariana", prioridad: "media", creado: new Date().toISOString(), historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió el ticket" }], comentarios: [] }); return -1; };
     const pasos = [
       { sel: null, t: `¡Hola, ${esc(yo)}!`, d: "Soy Rabbit. Aquí puedes asignarle tareas al equipo de marketing." },
       { sel: "#tkNuevo", toque: true, t: "1. Crear ticket", d: "Con este botón pides una pieza: un post, un video, un flyer…" },
       { sel: "#detalle .tk-form", hasta: "#detalle .tk-form [name=texto]", antes: () => abrirFormTicket(), t: "2. Llena el formulario", d: 'Detállanos qué necesitas llenando los campos con <b class="tuto-req">*</b> y pulsa Enviar ticket.' },
-      { sel: ".tk-lista > *:first-child, .mis-vacio", antes: cerrarTodo, toque: true, t: "3. Sigue tus tickets", d: "Cada ticket muestra su estado: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
-      { sel: "#detalle .tuto-chat", antes: () => { const id = primerTk(); if (id) { abrirTicket(id); (() => { const b = document.querySelector("#detalle .tkc-ayuda")?.parentElement; if (b) { b.classList.add("tuto-chat");
+      { sel: ".tk-lista > *:first-child, .mis-vacio", antes: cerrarTodo, toque: true, dVacio: "Aquí aparecerán tus tickets con su estado: Por revisar, En curso o Entregado.", t: "3. Sigue tus tickets", d: "Cada ticket muestra su estado: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
+      { sel: "#detalle .tuto-chat", antes: () => { const id = primerTk() || ticketEjemplo(); if (id) { abrirTicket(id); (() => { const b = document.querySelector("#detalle .tkc-ayuda")?.parentElement; if (b) { b.classList.add("tuto-chat");
             // Conversación de ejemplo (solo se ve en el tutorial, no se guarda)
             const mk = (document.querySelector(".tk-lista > *:first-child")?.textContent.match(/Lo hace (\S+)/) || [])[1] || "Ariana";
             const msg = (q, txt, min) => `<div class="tkc ${q === yo ? "mio" : ""}"><i class="av" style="${fondoAv(q)}">${letraAv(q)}</i><div><b>${esc(q)} <span>hace ${min} min</span></b><p>${txt}</p></div></div>`;
             const l = b.querySelector(".tkc-lista"); if (l) l.innerHTML = msg(mk, "¿El logo va en blanco o en color?", 12) + msg(yo, "En blanco, porque va sobre fondo oscuro.", 5); b.scrollIntoView({ block: "start" }); document.getElementById("detalle").scrollTop -= 20; } })(); } }, t: "4. Chat del ticket", d: "Dentro del ticket le escribes a quien lo está haciendo. Cada mensaje le llega como notificación." },
-      { sel: "#campanaBtn", antes: () => cerrarProyecto(), toque: true, t: "5. Notificaciones", d: "Toca la campana para ver tus avisos." },
+      { sel: "#campanaBtn", antes: () => { cerrarProyecto(); quitarEjemplo(); }, toque: true, t: "5. Notificaciones", d: "Toca la campana para ver tus avisos." },
       { sel: "#menuNotif", antes: () => { pintarNotif(); menuNotif.hidden = false; }, t: "¡Así se ven!", d: "Aquí te avisamos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
     ];
     let i = 0;
@@ -3018,11 +3021,11 @@
       <div class="tuto-pie"><div class="tuto-pts"></div><button type="button" class="tuto-saltar">Saltar</button><button type="button" class="tuto-sig">Siguiente</button></div></div>`;
     document.body.append(capa);
     const luz = capa.querySelector(".tuto-luz"), globo = capa.querySelector(".tuto-globo");
-    const fin = () => { cerrarProyecto(); menuNotif.hidden = true; marcarTutorial(); capa.classList.add("sale"); setTimeout(() => capa.remove(), 250); removeEventListener("resize", pintar); };
+    const fin = () => { cerrarProyecto(); quitarEjemplo(); menuNotif.hidden = true; marcarTutorial(); capa.classList.add("sale"); setTimeout(() => capa.remove(), 250); removeEventListener("resize", pintar); };
     function pintar() {
       const p = pasos[i];
       let el = null; if (p.sel) for (const x of p.sel.split(",")) { el = document.querySelector(x.trim()); if (el && el.offsetParent) break; el = null; }
-      capa.querySelector(".tuto-txt b").innerHTML = p.t; capa.querySelector(".tuto-txt p").innerHTML = p.d;
+      capa.querySelector(".tuto-txt b").innerHTML = p.t; capa.querySelector(".tuto-txt p").innerHTML = (p.dVacio && el && !el.closest(".tk-lista") && p.dVacio) || p.d;
       capa.querySelector(".tuto-pts").innerHTML = pasos.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("") + `<span>${i + 1} de ${pasos.length}</span>`;
       capa.querySelector(".tuto-sig").textContent = i === pasos.length - 1 ? "Empezar" : "Siguiente";
       capa.querySelector(".tuto-saltar").hidden = i === pasos.length - 1;
