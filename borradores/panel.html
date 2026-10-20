@@ -3037,10 +3037,12 @@
     capa.querySelector(".tuto-sig").onclick = () => { if (i === pasos.length - 1) return fin(); i++; ir(); };
     capa.querySelector(".tuto-saltar").onclick = fin;
     capa.addEventListener("click", (e) => {
-      const p = pasos[i]; if (!p.clic || e.target.closest(".tuto-globo")) return;
+      if (e.target.closest(".tuto-globo")) return;
+      e.stopPropagation(); // nada fuera del globo debe cerrar menús ni abrir otras cosas
+      const p = pasos[i]; if (!p.clic || capa.dataset.ocupado) return;
       const r = luz.getBoundingClientRect();
       if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
-      e.stopPropagation(); pintarNotif(); menuNotif.hidden = false; i++; setTimeout(pintar, 200);
+      capa.dataset.ocupado = "1"; pintarNotif(); menuNotif.hidden = false; i++; setTimeout(() => { delete capa.dataset.ocupado; pintar(); }, 200);
     });
     addEventListener("resize", pintar);
     requestAnimationFrame(pintar);
