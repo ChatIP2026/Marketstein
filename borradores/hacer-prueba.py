@@ -57,6 +57,5 @@ n = n.replace('aplicarRol(); pintarNotif(); avisoDemo(60000); rabbitHola();',
               'try { localStorage.removeItem("rabbit_tuto_Ana"); } catch (e) {} aplicarRol(); pintarNotif(); rabbitHola(); quizasTutorial();', 1)
 i = n.rindex("</body>")
 n = n[:i] + '''<style>.mp-demo{display:none!important}</style>
-<button onclick="try{localStorage.removeItem('rabbit_tuto_Ana')}catch(e){};iniciarTutorial()" style="position:fixed;left:16px;bottom:16px;z-index:350;background:#0a0a0a;color:#fff;border:0;border-radius:12px;padding:10px 14px;font:600 .8rem Inter,system-ui,sans-serif;cursor:pointer">Repetir tutorial</button>
 ''' + n[i:]
 open("rabbit-nuevo.html", "w").write(n)
