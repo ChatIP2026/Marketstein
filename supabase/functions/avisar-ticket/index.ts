@@ -28,7 +28,7 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
   const celda = (k: string, v: string, der = false) => `<td style="padding:12px 0 0;width:50%" align="${der ? "right" : "left"}"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a1a1aa">${k}</div><div style="font-size:16px;font-weight:700;color:#0a0a0a;margin-top:3px">${v}</div></td>`;
   const fila = (k: string, v: string) => `<tr><td style="padding:10px 0;color:#71717a;font-size:13px;border-top:1px dashed #e4e4e7">${k}</td><td align="right" style="padding:10px 0;font-size:14px;font-weight:700;color:#0a0a0a;border-top:1px dashed #e4e4e7">${v}</td></tr>`;
   // Cada paso ocupa un tercio: media línea a cada lado del círculo, así las líneas se unen sin cortes
-  const media = (h: boolean | null) => `<td style="padding:0"><div style="height:1px;line-height:1px;font-size:1px;background:${h === null ? "transparent" : h ? color : "#e4e4e7"}"></div></td>`;
+  const media = (h: boolean | null) => `<td style="padding:0"><div style="height:1.5px;line-height:1.5px;font-size:1px;background:${h === null ? "transparent" : h ? color : "#e4e4e7"}"></div></td>`;
   const nodo = (t: string, h: boolean, izq: boolean | null, der: boolean | null) => `<td width="33%" align="center" style="width:33%;padding:0">
       <table width="100%" cellpadding="0" cellspacing="0"><tr>${media(izq)}${bola(h)}${media(der)}</tr></table>
       <div style="padding-top:6px;font-size:11px;color:${h ? "#0a0a0a" : "#a1a1aa"};font-weight:${h ? 700 : 400}">${t}</div></td>`;
