@@ -1905,6 +1905,10 @@
   .te-datos .te-cola-n b { font-size: 1.5rem !important; font-variant-numeric: tabular-nums; }
   .tk-turno { background: #0a0a0a !important; color: #fff !important; border-color: #0a0a0a !important; }
   .cola-fila .cola-mas { margin: 0 2px 0 0 !important; height: 30px; padding: 0 8px; border-radius: 6px; background: #3f3f46; color: #fff !important; font-size: .76rem; font-weight: 700; display: inline-flex; align-items: center; }
+  /* Indicador de guardado: esquina inferior derecha, sin chocar con los avisos del centro */
+  #guardado { left: auto !important; right: 20px !important; bottom: 20px !important; translate: 0 20px !important; z-index: 400 !important; padding: 6px 12px !important; font-size: .74rem !important; box-shadow: 0 6px 16px rgba(0,0,0,.15); }
+  #guardado.g-guardando, #guardado.g-ok, #guardado.g-error { translate: 0 0 !important; }
+  @media (max-width: 760px) { #guardado { right: 12px !important; bottom: calc(100px + env(safe-area-inset-bottom)) !important; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
