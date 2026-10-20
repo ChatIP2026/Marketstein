@@ -21,7 +21,7 @@ const PRIO: Record<string, [string, string, string]> = {
 const LOGO = `${PANEL}/borradores/rabbit-correo.png`;
 
 // Correo con forma de ticket: cabecera negra con Rabbit, estado, datos y avance (Enviado > Aprobado > Entregado)
-function plantilla(o: { listo: boolean; id: number; titulo: string; persona: string; prioridad?: string; entrega?: string }) {
+function plantilla(o: { listo: boolean; id: number; titulo: string; persona: string; pieza: string; prioridad?: string; entrega?: string; entregado?: string; aTiempo?: boolean }) {
   const color = o.listo ? "#10b981" : "#0a0a0a";
   const pr = PRIO[o.prioridad || ""];
   const fila = (k: string, v: string) => `<tr><td style="padding:10px 0;color:#71717a;font-size:13px;border-top:1px dashed #e4e4e7">${k}</td><td align="right" style="padding:10px 0;font-size:14px;font-weight:700;color:#0a0a0a;border-top:1px dashed #e4e4e7">${v}</td></tr>`;
@@ -47,8 +47,10 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr><td colspan="2" style="padding:12px 0 10px;font-size:16px;font-weight:700;color:#0a0a0a">${o.titulo}</td></tr>
           ${fila(o.listo ? "Lo hizo" : "Lo hará", o.persona)}
+          ${fila("Pieza", o.pieza)}
           ${pr ? fila("Prioridad", `<span style="background:${pr[2]};color:${pr[1]};padding:3px 9px;border-radius:999px;font-size:12px">${pr[0]}</span>`) : ""}
-          ${o.entrega ? fila("Entrega", o.entrega) : ""}
+          ${o.entrega ? fila(o.listo ? "Fecha pedida" : "Entrega", o.entrega) : ""}
+          ${o.entregado ? fila("Entregado", `${o.entregado} <span style="background:${o.aTiempo ? "#d1fae5" : "#fee2e2"};color:${o.aTiempo ? "#047857" : "#b91c1c"};padding:3px 9px;border-radius:999px;font-size:12px;margin-left:4px">${o.aTiempo ? "A tiempo" : "Con retraso"}</span>`) : ""}
         </table>
       </div>
     </td></tr>
@@ -73,7 +75,9 @@ Deno.serve(async (req) => {
   const encargado = quien?.nombre || "marketing";
 
   const asunto = aprobado ? `Tu ticket ${num(t.id)} fue aprobado` : `Tu ticket ${num(t.id)} está listo`;
-  const html = plantilla({ listo: !aprobado, id: t.id, titulo: esc(t.titulo), persona: esc(encargado), prioridad: aprobado ? t.prioridad : undefined, entrega: aprobado ? fecha(t.fecha) : undefined });
+  const hoy = new Date().toLocaleDateString("en-CA", { timeZone: "America/Lima" });
+  const html = plantilla({ listo: !aprobado, id: t.id, titulo: esc(t.titulo), persona: esc(encargado), pieza: esc([t.tipo, t.formato].filter(Boolean).join(" | ")),
+    prioridad: t.prioridad, entrega: fecha(t.fecha), entregado: aprobado ? undefined : fecha(hoy), aTiempo: hoy <= t.fecha });
 
   const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para, asunto, html }) });
   const txt = await r.text();
