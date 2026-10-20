@@ -1850,6 +1850,7 @@
   .nt-cab { align-items: center !important; }
   .nt-tk { width: 64px; height: 36px; margin-left: auto; margin-right: 14px; transform: rotate(-8deg); filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); flex: none; }
   @media (max-width: 420px) { .nt-tk { width: 48px; height: 27px; margin-right: 8px; } }
+  .bc-yo b { white-space: nowrap; } .bc-yo .bc-sin { color: #71717a !important; font-weight: 600; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2820,7 +2821,7 @@
       : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto." : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
       : "No tienes nada pendiente aquí por ahora.";
     return `<article class="bc bcn a-${p.estado} ${p.standby ? "en-standby" : ""}" data-id="${p.id}">
-      <div class="bcn-a">${p.solicitado_por ? `<div class="bc-yo" title="Ticket aceptado"><span>Solicitado por</span>${av(p.solicitado_por.nombre)}<b>${esc(p.solicitado_por.nombre)}</b></div>` : `<div class="bc-yo bc-equipo" title="Proyecto interno del equipo"><span>Proyecto del equipo</span><span class="bc-avs">${(p.encargados.length ? p.encargados : [p.creado_por || JEFA]).map((n) => av(n)).join("")}</span>${p.encargados.length === 1 ? `<b>${esc(p.encargados[0])}</b>` : p.encargados.length ? "" : "<b>Sin encargado</b>"}</div>`}</div>
+      <div class="bcn-a">${p.solicitado_por ? `<div class="bc-yo" title="Ticket aceptado"><span>Solicitado por</span>${av(p.solicitado_por.nombre)}<b>${esc(p.solicitado_por.nombre)}</b></div>` : `<div class="bc-yo bc-equipo" title="Proyecto interno del equipo"><span>Proyecto del equipo</span>${p.encargados.length ? `<span class="bc-avs">${p.encargados.map((n) => av(n)).join("")}</span>` : ""}${p.encargados.length === 1 ? `<b>${esc(p.encargados[0])}</b>` : p.encargados.length ? "" : `<b class="bc-sin">Sin asignar</b>`}</div>`}</div>
       <button class="bcn-ir bc-abrir" title="Abrir proyecto" aria-label="Abrir proyecto">${FLECHA}</button>
       <div class="bcn-b"><div class="bc-ev">
         <button class="bc-carpeta" title="Ver tareas">${p.solicitado_por ? `<span class="bc-tkic c-${p.estado}"><svg viewBox="0 0 72 48" fill="none"><path d="M6 4h60a4 4 0 0 1 4 4v9a7 7 0 0 0 0 14v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-9a7 7 0 0 0 0-14V8a4 4 0 0 1 4-4Z" class="tkic-f"/><path d="M50 8v4M50 18v4M50 28v4M50 38v2" class="tkic-l" stroke-width="2" stroke-linecap="round"/><rect x="12" y="13" width="28" height="5" rx="2.5" class="tkic-a"/><rect x="12" y="23" width="20" height="4" rx="2" class="tkic-b"/><rect x="12" y="31" width="14" height="4" rx="2" class="tkic-b"/></svg></span>` : `<span class="carpeta-azul c-${p.estado}"></span>`}<span class="bc-info"><b>${esc(p.nombre)}</b>${anilloMini(ts.length ? Math.round(h / ts.length * 100) : 0)}</span></button>
