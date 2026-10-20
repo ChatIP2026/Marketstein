@@ -2,15 +2,13 @@
 //  1) Hilary lo aprueba (se le asigna a alguien de marketing)
 //  2) Marketing lo marca como Entregado
 // Se dispara desde un Database Webhook de Supabase sobre la tabla tickets (UPDATE).
-// Envía con una cuenta de Gmail (contraseña de aplicación), sin necesidad de dominio propio.
+// El correo sale desde una cuenta de Gmail a través de Google Apps Script (por HTTPS):
+// las funciones de Supabase no pueden usar los puertos de correo (SMTP), pero sí HTTPS.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
-import nodemailer from "npm:nodemailer@6.9.14";
 
 const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-const correo = nodemailer.createTransport({
-  service: "gmail",
-  auth: { user: Deno.env.get("GMAIL_USER")!, pass: Deno.env.get("GMAIL_APP_PASSWORD")! },
-});
+const CORREO_URL = Deno.env.get("CORREO_URL")!; // URL de la app web de Apps Script
+const CORREO_CLAVE = Deno.env.get("CORREO_CLAVE")!; // misma clave que en el Apps Script
 const PANEL = "https://rabbit-ipartner.vercel.app";
 const num = (id: number) => "#" + String(id).padStart(3, "0");
 const fecha = (f: string) => new Date(f + "T12:00").toLocaleDateString("es-PE", { day: "numeric", month: "long" });
@@ -47,6 +45,8 @@ Deno.serve(async (req) => {
     ? plantilla("¡Tu ticket fue aprobado!", `${t.titulo}`, [["Ticket", num(t.id)], ["Lo hará", encargado], ["Prioridad", t.prioridad || "—"], ["Entrega", fecha(t.fecha)]])
     : plantilla("¡Tu ticket está listo!", `${t.titulo}`, [["Ticket", num(t.id)], ["Lo hizo", encargado]]);
 
-  await correo.sendMail({ from: `Rabbit <${Deno.env.get("GMAIL_USER")}>`, to: para, subject: asunto, html });
-  return new Response("enviado");
+  const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para, asunto, html }) });
+  const txt = await r.text();
+  if (!txt.includes("ok")) console.error("No se envió el correo:", txt);
+  return new Response(txt);
 });
