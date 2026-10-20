@@ -1873,7 +1873,7 @@
   .tuto-luz.toque .tuto-dedo { animation: tutoToque 1.6s ease-in-out .3s infinite; }
   @keyframes tutoToque { 0% { opacity: 0; transform: translate(28px, 28px) scale(1); } 30% { opacity: 1; transform: translate(0, 0) scale(1); } 45% { transform: scale(.7); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 10px rgba(255,255,255,.5); } 60% { transform: scale(1); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 22px rgba(255,255,255,0); } 100% { opacity: 0; } }
   .tuto-txt .tuto-req { display: inline; color: #e5484d; font-weight: 700; margin: 0; font-size: inherit; }
-  .tuto-luz { transition: top .18s ease, left .18s ease, width .18s ease, height .18s ease !important; } .tuto-globo { transition: top .18s ease, left .18s ease !important; }
+  .tuto-luz { transition: top .12s ease, left .12s ease, width .12s ease, height .12s ease !important; } .tuto-globo { transition: top .12s ease, left .12s ease !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3002,7 +3002,11 @@
       { sel: "#tkNuevo", toque: true, t: "1. Crear ticket", d: "Con este botón pides una pieza: un post, un video, un flyer…" },
       { sel: "#detalle .tk-form", hasta: "#detalle .tk-form [name=texto]", antes: () => abrirFormTicket(), t: "2. Llena el formulario", d: 'Detállanos qué necesitas llenando los campos con <b class="tuto-req">*</b> y pulsa Enviar ticket.' },
       { sel: ".tk-lista > *:first-child, .mis-vacio", antes: cerrarTodo, toque: true, t: "3. Sigue tus tickets", d: "Cada ticket muestra su estado: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
-      { sel: "#detalle .tuto-chat", antes: () => { const id = primerTk(); if (id) { abrirTicket(id); (() => { const b = document.querySelector("#detalle .tkc-ayuda")?.parentElement; if (b) { b.classList.add("tuto-chat"); b.scrollIntoView({ block: "start" }); document.getElementById("detalle").scrollTop -= 20; } })(); } }, t: "4. Chat del ticket", d: "Dentro del ticket le escribes a quien lo está haciendo. Cada mensaje le llega como notificación." },
+      { sel: "#detalle .tuto-chat", antes: () => { const id = primerTk(); if (id) { abrirTicket(id); (() => { const b = document.querySelector("#detalle .tkc-ayuda")?.parentElement; if (b) { b.classList.add("tuto-chat");
+            // Conversación de ejemplo (solo se ve en el tutorial, no se guarda)
+            const mk = (document.querySelector(".tk-lista > *:first-child")?.textContent.match(/Lo hace (\S+)/) || [])[1] || "Ariana";
+            const msg = (q, txt, min) => `<div class="tkc ${q === yo ? "mio" : ""}"><i class="av" style="${fondoAv(q)}">${letraAv(q)}</i><div><b>${esc(q)} <span>hace ${min} min</span></b><p>${txt}</p></div></div>`;
+            const l = b.querySelector(".tkc-lista"); if (l) l.innerHTML = msg(mk, "¿El logo va en blanco o en color?", 12) + msg(yo, "En blanco, porque va sobre fondo oscuro.", 5); b.scrollIntoView({ block: "start" }); document.getElementById("detalle").scrollTop -= 20; } })(); } }, t: "4. Chat del ticket", d: "Dentro del ticket le escribes a quien lo está haciendo. Cada mensaje le llega como notificación." },
       { sel: "#campanaBtn", antes: () => cerrarProyecto(), toque: true, t: "5. Notificaciones", d: "Toca la campana para ver tus avisos." },
       { sel: "#menuNotif", antes: () => { pintarNotif(); menuNotif.hidden = false; }, t: "¡Así se ven!", d: "Aquí te avisamos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
     ];
@@ -3033,7 +3037,7 @@
       const left = Math.min(Math.max(12, r.left + r.width / 2 - gw / 2), innerWidth - gw - 12);
       globo.style.top = top + "px"; globo.style.left = left + "px";
     }
-    const ir = () => { const p = pasos[i], k = i; if (p.antes) setTimeout(() => { p.antes(); requestAnimationFrame(pintar); [120, 260, 420].forEach((t) => setTimeout(() => k === i && pintar(), t)); }, 0); else pintar(); };
+    const ir = () => { const p = pasos[i], k = i; if (p.antes) setTimeout(() => { p.antes(); requestAnimationFrame(pintar); [60, 160, 300].forEach((t) => setTimeout(() => k === i && pintar(), t)); }, 0); else pintar(); };
     const siguiente = () => { if (capa.dataset.ocupado) return; if (i === pasos.length - 1) return fin(); capa.dataset.ocupado = "1"; setTimeout(() => delete capa.dataset.ocupado, 250); i++; ir(); };
     capa.querySelector(".tuto-sig").onclick = siguiente;
     capa.querySelector(".tuto-saltar").onclick = fin;
