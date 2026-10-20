@@ -3155,7 +3155,7 @@
     const mesDe = (t) => t.fecha.slice(0, 7), hoyMes = new Date().toISOString().slice(0, 7);
     const todosVis = tkVisibles();
     const meses = [...new Set([hoyMes, ...todosVis.map(mesDe)])].sort().reverse();
-    if (mesTk === null) mesTk = hoyMes;
+    if (mesTk === null) mesTk = sol ? "todos" : hoyMes; // otras áreas ven todos sus tickets, sin importar la fecha de entrega
     const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
     const delMes = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
     const qTk = busTk.trim().toLowerCase();
@@ -3462,7 +3462,7 @@
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
         refs: [f.drive.value.trim()].filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
         historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió el ticket" }] });
-      ticketEnviado(tickets.find((t) => t.id === id)).then(() => { cerrarProyecto(); filtroTk = "activos"; pintarTickets(); contarTickets(); });
+      ticketEnviado(tickets.find((t) => t.id === id)).then(() => { cerrarProyecto(); filtroTk = "activos"; mesTk = "todos"; pintarTickets(); contarTickets(); });
     };
     document.body.classList.add("con-detalle");
   }
