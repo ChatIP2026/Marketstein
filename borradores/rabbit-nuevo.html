@@ -1926,6 +1926,9 @@
   .per-clave-c { display: flex; flex-direction: column; gap: 6px; font-size: .82rem; color: #52525b; font-weight: 600; }
   .per-clave-c small { font-weight: 400; color: #a1a1aa; }
   .per-clave code { user-select: all; cursor: text; }
+  .ic-copiar { width: 42px; padding: 0 !important; display: grid !important; place-items: center; }
+  .ic-copiar svg { width: 19px; height: 19px; }
+  .ic-copiar.copiado { color: #16a34a !important; border-color: #86efac !important; background: #f0fdf4 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3672,7 +3675,7 @@
         <div class="per-aviso" id="perRol"></div>
         <label class="tk-check" id="perAdminL"><input type="checkbox" name="admin" /> Puede administrar Personas (crear cuentas y restablecer contraseñas)</label>
         <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
-        <div class="per-clave-c" ${ed ? "hidden" : ""}><span class="per-clave-t">Contraseña temporal</span><div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn" id="perCopiar" title="Copiar contraseña">Copiar</button><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></div>
+        <div class="per-clave-c" ${ed ? "hidden" : ""}><span class="per-clave-t">Contraseña temporal</span><div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn ic-copiar" id="perCopiar" title="Copiar contraseña" aria-label="Copiar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="15" rx="2.5"/><path d="M5 7.5A2.5 2.5 0 0 0 3 10v9.5A2.5 2.5 0 0 0 5.5 22H13a2.5 2.5 0 0 0 2.5-2"/></svg></button><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></div>
         <div class="mensaje tk-err"></div>
         <button class="nuevo-btn" type="submit">${ed ? "Guardar cambios" : (window.sb ? "Crear cuenta" : "Crear cuenta y enviar correo")}</button>
       </form>${window.sb ? "" : '<p class="det-nota">Vista previa: no se crea ninguna cuenta real.</p>'}`;
@@ -3689,7 +3692,7 @@
     f.usuario.addEventListener("input", () => { usuTocado = true; f.usuario.value = f.usuario.value.toLowerCase().replace(/[^a-z0-9._]/g, ""); });
     if (ed) { f.admin.checked = !!ed.admin; f.usuario.value = usuarioDe(ed); f.nombre.value = ed.nombre; f.apellido.value = ed.apellido || ""; f.correo.value = ed.correo; f.area.value = AREAS.includes(ed.area) ? ed.area : "Marketing"; f.carpeta.value = ed.carpeta || ""; }
     f.area.onchange = verRol; verRol();
-    d.querySelector("#perCopiar")?.addEventListener("click", (e) => { e.preventDefault(); const t = d.querySelector("#perClave").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { e.target.textContent = "¡Copiada!"; setTimeout(() => (e.target.textContent = "Copiar"), 1500); }, () => avisar("No se pudo copiar. Selecciónala y usa Ctrl + C.")); });
+    d.querySelector("#perCopiar")?.addEventListener("click", (e) => { e.preventDefault(); const t = d.querySelector("#perClave").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { const bt = d.querySelector("#perCopiar"); bt.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="15" rx="2.5"/><path d="M5 7.5A2.5 2.5 0 0 0 3 10v9.5A2.5 2.5 0 0 0 5.5 22H13a2.5 2.5 0 0 0 2.5-2"/><path d="m11.5 10.5 2 2 4-4"/></svg>'; bt.classList.add("copiado"); bt.title = "¡Copiada!"; setTimeout(() => { bt.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="15" rx="2.5"/><path d="M5 7.5A2.5 2.5 0 0 0 3 10v9.5A2.5 2.5 0 0 0 5.5 22H13a2.5 2.5 0 0 0 2.5-2"/></svg>'; bt.classList.remove("copiado"); bt.title = "Copiar contraseña"; }, 1600); }, () => avisar("No se pudo copiar. Selecciónala y usa Ctrl + C.")); });
     d.querySelector("#perOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#perClave").textContent = clave; };
     f.onsubmit = async (e) => {
       e.preventDefault();
