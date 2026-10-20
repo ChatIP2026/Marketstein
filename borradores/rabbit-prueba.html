@@ -1853,6 +1853,21 @@
   .bc-yo b { white-space: nowrap; } .bc-yo .bc-sin { color: #71717a !important; font-weight: 600; }
   .ct-ico { width: 18px; height: 18px; margin-right: 7px; vertical-align: -4px; flex: none; }
   .tk-form .tk-cuenta { display: inline !important; margin: 0 0 0 4px !important; font-size: .74rem; color: #a1a1aa; }
+  /* Tutorial */
+  .tuto-capa { position: fixed; inset: 0; z-index: 500; animation: teFondo .25s ease both; }
+  .tuto-capa.sale { opacity: 0; transition: opacity .25s; }
+  .tuto-luz { position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(10,10,10,.62); transition: all .3s ease; pointer-events: none; outline: 2px solid #fff; }
+  .tuto-luz.nada { top: 50% !important; left: 50% !important; width: 0 !important; height: 0 !important; outline: 0; }
+  .tuto-globo { position: fixed; width: min(340px, calc(100vw - 24px)); background: #fff; border-radius: 18px; padding: 16px; box-shadow: 0 20px 50px rgba(0,0,0,.3); transition: top .3s ease, left .3s ease; display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; }
+  .tuto-globo.centro { top: 50% !important; left: 50% !important; transform: translate(-50%, -50%); }
+  .tuto-rb { width: 44px; height: 44px; border-radius: 12px; background: #f4f4f5; display: grid; place-items: center; }
+  .tuto-rb .saludo-rb { width: 32px !important; height: 32px !important; margin: 0 !important; }
+  .tuto-txt b { display: block; font-size: 1rem; margin-bottom: 3px; } .tuto-txt p { margin: 0; font-size: .86rem; color: #52525b; line-height: 1.4; }
+  .tuto-pie { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .tuto-pts { display: flex; align-items: center; gap: 4px; flex: 1; } .tuto-pts i { width: 6px; height: 6px; border-radius: 50%; background: #d4d4d8; } .tuto-pts i.on { background: #0a0a0a; width: 16px; border-radius: 4px; }
+  .tuto-pts span { font-size: .72rem; color: #a1a1aa; margin-left: 6px; }
+  .tuto-saltar { all: unset; cursor: pointer; font-size: .82rem; color: #71717a; padding: 8px 10px; }
+  .tuto-sig { all: unset; cursor: pointer; font-size: .84rem; font-weight: 600; color: #fff; background: #0a0a0a; padding: 8px 16px; border-radius: 10px; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2465,7 +2480,7 @@
       + `<div class="mp-grupo">Otras áreas</div>` + Object.entries(SOLICITANTES).map(([n, a]) => op(n, a)).join("");
     mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
       yo = b.dataset.n; try { localStorage.setItem("rabbit-demo-yo", yo); } catch (e) {}
-      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); avisoDemo(); rabbitHola();
+      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); avisoDemo(); rabbitHola(); quizasTutorial();
     }));
     const ext = !!SOLICITANTES[yo];
     document.getElementById("mpCab").innerHTML = `<div class="mp-yo"><i style="${fondoAv(yo)}">${letraAv(yo)}</i><div><b>${yo}</b><small>${ext ? SOLICITANTES[yo] : yo === JEFA ? "Marketing | Jefa" : "Marketing"}</small></div></div>`;
@@ -2474,11 +2489,13 @@
       + (ext ? `<button class="mp-acc" id="mpMisTk">${IC('<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/>')}Mis tickets</button>`
         : `<button class="mp-acc" id="mpMis">${IC('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>')}Mi entorno</button>` + (yo === JEFA ? `<button class="mp-acc" id="mpDash">${IC('<rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/>')}Dashboard</button>` : ""))
       + (VEN_PERSONAS.includes(yo) ? `<button class="mp-acc" id="mpPer">${IC('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c2 .6 3.5 2.4 3.5 5.4"/>')}Personas</button>` : "")
+      + (esSolicitante() ? `<button class="mp-acc" id="mpTuto">${IC('<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>')}Ver tutorial</button>` : "")
       + `<button class="mp-acc salir" id="mpSalir">${IC('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>')}Cerrar sesión</button>`;
     document.getElementById("mpMisTk")?.addEventListener("click", () => { menuPerfil.hidden = true; mesTk = "todos"; filtroTk = "todos"; irA("tickets"); });
     document.getElementById("mpMis")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("mis"); });
     document.getElementById("mpDash")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("dashboard"); });
     document.getElementById("mpPer")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("personas"); });
+    document.getElementById("mpTuto")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("tickets"); setTimeout(iniciarTutorial, 200); });
     document.getElementById("mpId").onclick = () => { menuPerfil.hidden = true; abrirIdCard(); };
     document.getElementById("mpSalir").onclick = () => { menuPerfil.hidden = true; avisar("Esta es una versión de prueba: no hay sesión que cerrar"); };
   }
@@ -2959,6 +2976,56 @@
     addEventListener("beforeunload", (e) => { if (tickets.some((t) => enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id))) { e.preventDefault(); e.returnValue = ""; } });
     let t0; sb.channel("tickets-vivos").on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, () => { clearTimeout(t0); t0 = setTimeout(() => cargarTickets(true), 600); }).subscribe();
   }
+
+  // ===== Tutorial de bienvenida (solo otras áreas, la primera vez) =====
+  const TUTO_KEY = () => "rabbit_tuto_" + yo;
+  function tutorialVisto() {
+    if (window.miPerfil && window.miPerfil.tutorial_visto) return true;
+    try { return localStorage.getItem(TUTO_KEY()) === "1"; } catch (e) { return false; }
+  }
+  function marcarTutorial() {
+    try { localStorage.setItem(TUTO_KEY(), "1"); } catch (e) {}
+    if (window.sb && window.miPerfil) sb.rpc("tutorial_visto").then(() => {}, () => {});
+  }
+  function iniciarTutorial() {
+    document.querySelector(".tuto-capa")?.remove();
+    const pasos = [
+      { sel: null, t: `¡Hola, ${esc(yo)}!`, d: "Soy Rabbit. Aquí le pides al equipo de marketing lo que necesites. Te enseño en 5 pasos." },
+      { sel: "#tkNuevo", t: "Crear ticket", d: "Toca aquí para pedir una pieza: un post, un video, un flyer… Llenas un formulario corto y listo." },
+      { sel: ".tk-lista, .mis-vacio, #vistaTickets .vacio-grande", t: "Tus tickets", d: "Aquí ves cada ticket y en qué va: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
+      { sel: ".tk-lista > *:first-child", t: "Chat del ticket", d: "Dentro de cada ticket puedes escribirle a quien lo está haciendo y ver todo su historial." },
+      { sel: "#campanaBtn", t: "Notificaciones", d: "Te avisaremos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
+    ];
+    let i = 0;
+    const capa = document.createElement("div"); capa.className = "tuto-capa";
+    capa.innerHTML = `<div class="tuto-luz"></div><div class="tuto-globo"><span class="tuto-rb">${rbMini()}</span><div class="tuto-txt"><b></b><p></p></div>
+      <div class="tuto-pie"><div class="tuto-pts"></div><button type="button" class="tuto-saltar">Saltar</button><button type="button" class="tuto-sig">Siguiente</button></div></div>`;
+    document.body.append(capa);
+    const luz = capa.querySelector(".tuto-luz"), globo = capa.querySelector(".tuto-globo");
+    const fin = () => { marcarTutorial(); capa.classList.add("sale"); setTimeout(() => capa.remove(), 250); removeEventListener("resize", pintar); };
+    function pintar() {
+      const p = pasos[i];
+      let el = null; if (p.sel) for (const x of p.sel.split(",")) { el = document.querySelector(x.trim()); if (el && el.offsetParent) break; el = null; }
+      capa.querySelector(".tuto-txt b").innerHTML = p.t; capa.querySelector(".tuto-txt p").textContent = p.d;
+      capa.querySelector(".tuto-pts").innerHTML = pasos.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("") + `<span>${i + 1} de ${pasos.length}</span>`;
+      capa.querySelector(".tuto-sig").textContent = i === pasos.length - 1 ? "Empezar" : "Siguiente";
+      capa.querySelector(".tuto-saltar").hidden = i === pasos.length - 1;
+      if (!el) { luz.classList.add("nada"); globo.classList.add("centro"); globo.style.top = globo.style.left = ""; return; }
+      luz.classList.remove("nada"); globo.classList.remove("centro");
+      el.scrollIntoView({ block: "center", behavior: "instant" });
+      const r = el.getBoundingClientRect(), m = 8, alto = Math.min(r.height, innerHeight * 0.45);
+      Object.assign(luz.style, { top: r.top - m + "px", left: r.left - m + "px", width: r.width + m * 2 + "px", height: alto + m * 2 + "px" });
+      const gw = globo.offsetWidth, gh = globo.offsetHeight;
+      let top = r.top + alto + m + 14; if (top + gh > innerHeight - 12) top = Math.max(12, r.top - m - gh - 14);
+      const left = Math.min(Math.max(12, r.left + r.width / 2 - gw / 2), innerWidth - gw - 12);
+      globo.style.top = top + "px"; globo.style.left = left + "px";
+    }
+    capa.querySelector(".tuto-sig").onclick = () => { if (i === pasos.length - 1) return fin(); i++; pintar(); };
+    capa.querySelector(".tuto-saltar").onclick = fin;
+    addEventListener("resize", pintar);
+    requestAnimationFrame(pintar);
+  }
+  function quizasTutorial() { if (esSolicitante() && !tutorialVisto()) setTimeout(iniciarTutorial, 700); }
   function aplicarRol() {
     pintarEventos();
     if (aplicarRol.yaUsado) { filtroTk = null; busTk = ""; personaTk = null; } aplicarRol.yaUsado = true;
@@ -3341,7 +3408,7 @@
       yo = p.nombre;
       await cargarPersonas();
       iniciarTicketsVivos();
-      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); rabbitHola();
+      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); rabbitHola(); quizasTutorial();
     });
     document.addEventListener("click", async (e) => { if (e.target.closest("#mpSalir")) { e.preventDefault(); e.stopImmediatePropagation(); await sb.auth.signOut(); location.href = "login.html"; } }, true);
   }
