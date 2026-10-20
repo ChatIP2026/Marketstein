@@ -1869,6 +1869,10 @@
   .tuto-pts span { font-size: .72rem; color: #a1a1aa; margin-left: 6px; }
   .tuto-saltar { all: unset; cursor: pointer; font-size: .82rem; color: #71717a; padding: 8px 10px; }
   .tuto-sig { all: unset; cursor: pointer; font-size: .84rem; font-weight: 600; color: #fff; background: #0a0a0a; padding: 8px 16px; border-radius: 10px; }
+  .tuto-capa { z-index: 9000 !important; } .tuto-capa .tuto-luz { z-index: 1; } .tuto-capa .tuto-globo { z-index: 2; }
+  .tuto-dedo { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 0 0 2px #0a0a0a; opacity: 0; }
+  .tuto-luz.toque .tuto-dedo { animation: tutoToque 1.6s ease-in-out .3s infinite; }
+  @keyframes tutoToque { 0% { opacity: 0; transform: translate(28px, 28px) scale(1); } 30% { opacity: 1; transform: translate(0, 0) scale(1); } 45% { transform: scale(.7); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 10px rgba(255,255,255,.5); } 60% { transform: scale(1); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 22px rgba(255,255,255,0); } 100% { opacity: 0; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2991,20 +2995,23 @@
   }
   function iniciarTutorial() {
     document.querySelector(".tuto-capa")?.remove();
+    const primerTk = () => { const c = document.querySelector(".tk-lista > *:first-child"); return c ? +(c.querySelector("[data-id]")?.dataset.id || c.dataset.id || 0) : 0; };
+    const cerrarTodo = () => { cerrarProyecto(); menuNotif.hidden = true; };
     const pasos = [
-      { sel: null, t: `¡Hola, ${esc(yo)}!`, d: "Soy Rabbit. Aquí le pides al equipo de marketing lo que necesites. Te enseño en 5 pasos." },
-      { sel: "#tkNuevo", t: "Crear ticket", d: "Toca aquí para pedir una pieza: un post, un video, un flyer… Llenas un formulario corto y listo." },
-      { sel: ".tk-lista, .mis-vacio, #vistaTickets .vacio-grande", t: "Tus tickets", d: "Aquí ves cada ticket y en qué va: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
-      { sel: ".tk-lista > *:first-child", t: "Chat del ticket", d: "Dentro de cada ticket puedes escribirle a quien lo está haciendo y ver todo su historial." },
-      { sel: "#campanaBtn", t: "Notificaciones", d: "Te avisaremos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
+      { sel: null, t: `¡Hola, ${esc(yo)}!`, d: "Soy Rabbit. Aquí le pides al equipo de marketing lo que necesites. Te muestro cómo en 5 pasos." },
+      { sel: "#tkNuevo", toque: true, t: "1. Crear ticket", d: "Con este botón pides una pieza: un post, un video, un flyer…" },
+      { sel: "#detalle .tk-form", antes: () => abrirFormTicket(), t: "2. Llena el formulario", d: "Cuéntanos qué necesitas y para cuándo. Los campos con * son obligatorios. Al final pulsas Enviar ticket." },
+      { sel: ".tk-lista > *:first-child, .mis-vacio", antes: cerrarTodo, toque: true, t: "3. Sigue tus tickets", d: "Cada ticket muestra su estado: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
+      { sel: "#detalle .tkc", antes: () => { const id = primerTk(); if (id) { abrirTicket(id); setTimeout(() => document.querySelector("#detalle .tkc")?.scrollIntoView({ block: "center" }), 50); } }, t: "4. Chat del ticket", d: "Dentro del ticket le escribes a quien lo está haciendo. Cada mensaje le llega como notificación." },
+      { sel: "#menuNotif", antes: () => { cerrarProyecto(); pintarNotif(); menuNotif.hidden = false; }, t: "5. Notificaciones", d: "Aquí te avisamos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
     ];
     let i = 0;
     const capa = document.createElement("div"); capa.className = "tuto-capa";
-    capa.innerHTML = `<div class="tuto-luz"></div><div class="tuto-globo"><span class="tuto-rb">${rbMini()}</span><div class="tuto-txt"><b></b><p></p></div>
+    capa.innerHTML = `<div class="tuto-luz"><span class="tuto-dedo"></span></div><div class="tuto-globo"><span class="tuto-rb">${rbMini()}</span><div class="tuto-txt"><b></b><p></p></div>
       <div class="tuto-pie"><div class="tuto-pts"></div><button type="button" class="tuto-saltar">Saltar</button><button type="button" class="tuto-sig">Siguiente</button></div></div>`;
     document.body.append(capa);
     const luz = capa.querySelector(".tuto-luz"), globo = capa.querySelector(".tuto-globo");
-    const fin = () => { marcarTutorial(); capa.classList.add("sale"); setTimeout(() => capa.remove(), 250); removeEventListener("resize", pintar); };
+    const fin = () => { cerrarProyecto(); menuNotif.hidden = true; marcarTutorial(); capa.classList.add("sale"); setTimeout(() => capa.remove(), 250); removeEventListener("resize", pintar); };
     function pintar() {
       const p = pasos[i];
       let el = null; if (p.sel) for (const x of p.sel.split(",")) { el = document.querySelector(x.trim()); if (el && el.offsetParent) break; el = null; }
@@ -3014,7 +3021,8 @@
       capa.querySelector(".tuto-saltar").hidden = i === pasos.length - 1;
       if (!el) { luz.classList.add("nada"); globo.classList.add("centro"); globo.style.top = globo.style.left = ""; return; }
       luz.classList.remove("nada"); globo.classList.remove("centro");
-      el.scrollIntoView({ block: "center", behavior: "instant" });
+      if (!el.closest("#detalle") && el.id !== "menuNotif") el.scrollIntoView({ block: "center", behavior: "instant" });
+      luz.classList.toggle("toque", !!p.toque);
       const r = el.getBoundingClientRect(), m = 8, alto = Math.min(r.height, innerHeight * 0.45);
       Object.assign(luz.style, { top: r.top - m + "px", left: r.left - m + "px", width: r.width + m * 2 + "px", height: alto + m * 2 + "px" });
       const gw = globo.offsetWidth, gh = globo.offsetHeight;
@@ -3022,7 +3030,8 @@
       const left = Math.min(Math.max(12, r.left + r.width / 2 - gw / 2), innerWidth - gw - 12);
       globo.style.top = top + "px"; globo.style.left = left + "px";
     }
-    capa.querySelector(".tuto-sig").onclick = () => { if (i === pasos.length - 1) return fin(); i++; pintar(); };
+    const ir = () => { const p = pasos[i]; if (p.antes) setTimeout(() => { p.antes(); setTimeout(pintar, 350); }, 0); else pintar(); };
+    capa.querySelector(".tuto-sig").onclick = () => { if (i === pasos.length - 1) return fin(); i++; ir(); };
     capa.querySelector(".tuto-saltar").onclick = fin;
     addEventListener("resize", pintar);
     requestAnimationFrame(pintar);
