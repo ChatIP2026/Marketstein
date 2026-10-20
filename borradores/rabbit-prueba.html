@@ -3345,8 +3345,7 @@
         <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Ticket enviado!</h3><p>Marketing ya lo recibió.</p></div>
         <div class="te-corte"></div>
         <div class="te-datos"><div><small>N.° de ticket</small><b>#${num}</b></div><div class="der"><small>Entrega</small><b>${fe}</b></div>
-          <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div>${turnoDe(t) ? `<div class="te-full te-cola"><span class="te-cola-n"><small>Turno</small><b>${turnoDe(t).n}</b></span><span class="te-cola-t"><b>${turnoDe(t).antes ? `Hay ${turnoDe(t).antes} ticket${turnoDe(t).antes === 1 ? "" : "s"} antes que el tuyo` : "¡Eres el siguiente!"}</b><small>Hilary los revisa en orden de llegada</small></span></div>` : ""}<div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
-        <div class="te-quien"><span class="av" style="${fondoAv(yo)}">${letraAv(yo)}</span><div><b>${esc(yo)}</b><small>${esc(t.area || "")}</small></div></div>
+          <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div>${turnoDe(t) ? `<div class="te-full te-cola"><span class="te-cola-n"><small>Turno</small><b>${turnoDe(t).n}</b></span><span class="te-cola-t"><b>${turnoDe(t).antes ? `Hay ${turnoDe(t).antes} ticket${turnoDe(t).antes === 1 ? "" : "s"} antes que el tuyo` : "¡Eres el siguiente!"}</b></span></div>` : ""}<div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
         <div class="te-corte2"></div>
         <div class="te-barras">${barras}</div><div class="te-cod">RB-${num}-${t.fecha.replace(/-/g, "")}</div>
       </div></div>`;
