@@ -1873,6 +1873,7 @@
   .tuto-dedo { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 0 0 2px #0a0a0a; opacity: 0; }
   .tuto-luz.toque .tuto-dedo { animation: tutoToque 1.6s ease-in-out .3s infinite; }
   @keyframes tutoToque { 0% { opacity: 0; transform: translate(28px, 28px) scale(1); } 30% { opacity: 1; transform: translate(0, 0) scale(1); } 45% { transform: scale(.7); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 10px rgba(255,255,255,.5); } 60% { transform: scale(1); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 22px rgba(255,255,255,0); } 100% { opacity: 0; } }
+  .tuto-txt .tuto-req { display: inline; color: #e5484d; font-weight: 700; margin: 0; font-size: inherit; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2998,12 +2999,12 @@
     const primerTk = () => { const c = document.querySelector(".tk-lista > *:first-child"); return c ? +(c.querySelector("[data-id]")?.dataset.id || c.dataset.id || 0) : 0; };
     const cerrarTodo = () => { cerrarProyecto(); menuNotif.hidden = true; };
     const pasos = [
-      { sel: null, t: `¡Hola, ${esc(yo)}!`, d: "Soy Rabbit. Aquí le pides al equipo de marketing lo que necesites. Te muestro cómo en 5 pasos." },
+      { sel: null, t: `¡Hola, ${esc(yo)}!`, d: "Soy Rabbit. Aquí puedes asignarle tareas al equipo de marketing." },
       { sel: "#tkNuevo", toque: true, t: "1. Crear ticket", d: "Con este botón pides una pieza: un post, un video, un flyer…" },
-      { sel: "#detalle .tk-form", antes: () => abrirFormTicket(), t: "2. Llena el formulario", d: "Cuéntanos qué necesitas y para cuándo. Los campos con * son obligatorios. Al final pulsas Enviar ticket." },
+      { sel: "#detalle .tk-form", antes: () => abrirFormTicket(), t: "2. Llena el formulario", d: 'Detállanos qué necesitas llenando los campos con <b class="tuto-req">*</b> y pulsa Enviar ticket.' },
       { sel: ".tk-lista > *:first-child, .mis-vacio", antes: cerrarTodo, toque: true, t: "3. Sigue tus tickets", d: "Cada ticket muestra su estado: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
       { sel: "#detalle .tuto-chat", antes: () => { const id = primerTk(); if (id) { abrirTicket(id); setTimeout(() => { const b = document.querySelector("#detalle .tkc-ayuda")?.parentElement; if (b) { b.classList.add("tuto-chat"); b.scrollIntoView({ block: "start" }); document.getElementById("detalle").scrollTop -= 20; } }, 50); } }, t: "4. Chat del ticket", d: "Dentro del ticket le escribes a quien lo está haciendo. Cada mensaje le llega como notificación." },
-      { sel: "#campanaBtn", antes: () => cerrarProyecto(), toque: true, t: "5. Notificaciones", d: "Toca la campana (o Siguiente) para ver tus avisos." },
+      { sel: "#campanaBtn", antes: () => cerrarProyecto(), toque: true, t: "5. Notificaciones", d: "Toca la campana para ver tus avisos." },
       { sel: "#menuNotif", antes: () => { pintarNotif(); menuNotif.hidden = false; }, t: "¡Así se ven!", d: "Aquí te avisamos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
     ];
     let i = 0;
@@ -3016,7 +3017,7 @@
     function pintar() {
       const p = pasos[i];
       let el = null; if (p.sel) for (const x of p.sel.split(",")) { el = document.querySelector(x.trim()); if (el && el.offsetParent) break; el = null; }
-      capa.querySelector(".tuto-txt b").innerHTML = p.t; capa.querySelector(".tuto-txt p").textContent = p.d;
+      capa.querySelector(".tuto-txt b").innerHTML = p.t; capa.querySelector(".tuto-txt p").innerHTML = p.d;
       capa.querySelector(".tuto-pts").innerHTML = pasos.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("") + `<span>${i + 1} de ${pasos.length}</span>`;
       capa.querySelector(".tuto-sig").textContent = i === pasos.length - 1 ? "Empezar" : "Siguiente";
       capa.querySelector(".tuto-saltar").hidden = i === pasos.length - 1;
