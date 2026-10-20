@@ -39,7 +39,7 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
       </tr></table>
     </td></tr>
     <tr><td align="center" style="padding:30px 24px 4px">
-      <div style="width:56px;height:56px;line-height:56px;border-radius:50%;background:${color};color:#ffffff;font-size:28px;font-weight:700;margin:0 auto">&#10003;</div>
+      <div style="width:56px;height:56px;border-radius:50%;background:${color};margin:0 auto;text-align:center"><img src="${PANEL}/borradores/${o.listo ? "check" : "reloj"}-correo.png" width="28" height="28" alt="" style="display:inline-block;margin-top:14px"></div>
       <h1 style="margin:16px 0 0;font-size:22px;color:#0a0a0a">${o.listo ? "¡Tu ticket está listo!" : "¡Tu ticket fue aprobado!"}</h1>
     </td></tr>
     <tr><td style="padding:20px 24px 4px">
