@@ -46,11 +46,8 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
     <tr><td style="padding:22px 24px 4px">
       <div style="border-top:2px dashed #e4e4e7;border-bottom:2px dashed #e4e4e7;padding:6px 0 8px">
         <table width="100%" cellpadding="0" cellspacing="0">
-          <tr>${celda("N.° de ticket", num(o.id))}${celda(o.listo ? "Entregado" : "Entrega", o.listo ? (o.entregado || "") : (o.entrega || ""), true)}</tr>
-          <tr><td colspan="2" style="padding:12px 0 0"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a1a1aa">Pedido</div><div style="font-size:16px;font-weight:700;color:#0a0a0a;margin-top:3px">${o.titulo}</div></td></tr>
-          <tr>${celda("Pieza", o.pieza || "—")}${celda(o.listo ? "Resultado" : "Prioridad",
-            o.listo ? chip(o.aTiempo ? "A tiempo" : "Con retraso", o.aTiempo ? "#d1fae5" : "#fee2e2", o.aTiempo ? "#047857" : "#b91c1c")
-                    : (pr ? chip(pr[0], pr[2], pr[1]) : "—"), true)}</tr>
+          <tr>${celda("Pedido", o.titulo)}${celda(o.listo ? "Entregado" : "Fecha", o.listo ? (o.entregado || "") : (o.entrega || ""), true)}</tr>
+          <tr>${celda("Pieza", o.pieza || "—")}${celda("Prioridad", pr ? chip(pr[0], pr[2], pr[1]) : "—", true)}</tr>
         </table>
       </div>
     </td></tr>
