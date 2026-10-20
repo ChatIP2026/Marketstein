@@ -88,6 +88,28 @@
   }
   @media (max-width: 820px) { .rb-zona { order: 1; } .burbuja { order: 3; } .lado-rb .sombra { display: none; } .marca { order: 0; } }
   [hidden] { display: none !important; }
+  /* Animación de inicio de sesión */
+  .ok-capa { position: fixed; inset: 0; z-index: 999; background: rgba(8,8,10,.92); backdrop-filter: blur(6px); display: grid; place-items: center; animation: okFondo .35s ease both; }
+  .ok-caja { text-align: center; }
+  .ok-svg { width: 150px; height: 150px; overflow: visible; }
+  .ok-marco { fill: none; stroke: rgba(255,255,255,.85); stroke-width: 3; transform-origin: 60px 60px; animation: okMarco 1.3s ease-in-out both; }
+  .ok-anillo { fill: none; stroke-width: 3; transform-origin: 60px 60px; }
+  .ok-anillo.a1 { stroke: #2f6bff; animation: okGiro1 1.3s cubic-bezier(.5,0,.5,1) both; }
+  .ok-anillo.a2 { stroke: #34d399; animation: okGiro2 1.3s cubic-bezier(.5,0,.5,1) both; }
+  .ok-circulo { fill: none; stroke: #e5e5e5; stroke-width: 5; stroke-dasharray: 239; stroke-dashoffset: 239; opacity: 0; transform: rotate(-90deg); transform-origin: 60px 60px; }
+  .ok-check { fill: none; stroke: #e5e5e5; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 60; stroke-dashoffset: 60; }
+  .ok-txt { margin: 18px 0 0; color: #d4d4d8; font-size: .95rem; font-weight: 600; opacity: 0; }
+  .fase2 .ok-marco, .fase2 .ok-anillo { animation: okFuera .3s ease forwards; }
+  .fase2 .ok-circulo { opacity: 1; animation: okTrazo .45s ease forwards; }
+  .fase2 .ok-check { animation: okTrazo .35s ease .3s forwards; }
+  .fase2 .ok-txt { animation: okFondo .3s ease .4s forwards; }
+  @keyframes okFondo { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes okMarco { 0% { opacity: 0; transform: scale(.7); } 25% { opacity: 1; transform: scale(1); } 100% { transform: scale(1); } }
+  @keyframes okGiro1 { 0% { transform: rotate(0) scale(.6); opacity: 0; } 20% { opacity: 1; } 100% { transform: rotate(300deg) scale(1); } }
+  @keyframes okGiro2 { 0% { transform: rotate(90deg) scale(.6); opacity: 0; } 20% { opacity: 1; } 100% { transform: rotate(-200deg) scale(1); } }
+  @keyframes okTrazo { to { stroke-dashoffset: 0; } }
+  @keyframes okFuera { to { opacity: 0; transform: scale(1.15); } }
+  @media (prefers-reduced-motion: reduce) { .ok-marco, .ok-anillo { animation: none; } }
 </style>
 </head>
 <body>
@@ -206,7 +228,24 @@
   }));
 
   // ===== Entrar de verdad (Supabase) =====
-  const irPanel = () => (location.href = "panel.html");
+  // Animación al entrar: anillos de luz que giran (como Face ID) y se cierran en un check; luego pasa al panel
+  function irPanel() {
+    if (document.querySelector(".ok-capa")) return;
+    const c = document.createElement("div");
+    c.className = "ok-capa";
+    c.innerHTML = `<div class="ok-caja">
+      <svg class="ok-svg" viewBox="0 0 120 120" aria-hidden="true">
+        <defs><filter id="okBrillo" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <rect class="ok-marco" x="22" y="22" width="76" height="76" rx="24"/>
+        <g filter="url(#okBrillo)"><ellipse class="ok-anillo a1" cx="60" cy="60" rx="34" ry="12"/><ellipse class="ok-anillo a2" cx="60" cy="60" rx="34" ry="12"/></g>
+        <circle class="ok-circulo" cx="60" cy="60" r="38"/>
+        <path class="ok-check" d="M42 61 l12 12 l24 -26"/>
+      </svg>
+      <p class="ok-txt">¡Listo! Entrando…</p></div>`;
+    document.body.append(c);
+    setTimeout(() => c.classList.add("fase2"), 1300);
+    setTimeout(() => (location.href = "panel.html"), 2500);
+  }
   async function despuesDeEntrar() {
     const { data: { user } } = await sb.auth.getUser();
     if (!user) return;
