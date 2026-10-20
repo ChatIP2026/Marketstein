@@ -1923,6 +1923,9 @@
   #lateral .ev-txt b { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
   #lateral .pr-txt b { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; display: -webkit-box !important; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   @media (min-width: 761px) { #vistaInicio #lateral #listaPronto, #vistaInicio #lateral #listaEventos { overflow: hidden !important; } #vistaInicio #lateral > .ev-caja { overflow: hidden !important; display: flex; flex-direction: column; } #vistaInicio #lateral #listaEventos { flex: 1 1 auto; min-height: 0; } }
+  .per-clave-c { display: flex; flex-direction: column; gap: 6px; font-size: .82rem; color: #52525b; font-weight: 600; }
+  .per-clave-c small { font-weight: 400; color: #a1a1aa; }
+  .per-clave code { user-select: all; cursor: text; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3661,7 +3664,7 @@
     const d = document.getElementById("detalle");
     d.className = "detalle tk-det";
     let clave = claveTemporal();
-    d.innerHTML = `<div class="det-cab"><div><h2>${ed ? "Editar persona" : "Nueva persona"}</h2><p class="tk-sub">${ed ? "Corrige sus datos o cambia su área." : "Le llegará un correo de bienvenida con su acceso."}</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+    d.innerHTML = `<div class="det-cab"><div><h2>${ed ? "Editar persona" : "Nueva persona"}</h2><p class="tk-sub">${ed ? "Corrige sus datos o cambia su área." : "Al crearla verás su usuario y contraseña para enviárselos."}</p></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <form class="tk-form" autocomplete="off">
         <div class="tk-dos"><label>Nombre *<input name="nombre" /></label><label>Apellido *<input name="apellido" /></label></div>
         <div class="tk-dos"><label>Correo *<input name="correo" type="email" placeholder="nombre@gmail.com" /></label><label>Usuario *<input name="usuario" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /><small class="per-usu-ayuda">Con este usuario entrará a Rabbit. Solo minúsculas, números, punto o guion bajo.</small></label></div>
@@ -3669,7 +3672,7 @@
         <div class="per-aviso" id="perRol"></div>
         <label class="tk-check" id="perAdminL"><input type="checkbox" name="admin" /> Puede administrar Personas (crear cuentas y restablecer contraseñas)</label>
         <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
-        <label ${ed ? "hidden" : ""}>Contraseña temporal<div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></label>
+        <div class="per-clave-c" ${ed ? "hidden" : ""}><span class="per-clave-t">Contraseña temporal</span><div class="per-clave"><code id="perClave">${clave}</code><button type="button" class="cal-btn" id="perCopiar" title="Copiar contraseña">Copiar</button><button type="button" class="cal-btn" id="perOtra">Generar otra</button></div><small>Al entrar por primera vez, Rabbit le pedirá cambiarla.</small></div>
         <div class="mensaje tk-err"></div>
         <button class="nuevo-btn" type="submit">${ed ? "Guardar cambios" : (window.sb ? "Crear cuenta" : "Crear cuenta y enviar correo")}</button>
       </form>${window.sb ? "" : '<p class="det-nota">Vista previa: no se crea ninguna cuenta real.</p>'}`;
@@ -3686,6 +3689,7 @@
     f.usuario.addEventListener("input", () => { usuTocado = true; f.usuario.value = f.usuario.value.toLowerCase().replace(/[^a-z0-9._]/g, ""); });
     if (ed) { f.admin.checked = !!ed.admin; f.usuario.value = usuarioDe(ed); f.nombre.value = ed.nombre; f.apellido.value = ed.apellido || ""; f.correo.value = ed.correo; f.area.value = AREAS.includes(ed.area) ? ed.area : "Marketing"; f.carpeta.value = ed.carpeta || ""; }
     f.area.onchange = verRol; verRol();
+    d.querySelector("#perCopiar")?.addEventListener("click", (e) => { e.preventDefault(); const t = d.querySelector("#perClave").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { e.target.textContent = "¡Copiada!"; setTimeout(() => (e.target.textContent = "Copiar"), 1500); }, () => avisar("No se pudo copiar. Selecciónala y usa Ctrl + C.")); });
     d.querySelector("#perOtra").onclick = () => { clave = claveTemporal(); d.querySelector("#perClave").textContent = clave; };
     f.onsubmit = async (e) => {
       e.preventDefault();
