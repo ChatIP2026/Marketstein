@@ -1879,6 +1879,20 @@
   .tuto-capa.cambiando .tuto-globo { opacity: 0; } .tuto-capa.cambiando .tuto-luz { transition: none !important; box-shadow: 0 0 0 9999px rgba(10,10,10,.62); outline-color: transparent; background: transparent; } .tuto-globo { transition: top .12s ease, left .12s ease, opacity .12s ease !important; }
   .vacio-crear { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 11px 18px; border-radius: 12px; background: #0a0a0a; color: #fff; font-weight: 600; font-size: .9rem; box-shadow: 0 10px 22px rgba(10,10,10,.18); transition: transform .15s; } .vacio-crear:hover { transform: translateY(-2px); } .vacio-crear svg { width: 18px; height: 18px; }
   .vacio-crear-c { display: block; width: 100%; text-align: center; }
+  .tk-turno { display: inline-block; font-weight: 700; color: #0a0a0a; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 999px; padding: 1px 8px; margin-right: 4px; font-size: .74rem; }
+  .tk.p-fuerte .tk-turno, .bcn .tk-turno { color: #0a0a0a !important; }
+  .cola { display: flex; gap: 16px; align-items: center; padding: 16px; border-radius: 16px; background: #0a0a0a; color: #fff; margin-bottom: 14px; }
+  .cola-num { width: 84px; height: 84px; border-radius: 16px; background: #fff; color: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: none; }
+  .cola-num small { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #71717a; font-weight: 700; }
+  .cola-num b { font-size: 2.4rem; line-height: 1; font-variant-numeric: tabular-nums; }
+  .cola-info b { font-size: 1rem; color: #fff !important; } .cola-info p { margin: 2px 0 10px; font-size: .8rem; color: #a1a1aa; }
+  .cola-fila { display: flex; gap: 6px; align-items: center; }
+  .cola-fila i { width: 22px; height: 30px; border-radius: 6px; background: #27272a; position: relative; }
+  .cola-fila i.antes { background: #52525b; } .cola-fila i.yo { background: #fbbf24; box-shadow: 0 0 12px rgba(251,191,36,.6); }
+  .cola-fila i::before { content: ""; position: absolute; left: 50%; top: 5px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: rgba(255,255,255,.35); }
+  .cola-fila i.yo::before { background: #0a0a0a; }
+  .cola-fila span { font-size: .74rem; color: #a1a1aa; margin-left: 4px; }
+  .te-turno b { color: #b45309 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3171,7 +3185,7 @@
       <span class="tk-ir">${FLECHA}</span>
       <div class="tk-b">
         <b class="tk-tit">${esc(t.titulo)}</b>
-        <span class="tk-de">${sol ? (t.asignado ? `Lo hace ${t.asignado}` : "Esperando aprobación") : `${esc(t.solicitante)} | ${esc(t.area)}`}</span>
+        <span class="tk-de">${sol ? (t.asignado ? `Lo hace ${t.asignado}` : turnoDe(t) ? `<span class="tk-turno">Turno ${turnoDe(t).n}</span> ${textoAntes(turnoDe(t).antes)}` : "Esperando aprobación") : `${esc(t.solicitante)} | ${esc(t.area)}`}</span>
         <div class="tk-fila">
           <div><small>Estado</small>${pillTk(t.estado)}</div>
           <div class="der"><small>Prioridad</small>${pr ? prioCard(t.prioridad, true) : `<span class="tk-prio sin">Sin definir</span>`}</div>
@@ -3184,6 +3198,14 @@
     </button>`;
   }
   function registrar(t, txt) { t.historial.push({ at: new Date().toISOString(), quien: yo, txt }); }
+  // ===== Cola de tickets: turno por orden de llegada entre los que esperan revisión =====
+  function turnoDe(t) {
+    if (!t || t.estado !== "revision_inicial") return null;
+    const cola = tickets.filter((x) => x.estado === "revision_inicial" && x.id > 0).sort((a, b) => (a.creado || "").localeCompare(b.creado || "") || a.id - b.id);
+    const k = cola.findIndex((x) => x.id === t.id);
+    return k < 0 ? null : { n: k + 1, antes: k, total: cola.length };
+  }
+  const textoAntes = (n) => (n === 0 ? "¡Eres el siguiente!" : n === 1 ? "1 ticket antes que el tuyo" : `${n} tickets antes que el tuyo`);
   function abrirTicket(id) {
     tkAbierto = id;
     const t = tickets.find((x) => x.id === id), d = document.getElementById("detalle");
@@ -3226,6 +3248,7 @@
         <div class="tkd-k tkd-prio"><small>Prioridad</small>${TK_PRIO[t.prioridad] ? prioCard(t.prioridad) : `<span class="tkd-vacio">La define Hilary</span>`}</div>
         <div class="tkd-k tkd-asig"><small>Asignado</small>${t.asignado ? `<div class="tkd-asig-in"><i class="av" style="${fondoAv(t.asignado)}">${letraAv(t.asignado)}</i><div><b>${t.asignado}</b><span>Marketing</span></div></div><span class="tkd-asig-tag">Responsable</span>` : `<div class="tkd-asig-in"><i class="av tkd-av-vacio">?</i><div><b>Aún nadie</b><span>Hilary lo asignará</span></div></div>`}</div>
       </div>
+      ${sol && turnoDe(t) ? (() => { const q = turnoDe(t); return `<div class="cola"><div class="cola-num"><small>Tu turno</small><b>${q.n}</b></div><div class="cola-info"><b>${textoAntes(q.antes)}</b><p>Hilary revisa los tickets en orden de llegada.</p><div class="cola-fila">${Array.from({ length: Math.min(q.total, 8) }, (_, k) => `<i class="${k === q.antes ? "yo" : k < q.antes ? "antes" : ""}"></i>`).join("")}${q.total > 8 ? `<span>+${q.total - 8}</span>` : ""}</div></div></div>`; })() : ""}
       ${acciones}
       ${t.entregable ? `<section class="tkd-b tkd-entregable"><h4>Entregable</h4><a class="tk-ent-link" href="${esc(t.entregable)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Ver archivo final</a></section>` : ""}
       ${["rechazado", "cancelado"].includes(t.estado) ? (() => { const h = [...t.historial].reverse().find((x) => /Rechazó|Canceló/.test(x.txt)); return h ? bloque(t.estado === "rechazado" ? "Motivo del rechazo" : "Motivo de la cancelación", `<p class="tkd-cita">${esc(h.txt.replace(/^[^:]+:\s*/, ""))}</p><small class="tkd-por">${h.quien} | ${hace(h.at)}</small>`) : ""; })() : ""}
@@ -3315,10 +3338,10 @@
       const o = document.createElement("div");
       o.className = "te-fondo";
       o.innerHTML = `<div class="te-ranura"></div><div class="te-salida"><div class="te">
-        <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Ticket enviado!</h3><p>Marketing ya la recibió.</p></div>
+        <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Ticket enviado!</h3><p>Marketing ya lo recibió.</p></div>
         <div class="te-corte"></div>
         <div class="te-datos"><div><small>N.° de ticket</small><b>#${num}</b></div><div class="der"><small>Entrega</small><b>${fe}</b></div>
-          <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div><div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
+          <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div>${turnoDe(t) ? `<div class="te-full te-turno"><small>Tu turno</small><b>${turnoDe(t).n} | ${textoAntes(turnoDe(t).antes)}</b></div>` : ""}<div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div></div>
         <div class="te-quien"><span class="av" style="${fondoAv(yo)}">${letraAv(yo)}</span><div><b>${esc(yo)}</b><small>${esc(t.area || "")}</small></div></div>
         <div class="te-corte2"></div>
         <div class="te-barras">${barras}</div><div class="te-cod">RB-${num}-${t.fecha.replace(/-/g, "")}</div>
