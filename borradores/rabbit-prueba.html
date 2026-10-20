@@ -1874,6 +1874,8 @@
   @keyframes tutoToque { 0% { opacity: 0; transform: translate(28px, 28px) scale(1); } 30% { opacity: 1; transform: translate(0, 0) scale(1); } 45% { transform: scale(.7); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 10px rgba(255,255,255,.5); } 60% { transform: scale(1); box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 22px rgba(255,255,255,0); } 100% { opacity: 0; } }
   .tuto-txt .tuto-req { display: inline; color: #e5484d; font-weight: 700; margin: 0; font-size: inherit; }
   .tuto-luz { transition: top .12s ease, left .12s ease, width .12s ease, height .12s ease !important; } .tuto-globo { transition: top .12s ease, left .12s ease !important; }
+  body.tuto-on #detalle, body.tuto-on #detalle * , body.tuto-on .menu-notif { animation: none !important; transition: none !important; }
+  .tuto-capa.cambiando .tuto-globo { opacity: 0; } .tuto-capa.cambiando .tuto-luz { transition: none !important; box-shadow: 0 0 0 9999px rgba(10,10,10,.62); outline-color: transparent; background: transparent; } .tuto-globo { transition: top .12s ease, left .12s ease, opacity .12s ease !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3017,9 +3019,9 @@
     const capa = document.createElement("div"); capa.className = "tuto-capa";
     capa.innerHTML = `<div class="tuto-luz"><span class="tuto-dedo"></span></div><div class="tuto-globo"><span class="tuto-rb">${rbMini()}</span><div class="tuto-txt"><b></b><p></p></div>
       <div class="tuto-pie"><div class="tuto-pts"></div><button type="button" class="tuto-saltar">Saltar</button><button type="button" class="tuto-sig">Siguiente</button></div></div>`;
-    document.body.append(capa);
+    document.body.append(capa); document.body.classList.add("tuto-on");
     const luz = capa.querySelector(".tuto-luz"), globo = capa.querySelector(".tuto-globo");
-    const fin = () => { cerrarProyecto(); quitarEjemplo(); menuNotif.hidden = true; marcarTutorial(); capa.classList.add("sale"); setTimeout(() => capa.remove(), 250); removeEventListener("resize", pintar); };
+    const fin = () => { cerrarProyecto(); quitarEjemplo(); menuNotif.hidden = true; marcarTutorial(); capa.classList.add("sale"); document.body.classList.remove("tuto-on"); setTimeout(() => capa.remove(), 250); removeEventListener("resize", pintar); };
     function pintar() {
       const p = pasos[i];
       let el = null; if (p.sel) for (const x of p.sel.split(",")) { el = document.querySelector(x.trim()); if (el && el.offsetParent) break; el = null; }
@@ -3040,7 +3042,10 @@
       const left = Math.min(Math.max(12, r.left + r.width / 2 - gw / 2), innerWidth - gw - 12);
       globo.style.top = top + "px"; globo.style.left = left + "px";
     }
-    const ir = () => { const p = pasos[i], k = i; if (p.antes) setTimeout(() => { p.antes(); requestAnimationFrame(pintar); [60, 160, 300].forEach((t) => setTimeout(() => k === i && pintar(), t)); }, 0); else pintar(); };
+    const ir = () => { const p = pasos[i], k = i;
+      if (!p.antes) return pintar();
+      capa.classList.add("cambiando"); // se oculta el globo mientras se abre la ventana, para que no salte
+      setTimeout(() => { p.antes(); setTimeout(() => { if (k !== i) return; pintar(); requestAnimationFrame(() => capa.classList.remove("cambiando")); }, 90); }, 0); };
     const siguiente = () => { if (capa.dataset.ocupado) return; if (i === pasos.length - 1) return fin(); capa.dataset.ocupado = "1"; setTimeout(() => delete capa.dataset.ocupado, 250); i++; ir(); };
     capa.querySelector(".tuto-sig").onclick = siguiente;
     capa.querySelector(".tuto-saltar").onclick = fin;
