@@ -27,6 +27,9 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
   const chip = (t: string, bg: string, c: string) => `<span style="display:inline-block;background:${bg};color:${c};font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;margin:0">${t}</span>`;
   const celda = (k: string, v: string, der = false) => `<td style="padding:12px 0 0;width:50%" align="${der ? "right" : "left"}"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a1a1aa">${k}</div><div style="font-size:16px;font-weight:700;color:#0a0a0a;margin-top:3px">${v}</div></td>`;
   const fila = (k: string, v: string) => `<tr><td style="padding:10px 0;color:#71717a;font-size:13px;border-top:1px dashed #e4e4e7">${k}</td><td align="right" style="padding:10px 0;font-size:14px;font-weight:700;color:#0a0a0a;border-top:1px dashed #e4e4e7">${v}</td></tr>`;
+  const bola = (h: boolean) => `<td align="center" width="26" style="width:26px"><div style="width:26px;height:26px;line-height:26px;border-radius:50%;background:${h ? color : "#e4e4e7"};color:#fff;font-size:14px;font-weight:700;text-align:center">${h ? "&#10003;" : ""}</div></td>`;
+  const linea = (h: boolean) => `<td style="padding:0 6px"><div style="height:3px;border-radius:3px;background:${h ? color : "#e4e4e7"}"></div></td>`;
+  const etq = (t: string, h: boolean) => `<td align="center" style="padding-top:6px;font-size:11px;white-space:nowrap;color:${h ? "#0a0a0a" : "#a1a1aa"};font-weight:${h ? 700 : 400}">${t}</td>`;
   const paso = (t: string, hecho: boolean) => `<td align="center" style="width:33%;font-size:11px;color:${hecho ? "#0a0a0a" : "#a1a1aa"};font-weight:${hecho ? 700 : 400}">
       <div style="width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto 6px;background:${hecho ? color : "#e4e4e7"};color:#fff;font-size:14px;font-weight:700">${hecho ? "&#10003;" : ""}</div>${t}</td>`;
   return `<!doctype html><html><body style="margin:0;background:#f4f4f5">
@@ -51,7 +54,10 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; persona: str
         </table>
       </div>
     </td></tr>
-    <tr><td style="padding:22px 24px 6px"><table width="100%" cellpadding="0" cellspacing="0"><tr>${paso("Enviado", true)}${paso("Aprobado", true)}${paso("Entregado", o.listo)}</tr></table></td></tr>
+    <tr><td style="padding:22px 24px 6px"><table width="100%" cellpadding="0" cellspacing="0">
+      <tr>${bola(true)}${linea(true)}${bola(true)}${linea(o.listo)}${bola(o.listo)}</tr>
+      <tr>${etq("Enviado", true)}<td></td>${etq("Aprobado", true)}<td></td>${etq("Entregado", o.listo)}</tr>
+    </table></td></tr>
     <tr><td style="padding:18px 24px 26px"><a href="${PANEL}" style="display:block;background:#0a0a0a;color:#ffffff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:15px">Ver mi ticket</a></td></tr>
   </table>
   <p style="font-size:11px;color:#a1a1aa;margin:16px 0 0">Correo automático de Rabbit | iPartner marketing</p>
