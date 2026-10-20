@@ -1915,6 +1915,12 @@
   @media (max-width: 760px) { .cargando-p { grid-template-columns: 1fr; } }
   body.sin-sesion #perfilBtn > * { visibility: hidden; }
   .cargando-p { grid-column: 1 / -1; width: 100%; }
+  @media (min-width: 761px) {
+    #vistaInicio #lateral { overflow: hidden !important; }
+    #vistaInicio #lateral > div:not([hidden]):first-child { flex: 0 1 auto !important; min-height: 120px; display: flex; flex-direction: column; }
+    #vistaInicio #lateral #listaPronto { overflow-y: auto; min-height: 0; flex: 1 1 auto; scrollbar-width: thin; }
+    #vistaInicio #lateral > .ev-caja { flex: 1 0 170px !important; }
+  }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2265,17 +2271,22 @@
     const fichas = [...document.querySelectorAll("#tablero .ficha")];
     if (!fichas.length) return;
     const alto = Math.max(...fichas.map((f) => f.offsetHeight));
-    document.querySelectorAll("#tablero .col-lista").forEach((c) => {
-      const nF = c.querySelectorAll(".ficha").length;
-      if (innerWidth > 760 && nF <= 4) { c.style.height = ""; c.style.flex = "none"; c.style.minHeight = ""; c.style.overflow = "visible"; }
-      else if (innerWidth > 760) { c.style.overflow = ""; const f4 = [...c.querySelectorAll(".ficha")].slice(0, 4); c.style.minHeight = ""; c.style.height = (f4.length ? f4.reduce((a, f) => a + f.offsetHeight, 0) + 12 * (f4.length - 1) + 4 : alto) + "px"; c.style.flex = "none"; }
-      else { c.style.height = ""; c.style.flex = ""; }
-      c.parentElement.querySelector(".mas")?.remove();
-      if (nF > 4 && c.scrollHeight > c.clientHeight + 2) c.insertAdjacentHTML("afterend", `<div class="mas">↕ Desliza para ver más</div>`);
-    });
+    // Escritorio: las columnas ocupan solo el alto que queda en pantalla (la página no se desliza);
+    // si los proyectos no caben, se desliza dentro de la columna y aparece el aviso.
+    const cols = [...document.querySelectorAll("#tablero .col-lista")];
+    cols.forEach((c) => { c.parentElement.querySelector(".mas")?.remove(); c.style.height = ""; c.style.minHeight = ""; c.style.flex = "none"; c.style.overflow = "visible"; });
+    if (innerWidth > 760 && cols.length) {
+      const caja = document.querySelector("#vistaInicio .tablero-caja"), app = document.querySelector(".app");
+      const pie = (caja ? parseFloat(getComputedStyle(caja).paddingBottom) : 16) + (app ? parseFloat(getComputedStyle(app).paddingBottom) : 16) + 20 + 26;
+      const disp = Math.max(150, innerHeight - cols[0].getBoundingClientRect().top - scrollY * 0 - pie);
+      cols.forEach((c) => {
+        if (c.scrollHeight > disp + 2) { c.style.height = disp + "px"; c.style.overflow = ""; c.insertAdjacentHTML("afterend", `<div class="mas">↕ Desliza para ver más</div>`); }
+      });
+    }
     // El lateral termina a la misma altura que el tablero; Próximos eventos se desliza si no cabe
     const lat = document.getElementById("lateral"), pri = document.querySelector("#vistaInicio .principal");
-    if (lat && pri) lat.style.height = innerWidth > 760 ? pri.offsetHeight + "px" : "";
+    const cajaT = document.querySelector("#vistaInicio .tablero-caja");
+    if (lat && pri) { if (innerWidth > 760) { const h = (cajaT || pri).offsetHeight; lat.style.setProperty("height", h + "px", "important"); lat.style.setProperty("max-height", h + "px", "important"); } else { lat.style.removeProperty("height"); lat.style.removeProperty("max-height"); } }
   }
   addEventListener("resize", () => vistaActual === "kanban" && ajustarAltoColumnas());
 
