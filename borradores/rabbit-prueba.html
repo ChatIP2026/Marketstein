@@ -1856,7 +1856,7 @@
   /* Tutorial */
   .tuto-capa { position: fixed; inset: 0; z-index: 500; animation: teFondo .25s ease both; }
   .tuto-capa.sale { opacity: 0; transition: opacity .25s; }
-  .tuto-capa .tuto-luz.clic { cursor: pointer; } .tuto-luz { position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(10,10,10,.62); transition: all .3s ease; pointer-events: none; outline: 2px solid #fff; }
+  .tuto-capa .tuto-luz.clic { cursor: pointer; } .tuto-luz { cursor: pointer; position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(10,10,10,.62); transition: all .3s ease; pointer-events: none; outline: 2px solid #fff; }
   .tuto-luz.nada { top: 50% !important; left: 50% !important; width: 0 !important; height: 0 !important; outline: 0; }
   .tuto-globo { position: fixed; width: min(340px, calc(100vw - 24px)); background: #fff; border-radius: 18px; padding: 16px; box-shadow: 0 20px 50px rgba(0,0,0,.3); transition: top .3s ease, left .3s ease; display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; }
   .tuto-globo.centro { top: 50% !important; left: 50% !important; transform: translate(-50%, -50%); }
@@ -3001,8 +3001,8 @@
       { sel: "#detalle .tk-form", antes: () => abrirFormTicket(), t: "2. Llena el formulario", d: "Cuéntanos qué necesitas y para cuándo. Los campos con * son obligatorios. Al final pulsas Enviar ticket." },
       { sel: ".tk-lista > *:first-child, .mis-vacio", antes: cerrarTodo, toque: true, t: "3. Sigue tus tickets", d: "Cada ticket muestra su estado: Por revisar, En curso o Entregado. Tócalo para ver el detalle." },
       { sel: "#detalle .tuto-chat", antes: () => { const id = primerTk(); if (id) { abrirTicket(id); setTimeout(() => { const b = document.querySelector("#detalle .tkc-ayuda")?.parentElement; if (b) { b.classList.add("tuto-chat"); b.scrollIntoView({ block: "start" }); document.getElementById("detalle").scrollTop -= 20; } }, 50); } }, t: "4. Chat del ticket", d: "Dentro del ticket le escribes a quien lo está haciendo. Cada mensaje le llega como notificación." },
-      { sel: "#campanaBtn", antes: () => cerrarProyecto(), toque: true, clic: true, t: "5. Notificaciones", d: "Toca la campana para ver tus avisos." },
-      { sel: "#menuNotif", t: "¡Así se ven!", d: "Aquí te avisamos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
+      { sel: "#campanaBtn", antes: () => cerrarProyecto(), toque: true, t: "5. Notificaciones", d: "Toca la campana (o Siguiente) para ver tus avisos." },
+      { sel: "#menuNotif", antes: () => { pintarNotif(); menuNotif.hidden = false; }, t: "¡Así se ven!", d: "Aquí te avisamos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
     ];
     let i = 0;
     const capa = document.createElement("div"); capa.className = "tuto-capa";
@@ -3018,12 +3018,11 @@
       capa.querySelector(".tuto-pts").innerHTML = pasos.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("") + `<span>${i + 1} de ${pasos.length}</span>`;
       capa.querySelector(".tuto-sig").textContent = i === pasos.length - 1 ? "Empezar" : "Siguiente";
       capa.querySelector(".tuto-saltar").hidden = i === pasos.length - 1;
-      capa.querySelector(".tuto-sig").hidden = !!p.clic;
       if (!el) { luz.classList.add("nada"); globo.classList.add("centro"); globo.style.top = globo.style.left = ""; return; }
       luz.classList.remove("nada"); globo.classList.remove("centro");
       if (!el.closest("#detalle") && el.id !== "menuNotif") el.scrollIntoView({ block: "center", behavior: "instant" });
       luz.classList.toggle("toque", !!p.toque);
-      capa.classList.toggle("con-clic", !!p.clic);
+      luz.classList.toggle("clic", true);
       const r = el.getBoundingClientRect(), m = 8, alto = Math.min(r.height, innerHeight * 0.45);
       Object.assign(luz.style, { top: r.top - m + "px", left: r.left - m + "px", width: r.width + m * 2 + "px", height: alto + m * 2 + "px" });
       const gw = globo.offsetWidth, gh = globo.offsetHeight;
@@ -3032,15 +3031,16 @@
       globo.style.top = top + "px"; globo.style.left = left + "px";
     }
     const ir = () => { const p = pasos[i]; if (p.antes) setTimeout(() => { p.antes(); setTimeout(pintar, 350); }, 0); else pintar(); };
-    capa.querySelector(".tuto-sig").onclick = () => { if (i === pasos.length - 1) return fin(); i++; ir(); };
+    const siguiente = () => { if (capa.dataset.ocupado) return; if (i === pasos.length - 1) return fin(); capa.dataset.ocupado = "1"; setTimeout(() => delete capa.dataset.ocupado, 600); i++; ir(); };
+    capa.querySelector(".tuto-sig").onclick = siguiente;
     capa.querySelector(".tuto-saltar").onclick = fin;
     capa.addEventListener("click", (e) => {
       if (e.target.closest(".tuto-globo")) return;
       e.stopPropagation(); // nada fuera del globo debe cerrar menús ni abrir otras cosas
-      const p = pasos[i]; if (!p.clic || capa.dataset.ocupado) return;
+      if (luz.classList.contains("nada") || capa.dataset.ocupado) return;
       const r = luz.getBoundingClientRect();
       if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
-      capa.dataset.ocupado = "1"; pintarNotif(); menuNotif.hidden = false; i++; setTimeout(() => { delete capa.dataset.ocupado; pintar(); }, 200);
+      siguiente(); // tocar lo señalado hace lo mismo que Siguiente
     });
     addEventListener("resize", pintar);
     requestAnimationFrame(pintar);
