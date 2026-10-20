@@ -2732,7 +2732,7 @@
     f.onclick = (e) => { if (e.target === f) cerrar(); };
     document.addEventListener("keydown", esc_);
   }
-  function avisoDemo(espera = 1200) { setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, espera); }
+  function avisoDemo(espera = 1200) { if (WEB_REAL && !window.miPerfil) return; setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, espera); }
   document.getElementById("campanaBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = true; pintarNotif(); menuNotif.hidden = !menuNotif.hidden; };
 
   // ===== Navegación entre pestañas =====
@@ -3130,6 +3130,7 @@
     { id: 5, titulo: "Mailing de bienvenida a clientes nuevos", solicitante: "Lucía", area: "Finanzas", tipo: "Mailing", formato: "Correo (600 px)", detalle: "Correo de bienvenida con los pasos para activar la cuenta.", destino: "Clientes nuevos", texto: "Bienvenido a iPartner", refs: [], fecha: enD(1), estado: "en_revision", prioridad: "urgente", asignado: "Pierina", creado: haceH(72), historial: [{ at: haceH(72), quien: "Lucía", txt: "Envió el ticket" }, { at: haceH(70), quien: "Hilary", txt: "Aceptó el ticket | prioridad Urgente | asignado a Pierina" }] },
     { id: 6, titulo: "Video corto para redes de RR. HH.", solicitante: "Rosa", area: "Recursos Humanos", tipo: "Video", formato: "Vertical (reel)", detalle: "Video de 30 s sobre la cultura de la empresa.", destino: "Candidatos", texto: "", refs: [], fecha: enD(-2), estado: "entregado", prioridad: "media", asignado: "Carlos", creado: haceH(240), historial: [{ at: haceH(240), quien: "Rosa", txt: "Envió el ticket" }, { at: haceH(230), quien: "Hilary", txt: "Aceptó el ticket | asignado a Carlos" }, { at: haceH(200), quien: "Carlos", txt: "Revisó la información y empezó a trabajarlo" }, { at: haceH(30), quien: "Carlos", txt: "Lo marcó como entregado y adjuntó el entregable" }], entregable: "https://drive.google.com/ejemplo-video-rrhh", comentarios: [{ quien: "Carlos", txt: "¿El video lleva subtítulos?", at: haceH(220) }, { quien: "Rosa", txt: "Sí, por favor, en español.", at: haceH(218) }] },
   ];
+  if (WEB_REAL) tickets.length = 0; // en la web real no hay tickets de ejemplo: llegan de Supabase
   let filtroTk = null, tkAbierto = null, mesTk = null, personaTk = null, busTk = "";
   const tkVisibles = () => esSolicitante() ? tickets.filter((t) => t.solicitante === yo)
     : yo === JEFA ? tickets : tickets.filter((t) => t.asignado === yo);
