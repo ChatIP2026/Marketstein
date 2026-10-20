@@ -3095,7 +3095,7 @@
   function quizasTutorial() { if (esSolicitante() && !tutorialVisto()) setTimeout(iniciarTutorial, 700); }
   function aplicarRol() {
     pintarEventos();
-    if (aplicarRol.yaUsado) { filtroTk = null; busTk = ""; personaTk = null; } aplicarRol.yaUsado = true;
+    if (aplicarRol.yaUsado) { filtroTk = null; busTk = ""; personaTk = null; mesTk = "todos"; } aplicarRol.yaUsado = true;
     const sol = esSolicitante();
     document.body.classList.toggle("rol-solicitante", sol);
     document.querySelectorAll("nav a").forEach((a) => (a.hidden = (sol && a.dataset.p !== "tickets") || a.dataset.p === "personas"));
@@ -3153,7 +3153,7 @@
     const mesDe = (t) => t.fecha.slice(0, 7), hoyMes = new Date().toISOString().slice(0, 7);
     const todosVis = tkVisibles();
     const meses = [...new Set([hoyMes, ...todosVis.map(mesDe)])].sort().reverse();
-    if (mesTk === null) mesTk = sol ? "todos" : hoyMes; // otras áreas ven todos sus tickets, sin importar la fecha de entrega
+    if (mesTk === null) mesTk = "todos"; // por defecto se ven todos los meses
     const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
     const delMes = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
     const qTk = busTk.trim().toLowerCase();
@@ -3464,7 +3464,7 @@
     };
     document.body.classList.add("con-detalle");
   }
-  ({ filtroTk = null, mesTk = null, personaTk = null, busTk = "", filtroEnt = "todos" } = MEM); kpiFiltro = null;
+  ({ filtroTk = null, personaTk = null, busTk = "", filtroEnt = "todos" } = MEM); mesTk = "todos"; kpiFiltro = null;
   if (MEM.b) document.getElementById("buscar").value = MEM.b;
   addEventListener("pagehide", guardarFiltros); document.addEventListener("visibilitychange", guardarFiltros);
   aplicarRol(); pintarNotif(); avisoDemo(60000); rabbitHola();
