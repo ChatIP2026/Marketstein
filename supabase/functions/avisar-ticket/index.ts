@@ -14,18 +14,49 @@ const esc = (x: string) => String(x ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&a
 const num = (id: number) => "#" + String(id).padStart(3, "0");
 const fecha = (f: string) => new Date(f + "T12:00").toLocaleDateString("es-PE", { day: "numeric", month: "long" });
 
-function plantilla(titulo: string, intro: string, filas: [string, string][]) {
-  return `<div style="font-family:Arial,sans-serif;background:#f4f4f5;padding:24px">
-  <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden">
-    <div style="background:#0a0a0a;color:#fff;padding:18px 22px;font-size:18px;font-weight:700">rabbit ai</div>
-    <div style="padding:22px">
-      <h2 style="margin:0 0 8px;font-size:20px;color:#0a0a0a">${titulo}</h2>
-      <p style="margin:0 0 16px;color:#52525b;font-size:14px">${intro}</p>
-      <table style="width:100%;border-collapse:collapse;font-size:14px">${filas.map(([k, v]) =>
-        `<tr><td style="padding:8px 0;color:#71717a;border-top:1px solid #eee">${k}</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#0a0a0a;border-top:1px solid #eee">${v}</td></tr>`).join("")}</table>
-      <a href="${PANEL}" style="display:block;margin-top:20px;background:#0a0a0a;color:#fff;text-align:center;padding:12px;border-radius:10px;text-decoration:none;font-weight:700">Ver mi ticket</a>
-    </div>
-  </div></div>`;
+const PRIO: Record<string, [string, string, string]> = {
+  urgente: ["Urgente", "#ffffff", "#dc2626"], alta: ["Alta", "#b91c1c", "#fee2e2"],
+  media: ["Media", "#92400e", "#fef3c7"], baja: ["Baja", "#1d4ed8", "#dbeafe"],
+};
+const LOGO = `${PANEL}/borradores/rabbit-correo.png`;
+
+// Correo con forma de ticket: cabecera negra con Rabbit, estado, datos y avance (Enviado > Aprobado > Entregado)
+function plantilla(o: { listo: boolean; id: number; titulo: string; persona: string; prioridad?: string; entrega?: string }) {
+  const color = o.listo ? "#10b981" : "#0a0a0a";
+  const pr = PRIO[o.prioridad || ""];
+  const fila = (k: string, v: string) => `<tr><td style="padding:10px 0;color:#71717a;font-size:13px;border-top:1px dashed #e4e4e7">${k}</td><td align="right" style="padding:10px 0;font-size:14px;font-weight:700;color:#0a0a0a;border-top:1px dashed #e4e4e7">${v}</td></tr>`;
+  const paso = (t: string, hecho: boolean) => `<td align="center" style="width:33%;font-size:11px;color:${hecho ? "#0a0a0a" : "#a1a1aa"};font-weight:${hecho ? 700 : 400}">
+      <div style="width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto 6px;background:${hecho ? color : "#e4e4e7"};color:#fff;font-size:14px;font-weight:700">${hecho ? "&#10003;" : ""}</div>${t}</td>`;
+  return `<!doctype html><html><body style="margin:0;background:#f4f4f5">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:28px 12px;font-family:Arial,Helvetica,sans-serif"><tr><td align="center">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e7">
+    <tr><td style="background:#0a0a0a;padding:22px 24px">
+      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td width="52"><div style="width:44px;height:44px;border-radius:12px;background:#ffffff;text-align:center"><img src="${LOGO}" width="36" height="36" alt="Rabbit" style="display:inline-block;margin-top:4px"></div></td>
+        <td style="color:#ffffff;font-size:17px;font-weight:700;padding-left:10px">rabbit ai<div style="font-size:12px;font-weight:400;color:#a1a1aa;margin-top:2px">Tickets de marketing</div></td>
+        <td align="right"><span style="display:inline-block;background:#ffffff;color:#0a0a0a;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px">${num(o.id)}</span></td>
+      </tr></table>
+    </td></tr>
+    <tr><td style="padding:26px 24px 6px">
+      <span style="display:inline-block;background:${o.listo ? "#d1fae5" : "#f4f4f5"};color:${o.listo ? "#047857" : "#0a0a0a"};font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px">${o.listo ? "&#10003; Entregado" : "&#10003; Aprobado"}</span>
+      <h1 style="margin:14px 0 6px;font-size:22px;line-height:1.25;color:#0a0a0a">${o.listo ? "¡Tu ticket está listo!" : "¡Tu ticket fue aprobado!"}</h1>
+      <p style="margin:0;font-size:14px;color:#52525b;line-height:1.5">${o.listo ? `${o.persona} terminó tu pedido. Ya puedes revisarlo en Rabbit.` : `${o.persona} ya está trabajando en tu pedido.`}</p>
+    </td></tr>
+    <tr><td style="padding:18px 24px 4px">
+      <div style="background:#fafafa;border:1px solid #f0f0f2;border-radius:14px;padding:4px 16px">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td colspan="2" style="padding:12px 0 10px;font-size:16px;font-weight:700;color:#0a0a0a">${o.titulo}</td></tr>
+          ${fila(o.listo ? "Lo hizo" : "Lo hará", o.persona)}
+          ${pr ? fila("Prioridad", `<span style="background:${pr[2]};color:${pr[1]};padding:3px 9px;border-radius:999px;font-size:12px">${pr[0]}</span>`) : ""}
+          ${o.entrega ? fila("Entrega", o.entrega) : ""}
+        </table>
+      </div>
+    </td></tr>
+    <tr><td style="padding:22px 24px 6px"><table width="100%" cellpadding="0" cellspacing="0"><tr>${paso("Enviado", true)}${paso("Aprobado", true)}${paso("Entregado", o.listo)}</tr></table></td></tr>
+    <tr><td style="padding:18px 24px 26px"><a href="${PANEL}" style="display:block;background:#0a0a0a;color:#ffffff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:15px">Ver mi ticket</a></td></tr>
+  </table>
+  <p style="font-size:11px;color:#a1a1aa;margin:16px 0 0">Correo automático de Rabbit | iPartner marketing</p>
+</td></tr></table></body></html>`;
 }
 
 Deno.serve(async (req) => {
@@ -42,9 +73,7 @@ Deno.serve(async (req) => {
   const encargado = quien?.nombre || "marketing";
 
   const asunto = aprobado ? `Tu ticket ${num(t.id)} fue aprobado` : `Tu ticket ${num(t.id)} está listo`;
-  const html = aprobado
-    ? plantilla("¡Tu ticket fue aprobado!", esc(t.titulo), [["Ticket", num(t.id)], ["Lo hará", esc(encargado)], ["Prioridad", t.prioridad || "—"], ["Entrega", fecha(t.fecha)]])
-    : plantilla("¡Tu ticket está listo!", esc(t.titulo), [["Ticket", num(t.id)], ["Lo hizo", esc(encargado)]]);
+  const html = plantilla({ listo: !aprobado, id: t.id, titulo: esc(t.titulo), persona: esc(encargado), prioridad: aprobado ? t.prioridad : undefined, entrega: aprobado ? fecha(t.fecha) : undefined });
 
   const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para, asunto, html }) });
   const txt = await r.text();
