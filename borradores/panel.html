@@ -3017,7 +3017,7 @@
             const msg = (q, txt, min) => `<div class="tkc ${q === yo ? "mio" : ""}"><i class="av" style="${fondoAv(q)}">${letraAv(q)}</i><div><b>${esc(q)} <span>hace ${min} min</span></b><p>${txt}</p></div></div>`;
             const l = b.querySelector(".tkc-lista"); if (l) l.innerHTML = msg(mk, "¿El logo va en blanco o en color?", 12) + msg(yo, "En blanco, porque va sobre fondo oscuro.", 5); b.scrollIntoView({ block: "start" }); document.getElementById("detalle").scrollTop -= 20; } })(); } }, t: "4. Chat del ticket", d: "Dentro del ticket le escribes a quien lo está haciendo. Cada mensaje le llega como notificación." },
       { sel: "#campanaBtn", antes: () => { cerrarProyecto(); quitarEjemplo(); }, toque: true, t: "5. Notificaciones", d: "Toca la campana para ver tus avisos." },
-      { sel: "#menuNotif", antes: () => { pintarNotif(); menuNotif.hidden = false; }, t: "¡Así se ven!", d: "Aquí te avisamos cuando tu ticket sea aprobado, tenga mensajes o esté listo. ¡Eso es todo, a pedir!" },
+      { sel: "#menuNotif", antes: () => { pintarNotif(); menuNotif.hidden = false; }, t: "¡Así se ven!", d: "Aquí te avisamos de cada novedad. ¡Listo, a pedir!" },
     ];
     let i = 0;
     const capa = document.createElement("div"); capa.className = "tuto-capa";
