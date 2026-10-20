@@ -2161,7 +2161,7 @@
       <div class="det-tareas"></div>
       <form class="det-nueva"><input placeholder="Añadir una tarea y pulsar Enter" /><button>Añadir</button></form>
       <div class="det-peligro"><button type="button" class="det-borrar"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Eliminar proyecto</button><button type="button" class="det-standby ${p.standby ? "on" : ""}">${p.standby ? `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v14l11-7Z"/></svg>Quitar standby` : `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Standby`}</button></div>
-      <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
+      ${WEB_REAL ? "" : `<p class="det-nota">Vista previa: los cambios no se guardan.</p>`}`;
     burbujaVista[p.id] = true;
 
     // Datos del proyecto
@@ -3391,7 +3391,7 @@
         ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Ej.: ¿Podemos usar el logo en blanco? Va sobre fondo oscuro." /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} | último ${hace(t.historial.at(-1).at)}</span></summary>
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>| ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
-      <p class="det-nota">Vista previa: los cambios no se guardan.</p>`;
+      ${WEB_REAL ? "" : `<p class="det-nota">Vista previa: los cambios no se guardan.</p>`}`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     d.querySelectorAll("[data-ver]").forEach((b) => (b.onclick = () => { const a = t.archivos[+b.dataset.ver], v = document.createElement("div"); v.className = "tk-visor"; v.innerHTML = a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<iframe src="${a.url}" title="PDF"></iframe>`; v.onclick = () => v.remove(); document.body.append(v); }));
     let prio = t.prioridad || "media", asig = t.asignado || null, modo = null;
