@@ -1834,6 +1834,10 @@
   .tk-form label > span:first-child, .tk-form .tk-subir-t { color: #0a0a0a !important; font-weight: 700 !important; font-size: .9rem !important; }
   .tk-form label small, .tk-form .tk-subir-t small { color: #71717a; font-weight: 400; }
   .tk-n { font-style: normal; margin-right: 2px; }
+  .tk-6 { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+  .tk-sep { font-style: normal; color: #0a0a0a; font-weight: 800; font-size: 1.05rem; }
+  .tk-6 .tk-check { display: inline-flex !important; align-items: center; gap: 6px; font-weight: 500; font-size: .84rem; color: #3f3f46 !important; margin: 0 !important; cursor: pointer; }
+  .tk-6 .tk-check input { margin: 0; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3237,8 +3241,7 @@
         <label class="tk-otro" hidden>¿Qué tipo de pieza es?<input name="otro" placeholder="Ej.: Firma de correo, invitación…" /></label>
         <label><span><em class="tk-n">4.</em> Detalla el pedido <span class="req">*</span></span><textarea name="detalle" placeholder="De qué se trata, el objetivo y el mensaje principal."></textarea></label>
         <label><span><em class="tk-n">5.</em> ¿A quién va dirigido? <small>(opcional)</small></span><input name="destino" placeholder="Ej.: clientes, seguidores de LinkedIn" /></label>
-        <label><span><em class="tk-n">6.</em> Texto que debe ir en la pieza</span><textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
-        <label class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</label>
+        <label><span class="tk-6"><em class="tk-n">6.</em> Texto que debe ir en la pieza <i class="tk-sep">|</i> <span class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</span></span><textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
         <div class="tk-subir"><span class="tk-subir-t"><em class="tk-n">7.</em> Fotos y archivos <small>(opcional, hasta 5 archivos | 10 MB en total)</small></span>
           <label class="tk-drop" id="tkDrop"><input type="file" id="tkArch" multiple accept="image/*,.pdf" hidden /><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><b>Arrastra tus referencias aquí</b><small>o haz clic para elegirlas | JPG, PNG o PDF</small></label>
           <div class="tk-miniaturas" id="tkMinis"></div><div class="tk-peso" id="tkPeso" hidden></div></div>
