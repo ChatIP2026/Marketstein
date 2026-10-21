@@ -42,6 +42,8 @@
   .op-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
   .op-txt b { font-size: 1.05rem; color: var(--negro); } .op-txt small { font-size: .86rem; color: var(--g500); line-height: 1.35; }
   .op-fl { width: 20px; height: 20px; flex: none; color: var(--g500); }
+  #vistaElegir h1, .op-txt b, .op-txt small { text-wrap: pretty; }
+  @media (max-width: 420px) { .op-txt b, .op-txt small { text-wrap: balance; } }
   .volver { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 18px -4px; font-size: .86rem; font-weight: 600; color: var(--g500); cursor: pointer; text-decoration: none; }
   .volver:hover { color: var(--negro); } .volver svg { width: 16px; height: 16px; }
   @media (max-width: 420px) { .opcion { padding: 16px; gap: 12px; } .op-ic { width: 44px; height: 44px; } }
@@ -153,8 +155,8 @@
 
   <section class="lado-form">
     <div class="vista" id="vistaElegir">
-      <h1>¡Hola! ¿Cómo quieres entrar?</h1>
-      <p class="sub">Elige la opción que te corresponde.</p>
+      <h1>¿Cómo quieres entrar?</h1>
+      <p class="sub">Elige la opción que va contigo.</p>
       <button type="button" class="opcion" data-modo="invitado">
         <span class="op-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 0 2-2V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v1a2 2 0 0 0 0 4v1a2 2 0 0 0 0 4v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1a2 2 0 0 0 0-4V9z"/><path d="M10 9h4M10 13h4"/></svg></span>
         <span class="op-txt"><b>Vengo a dejar un ticket</b><small>Otras áreas. Entras sin contraseña.</small></span>
@@ -162,7 +164,7 @@
       </button>
       <button type="button" class="opcion" data-modo="entrar">
         <span class="op-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
-        <span class="op-txt"><b>Tengo usuario y contraseña</b><small>Equipo de marketing o quien ya tenga su cuenta.</small></span>
+        <span class="op-txt"><b>Tengo usuario y contraseña</b><small>Marketing o si ya tienes cuenta.</small></span>
         <svg class="op-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
       </button>
     </div>
