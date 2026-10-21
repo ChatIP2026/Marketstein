@@ -2977,7 +2977,7 @@
     const { data, error } = await sb.from("perfiles").select("*").order("created_at");
     if (error) return;
     personas.length = 0;
-    data.forEach((p) => personas.push({ id: p.id, nombre: p.nombre, apellido: p.apellido, usuario: p.usuario, correo: p.correo, area: p.area, rol: p.rol, admin: p.admin_personas, carpeta: p.carpeta || "", activa: !p.debe_cambiar_clave, inactiva: !p.activa }));
+    data.forEach((p) => personas.push({ id: p.id, nombre: p.nombre, apellido: p.apellido, usuario: p.usuario, correo: p.correo, area: p.area, rol: p.rol, admin: p.admin_personas, carpeta: p.carpeta || "", cargo: p.cargo || "", activa: !p.debe_cambiar_clave, inactiva: !p.activa }));
     // Nombres ↔ cuentas reales, equipo de marketing, otras áreas y jefa
     for (const k in ID_DE) delete ID_DE[k]; for (const k in NOMBRE_DE) delete NOMBRE_DE[k];
     data.forEach((p) => { ID_DE[p.nombre] = p.id; NOMBRE_DE[p.id] = p.nombre; });
@@ -3640,7 +3640,7 @@
           <i class="av per-av" style="${fondoAv(x.nombre)}">${letraAv(x.nombre)}</i>
           <div class="per-nom"><b>${esc(x.nombre)} ${esc(x.apellido)}</b><small><span class="per-usu">@${esc(usuarioDe(x))}</span> | ${esc(x.correo)}</small></div>
           <div class="per-col"><small>Área</small><span class="tk-chip">${esc(x.area)}</span></div>
-          <div class="per-col"><small>Rol</small><span class="per-rol r-${x.rol}">${ROLES[x.rol]}</span></div>
+          <div class="per-col"><small>Cargo</small><span class="per-rol r-${x.rol}">${esc(x.cargo || ROLES[x.rol])}</span></div>
           <div class="per-col"><small>Referencias</small>${x.carpeta ? `<a class="tk-chip enl" href="#" onclick="return false">${ic("carpeta")}Su carpeta</a>` : `<span class="per-nada">—</span>`}</div>
           <div class="per-col"><small>Estado</small>${x.inactiva ? `<span class="per-est off">● Desactivada</span>` : x.activa ? `<span class="per-est ok">● Activa</span>` : `<span class="per-est">● Aún no entra</span>`}</div>
           <div class="per-acc">${!x.activa && !x.inactiva ? `<button class="cal-btn" data-reenviar="${personas.indexOf(x)}">Reenviar acceso</button>` : ""}
@@ -3671,7 +3671,7 @@
       <form class="tk-form" autocomplete="off">
         <div class="tk-dos"><label>Nombre *<input name="nombre" /></label><label>Apellido *<input name="apellido" /></label></div>
         <div class="tk-dos"><label>Correo *<input name="correo" type="email" placeholder="nombre@gmail.com" /></label><label>Usuario *<input name="usuario" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /><small class="per-usu-ayuda">Con este usuario entrará a Rabbit. Solo minúsculas, números, punto o guion bajo.</small></label></div>
-        <label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label>
+        <div class="tk-dos"><label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label><label>Cargo <small>(opcional)</small><input name="cargo" maxlength="50" placeholder="Ej.: Directora Creativa Jr." value="${esc(ed && ed.cargo || "")}" /></label></div>
         <div class="per-aviso" id="perRol"></div>
         <label class="tk-check" id="perAdminL"><input type="checkbox" name="admin" /> Puede administrar Personas (crear cuentas y restablecer contraseñas)</label>
         <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
@@ -3709,6 +3709,8 @@
           : await sb.rpc("crear_persona", { p_nombre: v("nombre"), p_apellido: v("apellido"), p_usuario: usu, p_correo: v("correo"), p_area: f.area.value, p_rol: rolV, p_clave: clave, p_admin: mkV && f.admin.checked, p_carpeta: carp });
         btn.disabled = false; btn.textContent = ed ? "Guardar cambios" : "Crear cuenta";
         if (e2) { err.className = "mensaje error tk-err"; err.textContent = /correo/i.test(e2.message) ? "Ya existe una cuenta con ese correo." : /usuario/i.test(e2.message) ? "Ese usuario ya está en uso." : "No se pudo guardar: " + e2.message; return; }
+        const idP = ed ? ed.id : (await sb.from("perfiles").select("id").eq("usuario", usu).single()).data?.id;
+        if (idP) await sb.from("perfiles").update({ cargo: v("cargo") || null }).eq("id", idP);
         await cargarPersonas();
         if (ed) { cerrarProyecto(); avisar(`Datos de <b>${esc(ed.nombre)}</b> actualizados`); }
         else mostrarAcceso({ nombre: v("nombre"), apellido: v("apellido"), usuario: usu }, clave, "nueva");
@@ -3718,7 +3720,7 @@
         if (!v("nombre") || !/^\S+@\S+\.\S+$/.test(v("correo"))) { err.className = "mensaje error tk-err"; err.textContent = "Completa el nombre y un correo válido."; return; }
         if (personas.some((x) => x !== ed && x.correo.toLowerCase() === v("correo").toLowerCase())) { err.className = "mensaje error tk-err"; err.textContent = "Ya existe otra cuenta con ese correo."; return; }
         const mk = f.area.value === "Marketing";
-        Object.assign(ed, { apellido: v("apellido"), correo: v("correo"), usuario: usu, area: f.area.value, carpeta: mk ? "" : (v("carpeta") || carpetaDe(ed.nombre)) });
+        Object.assign(ed, { cargo: v("cargo"), apellido: v("apellido"), correo: v("correo"), usuario: usu, area: f.area.value, carpeta: mk ? "" : (v("carpeta") || carpetaDe(ed.nombre)) });
         if (ed.rol !== "jefa") ed.rol = mk ? "equipo" : "solicitante";
         if (ed.rol === "solicitante") SOLICITANTES[ed.nombre] = ed.area; else delete SOLICITANTES[ed.nombre];
         pintarPerfil(); pintarPersonas(); cerrarProyecto(); avisar(`${ic("lapiz")}Datos de <b>${esc(ed.nombre)}</b> actualizados`); return;
