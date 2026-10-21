@@ -1940,6 +1940,11 @@
     .tk-barra-f .tk-buscar { flex: 1 1 200px; width: auto; min-width: 0; max-width: none; margin: 0; }
     .tk-barra-f .tk-mes { margin: 0; flex: none; }
   }
+  @media (max-width: 820px) {
+    .tk-carga small { white-space: nowrap; line-height: 1.35; }
+    .tk-carga .tc-sep { display: none; } .tk-carga .tc-a, .tk-carga .tc-b { display: block; }
+    .tk-barra-f .tk-mes, .tk-barra-f .tk-mes-btn { width: 100%; }
+  }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3310,7 +3315,7 @@
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
         const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
-        return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} | ${tareas} tareas pendientes</small></div></button>`; }).join("");
+        return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small><span class="tc-a">${c} ticket${c === 1 ? "" : "s"}</span><span class="tc-sep"> | </span><span class="tc-b">${tareas} tarea${tareas === 1 ? "" : "s"} pendiente${tareas === 1 ? "" : "s"}</span></small></div></button>`; }).join("");
       html += `<div class="tk-equipo">${carga}</div>`;
     }
     const selMes = `<label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="tkBuscar" placeholder="Buscar ticket o persona" value="${esc(busTk)}" /></label>${(() => { const TI = `<svg class="tk-mes-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M15 5v2M15 11v2M15 17v2" stroke-linecap="round"/></svg>`, ops = [...meses.map((m) => [m, `${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}`, todosVis.filter((t) => mesDe(t) === m).length]), ["todos", "Todos los meses", todosVis.length]], act = ops.find((o) => o[0] === mesTk) || ops[0]; return `<div class="tk-mes" id="tkMes"><button type="button" class="tk-mes-btn" title="Mes de entrega">${EXTRA && filtroTk === EXTRA[0] ? `${EXTRA[1]} | ${vis.filter((x) => pasa(x, EXTRA[0])).length}` : `${act[1]} | ${act[2]}`} ${TI}<svg class="tk-mes-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="tk-mes-menu">${ops.map((o) => `<button type="button" data-m="${o[0]}" class="${o[0] === act[0] ? "activa" : ""}">${o[1]} | ${o[2]} ${TI}</button>`).join("")}${EXTRA ? `<hr class="tk-mes-sep"><button type="button" data-ftm="${EXTRA[0]}" class="${filtroTk === EXTRA[0] ? "activa" : ""}">${EXTRA[1]} | ${vis.filter((x) => pasa(x, EXTRA[0])).length}</button>` : ""}</div></div>`; })()}`;
