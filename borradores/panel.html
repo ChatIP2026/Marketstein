@@ -1953,6 +1953,14 @@
     .gp-res > div { min-width: 0; flex-direction: column; align-items: flex-start !important; gap: 2px !important; padding: 10px !important; font-size: .74rem; white-space: nowrap; }
     .gp-res > div b { font-size: 1.35rem; line-height: 1.1; }
   }
+  .cal-btn.peligro { color: #dc2626 !important; border-color: #fca5a5 !important; background: #fff !important; font-weight: 600; }
+  .cal-btn.peligro:hover { background: #dc2626 !important; color: #fff !important; border-color: #dc2626 !important; }
+  @media (max-width: 820px) {
+    body.rol-solicitante nav { display: none !important; }
+    .tk-form .tk-sep { display: none; }
+    .tk-subir-t small { display: block; margin-top: 2px; }
+    .tk-form .tk-check { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3544,15 +3552,15 @@
       <form class="tk-form" novalidate>
         <label><span><em class="tk-n">1.</em> Nombre del pedido <span class="req">*</span> <small class="tk-cuenta">0/60</small></span><input name="titulo" maxlength="60" placeholder="Ej.: Post de LinkedIn para el webinar" /></label>
         <div class="mn-doble"><label><span><em class="tk-n">2.</em> Tipo de pieza <span class="req">*</span></span><select name="tipo"><option value="">Selecciona…</option>${Object.keys(TIPOS).map((k) => `<option>${k}</option>`).join("")}</select></label>
-          <label><span><em class="tk-n">3.</em> Formato</span><select name="formato" disabled><option value="">Elige el tipo primero</option></select></label></div>
+          <label><span><em class="tk-n">3.</em> Formato</span><select name="formato" disabled><option value="">Elige el tipo</option></select></label></div>
         <label class="tk-otro" hidden>¿Qué tipo de pieza es?<input name="otro" placeholder="Ej.: Firma de correo, invitación…" /></label>
         <label><span><em class="tk-n">4.</em> Detalla el pedido <span class="req">*</span></span><textarea name="detalle" placeholder="De qué se trata, el objetivo y el mensaje principal."></textarea></label>
         <label><span><em class="tk-n">5.</em> ¿A quién va dirigido? <small>(opcional)</small></span><input name="destino" placeholder="Ej.: clientes, seguidores de LinkedIn" /></label>
         <label><span class="tk-6"><em class="tk-n">6.</em> Texto que debe ir en la pieza <i class="tk-sep">|</i> <span class="tk-check"><input type="checkbox" name="sinTexto" /> Aún no tengo el texto final</span></span><textarea name="texto" placeholder="Títulos, datos y llamados a la acción."></textarea></label>
-        <div class="tk-subir"><span class="tk-subir-t"><em class="tk-n">7.</em> Fotos y archivos <small>(opcional, hasta 5 archivos | 10 MB en total)</small></span>
+        <div class="tk-subir"><span class="tk-subir-t"><em class="tk-n">7.</em> Fotos y archivos <small>(opcional, hasta 5 archivos | 10&nbsp;MB en total)</small></span>
           <label class="tk-drop" id="tkDrop"><input type="file" id="tkArch" multiple accept="image/*,.pdf" hidden /><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><b>Arrastra tus referencias aquí</b><small>o haz clic para elegirlas | JPG, PNG o PDF</small></label>
           <div class="tk-miniaturas" id="tkMinis"></div><div class="tk-peso" id="tkPeso" hidden></div></div>
-        <label class="tk-full"><span><em class="tk-n">8.</em> ¿Tus archivos pesan más de 10 MB? Déjanos un link de Drive <small>(opcional)</small></span><input name="drive" type="url" placeholder="Pega el link y compártelo como «Cualquier persona con el enlace»" /></label>
+        <label class="tk-full"><span><em class="tk-n">8.</em> ¿Tus archivos pesan más de 10&nbsp;MB? Déjanos un link de Drive <small>(opcional)</small></span><input name="drive" type="url" placeholder="Pega el link y compártelo como «Cualquier persona con el enlace»" /></label>
         <label class="tk-full"><span><em class="tk-n">9.</em> ¿Para cuándo lo necesitas? <span class="req">*</span></span><input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
         <p class="tk-nota">La prioridad la define ${esc(JEFA)}, Team Líder de marketing, al revisar tu ticket.</p>
