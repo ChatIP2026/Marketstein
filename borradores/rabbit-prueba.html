@@ -1929,6 +1929,8 @@
   .ic-copiar { width: 42px; padding: 0 !important; display: grid !important; place-items: center; }
   .ic-copiar svg { width: 19px; height: 19px; }
   .ic-copiar.copiado { color: #16a34a !important; border-color: #86efac !important; background: #f0fdf4 !important; }
+  .op-inl { display: inline !important; font-weight: 400; color: #a1a1aa; font-size: .9em; }
+  .op-tit { display: block !important; color: inherit !important; font-weight: inherit !important; font-size: inherit !important; } .op-tit .op-inl { font-style: normal; display: inline !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3671,7 +3673,7 @@
       <form class="tk-form" autocomplete="off">
         <div class="tk-dos"><label>Nombre *<input name="nombre" /></label><label>Apellido *<input name="apellido" /></label></div>
         <div class="tk-dos"><label>Correo *<input name="correo" type="email" placeholder="nombre@gmail.com" /></label><label>Usuario *<input name="usuario" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /><small class="per-usu-ayuda">Con este usuario entrará a Rabbit. Solo minúsculas, números, punto o guion bajo.</small></label></div>
-        <div class="tk-dos"><label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label><label>Cargo <small>(opcional)</small><input name="cargo" maxlength="50" placeholder="Ej.: Directora Creativa Jr." value="${esc(ed && ed.cargo || "")}" /></label></div>
+        <div class="tk-dos"><label>Área *<select name="area">${AREAS.map((a) => `<option>${a}</option>`).join("")}</select></label><label><span class="op-tit">Cargo <i class="op-inl">(opcional)</i></span><input name="cargo" maxlength="50" placeholder="Ej.: Directora Creativa Jr." value="${esc(ed && ed.cargo || "")}" /></label></div>
         <div class="per-aviso" id="perRol"></div>
         <label class="tk-check" id="perAdminL"><input type="checkbox" name="admin" /> Puede administrar Personas (crear cuentas y restablecer contraseñas)</label>
         <label id="perCarpeta">Carpeta de referencias <small>(enlace de su carpeta en Drive)</small><input name="carpeta" placeholder="https://drive.google.com/drive/folders/…" /></label>
