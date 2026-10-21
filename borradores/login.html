@@ -137,6 +137,8 @@
   }
   .campo select[aria-invalid="true"] { border-color: var(--rojo); background-color: #fef2f2; }
   @media (max-width: 820px) { #mensajeI, #mensaje { min-height: 1.4em; } }
+  .lado-form .sub { text-wrap: pretty; }
+  @media (max-width: 820px) { .lado-form .sub br { display: none; } }
 </style>
 </head>
 <body>
@@ -200,7 +202,7 @@
     <div class="vista" id="vistaInvitado" hidden>
       <a class="volver" href="#" data-modo="elegir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Otra forma de entrar</a>
       <h1>Crea tu ticket</h1>
-      <p class="sub">Elige tu nombre para pedir tu pieza a Marketing. No necesitas contraseña.</p>
+      <p class="sub">Elige tu nombre para pedir tu pieza a Marketing. <br>No necesitas contraseña.</p>
       <form id="formInv" novalidate>
         <label for="invQuien">¿Quién eres?</label>
         <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><select id="invQuien"><option value="">Cargando nombres…</option></select></div>
