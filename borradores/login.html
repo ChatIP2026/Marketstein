@@ -44,6 +44,10 @@
   .op-fl { width: 20px; height: 20px; flex: none; color: var(--g500); }
   #vistaElegir h1, .op-txt b, .op-txt small { text-wrap: pretty; }
   @media (max-width: 420px) { .op-txt b, .op-txt small { text-wrap: balance; } }
+  .campo select:focus { background-color: #fff; border-color: var(--negro); }
+  .opcion:focus-visible, .boton:focus-visible, .volver:focus-visible, .link:focus-visible, .ver:focus-visible { outline: 2px solid var(--negro); outline-offset: 3px; }
+  .campo input:focus-visible, .campo select:focus-visible, .codigo input:focus-visible { box-shadow: 0 0 0 3px rgba(10,10,10,.12); }
+  .campo input[aria-invalid="true"] { border-color: var(--rojo); background: #fef2f2; }
   .volver { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 18px -4px; font-size: .86rem; font-weight: 600; color: var(--g500); cursor: pointer; text-decoration: none; }
   .volver:hover { color: var(--negro); } .volver svg { width: 16px; height: 16px; }
   @media (max-width: 420px) { .opcion { padding: 16px; gap: 12px; } .op-ic { width: 44px; height: 44px; } }
@@ -169,7 +173,7 @@
       </button>
     </div>
     <div class="vista" id="vistaEntrar" hidden>
-      <a class="volver" data-modo="elegir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Otra forma de entrar</a>
+      <a class="volver" href="#" data-modo="elegir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Otra forma de entrar</a>
       <h1>Bienvenido de vuelta</h1>
       <p class="sub">Entra con tu usuario y contraseña.</p>
 
@@ -177,22 +181,22 @@
         <label for="correo">Usuario</label>
         <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><input id="correo" type="text" placeholder="Ej.: hsalazar" autocomplete="username" autocapitalize="none" spellcheck="false" /></div>
         <label for="clave">Contraseña</label>
-        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="clave" class="secreta" type="password" placeholder="••••••••" autocomplete="current-password" /><button type="button" class="ver" aria-label="Mostrar contraseña">OJO</button></div>
-        <div class="fila"><a class="link" data-ir="olvido">¿Olvidaste tu contraseña?</a></div>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="clave" class="secreta" type="password" placeholder="Tu contraseña" autocomplete="current-password" /><button type="button" class="ver" aria-label="Mostrar contraseña">OJO</button></div>
+        <div class="fila"><a class="link" href="#" data-ir="olvido">¿Olvidaste tu contraseña?</a></div>
         <button class="boton" id="entrar">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <p class="mensaje" id="mensaje"></p>
+        <p class="mensaje" aria-live="polite" id="mensaje"></p>
       </form>
       <p class="pie">¿No tienes cuenta? Pídela al equipo de marketing.</p>
     </div>
     <div class="vista" id="vistaInvitado" hidden>
-      <a class="volver" data-modo="elegir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Otra forma de entrar</a>
+      <a class="volver" href="#" data-modo="elegir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Otra forma de entrar</a>
       <h1>Deja tu ticket</h1>
       <p class="sub">Para áreas fuera de marketing. Elige tu nombre y entra, sin contraseña.</p>
       <form id="formInv" novalidate>
         <label for="invQuien">¿Quién eres?</label>
         <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><select id="invQuien"><option value="">Cargando nombres…</option></select></div>
         <button class="boton" id="invBoton">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <p class="mensaje" id="mensajeI"></p>
+        <p class="mensaje" aria-live="polite" id="mensajeI"></p>
       </form>
       <p class="pie">¿No apareces en la lista? Avisa al equipo de marketing.</p>
     </div>
@@ -209,8 +213,8 @@
           <div class="codigo"><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /></div>
         </div>
         <button class="boton" id="oBoton">Enviar código</button>
-        <p class="mensaje" id="mensajeO"></p>
-        <p class="pie" id="oReenviar" hidden>¿No te llegó? <a class="link" id="oReenviarA">Reenviar código</a> | <a class="link" id="oOtro">Cambiar usuario</a></p>
+        <p class="mensaje" aria-live="polite" id="mensajeO"></p>
+        <p class="pie" id="oReenviar" hidden>¿No te llegó? <a class="link" href="#" id="oReenviarA">Reenviar código</a> | <a class="link" href="#" id="oOtro">Cambiar usuario</a></p>
       </form>
     </div>
     <div class="vista" id="vistaNueva" hidden>
@@ -222,7 +226,7 @@
         <label for="nClave2">Repite la contraseña</label>
         <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="nClave2" class="secreta" type="password" placeholder="Igual a la anterior" autocomplete="new-password" /></div>
         <button class="boton" id="nBoton">Guardar y entrar</button>
-        <p class="mensaje" id="mensajeN"></p>
+        <p class="mensaje" aria-live="polite" id="mensajeN"></p>
       </form>
     </div>
   </section>
@@ -246,6 +250,7 @@
   decir(IDLE[0]); setTimeout(() => mover("salto"), 400); idle();
 
   const correo = document.getElementById("correo"), clave = document.getElementById("clave"), mensaje = document.getElementById("mensaje");
+  [correo, clave].forEach((x) => x.addEventListener("input", () => x.removeAttribute("aria-invalid")));
   correo.addEventListener("focus", () => decir("Escribe tu usuario"));
   document.querySelectorAll(".secreta").forEach((c) => {
     c.addEventListener("focus", () => { if (c.type === "password") { rb.classList.add("tapa"); decir("¡No estoy mirando!"); } });
@@ -308,6 +313,7 @@
     e.preventDefault();
     const err = (t, g) => { mensaje.className = "mensaje error"; mensaje.textContent = t; decir(g); mover("no"); b.disabled = false; b.firstChild.textContent = "Entrar"; };
     const b = document.getElementById("entrar");
+    [correo, clave].forEach((x) => x.setAttribute("aria-invalid", !x.value.trim()));
     if (!correo.value.trim() || !clave.value) return err("Escribe tu usuario y tu contraseña.", "Te falta algo…");
     b.disabled = true; b.firstChild.textContent = "Entrando…"; mensaje.textContent = "";
     const { data: email } = await sb.rpc("correo_de_usuario", { u: correo.value.trim() });
