@@ -1933,6 +1933,13 @@
   .op-inl { display: inline !important; font-weight: 400; color: #a1a1aa; font-size: .9em; }
   .op-tit { display: block !important; color: inherit !important; font-weight: inherit !important; font-size: inherit !important; } .op-tit .op-inl { font-style: normal; display: inline !important; }
   .tk-form label > span.op-tit:first-child { color: rgb(115,115,115) !important; font-weight: 500 !important; font-size: 14px !important; }
+  .tk-mes-sep { border: 0; border-top: 1px solid var(--g200, #e5e5e5); margin: 4px 6px; }
+  @media (min-width: 821px) {
+    .tk-barra-f { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+    .tk-barra-f .ent-filtros { flex: none; flex-wrap: nowrap; margin: 0; }
+    .tk-barra-f .tk-buscar { flex: 1 1 200px; width: auto; min-width: 0; max-width: none; margin: 0; }
+    .tk-barra-f .tk-mes { margin: 0; flex: none; }
+  }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3287,12 +3294,14 @@
     const qTk = busTk.trim().toLowerCase();
     const vis = (jefa && personaTk ? delMes.filter((t) => t.asignado === personaTk) : delMes).filter((t) => !qTk || [t.titulo, t.solicitante, t.area, t.tipo, t.asignado || "", "#" + String(t.id).padStart(3, "0")].join(" ").toLowerCase().includes(qTk));
     const FILTROS = sol ? [["todos", "Todas"], ["activos", "En proceso"], ["entregado", "Entregados"], ["rechazado", "Rechazadas o canceladas"]]
-      : jefa ? [["todos", "Todos"], ["revision_inicial", "Por revisar"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["rechazado", "Rechazados"]]
-      : [["todos", "Todos"], ["en_revision", "En revisión"], ["en_curso", "En curso"], ["entregado", "Entregados"], ["rechazado", "Cancelados"]];
-    if (!FILTROS.some((f) => f[0] === filtroTk)) filtroTk = FILTROS[0][0];
+      : jefa ? [["todos", "Todos"], ["revision_inicial", "Por revisar"], ["en_curso", "En curso"], ["entregado", "Entregados"]]
+      : [["todos", "Todos"], ["en_curso", "En curso"], ["entregado", "Entregados"]];
+    // Rechazados/cancelados no ocupan un filtro: se ven desde el menú del mes
+    const EXTRA = sol ? null : ["rechazado", jefa ? "Rechazados" : "Cancelados"];
+    if (!FILTROS.some((f) => f[0] === filtroTk) && !(EXTRA && EXTRA[0] === filtroTk)) filtroTk = FILTROS[0][0];
     // Sin filtro "Falta info": esos tickets se ven donde esperan (por revisar si no tiene asignado, en revisión si ya lo tiene)
     const estadoF = (t) => t.estado !== "falta_info" ? t.estado : t.asignado ? "en_revision" : "revision_inicial";
-    const pasa = (t, f) => f === "todos" ? !["rechazado", "cancelado"].includes(t.estado) : f === "activos" ? (sol ? ["en_curso", "en_revision", "revision_inicial", "falta_info"].includes(t.estado) : ["en_curso", "en_revision", "falta_info"].includes(t.estado)) : f === "rechazado" ? ["rechazado", "cancelado"].includes(t.estado) : estadoF(t) === f;
+    const pasa = (t, f) => f === "todos" ? !["rechazado", "cancelado"].includes(t.estado) : f === "activos" ? (sol ? ["en_curso", "en_revision", "revision_inicial", "falta_info"].includes(t.estado) : ["en_curso", "en_revision", "falta_info"].includes(t.estado)) : f === "rechazado" ? ["rechazado", "cancelado"].includes(t.estado) : f === "en_curso" ? ["en_curso", "en_revision"].includes(estadoF(t)) : estadoF(t) === f;
     const lista = vis.filter((t) => pasa(t, filtroTk)).sort((a, b) => (TK_PRIO[a.prioridad] ? Object.keys(TK_PRIO).indexOf(a.prioridad) : 9) - (TK_PRIO[b.prioridad] ? Object.keys(TK_PRIO).indexOf(b.prioridad) : 9) || a.fecha.localeCompare(b.fecha));
     const titulo = sol ? `<span class="saludo-h">Hola, ${yo} ${rbMini()}</span>` : jefa ? "Bandeja de tickets" : "Mis tickets";
     const sub = sol ? "Pide aquí lo que necesites al equipo de marketing y sigue su avance."
@@ -3304,7 +3313,7 @@
         return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small>${c} ticket${c === 1 ? "" : "s"} | ${tareas} tareas pendientes</small></div></button>`; }).join("");
       html += `<div class="tk-equipo">${carga}</div>`;
     }
-    const selMes = `<label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="tkBuscar" placeholder="Buscar ticket, persona o #número" value="${esc(busTk)}" /></label>${(() => { const TI = `<svg class="tk-mes-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M15 5v2M15 11v2M15 17v2" stroke-linecap="round"/></svg>`, ops = [...meses.map((m) => [m, `${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}`, todosVis.filter((t) => mesDe(t) === m).length]), ["todos", "Todos los meses", todosVis.length]], act = ops.find((o) => o[0] === mesTk) || ops[0]; return `<div class="tk-mes" id="tkMes"><button type="button" class="tk-mes-btn" title="Mes de entrega">${act[1]} | ${act[2]} ${TI}<svg class="tk-mes-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="tk-mes-menu">${ops.map((o) => `<button type="button" data-m="${o[0]}" class="${o[0] === act[0] ? "activa" : ""}">${o[1]} | ${o[2]} ${TI}</button>`).join("")}</div></div>`; })()}`;
+    const selMes = `<label class="tk-buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="tkBuscar" placeholder="Buscar ticket o persona" value="${esc(busTk)}" /></label>${(() => { const TI = `<svg class="tk-mes-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M15 5v2M15 11v2M15 17v2" stroke-linecap="round"/></svg>`, ops = [...meses.map((m) => [m, `${nomMes(m)}${m === hoyMes ? " (este mes)" : ""}`, todosVis.filter((t) => mesDe(t) === m).length]), ["todos", "Todos los meses", todosVis.length]], act = ops.find((o) => o[0] === mesTk) || ops[0]; return `<div class="tk-mes" id="tkMes"><button type="button" class="tk-mes-btn" title="Mes de entrega">${EXTRA && filtroTk === EXTRA[0] ? `${EXTRA[1]} | ${vis.filter((x) => pasa(x, EXTRA[0])).length}` : `${act[1]} | ${act[2]}`} ${TI}<svg class="tk-mes-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="tk-mes-menu">${ops.map((o) => `<button type="button" data-m="${o[0]}" class="${o[0] === act[0] ? "activa" : ""}">${o[1]} | ${o[2]} ${TI}</button>`).join("")}${EXTRA ? `<hr class="tk-mes-sep"><button type="button" data-ftm="${EXTRA[0]}" class="${filtroTk === EXTRA[0] ? "activa" : ""}">${EXTRA[1]} | ${vis.filter((x) => pasa(x, EXTRA[0])).length}</button>` : ""}</div></div>`; })()}`;
     html += `<div class="tk-barra-f"><div class="ent-filtros">${FILTROS.map(([k, t]) => `<button data-ft="${k}" class="${filtroTk === k ? "activa" : ""}">${t} <span>${vis.filter((x) => pasa(x, k)).length}</span></button>`).join("")}</div>${selMes}</div>`;
     html += lista.length ? `<div class="tk-lista">${lista.map(tarjetaTk).join("")}</div>`
       : `<div class="mis-vacio"><b>${sol ? "No tienes tickets aquí" : "Nada por aquí"}</b>${sol ? "Usa “Crear ticket” para pedir algo al equipo." : "Cuando llegue un ticket, aparecerá aquí."}${sol && !tickets.some((t) => t.solicitante === yo && t.id > 0) ? `<div class="vacio-crear-c"><button type="button" class="vacio-crear" id="tkPrimero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Crear mi primer ticket</button></div>` : ""}</div>`;
@@ -3312,7 +3321,7 @@
     cont.innerHTML = html;
     cont.querySelectorAll("[data-per]").forEach((b) => (b.onclick = () => { personaTk = personaTk === b.dataset.per ? null : b.dataset.per; filtroTk = "todos"; pintarTickets(); }));
     const ib = cont.querySelector("#tkBuscar"); ib.oninput = () => { busTk = ib.value; const pos = ib.selectionStart; pintarTickets(); const n = document.getElementById("tkBuscar"); n.focus(); n.setSelectionRange(pos, pos); };
-    { const mm = cont.querySelector("#tkMes"); mm.querySelector(".tk-mes-btn").onclick = (e) => { e.stopPropagation(); mm.classList.toggle("abierto"); }; mm.querySelectorAll("[data-m]").forEach((b) => (b.onclick = () => { mesTk = b.dataset.m; pintarTickets(); })); document.addEventListener("click", () => mm.classList.remove("abierto"), { once: true }); }
+    { const mm = cont.querySelector("#tkMes"); mm.querySelector(".tk-mes-btn").onclick = (e) => { e.stopPropagation(); mm.classList.toggle("abierto"); }; mm.querySelectorAll("[data-m]").forEach((b) => (b.onclick = () => { mesTk = b.dataset.m; if (EXTRA && filtroTk === EXTRA[0]) filtroTk = "todos"; pintarTickets(); })); mm.querySelectorAll("[data-ftm]").forEach((b) => (b.onclick = () => { filtroTk = b.dataset.ftm; pintarTickets(); })); document.addEventListener("click", () => mm.classList.remove("abierto"), { once: true }); }
     cont.querySelectorAll("[data-ft]").forEach((b) => (b.onclick = () => { filtroTk = b.dataset.ft; pintarTickets(); }));
     cont.querySelectorAll(".tk").forEach((c) => (c.onclick = () => abrirTicket(+c.dataset.id)));
     cont.querySelector("#tkNuevo")?.addEventListener("click", abrirFormTicket);
