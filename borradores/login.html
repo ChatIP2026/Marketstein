@@ -42,6 +42,7 @@
   label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 7px; }
   .campo { position: relative; display: flex; align-items: center; margin-bottom: 18px; }
   .campo > svg { position: absolute; left: 15px; width: 18px; height: 18px; color: var(--g400); pointer-events: none; }
+  .campo select { width: 100%; height: 50px; border-radius: 14px; border: 1px solid var(--g200); background: var(--g100); padding: 0 40px 0 46px; font: inherit; font-size: .95rem; color: var(--negro); outline: none; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; }
   .campo input { width: 100%; height: 50px; border-radius: 14px; border: 1px solid var(--g200); background: var(--g100); padding: 0 46px; font: inherit; font-size: .95rem; color: var(--negro); outline: none; transition: .15s; }
   .campo input:focus { background: #fff; border-color: var(--negro); box-shadow: 0 0 0 4px rgba(10,10,10,.06); }
   .campo input::placeholder { color: var(--g400); }
@@ -153,7 +154,18 @@
         <button class="boton" id="entrar">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <p class="mensaje" id="mensaje"></p>
       </form>
-      <p class="pie">¿No tienes cuenta? Pídela al equipo de marketing.</p>
+      <p class="pie">¿Solo vienes a dejar un ticket? <a class="link" data-ir="invitado">Entrar sin contraseña</a></p>
+    </div>
+    <div class="vista" id="vistaInvitado" hidden>
+      <h1>Entrar sin contraseña</h1>
+      <p class="sub">Elige tu nombre y entra a dejar o revisar tus tickets.</p>
+      <form id="formInv" novalidate>
+        <label for="invQuien">¿Quién eres?</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><select id="invQuien"><option value="">Cargando nombres…</option></select></div>
+        <button class="boton" id="invBoton">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="mensaje" id="mensajeI"></p>
+      </form>
+      <p class="pie">¿No apareces? Avisa a marketing | <a class="link" data-ir="entrar">Entrar con usuario</a></p>
     </div>
 
     <div class="vista" id="vistaOlvido" hidden>
@@ -217,13 +229,14 @@
   }));
 
   // Cambiar de vista
-  const vistas = { entrar: document.getElementById("vistaEntrar"), olvido: document.getElementById("vistaOlvido"), nueva: document.getElementById("vistaNueva") };
+  const vistas = { entrar: document.getElementById("vistaEntrar"), olvido: document.getElementById("vistaOlvido"), nueva: document.getElementById("vistaNueva"), invitado: document.getElementById("vistaInvitado") };
   const mostrar = (k) => { for (const x in vistas) vistas[x].hidden = x !== k; };
   const pasoCodigo = document.getElementById("pasoCodigo"), pasoUsuario = document.getElementById("pasoUsuario"), oSub = document.getElementById("oSub"), SUB_OLVIDO = oSub.textContent, oBoton = document.getElementById("oBoton"), digitos = [...document.querySelectorAll(".codigo input")];
   document.querySelectorAll("[data-ir]").forEach((a) => (a.onclick = (e) => {
     e.preventDefault();
     for (const k in vistas) vistas[k].hidden = k !== a.dataset.ir;
     if (a.dataset.ir === "olvido") { pasoCodigo.hidden = true; pasoUsuario.hidden = false; oSub.textContent = SUB_OLVIDO; oBoton.hidden = false; oBoton.textContent = "Enviar código"; document.getElementById("oReenviar").hidden = true; digitos.forEach((d) => (d.value = "")); document.getElementById("mensajeO").textContent = ""; const o = document.getElementById("oCorreo"); o.value = correo.value.trim(); setTimeout(() => o.focus(), 50); decir("Tranquilo, le pasa a cualquiera"); mover("ladeo"); }
+    else if (a.dataset.ir === "invitado") { cargarInvitados(); decir("¡Rapidito! Solo dime quién eres"); mover("salto"); }
     else { decir(IDLE[0]); mover("salto"); }
   }));
 
@@ -251,7 +264,8 @@
     if (!user) return;
     const { data: p } = await sb.from("perfiles").select("nombre, debe_cambiar_clave, activa").eq("id", user.id).single();
     if (!p || !p.activa) { await sb.auth.signOut(); mostrar("entrar"); mensaje.className = "mensaje error"; mensaje.textContent = "Tu cuenta está desactivada. Habla con el equipo de marketing."; decir("Mmm, algo no está bien"); mover("no"); return; }
-    if (p.debe_cambiar_clave) { mostrar("nueva"); document.getElementById("nuevaSub").textContent = `Hola, ${p.nombre}. Es tu primera vez en Rabbit: elige una contraseña que solo tú sepas.`; decir(`¡Hola, ${p.nombre}! Crea tu contraseña`); mover("salto"); setTimeout(() => document.getElementById("nClave").focus(), 60); return; }
+    let inv = false; try { inv = localStorage.getItem("rabbitInvitado") === user.id; } catch (e) {}
+    if (p.debe_cambiar_clave && !inv) { mostrar("nueva"); document.getElementById("nuevaSub").textContent = `Hola, ${p.nombre}. Es tu primera vez en Rabbit: elige una contraseña que solo tú sepas.`; decir(`¡Hola, ${p.nombre}! Crea tu contraseña`); mover("salto"); setTimeout(() => document.getElementById("nClave").focus(), 60); return; }
     decir(`¡Bienvenido de vuelta, ${p.nombre}!`); mover("feliz"); setTimeout(irPanel, 900);
   }
   document.getElementById("form").onsubmit = async (e) => {
@@ -267,6 +281,37 @@
     mensaje.className = "mensaje ok"; mensaje.textContent = "¡Listo! Entrando…";
     b.disabled = false; b.firstChild.textContent = "Entrar";
     despuesDeEntrar();
+  };
+
+  // ===== Entrar sin contraseña (solo quienes dejan tickets) =====
+  const FN_INV = "https://aqjmdlrafjjzdrqnogid.supabase.co/functions/v1/entrar-invitado";
+  const llamarInv = (cuerpo) => fetch(FN_INV, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) }).then((r) => r.json());
+  const invQuien = document.getElementById("invQuien"), mensajeI = document.getElementById("mensajeI");
+  let invCargado = false;
+  async function cargarInvitados() {
+    if (invCargado) return;
+    try {
+      const { personas } = await llamarInv({ accion: "lista" });
+      if (!personas) throw 0;
+      invQuien.innerHTML = '<option value="">Elige tu nombre</option>' + personas.map((x) => `<option value="${x.id}">${(x.nombre + " " + (x.apellido || "")).trim().replace(/[<>&]/g, "")}${x.area ? " | " + x.area.replace(/[<>&]/g, "") : ""}</option>`).join("");
+      invCargado = true;
+    } catch (e) { invQuien.innerHTML = '<option value="">No se pudo cargar la lista</option>'; }
+  }
+  invQuien.addEventListener("focus", () => decir("Busca tu nombre"));
+  document.getElementById("formInv").onsubmit = async (e) => {
+    e.preventDefault();
+    const b = document.getElementById("invBoton");
+    const err = (t) => { mensajeI.className = "mensaje error"; mensajeI.textContent = t; decir("Mmm, algo no está bien"); mover("no"); b.disabled = false; b.firstChild.textContent = "Entrar"; };
+    if (!invQuien.value) return err("Elige tu nombre en la lista.");
+    b.disabled = true; b.firstChild.textContent = "Entrando…"; mensajeI.textContent = "";
+    try {
+      const { token } = await llamarInv({ accion: "entrar", id: invQuien.value });
+      if (!token) return err("No se pudo entrar. Pide ayuda al equipo de marketing.");
+      const { error } = await sb.auth.verifyOtp({ token_hash: token, type: "magiclink" });
+      if (error) return err("No se pudo entrar. Intenta de nuevo.");
+      try { localStorage.setItem("rabbitInvitado", invQuien.value); } catch (e) {}
+      despuesDeEntrar();
+    } catch (e) { err("No se pudo entrar. Revisa tu conexión."); }
   };
 
   // Crear contraseña (primer ingreso o recuperación)
