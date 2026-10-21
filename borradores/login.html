@@ -43,7 +43,6 @@
   .op-txt b { font-size: 1.05rem; color: var(--negro); } .op-txt small { font-size: .86rem; color: var(--g500); line-height: 1.35; }
   .op-fl { width: 20px; height: 20px; flex: none; color: var(--g500); }
   #vistaElegir h1, .op-txt b, .op-txt small { text-wrap: pretty; }
-  @media (max-width: 420px) { .op-pill { display: block; width: fit-content; margin: 4px 0 2px; } }
   .campo select:focus { background-color: #fff; border-color: var(--negro); }
   .opcion:focus-visible, .boton:focus-visible, .volver:focus-visible, .link:focus-visible, .ver:focus-visible { outline: 2px solid var(--negro); outline-offset: 3px; }
   .campo input:focus-visible, .campo select:focus-visible, .codigo input:focus-visible { box-shadow: 0 0 0 3px rgba(10,10,10,.12); }
@@ -130,6 +129,12 @@
   @keyframes okTrazo { to { stroke-dashoffset: 0; } }
   @keyframes okFuera { to { opacity: 0; transform: scale(1.15); } }
   @media (prefers-reduced-motion: reduce) { .ok-marco, .ok-anillo { animation: none; } }
+  @media (max-width: 820px) {
+    .rb { width: 150px; height: 172px; }
+    .sub { text-wrap: pretty; }
+    .opcion { position: relative; }
+    .op-pill { position: absolute; top: -10px; right: 16px; margin: 0; background: var(--negro); border-color: var(--negro); color: #fff; vertical-align: 0; }
+  }
 </style>
 </head>
 <body>
