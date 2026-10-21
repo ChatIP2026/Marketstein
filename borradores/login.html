@@ -48,6 +48,7 @@
   .opcion:focus-visible, .boton:focus-visible, .volver:focus-visible, .link:focus-visible, .ver:focus-visible { outline: 2px solid var(--negro); outline-offset: 3px; }
   .campo input:focus-visible, .campo select:focus-visible, .codigo input:focus-visible { box-shadow: 0 0 0 3px rgba(10,10,10,.12); }
   .campo input[aria-invalid="true"] { border-color: var(--rojo); background: #fef2f2; }
+  .op-txt small { text-wrap: wrap !important; max-width: none; }
   .op-pill { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--g100); border: 1px solid var(--g200); font-style: normal; font-size: .7rem; font-weight: 600; color: var(--g600); vertical-align: 2px; white-space: nowrap; }
   .volver { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 18px -4px; font-size: .86rem; font-weight: 600; color: var(--g500); cursor: pointer; text-decoration: none; }
   .volver:hover { color: var(--negro); } .volver svg { width: 16px; height: 16px; }
@@ -164,7 +165,7 @@
       <p class="sub">El espacio del equipo de marketing de iPartner.</p>
       <button type="button" class="opcion" data-modo="invitado">
         <span class="op-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg></span>
-        <span class="op-txt"><b>Crear un ticket <em class="op-pill">Sin contraseña</em></b><small>Pide tu pieza y sigue su avance.</small></span>
+        <span class="op-txt"><b>Crear un ticket <em class="op-pill">Sin contraseña</em></b><small>Para que Marketing te ayude.</small></span>
         <svg class="op-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
       </button>
       <button type="button" class="opcion" data-modo="entrar">
