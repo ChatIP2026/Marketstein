@@ -3715,7 +3715,7 @@
         btn.disabled = false; btn.textContent = ed ? "Guardar cambios" : "Crear cuenta";
         if (e2) { err.className = "mensaje error tk-err"; err.textContent = /correo/i.test(e2.message) ? "Ya existe una cuenta con ese correo." : /usuario/i.test(e2.message) ? "Ese usuario ya está en uso." : "No se pudo guardar: " + e2.message; return; }
         const idP = ed ? ed.id : (await sb.from("perfiles").select("id").eq("usuario", usu).single()).data?.id;
-        if (idP) { const { error: e3 } = await sb.from("perfiles").update({ cargo: v("cargo") || null }).eq("id", idP); if (e3) avisar("El cargo no se guardó: " + (/cargo/.test(e3.message) ? "falta correr 06_cargo.sql en Supabase" : esc(e3.message))); }
+        if (idP) { const { error: e3 } = await sb.rpc("poner_cargo", { p_id: idP, p_cargo: v("cargo") }); if (e3) avisar("El cargo no se guardó: " + (/poner_cargo/.test(e3.message) ? "falta correr 07_cargo_rpc.sql en Supabase" : esc(e3.message))); }
         await cargarPersonas();
         if (ed) { cerrarProyecto(); avisar(`Datos de <b>${esc(ed.nombre)}</b> actualizados`); }
         else mostrarAcceso({ nombre: v("nombre"), apellido: v("apellido"), usuario: usu }, clave, "nueva");
