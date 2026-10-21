@@ -135,6 +135,8 @@
     .opcion { position: relative; }
     .op-pill { position: absolute; top: -10px; right: 16px; margin: 0; background: var(--negro); border-color: var(--negro); color: #fff; vertical-align: 0; }
   }
+  .campo select[aria-invalid="true"] { border-color: var(--rojo); background-color: #fef2f2; }
+  @media (max-width: 820px) { #mensajeI, #mensaje { min-height: 1.4em; } }
 </style>
 </head>
 <body>
@@ -346,12 +348,13 @@
       invCargado = true;
     } catch (e) { invQuien.innerHTML = '<option value="">No se pudo cargar la lista</option>'; }
   }
+  invQuien.addEventListener("change", () => { invQuien.removeAttribute("aria-invalid"); mensajeI.textContent = ""; });
   invQuien.addEventListener("focus", () => decir("Busca tu nombre"));
   document.getElementById("formInv").onsubmit = async (e) => {
     e.preventDefault();
     const b = document.getElementById("invBoton");
     const err = (t) => { mensajeI.className = "mensaje error"; mensajeI.textContent = t; decir("Mmm, algo no está bien"); mover("no"); b.disabled = false; b.firstChild.textContent = "Entrar"; };
-    if (!invQuien.value) return err("Elige tu nombre en la lista.");
+    if (!invQuien.value) { invQuien.setAttribute("aria-invalid", "true"); return err("Elige tu nombre en la lista."); }
     b.disabled = true; b.firstChild.textContent = "Entrando…"; mensajeI.textContent = "";
     try {
       const { token } = await llamarInv({ accion: "entrar", id: invQuien.value });
