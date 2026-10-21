@@ -2561,14 +2561,14 @@
   function pintarPerfil() {
     document.getElementById("perfilBtn").innerHTML = `<span class="avatar-yo" style="${fondoAv(yo)}" title="${yo}">${letraAv(yo)}</span>`;
     const op = (n, rol) => `<button class="mp-op ${n === yo ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i><span>${n}<small>${rol}</small></span>${n === yo ? '<span class="ok">✓</span>' : ""}</button>`;
-    mpLista.innerHTML = `<div class="mp-grupo">Equipo de marketing</div>` + Object.keys(COLORES).map((n) => op(n, n === JEFA ? "Marketing | Jefa" : "Marketing")).join("")
+    mpLista.innerHTML = `<div class="mp-grupo">Equipo de marketing</div>` + Object.keys(COLORES).map((n) => op(n, n === JEFA ? "Marketing | Team Líder" : "Marketing")).join("")
       + `<div class="mp-grupo">Otras áreas</div>` + Object.entries(SOLICITANTES).map(([n, a]) => op(n, a)).join("");
     mpLista.querySelectorAll(".mp-op").forEach((b) => (b.onclick = () => {
       yo = b.dataset.n; try { localStorage.setItem("rabbit-demo-yo", yo); } catch (e) {}
       menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); avisoDemo(); rabbitHola(); quizasTutorial();
     }));
     const ext = !!SOLICITANTES[yo];
-    document.getElementById("mpCab").innerHTML = `<div class="mp-yo"><i style="${fondoAv(yo)}">${letraAv(yo)}</i><div><b>${yo}</b><small>${ext ? SOLICITANTES[yo] : yo === JEFA ? "Marketing | Jefa" : "Marketing"}</small></div></div>`;
+    document.getElementById("mpCab").innerHTML = `<div class="mp-yo"><i style="${fondoAv(yo)}">${letraAv(yo)}</i><div><b>${yo}</b><small>${ext ? SOLICITANTES[yo] : yo === JEFA ? "Marketing | Team Líder" : "Marketing"}</small></div></div>`;
     const IC = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
     document.getElementById("mpAcc").innerHTML = `<button class="mp-acc" id="mpId">${IC('<rect x="2" y="5" width="20" height="14" rx="3"/><circle cx="8" cy="12" r="2.5"/><path d="M13 10h5M13 14h3"/>')}Mi ID card</button>`
       + (ext ? `<button class="mp-acc" id="mpMisTk">${IC('<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/>')}Mis tickets</button>`
@@ -3528,7 +3528,7 @@
         <label class="tk-full"><span><em class="tk-n">8.</em> ¿Tus archivos pesan más de 10 MB? Déjanos un link de Drive <small>(opcional)</small></span><input name="drive" type="url" placeholder="Pega el link y compártelo como «Cualquier persona con el enlace»" /></label>
         <label class="tk-full"><span><em class="tk-n">9.</em> ¿Para cuándo lo necesitas? <span class="req">*</span></span><input type="date" name="fecha" /></label>
         <div class="tk-aviso" hidden></div>
-        <p class="tk-nota">La prioridad la define ${esc(JEFA)}, jefa de marketing, al revisar tu ticket.</p>
+        <p class="tk-nota">La prioridad la define ${esc(JEFA)}, Team Líder de marketing, al revisar tu ticket.</p>
         <div class="mensaje tk-err"></div>
         <button class="nuevo-btn">Enviar ticket</button>
       </form>`;
@@ -3624,7 +3624,7 @@
     { nombre: "Pierina", apellido: "", correo: "pierina@ipartner.pe", area: "Marketing", rol: "equipo", activa: true },
     ...Object.entries(SOLICITANTES).map(([n, a]) => ({ nombre: n, apellido: "", correo: n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") + "@ipartner.pe", area: a, rol: "solicitante", carpeta: carpetaDe(n), activa: n !== "Romano" })),
   ];
-  const ROLES = { jefa: "Marketing | Jefa", equipo: "Equipo de marketing", solicitante: "Otra área" };
+  const ROLES = { jefa: "Marketing | Team Líder", equipo: "Equipo de marketing", solicitante: "Otra área" };
   let filtroPer = MEM.filtroPer || "todas", busPer = MEM.busPer || "";
   const claveTemporal = () => { const L = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; return Array.from({ length: 10 }, () => L[Math.floor(Math.random() * L.length)]).join(""); };
   let perSel = null;
