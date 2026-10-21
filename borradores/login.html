@@ -34,6 +34,13 @@
   /* Lado formulario */
   .lado-form { padding: 48px 52px; display: flex; flex-direction: column; justify-content: center; }
   .vista[hidden] { display: none; }
+  .modos { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin: 0 0 30px; background: var(--g100); border: 1px solid var(--g200); border-radius: 14px; }
+  .modos[hidden] { display: none; }
+  .modo { display: flex; align-items: center; justify-content: center; gap: 8px; height: 42px; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: .9rem; font-weight: 600; color: var(--g500); cursor: pointer; transition: .15s; white-space: nowrap; }
+  .modo svg { width: 16px; height: 16px; flex: none; }
+  .modo:hover { color: var(--negro); }
+  .modo.activo { background: #fff; color: var(--negro); box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.04); }
+  @media (max-width: 420px) { .modo { font-size: .82rem; gap: 6px; } .modos { margin-bottom: 20px; } }
   h1 { margin: 0 0 6px; font-size: 1.9rem; letter-spacing: -.02em; } .sub { margin: 0 0 26px; color: var(--g500); font-size: .95rem; }
   .sociales { display: grid; grid-template-columns: 1fr; }
   .social { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; height: 48px; border-radius: 14px; border: 1px solid var(--g200); font-weight: 600; font-size: .9rem; transition: .15s; }
@@ -141,6 +148,10 @@
   </section>
 
   <section class="lado-form">
+    <div class="modos" id="modos" role="tablist">
+      <button type="button" class="modo activo" data-modo="entrar" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Con mi usuario</button>
+      <button type="button" class="modo" data-modo="invitado" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 0 2-2V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v1a2 2 0 0 0 0 4v1a2 2 0 0 0 0 4v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1a2 2 0 0 0 0-4V9z"/><path d="M10 9h4M10 13h4"/></svg>Sin contraseña</button>
+    </div>
     <div class="vista" id="vistaEntrar">
       <h1>Bienvenido de vuelta</h1>
       <p class="sub">Entra con tu usuario y contraseña.</p>
@@ -154,18 +165,18 @@
         <button class="boton" id="entrar">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <p class="mensaje" id="mensaje"></p>
       </form>
-      <p class="pie">¿Solo vienes a dejar un ticket? <a class="link" data-ir="invitado">Entrar sin contraseña</a></p>
+      <p class="pie">¿Solo vienes a dejar un ticket? Usa <b>Sin contraseña</b>, arriba.</p>
     </div>
     <div class="vista" id="vistaInvitado" hidden>
-      <h1>Entrar sin contraseña</h1>
-      <p class="sub">Elige tu nombre y entra a dejar o revisar tus tickets.</p>
+      <h1>Deja tu ticket</h1>
+      <p class="sub">Para áreas fuera de marketing. Elige tu nombre y entra, sin contraseña.</p>
       <form id="formInv" novalidate>
         <label for="invQuien">¿Quién eres?</label>
         <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><select id="invQuien"><option value="">Cargando nombres…</option></select></div>
         <button class="boton" id="invBoton">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <p class="mensaje" id="mensajeI"></p>
       </form>
-      <p class="pie">¿No apareces? Avisa a marketing | <a class="link" data-ir="entrar">Entrar con usuario</a></p>
+      <p class="pie">¿No apareces en la lista? Avisa al equipo de marketing.</p>
     </div>
 
     <div class="vista" id="vistaOlvido" hidden>
@@ -230,11 +241,19 @@
 
   // Cambiar de vista
   const vistas = { entrar: document.getElementById("vistaEntrar"), olvido: document.getElementById("vistaOlvido"), nueva: document.getElementById("vistaNueva"), invitado: document.getElementById("vistaInvitado") };
-  const mostrar = (k) => { for (const x in vistas) vistas[x].hidden = x !== k; };
+  const modos = document.getElementById("modos");
+  const marcarModo = (k) => { modos.hidden = k !== "entrar" && k !== "invitado"; modos.querySelectorAll(".modo").forEach((b) => b.classList.toggle("activo", b.dataset.modo === k)); };
+  const mostrar = (k) => { for (const x in vistas) vistas[x].hidden = x !== k; marcarModo(k); };
+  modos.querySelectorAll(".modo").forEach((b) => (b.onclick = () => {
+    const k = b.dataset.modo; mostrar(k);
+    try { localStorage.setItem("rabbitModo", k); } catch (e) {}
+    if (k === "invitado") { cargarInvitados(); decir("¡Rapidito! Solo dime quién eres"); mover("salto"); } else { decir(IDLE[0]); mover("salto"); }
+  }));
   const pasoCodigo = document.getElementById("pasoCodigo"), pasoUsuario = document.getElementById("pasoUsuario"), oSub = document.getElementById("oSub"), SUB_OLVIDO = oSub.textContent, oBoton = document.getElementById("oBoton"), digitos = [...document.querySelectorAll(".codigo input")];
   document.querySelectorAll("[data-ir]").forEach((a) => (a.onclick = (e) => {
     e.preventDefault();
     for (const k in vistas) vistas[k].hidden = k !== a.dataset.ir;
+    marcarModo(a.dataset.ir);
     if (a.dataset.ir === "olvido") { pasoCodigo.hidden = true; pasoUsuario.hidden = false; oSub.textContent = SUB_OLVIDO; oBoton.hidden = false; oBoton.textContent = "Enviar código"; document.getElementById("oReenviar").hidden = true; digitos.forEach((d) => (d.value = "")); document.getElementById("mensajeO").textContent = ""; const o = document.getElementById("oCorreo"); o.value = correo.value.trim(); setTimeout(() => o.focus(), 50); decir("Tranquilo, le pasa a cualquiera"); mover("ladeo"); }
     else if (a.dataset.ir === "invitado") { cargarInvitados(); decir("¡Rapidito! Solo dime quién eres"); mover("salto"); }
     else { decir(IDLE[0]); mover("salto"); }
@@ -377,6 +396,7 @@
   // Si llega desde el enlace del correo de recuperación, pide la nueva contraseña
   sb.auth.onAuthStateChange((ev) => { if (ev === "PASSWORD_RECOVERY" && !recuperando) { recuperando = true; mostrarNuevaRec(); } });
   // Si ya tiene sesión abierta, entra directo
+  try { if (localStorage.getItem("rabbitModo") === "invitado" && !/type=recovery/.test(location.hash)) { mostrar("invitado"); cargarInvitados(); } } catch (e) {}
   sb.auth.getSession().then(({ data }) => { if (data.session && !recuperando && !/type=recovery/.test(location.hash)) despuesDeEntrar(); });
 </script>
 </body>
