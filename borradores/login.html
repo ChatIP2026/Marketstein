@@ -341,15 +341,24 @@
   const llamarInv = (cuerpo) => fetch(FN_INV, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) }).then((r) => r.json());
   const invQuien = document.getElementById("invQuien"), mensajeI = document.getElementById("mensajeI");
   let invCargado = false;
-  async function cargarInvitados() {
-    if (invCargado) return;
-    try {
-      const { personas } = await llamarInv({ accion: "lista" });
+  // La lista se pide apenas abre la página y se guarda en el navegador: la próxima vez sale al instante
+  const pintarInv = (personas) => {
+    const sel = invQuien.value || (() => { try { return localStorage.getItem("rabbitInvitado") || ""; } catch (e) { return ""; } })();
+    invQuien.innerHTML = '<option value="">Elige tu nombre</option>' + personas.map((x) => `<option value="${x.id}">${(x.nombre + " " + (x.apellido || "")).trim().replace(/[<>&]/g, "")}${x.area ? " | " + x.area.replace(/[<>&]/g, "") : ""}</option>`).join("");
+    if (sel && personas.some((x) => x.id === sel)) invQuien.value = sel;
+  };
+  try { const g = JSON.parse(localStorage.getItem("rabbitInvLista") || "null"); if (g && g.length) { pintarInv(g); invCargado = true; } } catch (e) {}
+  let invPidiendo = null;
+  function cargarInvitados() {
+    if (invPidiendo) return invPidiendo;
+    invPidiendo = llamarInv({ accion: "lista" }).then(({ personas }) => {
       if (!personas) throw 0;
-      invQuien.innerHTML = '<option value="">Elige tu nombre</option>' + personas.map((x) => `<option value="${x.id}">${(x.nombre + " " + (x.apellido || "")).trim().replace(/[<>&]/g, "")}${x.area ? " | " + x.area.replace(/[<>&]/g, "") : ""}</option>`).join("");
-      invCargado = true;
-    } catch (e) { invQuien.innerHTML = '<option value="">No se pudo cargar la lista</option>'; }
+      pintarInv(personas); invCargado = true;
+      try { localStorage.setItem("rabbitInvLista", JSON.stringify(personas)); } catch (e) {}
+    }).catch(() => { invPidiendo = null; if (!invCargado) invQuien.innerHTML = '<option value="">No se pudo cargar la lista</option>'; });
+    return invPidiendo;
   }
+  cargarInvitados();
   invQuien.addEventListener("change", () => { invQuien.removeAttribute("aria-invalid"); mensajeI.textContent = ""; });
   invQuien.addEventListener("focus", () => decir("Busca tu nombre"));
   document.getElementById("formInv").onsubmit = async (e) => {
