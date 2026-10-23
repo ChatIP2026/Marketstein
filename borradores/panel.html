@@ -2352,7 +2352,8 @@
   addEventListener("load", () => setTimeout(recortarListas, 400));
   function ajustarAltoColumnas() {
     const fichas = [...document.querySelectorAll("#tablero .ficha")];
-    const alto = fichas.length ? Math.max(...fichas.map((f) => f.offsetHeight)) : 0;
+    if (!fichas.length) return;
+    const alto = Math.max(...fichas.map((f) => f.offsetHeight));
     // Escritorio: las columnas ocupan solo el alto que queda en pantalla (la página no se desliza);
     // si los proyectos no caben, se desliza dentro de la columna y aparece el aviso.
     const cols = [...document.querySelectorAll("#tablero .col-lista")];
@@ -2369,7 +2370,7 @@
     const lat = document.getElementById("lateral"), pri = document.querySelector("#vistaInicio .principal");
     const cajaT = document.querySelector("#vistaInicio .tablero-caja");
     recortarListas();
-    if (lat && pri) { if (innerWidth > 760) { const libre = innerHeight - lat.getBoundingClientRect().top - 40; const h = Math.max((cajaT || pri).offsetHeight, libre); if (cajaT) cajaT.style.minHeight = h + "px"; lat.style.setProperty("height", h + "px", "important"); lat.style.setProperty("max-height", h + "px", "important"); } else { lat.style.removeProperty("height"); lat.style.removeProperty("max-height"); } }
+    if (lat && pri) { if (innerWidth > 760) { const h = (cajaT || pri).offsetHeight; lat.style.setProperty("height", h + "px", "important"); lat.style.setProperty("max-height", h + "px", "important"); } else { lat.style.removeProperty("height"); lat.style.removeProperty("max-height"); } }
   }
   addEventListener("resize", () => vistaActual === "kanban" && ajustarAltoColumnas());
 
