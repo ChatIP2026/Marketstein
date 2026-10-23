@@ -3025,6 +3025,8 @@
     // Nombres ↔ cuentas reales, equipo de marketing, otras áreas y jefa
     for (const k in ID_DE) delete ID_DE[k]; for (const k in NOMBRE_DE) delete NOMBRE_DE[k];
     data.forEach((p) => { ID_DE[p.nombre] = p.id; NOMBRE_DE[p.id] = p.nombre; });
+    // Si dos personas se llaman igual, "yo" siempre apunta a la cuenta que entró
+    if (window.miPerfil) ID_DE[miPerfil.nombre] = miPerfil.id;
     const PAL = ["#f4a6c1", "#9fd3f0", "#c3b5f7", "#f7d38b", "#a8e6cf", "#ffc9a3", "#b5d8ff"];
     for (const k in COLORES) delete COLORES[k]; for (const k in SOLICITANTES) delete SOLICITANTES[k];
     data.filter((p) => p.activa && p.rol !== "solicitante").forEach((p, i) => (COLORES[p.nombre] = PAL[i % PAL.length]));
