@@ -1972,6 +1972,10 @@
   .tk-editar #tkGuardar { display: flex; width: 100%; height: 44px; margin-top: 20px; justify-content: center; align-items: center; }
   .tk-barra-f { margin-bottom: 24px !important; }
   .tk-borrar-zona { margin-top: 18px; }
+  .cn-tk { width: 14px; height: 14px; vertical-align: -2px; margin-right: 5px; }
+  .cn-de { margin-left: auto; margin-right: 12px; font-size: .78rem; color: var(--tenue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .cn-de b { color: var(--texto); font-weight: 600; }
+  .cn-de + .cn-avs { margin-left: 0 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2451,9 +2455,9 @@
         const eq = p.encargados.slice(0, p.encargados.length > 4 ? 3 : 4);
         f.classList.toggle("en-standby", !!(mapaP.get(p.id) || {}).standby);
         f.innerHTML = `
-          <div class="cn-top"><div class="cn-tit">${(mapaP.get(p.id) || {}).standby ? `<span class="sb-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.9 6.5l14.2 11M19.1 6.5 4.9 17.5"/><path d="m9 4 3 2 3-2M9 20l3-2 3 2M3.5 10.5l3.4.6L6 14.4M20.5 10.5l-3.4.6.9 3.3M3.5 13.5l3.4-.6M20.5 13.5l-3.4-.6"/></svg>Standby</span>` : ""}<b>${esc(p.nombre)}</b><small>${sp ? `Pedido por ${esc(sp.nombre)} | ${esc(sp.area)}` : "Proyecto del equipo"}</small></div><span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span></div>
+          <div class="cn-top"><div class="cn-tit">${(mapaP.get(p.id) || {}).standby ? `<span class="sb-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.9 6.5l14.2 11M19.1 6.5 4.9 17.5"/><path d="m9 4 3 2 3-2M9 20l3-2 3 2M3.5 10.5l3.4.6L6 14.4M20.5 10.5l-3.4.6.9 3.3M3.5 13.5l3.4-.6M20.5 13.5l-3.4-.6"/></svg>Standby</span>` : ""}<b>${esc(p.nombre)}</b><small>${sp ? `<svg class="cn-tk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg>Ticket` : "Proyecto del equipo"}</small></div><span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span></div>
           <div class="cn-prog"><div class="cn-prog-t"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Progreso</span><b>${p.hechas}/${p.total}</b></div><div class="cn-barra"><i class="anillo-prog" style="width:${pct}%"></i></div></div>
-          <div class="cn-pie"><span class="cn-fecha ${tonoF}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>${p.fecha ? fmt(p.fecha) : "Sin fecha"}</span><span class="cn-avs">${eq.length ? eq.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("") + (p.encargados.length > 4 ? `<i class="mas">+${p.encargados.length - 3}</i>` : "") : `<em>Sin encargado</em>`}</span></div>`;
+          <div class="cn-pie"><span class="cn-fecha ${tonoF}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>${p.fecha ? fmt(p.fecha) : "Sin fecha"}</span>${sp ? `<span class="cn-de">Pedido por <b>${esc(sp.nombre)}</b></span>` : ""}<span class="cn-avs">${eq.length ? eq.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("") + (p.encargados.length > 4 ? `<i class="mas">+${p.encargados.length - 3}</i>` : "") : `<em>Sin encargado</em>`}</span></div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
         f.onclick = () => abrirProyecto(p.id);
         f.onkeydown = (e) => { if (e.key === "Enter") abrirProyecto(p.id); };
