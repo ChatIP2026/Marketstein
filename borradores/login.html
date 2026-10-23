@@ -441,7 +441,13 @@
   sb.auth.onAuthStateChange((ev) => { if (ev === "PASSWORD_RECOVERY" && !recuperando) { recuperando = true; mostrarNuevaRec(); } });
   // Si ya tiene sesión abierta, entra directo
   try { const m = localStorage.getItem("rabbitModo"); if ((m === "invitado" || m === "entrar") && !/type=recovery/.test(location.hash)) { mostrar(m); if (m === "invitado") cargarInvitados(); } } catch (e) {}
-  sb.auth.getSession().then(({ data }) => { if (data.session && !recuperando && !/type=recovery/.test(location.hash)) despuesDeEntrar(); });
+  sb.auth.getSession().then(async ({ data }) => {
+    if (!data.session || recuperando || /type=recovery/.test(location.hash)) return;
+    // Quien entró sin contraseña no vuelve a entrar solo: ve la lista con su nombre ya elegido y pulsa Entrar
+    let inv = null; try { inv = localStorage.getItem("rabbitInvitado"); } catch (e) {}
+    if (inv && inv === data.session.user.id) { await sb.auth.signOut(); mostrar("invitado"); cargarInvitados(); return; }
+    despuesDeEntrar();
+  });
 </script>
 </body>
 </html>
