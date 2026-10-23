@@ -3392,7 +3392,7 @@
     let acciones = "";
     if (jefa && (t.estado === "revision_inicial" || (t.estado === "falta_info" && !t.asignado))) acciones = `
       <div class="tk-acc"><h4>Tu decisión</h4>
-        <label>Prioridad<div class="tk-prios">${Object.entries(TK_PRIO).map(([k, v]) => `<button type="button" data-p="${k}" style="--c:${v.c}" class="${(t.prioridad || "media") === k ? "activa" : ""}">${v.t}</button>`).join("")}</div></label>
+        <label>Prioridad<div class="tk-prios">${Object.entries(TK_PRIO).map(([k, v]) => `<button type="button" data-p="${k}" style="--c:${v.c}" class="${t.prioridad === k ? "activa" : ""}">${v.t}</button>`).join("")}</div></label>
         <label>Asignar a<div class="tk-prios">${Object.keys(COLORES).map((n) => `<button type="button" data-a="${n}" class="${t.asignado === n ? "activa" : ""}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></label>
         <button class="nuevo-btn" id="tkAceptar">Aceptar y asignar</button>
         <div class="tk-sec"><button class="cal-btn peligro" id="tkRechazar">Rechazar</button></div>
@@ -3441,10 +3441,11 @@
       ${WEB_REAL ? "" : `<p class="det-nota">Vista previa: los cambios no se guardan.</p>`}`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     d.querySelectorAll("[data-ver]").forEach((b) => (b.onclick = () => { const a = t.archivos[+b.dataset.ver], v = document.createElement("div"); v.className = "tk-visor"; v.innerHTML = a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<iframe src="${a.url}" title="PDF"></iframe>`; v.onclick = () => v.remove(); document.body.append(v); }));
-    let prio = t.prioridad || "media", asig = t.asignado || null, modo = null;
+    let prio = t.prioridad || null, asig = t.asignado || null, modo = null;
     d.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => { prio = b.dataset.p; d.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("activa", x === b)); }));
     d.querySelectorAll("[data-a]").forEach((b) => (b.onclick = () => { asig = b.dataset.a; d.querySelectorAll("[data-a]").forEach((x) => x.classList.toggle("activa", x === b)); }));
     d.querySelector("#tkAceptar")?.addEventListener("click", () => {
+      if (!prio) return avisar("Elige una prioridad");
       if (!asig) return avisar("Elige a quién asignar el ticket");
       t.prioridad = prio; t.asignado = asig; t.estado = "en_revision";
       registrar(t, `Aceptó el ticket | prioridad ${TK_PRIO[prio].t} | asignado a ${asig}`);
