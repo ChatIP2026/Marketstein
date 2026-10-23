@@ -2635,7 +2635,7 @@
     if (SOLICITANTES[yo]) {
       // Externos: avance de sus propios tickets
       tks.filter((t) => t.solicitante === yo).forEach((t) => {
-        const num = "#" + String(t.id).padStart(3, "0");
+        const num = "#" + (t.id > 0 ? String(t.id).padStart(3, "0") : "…");
         if (t.estado === "revision_inicial") add("rv" + t.id, "👀", "Tu ticket está en revisión", `${num} ${t.titulo}`, t.historial[0].at, ["tk", t.id]);
         const ac = t.historial.find((h) => /Aceptó/.test(h.txt)); if (ac) add("ap" + t.id, "✅", "Tu ticket fue aprobado", `${num} ${t.titulo} | lo hará ${t.asignado}`, ac.at, ["tk", t.id]);
         const en = t.historial.find((h) => /entregado/i.test(h.txt)); if (t.estado === "entregado" && en) add("fn" + t.id, "🎉", "Tu ticket fue finalizado", `${num} ${t.titulo}`, en.at, ["tk", t.id]);
@@ -2646,12 +2646,12 @@
         const d = diasHasta(p.fecha_limite); if (d >= 0 && d <= 4) add("vp" + p.id, "⏰", d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `Vence en ${d} días`, `Proyecto: ${p.nombre}`, haceDias(Math.max(0, 4 - d) * 0.2), ["p", p.id]);
       });
       tks.filter((t) => t.asignado === yo && !["entregado", "rechazado", "cancelado"].includes(t.estado)).forEach((t) => {
-        const d = diasHasta(t.fecha); if (d >= 0 && d <= 4) add("vt" + t.id, "⏰", d === 0 ? "Ticket vence hoy" : d === 1 ? "Ticket vence mañana" : `Ticket vence en ${d} días`, `#${String(t.id).padStart(3, "0")} ${t.titulo}`, haceDias(0.1), ["tk", t.id]);
+        const d = diasHasta(t.fecha); if (d >= 0 && d <= 4) add("vt" + t.id, "⏰", d === 0 ? "Ticket vence hoy" : d === 1 ? "Ticket vence mañana" : `Ticket vence en ${d} días`, `#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")} ${t.titulo}`, haceDias(0.1), ["tk", t.id]);
       });
       // Tickets nuevos por aprobar (solo Hilary)
       if (yo === JEFA) tks.filter((t) => t.estado === "revision_inicial").forEach((t) => add("nt" + t.id, "📨", "Nuevo ticket por revisar", `${t.solicitante} (${t.area}): ${t.titulo}`, t.historial[0].at, ["tk", t.id]));
       // Asignaciones nuevas: tickets, proyectos y tareas
-      tks.filter((t) => t.asignado === yo).forEach((t) => { const h = t.historial.find((x) => /asignado a/.test(x.txt)); if (h) add("at" + t.id, "🎫", "Te asignaron un ticket", `#${String(t.id).padStart(3, "0")} ${t.titulo}`, h.at, ["tk", t.id]); });
+      tks.filter((t) => t.asignado === yo).forEach((t) => { const h = t.historial.find((x) => /asignado a/.test(x.txt)); if (h) add("at" + t.id, "🎫", "Te asignaron un ticket", `#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")} ${t.titulo}`, h.at, ["tk", t.id]); });
       [...mapaP.values()].filter((p) => p.encargados.includes(yo) && p.creado_por && p.creado_por !== yo && !p.solicitado_por).forEach((p) => add("ap" + p.id, "📁", "Te asignaron un proyecto", `${p.nombre} | por ${p.creado_por}`, p.created_at, ["p", p.id]));
       [...mapaT.values()].filter((t) => t.encargado === yo && !t.hecha && mapaP.has(t.proyecto_id)).slice(0, 4).forEach((t, i) => add("as" + t.id, "☑️", "Te asignaron una tarea", `${t.texto} | ${mapaP.get(t.proyecto_id).nombre}`, t.created_at || haceDias(i + 1), ["p", t.proyecto_id]));
     }
@@ -2661,7 +2661,7 @@
       let k = ult; while (k > 0 && cs[k - 1].quien !== yo) k--;
       const nuevos = cs.slice(k), quienes = [...new Set(nuevos.map((c) => c.quien))];
       const tit = quienes.length > 1 ? `${quienes.slice(0, -1).join(", ")} y ${quienes.at(-1)} te escribieron` : `${quienes[0]} te escribió`;
-      add(`cm${t.id}_${ult}`, "💬", tit, `${nuevos.length > 1 ? nuevos.length + " mensajes | " : ""}#${String(t.id).padStart(3, "0")} ${t.titulo}`, cs[ult].at, ["tk", t.id]);
+      add(`cm${t.id}_${ult}`, "💬", tit, `${nuevos.length > 1 ? nuevos.length + " mensajes | " : ""}#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")} ${t.titulo}`, cs[ult].at, ["tk", t.id]);
     });
     // Ejemplo: algunas ya leídas al inicio para mostrar los dos grupos
     if (!LEIDAS[yo] && window.sb) { try { LEIDAS[yo] = new Set(JSON.parse(localStorage.getItem("rabbit_leidas_" + yo) || "null") || L.map((n) => n.id)); } catch (e) { LEIDAS[yo] = new Set(L.map((n) => n.id)); } }
@@ -3317,7 +3317,7 @@
     const nomMes = (m) => `${MESES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
     const delMes = mesTk === "todos" ? todosVis : todosVis.filter((t) => mesDe(t) === mesTk);
     const qTk = busTk.trim().toLowerCase();
-    const vis = (jefa && personaTk ? delMes.filter((t) => t.asignado === personaTk) : delMes).filter((t) => !qTk || [t.titulo, t.solicitante, t.area, t.tipo, t.asignado || "", "#" + String(t.id).padStart(3, "0")].join(" ").toLowerCase().includes(qTk));
+    const vis = (jefa && personaTk ? delMes.filter((t) => t.asignado === personaTk) : delMes).filter((t) => !qTk || [t.titulo, t.solicitante, t.area, t.tipo, t.asignado || "", "#" + (t.id > 0 ? String(t.id).padStart(3, "0") : "…")].join(" ").toLowerCase().includes(qTk));
     const FILTROS = sol ? [["todos", "Todas"], ["activos", "En proceso"], ["entregado", "Entregados"], ["rechazado", "Rechazadas o canceladas"]]
       : jefa ? [["todos", "Todos"], ["revision_inicial", "Por revisar"], ["en_curso", "En curso"], ["entregado", "Entregados"]]
       : [["todos", "Todos"], ["en_curso", "En curso"], ["entregado", "Entregados"]];
@@ -3357,7 +3357,7 @@
     const pr = TK_PRIO[t.prioridad], sol = esSolicitante();
     const quien = sol ? t.asignado : t.solicitante;
     return `<button class="tk ${["urgente", "alta"].includes(t.prioridad) && !["entregado", "rechazado", "cancelado"].includes(t.estado) ? "p-fuerte" : ""}" data-id="${t.id}">
-      <div class="tk-a">${quien ? `<i class="av tk-av" style="${fondoAv(quien)}">${letraAv(quien)}</i>` : `<i class="av tk-av vacio">?</i>`}<span class="tk-id">#${String(t.id).padStart(3, "0")}</span></div>
+      <div class="tk-a">${quien ? `<i class="av tk-av" style="${fondoAv(quien)}">${letraAv(quien)}</i>` : `<i class="av tk-av vacio">?</i>`}<span class="tk-id">#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")}</span></div>
       <span class="tk-ir">${FLECHA}</span>
       <div class="tk-b">
         <b class="tk-tit">${esc(t.titulo)}</b>
@@ -3416,7 +3416,7 @@
     const bloque = (tit, cuerpo) => `<section class="tkd-b"><h4>${tit}</h4>${cuerpo}</section>`;
     const campo = (et, v) => `<div class="tkd-campo"><small>${et}</small><p>${v}</p></div>`;
     d.innerHTML = `
-      <div class="det-cab"><div class="tkd-cab"><span class="tk-id">#${String(t.id).padStart(3, "0")}</span>${pillTk(t.estado)}</div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      <div class="det-cab"><div class="tkd-cab"><span class="tk-id">#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")}</span>${pillTk(t.estado)}</div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <h2 class="tkd-tit">${esc(t.titulo)}</h2>
       <div class="tkd-quien"><i class="av" style="${fondoAv(t.solicitante)}">${letraAv(t.solicitante)}</i><div><b>${esc(t.solicitante)}</b><small>${esc(t.area)} | lo pidió ${hace(t.historial[0].at)}</small></div></div>
       <div class="tkd-kpis">
@@ -3431,7 +3431,7 @@
       ${bloque("El pedido", `<div class="tkd-chips"><span class="tk-chip">${esc(t.tipo)}</span><span class="tk-chip">${esc(t.formato || "—")}</span></div>${campo("Qué necesita", esc(t.detalle))}${t.destino ? campo("Dirigido a", esc(t.destino)) : ""}`)}
       ${bloque("Texto de la pieza", t.texto ? `<p class="tkd-cita">${esc(t.texto)}</p>` : `<p class="tkd-vacio">Aún no tiene el texto final</p>`)}
       ${(t.archivos || []).length ? bloque(`Archivos adjuntos <span class="tkd-n">${t.archivos.length}</span>`, `<div class="tk-miniaturas">${t.archivos.map((a, i) => `<button type="button" class="tk-mini ver" data-ver="${i}" title="${esc(a.n)}">${a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<span class="tk-mini-doc">PDF</span>`}<small>${esc(a.n)}</small></button>`).join("")}</div>`) : ""}
-      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">${ic("carpeta")}Carpeta de ${esc(t.solicitante)} | busca <b>#${String(t.id).padStart(3, "0")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">${ic("enlace")} ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
+      ${t.refs.length || t.adjuntos ? bloque("Referencias", `<div class="tkd-chips">${t.adjuntos ? `<a class="tk-chip enl adj" href="#" onclick="return false" title="Abrir la carpeta de referencias">${ic("carpeta")}Carpeta de ${esc(t.solicitante)} | busca <b>#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")}</b></a>` : ""}${t.refs.map((u, i) => `<a class="tk-chip enl" href="${esc(u)}" target="_blank" rel="noopener">${ic("enlace")} ${esc((() => { try { return new URL(u).hostname.replace("www.", ""); } catch { return "Referencia " + (i + 1); } })())}</a>`).join("")}</div>`) : ""}
       ${bloque(`Chat del ticket${(t.comentarios || []).length ? ` <span class="tkd-n">${t.comentarios.length}</span>` : ""}`, `<p class="tkc-ayuda">Escribe aquí indicaciones extra, dudas o cambios. Le llegará una notificación a ${t.solicitante === yo ? (t.asignado || "marketing") : esc(t.solicitante)}.</p><div class="tkc-lista">${(t.comentarios || []).map((c) => `<div class="tkc ${c.quien === yo ? "mio" : ""}"><i class="av" style="${fondoAv(c.quien)}">${letraAv(c.quien)}</i><div><b>${c.quien} <span>${hace(c.at)}</span></b><p>${esc(c.txt)}</p></div></div>`).join("") || '<div class="tkc-vacio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7M8.5 14.5h4"/></svg><span>Aún no hay mensajes. Escribe el primero.</span></div>'}</div>
         ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Ej.: ¿Podemos usar el logo en blanco? Va sobre fondo oscuro." /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} | último ${hace(t.historial.at(-1).at)}</span></summary>
@@ -3507,7 +3507,7 @@
   // Animación: el ticket sale impreso al enviar la solicitud; al terminar, vuelve a Mis solicitudes
   function ticketEnviado(t) {
     return new Promise((fin) => {
-      const num = String(t.id).padStart(3, "0"), sem = Array.from(`RB${num}${t.fecha}${t.titulo}`).map((c) => c.charCodeAt(0));
+      const num = t.id > 0 ? String(t.id).padStart(3, "0") : "…", sem = Array.from(`RB${num}${t.fecha}${t.titulo}`).map((c) => c.charCodeAt(0));
       const barras = Array.from({ length: 46 }, (_, i) => `<i style="width:${1 + ((sem[i % sem.length] + i * 7) % 3)}px"></i>`).join("");
       const fe = new Date(t.fecha + "T12:00").toLocaleDateString("es-PE", { day: "numeric", month: "short", year: "numeric" });
       const ahora = new Date(), hora = ahora.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
@@ -3516,12 +3516,14 @@
       o.innerHTML = `<div class="te-ranura"></div><div class="te-salida"><div class="te">
         <div class="te-top"><span class="te-rb">${rbMini()}</span><h3>¡Ticket enviado!</h3><p>Marketing ya lo recibió.</p></div>
         <div class="te-corte"></div>
-        <div class="te-datos"><div><small>N.° de ticket</small><b>#${num}</b></div><div class="der"><small>Entrega</small><b>${fe}</b></div>
+        <div class="te-datos"><div><small>N.° de ticket</small><b class="te-num">#${num}</b></div><div class="der"><small>Entrega</small><b>${fe}</b></div>
           <div class="te-full"><small>Pedido</small><b>${esc(t.titulo)}</b></div><div><small>Enviado</small><b>Hoy | ${hora}</b></div><div class="der"><small>Pieza</small><b>${esc(t.tipo)}</b></div>${turnoDe(t) ? `<div class="te-full te-cola"><span class="te-cola-n"><small>Turno</small><b>${turnoDe(t).n}</b></span><span class="te-cola-t"><b>${turnoDe(t).antes ? `Hay ${turnoDe(t).antes} ticket${turnoDe(t).antes === 1 ? "" : "s"} antes que el tuyo` : "¡Eres el siguiente!"}</b></span></div>` : ""}</div>
         <div class="te-corte2"></div>
         <div class="te-barras">${barras}</div><div class="te-cod">RB-${num}-${t.fecha.replace(/-/g, "")}</div>
       </div></div>`;
       document.body.appendChild(o);
+      // Si el número aún no llega de la base de datos, se completa apenas se guarda
+      if (!(t.id > 0)) { const vigila = setInterval(() => { if (t.id > 0) { const n = String(t.id).padStart(3, "0"); o.querySelector(".te-num").textContent = "#" + n; o.querySelector(".te-cod").textContent = `RB-${n}-${t.fecha.replace(/-/g, "")}`; clearInterval(vigila); } }, 150); setTimeout(() => clearInterval(vigila), 15000); }
       let listo = false;
       const cerrar = () => { if (listo) return; listo = true; o.classList.add("sale"); setTimeout(() => { o.remove(); fin(); }, 450); };
       o.onclick = cerrar;
@@ -3617,7 +3619,8 @@
       const err = d.querySelector(".tk-err");
       const faltan = [f.titulo, f.tipo, f.detalle, f.fecha].filter((x) => !x.value.trim());
       if (faltan.length) { faltan.forEach((x) => { x.classList.remove("falta"); void x.offsetWidth; x.classList.add("falta"); }); faltan[0].focus(); err.className = "mensaje error tk-err"; err.textContent = "Completa los campos marcados en rojo."; return; }
-      const id = Math.max(...tickets.map((t) => t.id)) + 1;
+      // En la web real el número lo da la base de datos; mientras tanto se usa uno temporal
+      const id = window.sb ? -Date.now() : Math.max(0, ...tickets.map((t) => t.id)) + 1;
       tickets.push({ id, titulo: f.titulo.value.trim(), solicitante: yo, area: SOLICITANTES[yo], tipo: f.tipo.value === "Otro" ? (f.otro.value.trim() || "Otro") : f.tipo.value,
         formato: f.formato.disabled ? "" : f.formato.value, detalle: f.detalle.value.trim(), destino: f.destino.value.trim(), texto: f.sinTexto.checked ? "" : f.texto.value.trim(),
         refs: [f.drive.value.trim()].filter((u) => /^https?:\/\//.test(u)), adjuntos: false, archivos: archivos.slice(), fecha: f.fecha.value, estado: "revision_inicial", creado: new Date().toISOString(),
