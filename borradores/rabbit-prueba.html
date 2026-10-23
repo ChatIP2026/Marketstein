@@ -3643,14 +3643,16 @@
       const { data: p } = await sb.from("perfiles").select("*").eq("id", data.session.user.id).single();
       // Quien solo deja tickets puede entrar sin contraseña: a esa persona no se le exige crear una
       if (!p || !p.activa || (p.debe_cambiar_clave && p.rol !== "solicitante")) { await sb.auth.signOut(); return (location.href = "login.html"); }
-      window.miPerfil = p; document.body.classList.remove("sin-sesion");
+      window.miPerfil = p;
       VEN_PERSONAS.length = 0; if (p.admin_personas || p.rol === "jefa") VEN_PERSONAS.push(p.nombre);
       if (p.rol === "solicitante") SOLICITANTES[p.nombre] = p.area;
       yo = p.nombre;
       await cargarPersonas();
       iniciarTicketsVivos();
       if (p.rol !== "solicitante") iniciarProyectosVivos();
-      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif(); rabbitHola(); quizasTutorial();
+      menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif();
+      // Recién ahora, con todo pintado para esta persona, se muestra el panel
+      requestAnimationFrame(() => { document.body.classList.remove("sin-sesion"); rabbitHola(); quizasTutorial(); });
     });
     document.addEventListener("click", async (e) => { if (e.target.closest("#mpSalir")) { e.preventDefault(); e.stopImmediatePropagation(); await sb.auth.signOut(); location.href = "login.html"; } }, true);
   }
