@@ -3636,7 +3636,8 @@
     sb.auth.getSession().then(async ({ data }) => {
       if (!data.session) return (location.href = "login.html");
       const { data: p } = await sb.from("perfiles").select("*").eq("id", data.session.user.id).single();
-      if (!p || !p.activa || p.debe_cambiar_clave) { await sb.auth.signOut(); return (location.href = "login.html"); }
+      // Quien solo deja tickets puede entrar sin contraseña: a esa persona no se le exige crear una
+      if (!p || !p.activa || (p.debe_cambiar_clave && p.rol !== "solicitante")) { await sb.auth.signOut(); return (location.href = "login.html"); }
       window.miPerfil = p; document.body.classList.remove("sin-sesion");
       VEN_PERSONAS.length = 0; if (p.admin_personas || p.rol === "jefa") VEN_PERSONAS.push(p.nombre);
       if (p.rol === "solicitante") SOLICITANTES[p.nombre] = p.area;
