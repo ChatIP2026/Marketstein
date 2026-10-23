@@ -3171,10 +3171,11 @@
       .on("postgres_changes", { event: "*", schema: "public", table: "proyectos" }, () => { clearTimeout(t1); t1 = setTimeout(cargarProyectos, 700); })
       .on("postgres_changes", { event: "*", schema: "public", table: "tareas" }, () => { clearTimeout(t1); t1 = setTimeout(cargarProyectos, 700); })
       .subscribe();
+    return primera;
   }
   function iniciarTicketsVivos() {
     tickets.length = 0;
-    cargarTickets(false);
+    const primera = cargarTickets(false);
     setInterval(sincronizarTickets, 1200);
     addEventListener("beforeunload", (e) => { if ((mapaP.size && typeof hayPendientes === "function" && BD_P.size + BD_T.size && hayPendientes()) || tickets.some((t) => enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id))) { e.preventDefault(); e.returnValue = ""; } });
     let t0; sb.channel("tickets-vivos").on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, () => { clearTimeout(t0); t0 = setTimeout(() => cargarTickets(true), 600); }).subscribe();
@@ -3656,7 +3657,8 @@
       if (p.rol === "solicitante") SOLICITANTES[p.nombre] = p.area;
       yo = p.nombre;
       await cargarPersonas();
-      iniciarTicketsVivos();
+      // Se espera a tener los tickets (máximo 6 s) para no mostrar la bandeja vacía por un momento
+      await Promise.race([iniciarTicketsVivos(), new Promise((ok) => setTimeout(ok, 6000))]).catch(() => {});
       if (p.rol !== "solicitante") iniciarProyectosVivos();
       menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif();
       // Recién ahora, con todo pintado para esta persona, se muestra el panel
