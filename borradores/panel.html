@@ -1976,6 +1976,7 @@
   .cn-de { margin-left: auto; margin-right: 12px; font-size: .78rem; color: var(--tenue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .cn-de b { color: var(--texto); font-weight: 600; }
   .cn-de + .cn-avs { margin-left: 0 !important; }
+  textarea.det-nombre { resize: none; overflow: hidden; line-height: 1.25; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2194,8 +2195,9 @@
     const hechas = tareas.filter((t) => t.hecha).length, pct = tareas.length ? Math.round((hechas / tareas.length) * 100) : 0;
     const d = document.getElementById("detalle");
     d.className = "detalle a-" + p.estado + (pagina === "mis" || centrarDet ? " tk-det" : "");
+    const tkDe = p.ticket ? tickets.find((x) => x.id === p.ticket) : null; // proyecto que nació de un ticket
     d.innerHTML = `
-      <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<input class="det-nombre" value="${esc(p.nombre)}" maxlength="200" title="Haz clic para editar el nombre" /></div>
+      <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<textarea class="det-nombre" rows="1" maxlength="200" title="Haz clic para editar el nombre">${esc(p.nombre)}</textarea></div>
         <div class="det-rabbit"><span class="det-burbuja ${burbujaVista[p.id] ? "oculta" : "pop"}">${(animoDe[p.id] ??= ANIMO[Math.floor(Math.random() * ANIMO.length)])}</span><img src="${CONEJO}" alt="" /></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
 
 
@@ -2213,7 +2215,7 @@
       <h3 class="det-sub">Tareas <span class="det-npend">${tareas.length - hechas} pendiente${tareas.length - hechas === 1 ? "" : "s"}</span> <small>doble clic en una tarea para renombrarla</small></h3>
       <div class="det-tareas"></div>
       <form class="det-nueva"><input placeholder="Añadir una tarea y pulsar Enter" /><button>Añadir</button></form>
-      <div class="det-peligro"><button type="button" class="det-borrar"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Eliminar proyecto</button><button type="button" class="det-standby ${p.standby ? "on" : ""}">${p.standby ? `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v14l11-7Z"/></svg>Quitar standby` : `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Standby`}</button></div>
+      <div class="det-peligro">${tkDe && yo !== JEFA ? "" : `<button type="button" class="det-borrar"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>${tkDe ? "Eliminar ticket" : "Eliminar proyecto"}</button>`}<button type="button" class="det-standby ${p.standby ? "on" : ""}">${p.standby ? `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v14l11-7Z"/></svg>Quitar standby` : `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Standby`}</button></div>
       ${WEB_REAL ? "" : `<p class="det-nota">Vista previa: los cambios no se guardan.</p>`}`;
     burbujaVista[p.id] = true;
 
@@ -2221,7 +2223,8 @@
     const nom = d.querySelector(".det-nombre");
     const guardarNombre = () => { const v = nom.value.trim(); if (v && v !== p.nombre) { p.nombre = v; armar(); } else nom.value = p.nombre; };
     nom.onblur = guardarNombre;
-    nom.onkeydown = (e) => { if (e.key === "Enter") nom.blur(); if (e.key === "Escape") { nom.value = p.nombre; e.stopPropagation(); nom.blur(); } };
+    const altoNom = () => { nom.style.height = "auto"; nom.style.height = nom.scrollHeight + "px"; }; altoNom(); requestAnimationFrame(altoNom); nom.oninput = altoNom;
+    nom.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); nom.blur(); } if (e.key === "Escape") { nom.value = p.nombre; e.stopPropagation(); nom.blur(); } };
     d.querySelectorAll(".det-persona").forEach((b) => (b.onclick = () => {
       const n = b.dataset.n;
       p.encargados = p.encargados.includes(n) ? p.encargados.filter((x) => x !== n) : [...p.encargados, n];
@@ -2279,12 +2282,18 @@
       p.standby = !p.standby; pintarDetalle(); armar();
       avisar(p.standby ? `<b>${esc(p.nombre)}</b> quedó en standby` : `<b>${esc(p.nombre)}</b> vuelve a estar activo`, () => { p.standby = !p.standby; pintarDetalle(); armar(); });
     };
-    zona.querySelector(".det-borrar").onclick = () => {
-      zona.innerHTML = `<span>¿Eliminar <b>${esc(p.nombre)}</b> y sus ${tareas.length} tareas?</span>
+    if (zona.querySelector(".det-borrar")) zona.querySelector(".det-borrar").onclick = () => {
+      zona.innerHTML = (tkDe ? `<span>¿Eliminar el ticket <b>${esc(tkDe.titulo)}</b> y su proyecto? No se puede deshacer.</span>` : `<span>¿Eliminar <b>${esc(p.nombre)}</b> y sus ${tareas.length} tareas?</span>`) + `
         <div><button type="button" class="cal-btn det-no">Cancelar</button><button type="button" class="det-si">Sí, eliminar</button></div>`;
       zona.classList.add("confirmar");
       zona.querySelector(".det-no").onclick = pintarDetalle;
-      zona.querySelector(".det-si").onclick = () => {
+      zona.querySelector(".det-si").onclick = async () => {
+        if (tkDe) { // borra el ticket de la base y luego su proyecto
+          if (window.sb && BD_TK.has(tkDe.id)) { const { error } = await sb.from("tickets").delete().eq("id", tkDe.id); if (error) return avisar("No se pudo eliminar: " + esc(error.message)); BD_TK.delete(tkDe.id); }
+          const i = tickets.indexOf(tkDe); if (i >= 0) tickets.splice(i, 1);
+          mapaP.delete(p.id); tareas.forEach((t) => mapaT.delete(t.id)); cerrarProyecto(); armar(); if (typeof contarTickets === "function") contarTickets();
+          return avisar(`Ticket <b>${esc(tkDe.titulo)}</b> eliminado`);
+        }
         mapaP.delete(p.id); tareas.forEach((t) => mapaT.delete(t.id));
         cerrarProyecto(); armar();
         avisar(`Proyecto <b>${esc(p.nombre)}</b> eliminado`, () => { mapaP.set(p.id, p); tareas.forEach((t) => mapaT.set(t.id, t)); armar(); });
