@@ -3077,7 +3077,7 @@
   }
   async function sincronizarTickets() {
     for (const t of tickets) {
-      if (enviandoTk.has(t)) continue;
+      if (enviandoTk.has(t) || t.ejemplo) continue; // el ticket de ejemplo del tutorial nunca se guarda
       if (!BD_TK.has(t.id)) {
         enviandoTk.add(t); const viejo = t.id; estadoGuardado("guardando");
         await subirArchivos(t);
@@ -3179,7 +3179,7 @@
     tickets.length = 0;
     const primera = cargarTickets(false);
     setInterval(sincronizarTickets, 1200);
-    addEventListener("beforeunload", (e) => { if ((mapaP.size && typeof hayPendientes === "function" && BD_P.size + BD_T.size && hayPendientes()) || tickets.some((t) => enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id))) { e.preventDefault(); e.returnValue = ""; } });
+    addEventListener("beforeunload", (e) => { if ((mapaP.size && typeof hayPendientes === "function" && BD_P.size + BD_T.size && hayPendientes()) || tickets.some((t) => !t.ejemplo && (enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id)))) { e.preventDefault(); e.returnValue = ""; } });
     let t0; sb.channel("tickets-vivos").on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, () => { clearTimeout(t0); t0 = setTimeout(() => cargarTickets(true), 600); }).subscribe();
     return primera;
   }
@@ -3199,8 +3199,8 @@
     const primerTk = () => { const c = document.querySelector(".tk-lista > *:first-child"); return c ? +(c.querySelector("[data-id]")?.dataset.id || c.dataset.id || 0) : 0; };
     const cerrarTodo = () => { cerrarProyecto(); menuNotif.hidden = true; };
     // Si la persona aún no tiene tickets, se usa uno de ejemplo solo para mostrar el chat
-    const quitarEjemplo = () => { const k = tickets.findIndex((t) => t.id === -1); if (k >= 0) tickets.splice(k, 1); };
-    const ticketEjemplo = () => { quitarEjemplo(); tickets.push({ id: -1, titulo: "Ticket de ejemplo", solicitante: yo, area: SOLICITANTES[yo] || "", tipo: "Post", formato: "", detalle: "Así se verá cada ticket que envíes.", destino: "", texto: "", refs: [], adjuntos: false, archivos: [], fecha: HOY, estado: "en_curso", asignado: "Ariana", prioridad: "media", creado: new Date().toISOString(), historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió el ticket" }], comentarios: [] }); return -1; };
+    const quitarEjemplo = () => { const k = tickets.findIndex((t) => t.ejemplo); if (k >= 0) tickets.splice(k, 1); };
+    const ticketEjemplo = () => { quitarEjemplo(); tickets.push({ id: -1, ejemplo: true, titulo: "Ticket de ejemplo", solicitante: yo, area: SOLICITANTES[yo] || "", tipo: "Post", formato: "", detalle: "Así se verá cada ticket que envíes.", destino: "", texto: "", refs: [], adjuntos: false, archivos: [], fecha: HOY, estado: "en_curso", asignado: "Ariana", prioridad: "media", creado: new Date().toISOString(), historial: [{ at: new Date().toISOString(), quien: yo, txt: "Envió el ticket" }], comentarios: [] }); return -1; };
     const pasos = [
       { sel: null, t: `¡Hola, ${esc(yo)}!`, d: "Soy Rabbit. Aquí puedes asignarle tareas al equipo de marketing." },
       { sel: "#tkNuevo", toque: true, t: "1. Crear ticket", d: "Con este botón pides una pieza: un post, un video, un flyer…" },
