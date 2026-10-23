@@ -1960,6 +1960,12 @@
     .tk-subir-t small { display: block; margin-top: 2px; }
     .tk-form .tk-check { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
   }
+  /* Mientras se carga el perfil real no se muestra nada de nadie: solo el conejo cargando */
+  body.sin-sesion > *:not(script):not(.carga-ini) { visibility: hidden !important; }
+  .carga-ini { display: none; }
+  body.sin-sesion .carga-ini { display: grid; position: fixed; inset: 0; place-items: center; z-index: 99999; }
+  .carga-ini svg { width: 56px; height: 64px; animation: cargaRb 1s ease-in-out infinite alternate; }
+  @keyframes cargaRb { from { transform: translateY(0); opacity: .55; } to { transform: translateY(-6px); opacity: 1; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3629,6 +3635,7 @@
   // ===== Conexión real (solo en la web publicada) =====
   if (/vercel\.app$/.test(location.hostname) && window.supabase) {
     document.body.classList.add("sin-sesion");
+    document.body.insertAdjacentHTML("beforeend", `<div class="carga-ini" aria-label="Cargando">${rbMini()}</div>`);
     const sb = window.sb = supabase.createClient("https://aqjmdlrafjjzdrqnogid.supabase.co", "sb_publishable_EYSGo1Od8olfwv79ItxRzg_WDLfk1zf");
     document.body.classList.add("en-vivo");
     sb.auth.getSession().then(async ({ data }) => {
