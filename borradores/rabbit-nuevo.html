@@ -1970,6 +1970,7 @@
   .tk-editar > label { display: grid; gap: 8px; margin: 14px 0 0 !important; }
   .tk-editar #tkGuardar { display: flex; width: 100%; height: 44px; margin-top: 20px; justify-content: center; align-items: center; }
   .tk-barra-f { margin-bottom: 24px !important; }
+  .tk-borrar-zona { margin-top: 18px; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3441,9 +3442,30 @@
         ${["rechazado", "cancelado"].includes(t.estado) ? "" : `<div class="tkc-nuevo"><input id="tkComTxt" placeholder="Ej.: ¿Podemos usar el logo en blanco? Va sobre fondo oscuro." /><button class="nuevo-btn" id="tkComOk">Enviar</button></div>`}`)}
       <details class="tkd-b tkd-hist"><summary><h4>Historial</h4><span>${t.historial.length} movimiento${t.historial.length === 1 ? "" : "s"} | último ${hace(t.historial.at(-1).at)}</span></summary>
       <div class="linea">${t.historial.slice().reverse().map((h) => `<div class="ev"><div class="ev-ico"><i class="av" style="${fondoAv(h.quien)}">${letraAv(h.quien)}</i></div><div class="ev-cuerpo"><div class="ev-tit"><b>${h.quien}</b> <span>| ${hace(h.at)}</span></div><div class="ev-txt">${esc(h.txt)}</div></div></div>`).join("")}</div></details>
+      ${jefa ? `<div class="det-peligro tk-borrar-zona"><button type="button" class="det-borrar"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Eliminar ticket</button></div>` : ""}
       ${WEB_REAL ? "" : `<p class="det-nota">Vista previa: los cambios no se guardan.</p>`}`;
     d.querySelector(".det-cerrar").onclick = cerrarProyecto;
     d.querySelectorAll("[data-ver]").forEach((b) => (b.onclick = () => { const a = t.archivos[+b.dataset.ver], v = document.createElement("div"); v.className = "tk-visor"; v.innerHTML = a.tipo.startsWith("image/") ? `<img src="${a.url}" alt="" />` : `<iframe src="${a.url}" title="PDF"></iframe>`; v.onclick = () => v.remove(); document.body.append(v); }));
+    // Eliminar ticket (solo la Team Líder, en cualquier estado). Si ya tenía proyecto, se borra con sus tareas
+    const zonaTk = d.querySelector(".tk-borrar-zona");
+    if (zonaTk) zonaTk.querySelector(".det-borrar").onclick = () => {
+      const pr = t.proyecto && mapaP.get(t.proyecto);
+      zonaTk.innerHTML = `<span>¿Eliminar el ticket <b>#${t.id > 0 ? String(t.id).padStart(3, "0") : "…"}</b>${pr ? " y su proyecto" : ""}? No se puede deshacer.</span>
+        <div><button type="button" class="cal-btn det-no">Cancelar</button><button type="button" class="det-si">Sí, eliminar</button></div>`;
+      zonaTk.classList.add("confirmar");
+      zonaTk.querySelector(".det-no").onclick = () => abrirTicket(t.id);
+      zonaTk.querySelector(".det-si").onclick = async () => {
+        if (window.sb && BD_TK.has(t.id)) {
+          const { error } = await sb.from("tickets").delete().eq("id", t.id);
+          if (error) return avisar("No se pudo eliminar: " + esc(error.message));
+          BD_TK.delete(t.id);
+        }
+        const i = tickets.indexOf(t); if (i >= 0) tickets.splice(i, 1);
+        if (pr) { mapaP.delete(pr.id); [...mapaT.values()].filter((x) => x.proyecto_id === pr.id).forEach((x) => mapaT.delete(x.id)); if (typeof armar === "function") armar(); }
+        cerrarProyecto(); pintarTickets(); contarTickets();
+        avisar(`Ticket <b>${esc(t.titulo)}</b> eliminado`);
+      };
+    };
     let prio = t.prioridad || null, asig = t.asignado || null, modo = null;
     d.querySelectorAll("[data-p]").forEach((b) => (b.onclick = () => { prio = b.dataset.p; d.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("activa", x === b)); }));
     d.querySelectorAll("[data-a]").forEach((b) => (b.onclick = () => { asig = b.dataset.a; d.querySelectorAll("[data-a]").forEach((x) => x.classList.toggle("activa", x === b)); }));
