@@ -2346,6 +2346,9 @@
       its.forEach((x) => { if (x.getBoundingClientRect().bottom > tope + 1) x.style.display = "none"; });
     }));
   }
+  // Si el lateral cambia de alto (carga de proyectos, panel recién mostrado), se vuelve a calcular qué cabe
+  if (window.ResizeObserver) requestAnimationFrame(() => { const ro = new ResizeObserver(() => recortarListas()); document.querySelectorAll("#lateral, #lateral > div").forEach((x) => ro.observe(x)); });
+  addEventListener("load", () => setTimeout(recortarListas, 400));
   function ajustarAltoColumnas() {
     const fichas = [...document.querySelectorAll("#tablero .ficha")];
     if (!fichas.length) return;
