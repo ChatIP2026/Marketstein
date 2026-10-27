@@ -1976,6 +1976,8 @@
   .cn-de b { color: var(--texto); font-weight: 600; }
   .cn-de + .cn-avs { margin-left: 0 !important; }
   textarea.det-nombre { resize: none; overflow: hidden; line-height: 1.25; }
+  .ev-it.k-calabaza .ev-ico { background: #ea7a2e !important; color: #0a0a0a !important; }
+  #lateral .k-calabaza .ev-ico svg { width: 28px !important; height: 28px !important; background: none !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2154,7 +2156,7 @@
   const EVENTOS_EMPRESA = [{ t: "Concurso de disfraces por Halloween", k: "empresa", ico: "calabaza", f: "2026-10-30" }, { t: "Cena de acción de gracias", k: "empresa", f: "2026-11-26" }, { t: "Evento Fin de Año: intercambio de regalos y premiación", k: "empresa", f: "2026-12-18" }];
   const EVENTOS = WEB_REAL ? [...CUMPLES.map(([md, n]) => ({ t: `Cumpleaños de ${n}`, k: "cumple", f: `2000-${md}` })), ...EVENTOS_EMPRESA] : (() => { const d = (n) => { const x = new Date(); x.setDate(x.getDate() + n); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`; };
     return [{ t: "Cumpleaños de Pierina", k: "cumple", f: d(2) }, { t: "Aniversario iPartner", k: "empresa", f: d(5) }, { t: "Cumpleaños de Mario", k: "cumple", f: d(11) }, { t: "Fiesta de fin de año", k: "empresa", f: d(40) }]; })();
-  const ICO_EV = { calabaza: '<path d="M12 8.2C10 6.8 6.5 6.8 4.6 8.6 2.4 10.7 2.4 15.6 4.6 18c1.8 2 4.6 2.4 7.4 2.4s5.6-.4 7.4-2.4c2.2-2.4 2.2-7.3 0-9.4C17.5 6.8 14 6.8 12 8.2Z"/><path d="M8.6 7.5c-1 2.6-1 9.6 0 12.6M15.4 7.5c1 2.6 1 9.6 0 12.6"/><path d="M12 8.2V5.5c0-1 .7-2 2-2.2"/>', cumple: '<path d="M4 21h16v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2Z"/><path d="M4 16c2 1.5 4 1.5 5.3 0 1.4 1.5 4 1.5 5.4 0 1.3 1.5 3.3 1.5 5.3 0M12 11V7M12 4.5c.6-.6.6-1.4 0-2-.6.6-.6 1.4 0 2"/>', empresa: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 10h.01M15 10h.01"/>' };
+  const ICO_EV = { calabaza: '<path fill="currentColor" stroke="none" fill-rule="evenodd" d="M12 7.6C9.6 6.3 5.6 6.3 3.6 8.5 1.4 11 1.6 16.3 4 18.6c1.9 1.8 4.9 2.1 8 2.1s6.1-.3 8-2.1c2.4-2.3 2.6-7.6.4-10.1-2-2.2-6-2.2-8.4-.9ZM6.6 11.2l3 1.4-3 1Zm10.8 0-3 1.4 3 1ZM12 13.4l1 2h-2Zm-5 2.4c3.2 1.6 6.8 1.6 10 0-.6 1.8-2.6 2.8-5 2.8s-4.4-1-5-2.8Z"/><path d="M12 7.6c-.2-2 .4-3.6 2-4.6" stroke-width="2.2"/>', cumple: '<path d="M4 21h16v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2Z"/><path d="M4 16c2 1.5 4 1.5 5.3 0 1.4 1.5 4 1.5 5.4 0 1.3 1.5 3.3 1.5 5.3 0M12 11V7M12 4.5c.6-.6.6-1.4 0-2-.6.6-.6 1.4 0 2"/>', empresa: '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 10h.01M15 10h.01"/>' };
   function proximaFecha(e) {
     if (e.k !== "cumple") return e.f;
     const [, m, dd] = e.f.split("-"), y = +HOY.slice(0, 4); let f = `${y}-${m}-${dd}`;
@@ -2167,7 +2169,7 @@
     const lista = EVENTOS.map((e) => ({ ...e, prox: proximaFecha(e) })).filter((e) => e.prox >= HOY && e.prox <= L).sort((a, b) => a.prox.localeCompare(b.prox)).slice(0, 5);
     const MES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"];
     cont.innerHTML = lista.length ? lista.map((e) => { const [, m, dd] = e.prox.split("-"), n = diasHasta(e.prox);
-      return `<div class="ev-it k-${e.k}"><span class="ev-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO_EV[e.ico || e.k]}</svg></span><span class="pr-txt ev-txt"><b>${esc(e.k === "cumple" ? e.t.replace(/^Cumpleaños de /, "") : e.t)}</b><small>${e.k === "cumple" ? "Cumpleaños | " : ""}${n === 0 ? "Hoy" : n === 1 ? "Mañana" : `${+dd} ${MES[+m - 1]} | en ${n} días`}</small></span></div>`; }).join("")
+      return `<div class="ev-it k-${e.ico || e.k}"><span class="ev-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO_EV[e.ico || e.k]}</svg></span><span class="pr-txt ev-txt"><b>${esc(e.k === "cumple" ? e.t.replace(/^Cumpleaños de /, "") : e.t)}</b><small>${e.k === "cumple" ? "Cumpleaños | " : ""}${n === 0 ? "Hoy" : n === 1 ? "Mañana" : `${+dd} ${MES[+m - 1]} | en ${n} días`}</small></span></div>`; }).join("")
       : `<div class="pronto-ok">No hay eventos en los próximos 60 días.</div>`;
     recortarListas();
   }
