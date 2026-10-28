@@ -2653,7 +2653,10 @@
 
   // ===== Notificaciones (por persona): no leídas primero, luego leídas =====
   const menuNotif = document.getElementById("menuNotif");
-  const LEIDAS = {}; // { persona: Set(ids) } (en Supabase se guardará por usuario)
+  const LEIDAS = {}; // { persona: Set(ids) }
+  // "Leído hasta": todo aviso anterior a esta fecha cuenta como leído aunque su id cambie (p. ej. al guardarse en la base)
+  const HASTA = {};
+  const leida = (n) => (LEIDAS[yo] && LEIDAS[yo].has(n.id)) || (HASTA[yo] && n.at <= HASTA[yo]);
   const haceDias = (n) => new Date(Date.now() - n * 864e5).toISOString();
   function notificaciones() {
     const L = [], hoyI = new Date().toISOString().slice(0, 10);
@@ -2670,10 +2673,10 @@
     } else {
       // Vencimientos: 4 días o menos
       [...mapaP.values()].filter((p) => p.estado !== "listo" && p.fecha_limite && (yo === JEFA || p.encargados.includes(yo))).forEach((p) => {
-        const d = diasHasta(p.fecha_limite); if (d >= 0 && d <= 4) add("vp" + p.id, "⏰", d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `Vence en ${d} días`, `Proyecto: ${p.nombre}`, haceDias(Math.max(0, 4 - d) * 0.2), ["p", p.id]);
+        const d = diasHasta(p.fecha_limite); if (d >= 0 && d <= 4) add("vp" + p.id, "⏰", d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `Vence en ${d} días`, `Proyecto: ${p.nombre}`, String(p.fecha_limite).slice(0, 10) + "T08:00:00.000Z", ["p", p.id]);
       });
       tks.filter((t) => t.asignado === yo && !["entregado", "rechazado", "cancelado"].includes(t.estado)).forEach((t) => {
-        const d = diasHasta(t.fecha); if (d >= 0 && d <= 4) add("vt" + t.id, "⏰", d === 0 ? "Ticket vence hoy" : d === 1 ? "Ticket vence mañana" : `Ticket vence en ${d} días`, `#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")} ${t.titulo}`, haceDias(0.1), ["tk", t.id]);
+        const d = diasHasta(t.fecha); if (d >= 0 && d <= 4) add("vt" + t.id, "⏰", d === 0 ? "Ticket vence hoy" : d === 1 ? "Ticket vence mañana" : `Ticket vence en ${d} días`, `#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")} ${t.titulo}`, String(t.fecha).slice(0, 10) + "T08:00:00.000Z", ["tk", t.id]);
       });
       // Tickets nuevos por aprobar (solo Hilary)
       if (yo === JEFA) tks.filter((t) => t.estado === "revision_inicial").forEach((t) => add("nt" + t.id, "📨", "Nuevo ticket por revisar", `${t.solicitante} (${t.area}): ${t.titulo}`, t.historial[0].at, ["tk", t.id]));
@@ -2691,6 +2694,7 @@
       add(`cm${t.id}_${ult}`, "💬", tit, `${nuevos.length > 1 ? nuevos.length + " mensajes | " : ""}#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")} ${t.titulo}`, cs[ult].at, ["tk", t.id]);
     });
     // Ejemplo: algunas ya leídas al inicio para mostrar los dos grupos
+    if (!HASTA[yo] && window.sb) try { HASTA[yo] = localStorage.getItem("rabbit_hasta_" + yo) || ""; } catch (e) {}
     if (!LEIDAS[yo] && window.sb) { try { LEIDAS[yo] = new Set(JSON.parse(localStorage.getItem("rabbit_leidas_" + yo) || "null") || L.map((n) => n.id)); } catch (e) { LEIDAS[yo] = new Set(L.map((n) => n.id)); } }
     if (!LEIDAS[yo]) LEIDAS[yo] = new Set(L.sort((a, b) => b.at.localeCompare(a.at)).slice(Math.ceil(L.length / 2)).map((n) => n.id));
     return L.sort((a, b) => b.at.localeCompare(a.at));
@@ -2699,16 +2703,16 @@
   const ntIco = (e) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NT_IC[e] || NT_IC["📨"]}</svg>`;
   let ntTab = "todas";
   function pintarNotif() {
-    if (window.sb && LEIDAS[yo]) try { localStorage.setItem("rabbit_leidas_" + yo, JSON.stringify([...LEIDAS[yo]])); } catch (e) {}
-    const L = notificaciones(), leidas = LEIDAS[yo], nuevas = L.filter((n) => !leidas.has(n.id)), viejas = L.filter((n) => leidas.has(n.id));
+    if (window.sb && LEIDAS[yo]) try { localStorage.setItem("rabbit_leidas_" + yo, JSON.stringify([...LEIDAS[yo]].slice(-300))); localStorage.setItem("rabbit_hasta_" + yo, HASTA[yo] || ""); } catch (e) {}
+    const L = notificaciones(), leidas = LEIDAS[yo], nuevas = L.filter((n) => !leida(n)), viejas = L.filter((n) => leida(n));
     const badge = document.getElementById("nNotif"); badge.textContent = nuevas.length > 99 ? "99+" : nuevas.length; badge.hidden = !nuevas.length;
-    const item = (n) => { const nueva = !leidas.has(n.id); return `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${ntIco(n.ico)}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small></span><span class="nt-der"><em>${hace(n.at)}</em>${nueva ? '<i class="nt-punto"></i>' : ""}</span></button>`; };
+    const item = (n) => { const nueva = !leida(n); return `<button class="nt ${nueva ? "nueva" : ""}" data-id="${n.id}"><span class="nt-ico">${ntIco(n.ico)}</span><span class="nt-txt"><b>${esc(n.tit)}</b><small>${esc(n.txt)}</small></span><span class="nt-der"><em>${hace(n.at)}</em>${nueva ? '<i class="nt-punto"></i>' : ""}</span></button>`; };
     const lista = ntTab === "nuevas" ? nuevas : ntTab === "leidas" ? viejas : [...nuevas, ...viejas];
     const TABS = [["todas", "Todas", L.length], ["nuevas", "No leídas", nuevas.length], ["leidas", "Leídas", viejas.length]];
     menuNotif.innerHTML = `<div class="nt-tabs">${TABS.map(([k, t, c]) => `<button class="nt-tab ${ntTab === k ? "activa" : ""}" data-tab="${k}"><i class="nt-cl"></i>${t}<span>${c}</span></button>`).join("")}</div>
       <div class="nt-lista nt-panel">${lista.length ? lista.map(item).join("") : `<p class="nt-vacio">${ntTab === "leidas" ? "Nada por aquí." : "Estás al día."}</p>`}</div>${nuevas.length ? '<button class="nt-todas nt-pie">Marcar todas como leídas</button>' : ""}`;
     menuNotif.querySelectorAll(".nt-tab").forEach((b) => (b.onclick = (e) => { e.stopPropagation(); ntTab = b.dataset.tab; pintarNotif(); }));
-    menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); pintarNotif(); });
+    menuNotif.querySelector(".nt-todas")?.addEventListener("click", (e) => { e.stopPropagation(); L.forEach((n) => leidas.add(n.id)); const max = L.reduce((m, n) => (n.at > m ? n.at : m), HASTA[yo] || ""); HASTA[yo] = max; pintarNotif(); });
     menuNotif.querySelectorAll(".nt").forEach((b) => (b.onclick = () => {
       const n = L.find((x) => x.id === b.dataset.id); leidas.add(n.id); menuNotif.hidden = true; pintarNotif();
       if (n.ir[0] === "tk") { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(n.ir[1]); if (n.ico === "💬") setTimeout(() => document.querySelector("#detalle .tkc-ayuda")?.scrollIntoView({ behavior: "smooth", block: "start" }), 300); } else { irA(SOLICITANTES[yo] ? "tickets" : "inicio"); abrirProyecto(n.ir[1], true); }
@@ -2842,7 +2846,7 @@
     f.onclick = (e) => { if (e.target === f) cerrar(); };
     document.addEventListener("keydown", esc_);
   }
-  function avisoDemo(espera = 1200) { if (WEB_REAL && !window.miPerfil) return; setTimeout(() => { const L = notificaciones(), n = L.find((x) => !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }, espera); }
+  function avisoDemo(espera = 1200) { if (WEB_REAL && !window.miPerfil) return; setTimeout(() => { const L = notificaciones(), n = L.find((x) => !leida(x)); if (n) mostrarToast(n); }, espera); }
   document.getElementById("campanaBtn").onclick = (e) => { e.stopPropagation(); menuPerfil.hidden = true; pintarNotif(); menuNotif.hidden = !menuNotif.hidden; };
 
   // ===== Navegación entre pestañas =====
@@ -3080,7 +3084,7 @@
     if (pagina === "tickets") pintarTickets();
     const abierto = document.body.classList.contains("con-detalle") && tickets.some((t) => t.id === tkAbierto);
     if (abierto && !(document.activeElement && document.activeElement.closest("#detalle input, #detalle textarea"))) abrirTicket(tkAbierto);
-    if (antes) { const n = notificaciones().find((x) => !antes.has(x.id) && !LEIDAS[yo].has(x.id)); if (n) mostrarToast(n); }
+    if (antes) { const n = notificaciones().find((x) => !antes.has(x.id) && !leida(x)); if (n) mostrarToast(n); }
   }
   async function subirArchivos(t) {
     for (const a of t.archivos || []) {
