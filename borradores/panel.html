@@ -1979,6 +1979,15 @@
   textarea.det-nombre { resize: none; overflow: hidden; line-height: 1.25; }
   .ev-it.k-calabaza .ev-ico { background: #ea7a2e !important; color: #0a0a0a !important; }
   #lateral .k-calabaza .ev-ico svg { width: 28px !important; height: 28px !important; background: none !important; }
+  .det-pedido { margin: 14px 0 4px; padding: 16px 18px; border-radius: 16px; background: #f5f5f5; border: 1px solid #ececec; }
+  .det-pedido .dp-cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .det-pedido h4 { margin: 0; font-size: 1rem; }
+  .det-pedido .dp-ver { border: 0; background: none; font: inherit; font-size: .85rem; font-weight: 600; color: #0a0a0a; cursor: pointer; text-decoration: underline; }
+  .det-pedido small { display: block; margin-top: 12px; font-size: .74rem; color: #737373; }
+  .det-pedido p { margin: 3px 0 0; font-size: .92rem; line-height: 1.45; overflow-wrap: anywhere; } .det-pedido p.dp-vacio { color: #a3a3a3; font-style: italic; }
+  .det-pedido .dp-arch { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .det-pedido .dp-arch a { width: 56px; height: 56px; border-radius: 10px; overflow: hidden; display: grid; place-items: center; background: #fff; border: 1px solid #e5e5e5; font-size: .72rem; font-weight: 700; color: #525252; text-decoration: none; }
+  .det-pedido .dp-arch img { width: 100%; height: 100%; object-fit: cover; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2214,6 +2223,14 @@
         ${p.solicitado_por ? `<div class="det-i det-i-solic"><small>Solicitado por</small><div class="det-solic"><i class="av" style="${fondoAv(p.solicitado_por.nombre)}">${letraAv(p.solicitado_por.nombre)}</i><div><b>${esc(p.solicitado_por.nombre)}</b></div><span class="det-solic-area">${esc(p.solicitado_por.area)}</span><span class="det-solic-tk"><svg viewBox="0 0 72 48" fill="none"><path d="M6 4h60a4 4 0 0 1 4 4v9a7 7 0 0 0 0 14v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-9a7 7 0 0 0 0-14V8a4 4 0 0 1 4-4Z" fill="#0a0a0a"/><path d="M50 8v4M50 18v4M50 28v4M50 38v2" stroke="#737373" stroke-width="2" stroke-linecap="round"/><rect x="12" y="13" width="28" height="5" rx="2.5" fill="#fff"/><rect x="12" y="23" width="20" height="4" rx="2" fill="#a3a3a3"/><rect x="12" y="31" width="14" height="4" rx="2" fill="#525252"/><path d="m56 22 2 2 4-5" stroke="#8ee86a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ticket</span></span></div></div>` : ""}
         <div class="det-i ${p.solicitado_por ? "" : "det-i-full"}"><small>Encargados</small><div class="det-personas">${Object.keys(COLORES).map((n) => `<button type="button" class="det-persona ${p.encargados.includes(n) ? "activa" : ""}" data-n="${n}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></div>
       </div>
+      ${tkDe ? `<section class="det-pedido"><div class="dp-cab"><h4>El pedido</h4><button type="button" class="dp-ver">Ver ticket y chat ›</button></div>
+        <div class="tkd-chips"><span class="tk-chip">${esc(tkDe.tipo)}</span>${tkDe.formato ? `<span class="tk-chip">${esc(tkDe.formato)}</span>` : ""}</div>
+        <small>Qué necesita</small><p>${esc(tkDe.detalle || "—")}</p>
+        ${tkDe.destino ? `<small>Dirigido a</small><p>${esc(tkDe.destino)}</p>` : ""}
+        <small>Texto de la pieza</small><p class="${tkDe.texto ? "" : "dp-vacio"}">${tkDe.texto ? esc(tkDe.texto) : "Aún no tiene el texto final"}</p>
+        ${(tkDe.archivos || []).length ? `<small>Archivos</small><div class="dp-arch">${tkDe.archivos.map((x) => `<a href="${esc(x.url || "#")}" target="_blank" rel="noopener" title="${esc(x.n)}">${String(x.tipo).startsWith("image/") && x.url ? `<img src="${x.url}" alt="" />` : "PDF"}</a>`).join("")}</div>` : ""}
+        ${(tkDe.refs || []).length ? `<small>Referencias</small><p>${tkDe.refs.map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`).join("<br>")}</p>` : ""}
+      </section>` : ""}
       <div class="det-prog"><span>${tareas.length ? `${hechas} de ${tareas.length} tareas hechas` : "Aún sin tareas"}</span><b>${tareas.length ? pct + "%" : ""}</b></div>
       <div class="fx-barra"><i style="width:${pct}%"></i></div>
       <h3 class="det-sub">Tareas <span class="det-npend">${tareas.length - hechas} pendiente${tareas.length - hechas === 1 ? "" : "s"}</span> <small>doble clic en una tarea para renombrarla</small></h3>
@@ -2286,6 +2303,7 @@
       p.standby = !p.standby; pintarDetalle(); armar();
       avisar(p.standby ? `<b>${esc(p.nombre)}</b> quedó en standby` : `<b>${esc(p.nombre)}</b> vuelve a estar activo`, () => { p.standby = !p.standby; pintarDetalle(); armar(); });
     };
+    d.querySelector(".dp-ver")?.addEventListener("click", () => { irA("tickets"); mesTk = "todos"; filtroTk = "todos"; pintarTickets(); abrirTicket(tkDe.id); });
     if (zona.querySelector(".det-borrar")) zona.querySelector(".det-borrar").onclick = () => {
       zona.innerHTML = (tkDe ? `<span>¿Eliminar el ticket <b>${esc(tkDe.titulo)}</b> y su proyecto? No se puede deshacer.</span>` : `<span>¿Eliminar <b>${esc(p.nombre)}</b> y sus ${tareas.length} tareas?</span>`) + `
         <div><button type="button" class="cal-btn det-no">Cancelar</button><button type="button" class="det-si">Sí, eliminar</button></div>`;
