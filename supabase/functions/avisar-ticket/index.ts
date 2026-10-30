@@ -66,8 +66,8 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; pieza: strin
 // Correo para el equipo de marketing: ticket nuevo o ticket asignado
 function avisoEquipo(o: { id: number; titulo: string; tit: string; sub: string; quien: string; area: string; pieza: string; entrega: string; prioridad?: string }) {
   const pr = PRIO[o.prioridad || ""];
-  // Cada dato en su propia tarjeta blanca: etiqueta a la izquierda y valor a la derecha
-  const caja = (k: string, v: string) => `<tr><td style="padding:4px 5px"><table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #ececec;border-radius:12px"><tr><td style="padding:13px 14px;font-size:11px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.08em;width:36%">${k}</td><td style="padding:13px 14px 13px 0;font-size:15px;font-weight:700;color:#0a0a0a">${v}</td></tr></table></td></tr>`;
+  // Datos en tarjetas: el pedido arriba a todo el ancho y el resto en dos columnas
+  const caja = (k: string, v: string, ancho = 1) => `<td colspan="${ancho}" width="${ancho === 2 ? 100 : 50}%" style="padding:5px;vertical-align:top"><div style="background:#ffffff;border:1px solid #ececec;border-radius:12px;padding:12px 14px;height:46px"><div style="font-size:11px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.08em">${k}</div><div style="margin-top:5px;font-size:15px;font-weight:700;color:#0a0a0a;line-height:1.35">${v}</div></div></td>`;
   return `<!doctype html><html><body style="margin:0;background:#f4f4f5">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:28px 12px;font-family:Arial,Helvetica,sans-serif"><tr><td align="center">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e7">
@@ -77,12 +77,10 @@ function avisoEquipo(o: { id: number; titulo: string; tit: string; sub: string; 
       <td align="right"><span style="display:inline-block;background:#ffffff;color:#0a0a0a;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px">${num(o.id)}</span></td>
     </tr></table></td></tr>
     <tr><td style="padding:28px 24px 4px"><h1 style="margin:0;font-size:21px;line-height:1.3;color:#0a0a0a">${o.tit}</h1><p style="margin:8px 0 0;font-size:14px;color:#71717a;line-height:1.45">${o.sub}</p></td></tr>
-    <tr><td style="padding:18px 19px 4px"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;border-radius:16px;padding:6px">
-      ${caja("Pedido", o.titulo)}
-      ${caja("Pedido por", `${o.quien} <span style="font-weight:400;color:#71717a">| ${o.area}</span>`)}
-      ${caja("Pieza", o.pieza || "—")}
-      ${caja("Entrega", o.entrega || "—")}
-      ${caja("Prioridad", pr ? `<span style="display:inline-block;background:${pr[2]};color:${pr[1]};font-size:12px;line-height:16px;padding:2px 10px;border-radius:999px">${pr[0]}</span>` : `<span style="font-weight:400;color:#71717a">Por definir</span>`)}
+    <tr><td style="padding:18px 19px 4px"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;border-radius:16px;padding:5px">
+      <tr>${caja("Pedido", o.titulo, 2)}</tr>
+      <tr>${caja("Pedido por", `${o.quien} <span style="font-weight:400;color:#71717a">| ${o.area}</span>`)}${caja("Pieza", o.pieza || "—")}</tr>
+      <tr>${caja("Entrega", o.entrega || "—")}${caja("Prioridad", pr ? `<span style="display:inline-block;background:${pr[2]};color:${pr[1]};font-size:12px;line-height:16px;padding:2px 10px;border-radius:999px">${pr[0]}</span>` : `<span style="font-weight:400;color:#71717a">Por definir</span>`)}</tr>
     </table></td></tr>
     <tr><td style="padding:22px 24px 26px"><a href="${PANEL}" style="display:block;background:#0a0a0a;color:#ffffff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:15px">Abrir Rabbit</a></td></tr>
   </table>
