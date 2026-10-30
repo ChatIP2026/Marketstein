@@ -3096,8 +3096,13 @@
     if (error) return;
     const antes = avisarNuevos ? new Set(notificaciones().map((n) => n.id)) : null;
     const urls = {}; tickets.forEach((t) => (t.archivos || []).forEach((a) => a.ruta && a.url && (urls[a.ruta] = a.url)));
+    // Cambios hechos en esta pantalla que aún no se guardan (p. ej. una aprobación recién hecha): no se pisan al recargar
+    const pendientes = new Map(tickets.filter((t) => !t.ejemplo && (enviandoTk.has(t) || !BD_TK.has(t.id) || JSON.stringify(aBd(t)) !== BD_TK.get(t.id))).map((t) => [t.id, t]));
+    const previos = new Map([...BD_TK]);
     tickets.length = 0; BD_TK.clear();
-    data.forEach((r) => { const t = deBd(r); t.archivos.forEach((a) => (a.url = urls[a.ruta])); tickets.push(t); BD_TK.set(t.id, JSON.stringify(aBd(t))); });
+    data.forEach((r) => { const t = deBd(r); t.archivos.forEach((a) => (a.url = urls[a.ruta])); const loc = pendientes.get(t.id);
+      if (loc) { pendientes.delete(t.id); tickets.push(loc); BD_TK.set(t.id, previos.get(t.id) || JSON.stringify(aBd(t))); } else { tickets.push(t); BD_TK.set(t.id, JSON.stringify(aBd(t))); } });
+    pendientes.forEach((t) => { if (!previos.has(t.id)) tickets.push(t); }); // tickets nuevos aún sin guardar
     const faltan = tickets.flatMap((t) => t.archivos.filter((a) => a.ruta && !a.url));
     if (faltan.length) { const { data: f } = await sb.storage.from("adjuntos").createSignedUrls(faltan.map((a) => a.ruta), 60 * 60 * 6); (f || []).forEach((x, i) => (faltan[i].url = x.signedUrl)); }
     contarTickets(); pintarNotif(); enlazarSolicitados();
@@ -3140,7 +3145,7 @@
           await subirArchivos(t);
           const { error } = await sb.from("tickets").update(aBd(t)).eq("id", t.id);
           enviandoTk.delete(t);
-          if (error) { BD_TK.set(t.id, previo); estadoGuardado("error"); } else estadoGuardado("ok");
+          if (error) { BD_TK.set(t.id, previo); estadoGuardado("error"); console.error("No se guardó el ticket", t.id, error); } else estadoGuardado("ok");
         }
       }
     }
