@@ -1990,6 +1990,8 @@
   .det-pedido .dp-arch img { width: 100%; height: 100%; object-fit: cover; }
   #lateral .pr-txt b { overflow: hidden !important; line-height: 1.3; max-height: 2.6em; overflow-wrap: anywhere; flex: none; }
   #lateral .pr-txt small { flex: none; }
+  #avisoSesion { position: fixed; left: 50%; top: 14px; transform: translateX(-50%); z-index: 100000; display: flex; gap: 14px; align-items: center; background: #dc2626; color: #fff; padding: 12px 16px 12px 18px; border-radius: 14px; font-size: .92rem; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,.25); max-width: calc(100% - 24px); }
+  #avisoSesion button { border: 0; background: #fff; color: #dc2626; font: inherit; font-weight: 700; padding: 8px 12px; border-radius: 9px; cursor: pointer; white-space: nowrap; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3119,7 +3121,25 @@
       if (!error) a.ruta = ruta;
     }
   }
-  function estadoGuardado(tipo) {
+  // Si un guardado falla: se anota el motivo, se intenta renovar la sesión y, si sigue fallando, se avisa en grande
+  const FALLOS = []; window.FALLOS = FALLOS;
+  async function falloGuardado(err) {
+    const msg = String(err?.message || err || ""); FALLOS.push({ at: new Date().toISOString(), msg, code: err?.code, status: err?.status });
+    if (FALLOS.length > 30) FALLOS.shift(); console.error("Rabbit no pudo guardar:", err);
+    if (/jwt|expired|token|401|403|row-level|permission/i.test(msg + " " + (err?.code || "") + " " + (err?.status || "")) && window.sb) {
+      const { error } = await sb.auth.refreshSession();
+      if (error) return avisoSesion("Tu sesión venció y los últimos cambios no se guardaron.");
+    }
+    clearTimeout(falloGuardado.t); falloGuardado.t = setTimeout(() => { if (document.getElementById("guardado")?.classList.contains("g-error")) avisoSesion("No se están guardando los cambios. Recarga la página y vuelve a hacerlos."); }, 12000);
+  }
+  function avisoSesion(txt) {
+    if (document.getElementById("avisoSesion")) return;
+    const d = document.createElement("div"); d.id = "avisoSesion";
+    d.innerHTML = `<span>${txt}</span><button type="button" onclick="location.reload()">Recargar página</button>`; document.body.append(d);
+  }
+  function estadoGuardado(tipo, err) {
+    if (tipo === "error" && err) falloGuardado(err);
+    if (tipo === "ok") document.getElementById("avisoSesion")?.remove();
     let e = document.getElementById("guardado");
     if (!e) { e = document.createElement("div"); e.id = "guardado"; document.body.append(e); }
     clearTimeout(estadoGuardado.t);
@@ -3134,7 +3154,7 @@
         await subirArchivos(t);
         const { data, error } = await sb.from("tickets").insert(aBd(t)).select("id, created_at").single();
         enviandoTk.delete(t);
-        if (error) { estadoGuardado("error"); continue; }
+        if (error) { estadoGuardado("error", error); continue; }
         estadoGuardado("ok"); t.id = data.id; t.creado = data.created_at; BD_TK.set(t.id, JSON.stringify(aBd(t)));
         if (tkAbierto === viejo) tkAbierto = t.id;
         if (pagina === "tickets") pintarTickets();
@@ -3145,7 +3165,7 @@
           await subirArchivos(t);
           const { error } = await sb.from("tickets").update(aBd(t)).eq("id", t.id);
           enviandoTk.delete(t);
-          if (error) { BD_TK.set(t.id, previo); estadoGuardado("error"); console.error("No se guardó el ticket", t.id, error); } else estadoGuardado("ok");
+          if (error) { BD_TK.set(t.id, previo); estadoGuardado("error", error); } else estadoGuardado("ok");
         }
       }
     }
@@ -3188,7 +3208,7 @@
         if (!BD_P.has(p.id)) {
           estadoGuardado("guardando");
           const { data, error } = await sb.from("proyectos").insert(pAbd(p)).select("id, created_at").single();
-          if (error) { estadoGuardado("error"); continue; }
+          if (error) { estadoGuardado("error", error); continue; }
           const viejo = p.id; mapaP.delete(viejo); p.id = data.id; p.created_at = data.created_at; mapaP.set(p.id, p);
           for (const t of mapaT.values()) if (t.proyecto_id === viejo) t.proyecto_id = p.id;
           for (const t of tickets) if (t.proyecto === viejo) t.proyecto = p.id;
@@ -3197,7 +3217,7 @@
         } else if (j !== BD_P.get(p.id)) {
           estadoGuardado("guardando");
           const { error } = await sb.from("proyectos").update(pAbd(p)).eq("id", p.id);
-          if (error) { estadoGuardado("error"); continue; }
+          if (error) { estadoGuardado("error", error); continue; }
           BD_P.set(p.id, j); estadoGuardado("ok");
         }
       }
@@ -3207,11 +3227,11 @@
         const j = JSON.stringify(tAbd(t));
         if (!BD_T.has(t.id)) {
           const { data, error } = await sb.from("tareas").insert(tAbd(t)).select("id, created_at").single();
-          if (error) { estadoGuardado("error"); continue; }
+          if (error) { estadoGuardado("error", error); continue; }
           mapaT.delete(t.id); t.id = data.id; t.created_at = data.created_at; mapaT.set(t.id, t); BD_T.set(t.id, JSON.stringify(tAbd(t)));
         } else if (j !== BD_T.get(t.id)) {
           const { error } = await sb.from("tareas").update(tAbd(t)).eq("id", t.id);
-          if (!error) BD_T.set(t.id, j); else estadoGuardado("error");
+          if (!error) BD_T.set(t.id, j); else estadoGuardado("error", error);
         }
       }
       for (const id of [...BD_T.keys()]) if (!mapaT.has(id)) { const { error } = await sb.from("tareas").delete().eq("id", id); if (!error) BD_T.delete(id); }
@@ -3722,6 +3742,7 @@
     document.body.insertAdjacentHTML("beforeend", `<div class="carga-ini" aria-label="Cargando">${rbMini()}</div>`);
     const sb = window.sb = supabase.createClient("https://aqjmdlrafjjzdrqnogid.supabase.co", "sb_publishable_EYSGo1Od8olfwv79ItxRzg_WDLfk1zf");
     document.body.classList.add("en-vivo");
+    sb.auth.onAuthStateChange((ev) => { if (ev === "SIGNED_OUT") avisoSesion("Tu sesión se cerró. Recarga para volver a entrar."); });
     sb.auth.getSession().then(async ({ data }) => {
       if (!data.session) return (location.href = "login.html");
       const { data: p } = await sb.from("perfiles").select("*").eq("id", data.session.user.id).single();
