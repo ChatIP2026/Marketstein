@@ -63,12 +63,58 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; pieza: strin
 </td></tr></table></body></html>`;
 }
 
+// Correo para el equipo de marketing: ticket nuevo o ticket asignado
+function avisoEquipo(o: { id: number; titulo: string; tit: string; sub: string; quien: string; area: string; pieza: string; entrega: string; prioridad?: string }) {
+  const pr = PRIO[o.prioridad || ""];
+  const fila = (k: string, v: string) => `<tr><td style="padding:9px 0;font-size:12px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.06em;width:38%">${k}</td><td style="padding:9px 0;font-size:15px;font-weight:700;color:#0a0a0a">${v}</td></tr>`;
+  return `<!doctype html><html><body style="margin:0;background:#f4f4f5">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:28px 12px;font-family:Arial,Helvetica,sans-serif"><tr><td align="center">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e7">
+    <tr><td style="background:#0a0a0a;padding:22px 24px"><table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td width="52"><div style="width:44px;height:44px;border-radius:12px;background:#ffffff;text-align:center"><img src="${LOGO}" width="36" height="36" alt="Rabbit" style="display:inline-block;margin-top:4px"></div></td>
+      <td style="color:#ffffff;font-size:17px;font-weight:700;padding-left:10px">rabbit ai<div style="font-size:12px;font-weight:400;color:#a1a1aa;margin-top:2px">Equipo de marketing</div></td>
+      <td align="right"><span style="display:inline-block;background:#ffffff;color:#0a0a0a;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px">${num(o.id)}</span></td>
+    </tr></table></td></tr>
+    <tr><td style="padding:28px 24px 4px"><h1 style="margin:0;font-size:21px;line-height:1.3;color:#0a0a0a">${o.tit}</h1><p style="margin:8px 0 0;font-size:14px;color:#71717a;line-height:1.45">${o.sub}</p></td></tr>
+    <tr><td style="padding:16px 24px 4px"><table width="100%" cellpadding="0" cellspacing="0" style="border-top:2px dashed #e4e4e7;border-bottom:2px dashed #e4e4e7">
+      ${fila("Pedido", o.titulo)}${fila("Pedido por", `${o.quien} <span style="font-weight:400;color:#71717a">| ${o.area}</span>`)}${fila("Pieza", o.pieza || "—")}${fila("Entrega", o.entrega || "—")}${pr ? fila("Prioridad", `<span style="display:inline-block;background:${pr[2]};color:${pr[1]};font-size:12px;padding:5px 10px;border-radius:999px">${pr[0]}</span>`) : ""}
+    </table></td></tr>
+    <tr><td style="padding:22px 24px 26px"><a href="${PANEL}" style="display:block;background:#0a0a0a;color:#ffffff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:15px">Abrir Rabbit</a></td></tr>
+  </table>
+  <p style="font-size:11px;color:#a1a1aa;margin:16px 0 0">Correo automático de Rabbit | iPartner marketing</p>
+</td></tr></table></body></html>`;
+}
+const enviar = async (para: string, asunto: string, html: string) => {
+  const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para, asunto, html }) });
+  const txt = await r.text(); if (!txt.includes("ok")) console.error("No se envió el correo a", para, txt); return txt;
+};
+const perfil = async (id: string) => (await sb.from("perfiles").select("nombre, area, correo").eq("id", id).single()).data;
+
 Deno.serve(async (req) => {
-  const { record: t, old_record: o } = await req.json();
-  if (!t || !o) return new Response("sin datos");
+  const { type, record: t, old_record: o } = await req.json();
+  if (!t) return new Response("sin datos");
+  const pieza = esc([t.tipo, t.formato].filter(Boolean).join(" | "));
+
+  // 1) Ticket nuevo: aviso a todo el equipo de marketing
+  if (type === "INSERT" || !o) {
+    const sol = await perfil(t.solicitante);
+    const { data: eq } = await sb.from("perfiles").select("correo").in("rol", ["jefa", "equipo"]).eq("activa", true);
+    for (const p of eq || []) await enviar(p.correo, `Nuevo ticket ${num(t.id)} de ${sol?.nombre || "alguien"}`, avisoEquipo({ id: t.id, titulo: esc(t.titulo),
+      tit: `${esc(sol?.nombre || "Alguien")} envió un ticket`, sub: "Está esperando la revisión del equipo de marketing.", quien: esc(sol?.nombre || "—"), area: esc(sol?.area || ""), pieza, entrega: fecha(t.fecha) }));
+    return new Response("aviso de ticket nuevo enviado");
+  }
+
   const aprobado = !o.asignado && t.asignado && !["rechazado", "cancelado"].includes(t.estado);
+  const reasignado = o.asignado && t.asignado && o.asignado !== t.asignado;
   const entregado = o.estado !== "entregado" && t.estado === "entregado";
-  if (!aprobado && !entregado) return new Response("nada que avisar");
+
+  // 2) Ticket asignado (o reasignado): aviso a la persona encargada
+  if (aprobado || reasignado) {
+    const [enc, sol, jefa] = await Promise.all([perfil(t.asignado), perfil(t.solicitante), sb.from("perfiles").select("nombre").eq("rol", "jefa").limit(1).single().then((r) => r.data)]);
+    if (enc?.correo) await enviar(enc.correo, `Te asignaron el ticket de ${sol?.nombre || "alguien"}`, avisoEquipo({ id: t.id, titulo: esc(t.titulo),
+      tit: `Te asignaron el ticket de ${esc(sol?.nombre || "alguien")}`, sub: `${esc(jefa?.nombre || "La Team Líder")} te lo asignó. Ya aparece en tu Mi entorno.`, quien: esc(sol?.nombre || "—"), area: esc(sol?.area || ""), pieza, entrega: fecha(t.fecha), prioridad: t.prioridad }));
+  }
+  if (!aprobado && !entregado) return new Response("listo");
 
   const { data: u } = await sb.auth.admin.getUserById(t.solicitante);
   const para = u?.user?.email;
@@ -76,7 +122,7 @@ Deno.serve(async (req) => {
 
   const asunto = aprobado ? `Tu ticket ${num(t.id)} fue aprobado` : `Tu ticket ${num(t.id)} está listo`;
   const hoy = new Date().toLocaleDateString("en-CA", { timeZone: "America/Lima" });
-  const html = plantilla({ listo: !aprobado, id: t.id, titulo: esc(t.titulo), pieza: esc([t.tipo, t.formato].filter(Boolean).join(" | ")),
+  const html = plantilla({ listo: !aprobado, id: t.id, titulo: esc(t.titulo), pieza,
     prioridad: t.prioridad, entrega: fecha(t.fecha), entregado: aprobado ? undefined : fecha(hoy), aTiempo: hoy <= t.fecha });
 
   const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para, asunto, html }) });
