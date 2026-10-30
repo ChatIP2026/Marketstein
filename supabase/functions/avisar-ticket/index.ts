@@ -66,7 +66,8 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; pieza: strin
 // Correo para el equipo de marketing: ticket nuevo o ticket asignado
 function avisoEquipo(o: { id: number; titulo: string; tit: string; sub: string; quien: string; area: string; pieza: string; entrega: string; prioridad?: string }) {
   const pr = PRIO[o.prioridad || ""];
-  const fila = (k: string, v: string) => `<tr><td style="padding:9px 0;font-size:12px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.06em;width:38%">${k}</td><td style="padding:9px 0;font-size:15px;font-weight:700;color:#0a0a0a">${v}</td></tr>`;
+  let n = 0; // filas separadas por una línea fina; la etiqueta va arriba y el dato debajo
+  const fila = (k: string, v: string) => `<tr><td style="padding:12px 0;${n++ ? "border-top:1px solid #f0f0f0;" : ""}"><div style="font-size:11px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.08em">${k}</div><div style="margin-top:4px;font-size:16px;font-weight:700;color:#0a0a0a">${v}</div></td></tr>`;
   return `<!doctype html><html><body style="margin:0;background:#f4f4f5">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:28px 12px;font-family:Arial,Helvetica,sans-serif"><tr><td align="center">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e7">
