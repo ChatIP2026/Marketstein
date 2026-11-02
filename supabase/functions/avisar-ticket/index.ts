@@ -67,7 +67,7 @@ function plantilla(o: { listo: boolean; id: number; titulo: string; pieza: strin
 function avisoEquipo(o: { id: number; titulo: string; tit: string; sub: string; quien: string; area: string; pieza: string; entrega: string; prioridad?: string }) {
   const pr = PRIO[o.prioridad || ""];
   // Datos en tarjetas: el pedido arriba a todo el ancho y el resto en dos columnas
-  const caja = (k: string, v: string, ancho = 1) => `<td colspan="${ancho}" width="${ancho === 2 ? 100 : 50}%" style="padding:5px;vertical-align:top"><div style="background:#ffffff;border:1px solid #ececec;border-radius:12px;padding:12px 14px;height:46px"><div style="font-size:11px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.08em">${k}</div><div style="margin-top:5px;font-size:15px;font-weight:700;color:#0a0a0a;line-height:1.35">${v}</div></div></td>`;
+  const caja = (k: string, v: string, ancho = 1) => `<td colspan="${ancho}" width="${ancho === 2 ? 100 : 50}%" style="padding:5px;vertical-align:top"><div style="background:#ffffff;border:1px solid #ececec;border-radius:12px;padding:12px 14px;min-height:46px"><div style="font-size:11px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.08em">${k}</div><div style="margin-top:5px;font-size:15px;font-weight:700;color:#0a0a0a;line-height:1.35">${v}</div></div></td>`;
   return `<!doctype html><html><body style="margin:0;background:#f4f4f5">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:28px 12px;font-family:Arial,Helvetica,sans-serif"><tr><td align="center">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e7">
