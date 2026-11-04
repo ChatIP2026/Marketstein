@@ -2001,6 +2001,7 @@
   .tk-prios .tk-carga-btn { justify-content: flex-start; width: 100%; min-width: 0; box-sizing: border-box; margin: 0 !important; }
   @media (min-width: 1100px) { .tk-det .tk-prios:has(.tk-carga-btn) { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 420px) { .tk-prios:has(.tk-carga-btn) { grid-template-columns: 1fr; } }
+  .tk-carga-btn .cg-n { font-weight: 600; color: #0a0a0a; margin-right: 4px; } .tk-carga-btn.activa .cg-n { color: #fff; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3486,7 +3487,7 @@
     if (jefa && (t.estado === "revision_inicial" || (t.estado === "falta_info" && !t.asignado))) acciones = `
       <div class="tk-acc"><h4>Tu decisión</h4>
         <label>Prioridad<div class="tk-prios">${Object.entries(TK_PRIO).map(([k, v]) => `<button type="button" data-p="${k}" style="--c:${v.c}" class="${t.prioridad === k ? "activa" : ""}">${v.t}</button>`).join("")}</div></label>
-        <label>Asignar a<div class="tk-prios">${Object.keys(COLORES).map((n) => { const c = cargaDe(n); return `<button type="button" data-a="${n}" class="tk-carga-btn ${t.asignado === n ? "activa" : ""}" title="${n} | ${c.txt}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><i class="cg-d cg-${c.nivel}"></i>${c.tk} ticket${c.tk === 1 ? "" : "s"} | ${c.ta} tarea${c.ta === 1 ? "" : "s"}</button>`; }).join("")}</div></label>
+        <label>Asignar a<div class="tk-prios">${Object.keys(COLORES).map((n) => { const c = cargaDe(n); return `<button type="button" data-a="${n}" class="tk-carga-btn ${t.asignado === n ? "activa" : ""}" title="${n} | ${c.txt}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><b class="cg-n">${n}</b><i class="cg-d cg-${c.nivel}"></i>${c.tk} ticket${c.tk === 1 ? "" : "s"} | ${c.ta} tarea${c.ta === 1 ? "" : "s"}</button>`; }).join("")}</div></label>
         <button class="nuevo-btn" id="tkAceptar">Aceptar y asignar</button>
         <div class="tk-sec"><button class="cal-btn peligro" id="tkRechazar">Rechazar</button></div>
         <textarea id="tkMotivo" placeholder="Escribe la pregunta o el motivo…" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button>
