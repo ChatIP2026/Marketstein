@@ -4010,7 +4010,24 @@
       <div class="gp-cols">${PRI.map(col).join("")}</div>
       </section>`;
   }
+  // Datos manuales (tardanzas y vestimenta) guardados por mes en Supabase: cada mes empieza limpio
+  const MANUAL_LISTO = {};
+  async function cargarManual(mes) {
+    MANUAL_LISTO[mes] = "cargando";
+    const { data, error } = await sb.from("puntaje_manual").select("perfil, tardanzas, vestimenta").eq("mes", mes);
+    if (error) { MANUAL_LISTO[mes] = false; return; }
+    const M = (MANUAL[mes] = {});
+    (data || []).forEach((r) => { const n = NOMBRE_DE[r.perfil]; if (n) M[n] = { tardanzas: r.tardanzas, vestimenta: +r.vestimenta }; });
+    MANUAL_LISTO[mes] = true; if (pagina === "dashboard") pintarDash();
+  }
+  async function guardarManual(mes, n) {
+    const m = MANUAL[mes][n]; if (!ID_DE[n]) return;
+    estadoGuardado("guardando");
+    const { error } = await sb.from("puntaje_manual").upsert({ mes, perfil: ID_DE[n], tardanzas: m.tardanzas, vestimenta: m.vestimenta }, { onConflict: "mes,perfil" });
+    estadoGuardado(error ? "error" : "ok", error);
+  }
   function pintarDash() {
+    if (window.sb && !MANUAL_LISTO[mesDash]) cargarManual(mesDash);
     const cont = document.getElementById("vistaDash"), jefa = yo === JEFA;
     const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
     const hoyMes = new Date().toISOString().slice(0, 7);
@@ -4117,7 +4134,7 @@
       avisar("⬇ Descargando el dashboard en Excel");
     }));
     if (!cont.querySelector(".dg-svg")) return;
-    cont.querySelectorAll(".dm-cols input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); pintarDash(); }));
+    cont.querySelectorAll(".dm-cols input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); if (window.sb) guardarManual(mesDash, inp.dataset.n); pintarDash(); }));
     // Cruz + tooltip al pasar el mouse
     const svg = cont.querySelector(".dg-svg"), cruz = svg.querySelector(".dg-cruz"), pts = svg.querySelector(".dg-puntos"), tip = cont.querySelector(".dg-tip");
     svg.querySelector(".dg-hit").onmousemove = (e) => {
