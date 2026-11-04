@@ -1992,6 +1992,9 @@
   #lateral .pr-txt small { flex: none; }
   #avisoSesion { position: fixed; left: 50%; top: 14px; transform: translateX(-50%); z-index: 100000; display: flex; gap: 14px; align-items: center; background: #dc2626; color: #fff; padding: 12px 16px 12px 18px; border-radius: 14px; font-size: .92rem; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,.25); max-width: calc(100% - 24px); }
   #avisoSesion button { border: 0; background: #fff; color: #dc2626; font: inherit; font-weight: 700; padding: 8px 12px; border-radius: 9px; cursor: pointer; white-space: nowrap; }
+  .tk-carga-btn { display: inline-flex !important; align-items: center; gap: 7px; color: #525252 !important; }
+  .tk-carga-btn.activa { color: #fff !important; }
+  .cg-d { width: 8px; height: 8px; border-radius: 50%; flex: none; } .cg-v { background: #16a34a; } .cg-a { background: #f59e0b; } .cg-r { background: #dc2626; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3461,6 +3464,13 @@
     return k < 0 ? null : { n: k + 1, antes: k, total: cola.length };
   }
   const textoAntes = (n) => (n === 0 ? "¡Eres el siguiente!" : n === 1 ? "1 ticket antes que el tuyo" : `${n} tickets antes que el tuyo`);
+  // Carga de cada persona al asignar: tickets abiertos (valen x2) + tareas pendientes
+  function cargaDe(n) {
+    const tk = tickets.filter((t) => t.asignado === n && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length;
+    const ta = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha && mapaP.has(t.proyecto_id)).length;
+    const v = tk * 2 + ta, nivel = v <= 10 ? "v" : v <= 18 ? "a" : "r";
+    return { tk, ta, nivel, txt: { v: "Con espacio", a: "Carga media", r: "Muy cargado" }[nivel] };
+  }
   function abrirTicket(id) {
     tkAbierto = id;
     const t = tickets.find((x) => x.id === id), d = document.getElementById("detalle");
@@ -3470,7 +3480,7 @@
     if (jefa && (t.estado === "revision_inicial" || (t.estado === "falta_info" && !t.asignado))) acciones = `
       <div class="tk-acc"><h4>Tu decisión</h4>
         <label>Prioridad<div class="tk-prios">${Object.entries(TK_PRIO).map(([k, v]) => `<button type="button" data-p="${k}" style="--c:${v.c}" class="${t.prioridad === k ? "activa" : ""}">${v.t}</button>`).join("")}</div></label>
-        <label>Asignar a<div class="tk-prios">${Object.keys(COLORES).map((n) => `<button type="button" data-a="${n}" class="${t.asignado === n ? "activa" : ""}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i>${n}</button>`).join("")}</div></label>
+        <label>Asignar a<div class="tk-prios">${Object.keys(COLORES).map((n) => { const c = cargaDe(n); return `<button type="button" data-a="${n}" class="tk-carga-btn ${t.asignado === n ? "activa" : ""}" title="${n} | ${c.txt}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><i class="cg-d cg-${c.nivel}"></i>${c.tk} ticket${c.tk === 1 ? "" : "s"} | ${c.ta} tarea${c.ta === 1 ? "" : "s"}</button>`; }).join("")}</div></label>
         <button class="nuevo-btn" id="tkAceptar">Aceptar y asignar</button>
         <div class="tk-sec"><button class="cal-btn peligro" id="tkRechazar">Rechazar</button></div>
         <textarea id="tkMotivo" placeholder="Escribe la pregunta o el motivo…" hidden></textarea><button class="cal-btn" id="tkMotivoOk" hidden>Enviar</button>
