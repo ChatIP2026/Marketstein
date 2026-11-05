@@ -2045,6 +2045,8 @@
   .fsel-label input[name="fechaVista"] { cursor: pointer; font-weight: 600; }
   @media (max-width: 820px) { .bloq-btn { width: 100%; justify-content: center; } }
   @keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+  .mis-cab .mis-nuevo { align-self: center; flex: none; }
+  @media (max-width: 820px) { .mis-cab .mis-nuevo { align-self: stretch; width: 100%; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3003,14 +3005,16 @@
     return [...mapaP.values()].filter((p) => p.encargados.includes(yo) || p.creado_por === yo || [...mapaT.values()].some((t) => t.proyecto_id === p.id && t.encargado === yo))
       .sort((a, b) => (a.estado === "listo") - (b.estado === "listo") || (a.fecha_limite || "9").localeCompare(b.fecha_limite || "9"));
   }
+  // En Mi entorno, "Nuevo proyecto" abre el mismo formulario con la persona ya marcada como encargada
+  function enlazarNuevoMis(cont) { const b = cont.querySelector("#misNuevo"); if (b) b.onclick = () => { abrirNuevo(); fNuevo.querySelector(`.mn-persona[data-n="${yo}"]`)?.classList.add("activa"); }; }
   function pintarMis() {
     const cont = document.getElementById("vistaMis");
     const lista = misProyectos();
     const misT = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
     const pend = misT.filter((t) => !t.hecha);
     const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
-    let html = `<div class="mis-cab"><div><h2 class="saludo-h">${saludo}, ${yo} ${rbMini()}</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div></div>`;
-    if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.</div>`; return; }
+    let html = `<div class="mis-cab"><div><h2 class="saludo-h">${saludo}, ${yo} ${rbMini()}</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div>${esSolicitante() ? "" : `<button class="nuevo-btn mis-nuevo" id="misNuevo">＋ Nuevo proyecto</button>`}</div>`;
+    if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.</div>`; enlazarNuevoMis(cont); return; }
     // Filtros y divisiones por estado
     const ORDEN = ["en_curso", "sin_empezar", "listo"];
     const cuenta = (e) => lista.filter((p) => p.estado === e).length;
@@ -3025,7 +3029,7 @@
     </div></div>`;
     if (modoEnt === "calendario") {
       const vis = lista.filter((p) => filtroEnt === "todos" || p.estado === filtroEnt);
-      cont.innerHTML = html + calendarioEntorno(vis);
+      cont.innerHTML = html + calendarioEntorno(vis); enlazarNuevoMis(cont);
       enlazarEntorno(cont);
       return;
     }
@@ -3037,7 +3041,7 @@
         ${grupo.length ? `<div class="burbujas">${grupo.map(tarjetaChat).join("")}</div>` : `<div class="ent-vacia">No tienes proyectos ${{ sin_empezar: "sin empezar", en_curso: "en curso", listo: "listos" }[e]}.</div>`}</section>`;
     }
     cont.innerHTML = html;
-    enlazarEntorno(cont);
+    enlazarEntorno(cont); enlazarNuevoMis(cont);
     cont.querySelectorAll(".bc").forEach((c) => {
       const p = mapaP.get(+c.dataset.id);
       c.querySelectorAll(".bc-abrir").forEach((x) => (x.onclick = () => abrirProyecto(p.id)));
