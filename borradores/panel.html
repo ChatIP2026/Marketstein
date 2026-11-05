@@ -2045,8 +2045,8 @@
   .fsel-label input[name="fechaVista"] { cursor: pointer; font-weight: 600; }
   @media (max-width: 820px) { .bloq-btn { width: 100%; justify-content: center; } }
   @keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } }
-  .mis-cab .mis-nuevo { align-self: center; flex: none; }
-  @media (max-width: 820px) { .mis-cab .mis-nuevo { align-self: stretch; width: 100%; } }
+  .ent-acc { display: flex; align-items: center; gap: 10px; flex: none; } .ent-acc .mis-nuevo { height: 44px; white-space: nowrap; }
+  @media (max-width: 820px) { .ent-barra:has(.ent-acc) { flex-wrap: wrap !important; } .ent-barra .ent-filtros { flex: 1 1 100% !important; } .ent-acc { width: 100%; } .ent-acc .mis-nuevo { flex: 1; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3013,8 +3013,8 @@
     const misT = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
     const pend = misT.filter((t) => !t.hecha);
     const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
-    let html = `<div class="mis-cab"><div><h2 class="saludo-h">${saludo}, ${yo} ${rbMini()}</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div>${esSolicitante() ? "" : `<button class="nuevo-btn mis-nuevo" id="misNuevo">＋ Nuevo proyecto</button>`}</div>`;
-    if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.</div>`; enlazarNuevoMis(cont); return; }
+    let html = `<div class="mis-cab"><div><h2 class="saludo-h">${saludo}, ${yo} ${rbMini()}</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div></div>`;
+    if (!lista.length) { cont.innerHTML = html + `<div class="mis-vacio"><b>Aún no participas en ningún proyecto</b>Cuando te asignen uno, aparecerá aquí.${esSolicitante() ? "" : `<button class="nuevo-btn mis-nuevo" id="misNuevo" style="margin-top:14px">＋ Nuevo proyecto</button>`}</div>`; enlazarNuevoMis(cont); return; }
     // Filtros y divisiones por estado
     const ORDEN = ["en_curso", "sin_empezar", "listo"];
     const cuenta = (e) => lista.filter((p) => p.estado === e).length;
@@ -3022,11 +3022,11 @@
       <button data-fe="todos" class="${filtroEnt === "todos" ? "activa" : ""}">Todos <span>${lista.length}</span></button>
       ${ORDEN.map((e) => `<button data-fe="${e}" class="f-${e} ${filtroEnt === e ? "activa" : ""}">${ICONOS[e]}${ETIQUETA[e]} <span>${cuenta(e)}</span></button>`).join("")}
     </div>
-    <div class="ent-modo">
+    <div class="ent-acc">${esSolicitante() ? "" : `<button class="nuevo-btn mis-nuevo" id="misNuevo">＋ Nuevo proyecto</button>`}<div class="ent-modo">
       <button data-modo="carpetas" class="${modoEnt === "carpetas" ? "activa" : ""}" title="Ver como carpetas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4l2 2h7A2.5 2.5 0 0 1 21 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/></svg></button>
       <span></span>
       <button data-modo="calendario" class="${modoEnt === "calendario" ? "activa" : ""}" title="Ver en calendario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>
-    </div></div>`;
+    </div></div></div>`;
     if (modoEnt === "calendario") {
       const vis = lista.filter((p) => filtroEnt === "todos" || p.estado === filtroEnt);
       cont.innerHTML = html + calendarioEntorno(vis); enlazarNuevoMis(cont);
