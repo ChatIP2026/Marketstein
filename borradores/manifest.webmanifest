@@ -1,0 +1,14 @@
+{
+  "name": "Rabbit | Marketing iPartner",
+  "short_name": "Rabbit",
+  "description": "Tickets y proyectos del equipo de marketing de iPartner",
+  "start_url": "/borradores/login",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    { "src": "/borradores/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/borradores/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
