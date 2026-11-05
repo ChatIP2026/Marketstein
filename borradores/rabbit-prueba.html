@@ -2026,7 +2026,7 @@
   .rcal-g { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 6px; text-align: center; font-size: .9rem; }
   .rcal-g b { font-size: .74rem; color: #a3a3a3; font-weight: 500; padding: 3px 0; }
   .rcal-g i { font-style: normal; height: 38px; display: grid; place-items: center; position: relative; z-index: 0; cursor: pointer; border-radius: 50%; }
-  .rcal-g i[data-f]:hover { background: #f4f4f5; } .rcal-g i.o { color: #d4d4d4; cursor: default; }
+  .rcal-g i[data-f]:not(.bl):not(.r):not(.ini):not(.fin):not(.sel):hover::before { content: ""; position: absolute; width: 38px; height: 38px; border-radius: 50%; background: #f4f4f5; z-index: -1; } .rcal-g i.o { color: #d4d4d4; cursor: default; }
   .rcal-g i.hoy::after { content: ""; position: absolute; width: 36px; height: 36px; border-radius: 50%; border: 2px solid #0a0a0a; z-index: -1; }
   /* rango (panel de Hilary) */
   .rcal-g i.r { background: rgba(220,38,38,.14); color: #991b1b; font-weight: 600; border-radius: 0; }
