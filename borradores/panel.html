@@ -2392,7 +2392,19 @@
   }
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarProyecto(); });
 
+  // El estado siempre debe coincidir con las tareas: todas hechas = Listo; Listo con tareas pendientes = En curso
+  function corregirEstados() {
+    const porP = new Map();
+    for (const t of mapaT.values()) { const c = porP.get(t.proyecto_id) || [0, 0]; c[0]++; if (t.hecha) c[1]++; porP.set(t.proyecto_id, c); }
+    for (const p of mapaP.values()) {
+      const [tot, ok] = porP.get(p.id) || [0, 0];
+      if (tot && ok === tot && p.estado !== "listo") p.estado = "listo";
+      else if (tot && ok < tot && p.estado === "listo") p.estado = "en_curso";
+      else if (ok > 0 && p.estado === "sin_empezar") p.estado = "en_curso";
+    }
+  }
   function armar() {
+    corregirEstados();
     pintarPronto();
     pintarTareas();
     if (abiertoId !== null) pintarDetalle();
