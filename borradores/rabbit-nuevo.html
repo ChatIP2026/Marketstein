@@ -1179,7 +1179,7 @@
     <span class="rb-nombre">rabbit ai</span>
     </div>
     <nav>
-      <a class="activo" data-p="inicio"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Inicio</a><a data-p="mis"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Mi entorno</a><a data-p="tickets"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg><span class="nl">Tickets</span> <span class="nav-num" id="navTk"></span></a><a data-p="personas"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.2.6 3.5 2.4 3.5 5.2"/></svg>Personas</a><a data-p="dashboard"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg>Dashboard</a>
+      <a class="activo" data-p="inicio"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Inicio</a><a data-p="mis"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Mi entorno</a><a data-p="tickets"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg><span class="nl">Tickets</span> <span class="nav-num" id="navTk"></span></a><a data-p="personas"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2.2.6 3.5 2.4 3.5 5.2"/></svg>Personas</a><a data-p="eventos"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="m9.5 15 1.8 1.8 3.4-3.6"/></svg>Eventos</a><a data-p="dashboard"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg>Dashboard</a>
     </nav>
     <div class="boton-neo campana-btn" title="Notificaciones" id="campanaBtn">
       <svg viewBox="0 0 24 24" fill="currentColor">
@@ -1207,6 +1207,7 @@
   <section class="mis vidrio" id="vistaTickets" hidden></section>
   <section class="mis vidrio" id="vistaPersonas" hidden></section>
   <section class="mis vidrio" id="vistaDash" hidden></section>
+  <section class="mis vidrio" id="vistaEventos" hidden></section>
 
   <div class="rejilla" id="vistaInicio">
 
@@ -2046,6 +2047,98 @@
   @keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } }
   .ent-acc { display: flex; align-items: center; gap: 10px; flex: none; } .ent-acc .mis-nuevo { height: 42px !important; border-radius: 12px !important; padding: 0 16px !important; white-space: nowrap; box-sizing: border-box; display: inline-flex; align-items: center; }
   @media (max-width: 820px) { .ent-barra:has(.ent-acc) { flex-wrap: wrap !important; } .ent-barra .ent-filtros { flex: 1 1 100% !important; } .ent-acc { width: 100%; } .ent-acc .mis-nuevo { flex: 1; } }
+
+  /* ===== Eventos ===== */
+  #vistaEventos { padding: 26px 28px 30px; }
+  .ev-cab { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+  .ev-cab-i { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; } .ev-cab h2 { margin: 0; font-size: 1.5rem; }
+  .ev-seg { display: inline-flex; background: #f2f2f2; border-radius: 12px; padding: 4px; gap: 2px; }
+  .ev-seg button { border: 0; background: none; font: inherit; font-size: .86rem; color: #666; padding: 7px 14px; border-radius: 9px; cursor: pointer; }
+  .ev-seg button.on { background: #0a0a0a; color: #fff; }
+  .ev-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 26px; }
+  .ev-sub { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; } .ev-sub h3 { margin: 0; font-size: 1.15rem; }
+  .ev-sub-d { display: flex; align-items: center; gap: 6px; }
+  .ev-nav, .ev-hoy { border: 1px solid #e3e3e3; background: #fafafa; border-radius: 10px; height: 34px; min-width: 34px; font: inherit; cursor: pointer; color: #333; }
+  .ev-hoy { padding: 0 12px; } .ev-sub-d .ev-seg { margin-left: 8px; }
+  .ev-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+  .ev-wd { font-size: .74rem; color: #888; text-align: center; padding: 4px 0; }
+  .ev-dia { min-height: 94px; border: 1px solid #e6e6e6; border-radius: 14px; background: linear-gradient(#fafafa, #f3f3f3); display: flex; flex-direction: column; align-items: stretch; padding: 7px 6px 7px; font: inherit; cursor: pointer; text-align: left; min-width: 0; }
+  .ev-dia > b { font-size: .86rem; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; }
+  .ev-dia.hoy > b { background: #0a0a0a; color: #fff; } .ev-dia.sel { outline: 2px solid #0a0a0a; outline-offset: -1px; }
+  .ev-dia:hover { filter: brightness(.98); }
+  .ev-dn { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; }
+  .ev-dn span { font-size: .66rem; color: #777; font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ev-dn span.ev { color: #111; font-weight: 700; }
+  .ev-pts { display: flex; justify-content: center; gap: 4px; margin-top: 4px; } .ev-pts i { width: 9px; height: 9px; border-radius: 50%; border: 2px solid; box-sizing: border-box; }
+  .ev-h3 { margin: 2px 0 10px; font-size: 1.02rem; display: flex; align-items: center; gap: 8px; } .ev-cuadro { width: 10px; height: 10px; background: #0a0a0a; border-radius: 2px; }
+  .ev-proxs { display: flex; flex-direction: column; }
+  .ev-prox, .ag-fila { display: flex; gap: 14px; padding: 13px 10px; border: 0; border-bottom: 1px solid #eee; background: none; font: inherit; text-align: left; cursor: pointer; width: 100%; color: inherit; }
+  .ev-prox.sel { background: #f6f6f6; border-radius: 14px; border-bottom-color: transparent; } .ev-prox:hover, .ag-fila:hover { background: #fafafa; }
+  .ep-fecha { width: 86px; flex: none; } .ep-top { display: flex; align-items: flex-end; gap: 6px; }
+  .ep-top em { font-style: normal; font-size: .68rem; font-weight: 700; border-radius: 5px; padding: 2px 6px; margin-bottom: 4px; } .ep-top b { font-size: 1.7rem; line-height: 1; letter-spacing: -.02em; }
+  .ep-fecha small { display: block; font-size: .68rem; color: #888; margin-top: 3px; }
+  .ep-linea { width: 2px; border-radius: 2px; flex: none; align-self: stretch; }
+  .ep-info { flex: 1; min-width: 0; display: flex; flex-direction: column; } .ep-info > b { font-size: .88rem; line-height: 1.25; }
+  .ep-l { display: flex; align-items: center; gap: 6px; font-size: .76rem; color: #666; margin-top: 3px; } .ep-l i { display: flex; } .ep-l svg { width: 13px; height: 13px; }
+  .ev-lt { position: relative; height: 12px; margin: 11px 6px 4px; }
+  .lt-base { position: absolute; left: 0; width: 80%; top: 5px; height: 3px; background: #e6e6e6; border-radius: 3px; } .lt-pun { position: absolute; left: 80%; right: 0; top: 4px; border-top: 3px dotted #d0d0d0; }
+  .lt-ok { position: absolute; left: 0; top: 5px; height: 3px; border-radius: 3px; }
+  .lt-p { position: absolute; top: 2px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; border: 2px solid; box-sizing: border-box; } .lt-p.g { top: 0; width: 12px; height: 12px; margin-left: -6px; }
+  .ev-lt-t { display: flex; justify-content: space-between; gap: 6px; font-size: .66rem; color: #888; white-space: nowrap; } .ev-lt-t b { color: #222; }
+  .ag-mes { font-size: .74rem; font-weight: 700; letter-spacing: .06em; color: #888; margin: 18px 0 4px; } .ag-mes:first-child { margin-top: 4px; }
+  .ag-fila { display: grid; grid-template-columns: 86px 2px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) 96px; align-items: center; }
+  .ag-nom b { display: block; font-size: .92rem; } .ag-pills { display: flex; gap: 5px; margin-bottom: 4px; flex-wrap: wrap; }
+  .ag-pills em { font-style: normal; font-size: .68rem; font-weight: 700; border-radius: 999px; padding: 2px 9px; } .ag-pills em.pc { background: #f1f1f1; color: #666; }
+  .ag-prep small { display: block; font-size: .7rem; color: #888; } .ag-barra { display: block; height: 6px; background: #eee; border-radius: 9px; margin: 5px 0 4px; overflow: hidden; } .ag-barra i { display: block; height: 100%; border-radius: 9px; }
+  .ag-enc { display: flex; justify-content: flex-end; } .ag-enc small { font-size: .72rem; color: #999; }
+  .ev-avs { display: inline-flex; padding-left: 8px; } .ev-av { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; margin-left: -8px; display: grid; place-items: center; font-style: normal; font-size: .62rem; font-weight: 700; color: #0a0a0a; box-sizing: border-box; flex: none; }
+  .ev-av.mas { background: #e2e2e2; color: #333; }
+  .mc-cab { display: flex; justify-content: space-between; align-items: center; } .mc-cab .ev-nav { height: 28px; min-width: 28px; margin-left: 4px; }
+  .mc-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; } .mc-wd { font-size: .7rem; color: #999; text-align: center; }
+  .mc-d { height: 42px; border: 0; background: none; border-radius: 10px; font: inherit; font-size: .84rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; }
+  .mc-d i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid; box-sizing: border-box; } .mc-d i.nada { border: 0; } .mc-d.hoy { background: #0a0a0a; color: #fff; font-weight: 700; } .mc-d:hover { background: #f3f3f3; } .mc-d.hoy:hover { background: #0a0a0a; }
+  .ev-ley { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; font-size: .78rem; color: #666; } .ev-ley span { display: flex; align-items: center; gap: 8px; } .ev-ley i { width: 9px; height: 9px; border-radius: 50%; } .ev-ley i.hueco { border: 2px solid #999; box-sizing: border-box; }
+  .ev-vacio { color: #999; font-size: .86rem; padding: 18px 4px; }
+  /* Ventana del evento */
+  .ev-pills { display: flex; gap: 8px; align-items: center; } .ev-pill-tipo { border: 0; font: inherit; font-size: .74rem; font-weight: 700; border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+  .ev-pill-est { border: 1.5px solid #0a0a0a; border-radius: 999px; padding: 3px 10px; font-size: .74rem; font-weight: 600; }
+  .ev-tarjetas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .ev-card { border-radius: 18px; padding: 15px 16px; border: 1px solid; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .ev-card small { font-size: .7rem; font-weight: 700; letter-spacing: .06em; } .ev-card.fecha { background: #0a0a0a; border-color: #0a0a0a; color: #fff; } .ev-card.fecha small { color: #aaa; }
+  .ev-fechas { display: flex; align-items: center; gap: 6px; } .ev-fechas span { color: #aaa; }
+  .ev-fechas input, .ev-datos input { min-width: 0; flex: 1; font: inherit; font-size: .86rem; font-weight: 700; border: 1px solid rgba(0,0,0,.1); background: #fff; color: #111; border-radius: 9px; padding: 6px 8px; }
+  .ev-card.fecha input { background: #1f1f1f; color: #fff; border-color: #333; color-scheme: dark; } .ev-datos { display: flex; gap: 6px; } .ev-datos input { font-weight: 500; }
+  .ev-acc { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: .8rem; } .ev-acc a { color: #ddd; }
+  .ev-pc { display: flex; align-items: center; gap: 6px; cursor: pointer; } .ev-gris { color: #888; font-size: .8rem; }
+  .ev-enc { background: #f6f6f6; border: 1px solid #eee; border-radius: 16px; padding: 13px 15px; } .ev-enc > small { display: block; margin-bottom: 8px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; color: #777; }
+  .ev-det .fx-barra { margin-top: 6px; }
+  .et-lista { display: flex; flex-direction: column; }
+  .et-fila { display: flex; align-items: center; gap: 10px; padding: 8px 2px; border-bottom: 1px solid #f2f2f2; }
+  .et-check { width: 18px; height: 18px; flex: none; border: 1.5px solid #999; border-radius: 5px; background: #fff; cursor: pointer; font-size: .7rem; color: #fff; padding: 0; display: grid; place-items: center; }
+  .et-check.ok { background: #0a0a0a; border-color: #0a0a0a; }
+  .et-texto { flex: 1; min-width: 0; font-size: .9rem; outline: none; } .et-fila.hecha .et-texto { color: #999; text-decoration: line-through; }
+  .et-resp { width: 196px; flex: none; display: flex; align-items: center; gap: 8px; border: 1px solid #e3e3e3; background: #f6f6f6; border-radius: 999px; padding: 3px 8px 3px 14px; font: inherit; cursor: pointer; min-height: 34px; }
+  .et-resp > span:first-child { flex: 1; min-width: 0; text-align: left; font-size: .78rem; font-weight: 600; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .et-resp svg { width: 14px; height: 14px; color: #999; flex: none; } .et-resp .ev-avs { justify-content: flex-end; }
+  .et-fecha { width: 132px; flex: none; font: inherit; font-size: .78rem; border: 1px solid #e3e3e3; border-radius: 8px; padding: 5px 6px; color: #555; background: #fff; }
+  .et-x { border: 0; background: none; color: #bbb; cursor: pointer; font-size: .8rem; padding: 4px; } .et-x:hover { color: #dc2626; }
+  .et-pop { position: absolute; z-index: 30; width: 250px; background: #fff; border: 1px solid #e5e5e5; border-radius: 16px; box-shadow: 0 14px 40px rgba(0,0,0,.14); padding: 10px; max-height: 340px; overflow: auto; }
+  .et-pop small { display: block; font-size: .68rem; font-weight: 700; letter-spacing: .06em; color: #777; margin: 6px 6px 4px; }
+  .et-pop button { display: flex; align-items: center; gap: 9px; width: 100%; border: 0; background: none; font: inherit; font-size: .85rem; padding: 6px; border-radius: 9px; cursor: pointer; text-align: left; }
+  .et-pop button:hover { background: #f5f5f5; } .et-pop .ev-av { margin-left: 0; }
+  .et-caja { width: 16px; height: 16px; border: 1.5px solid #999; border-radius: 4px; display: grid; place-items: center; font-style: normal; font-size: .62rem; color: #fff; flex: none; } .et-pop button.on .et-caja { background: #0a0a0a; border-color: #0a0a0a; }
+  .ev-det { position: fixed; }
+  .ev-card, .ev-card * { text-align: left; } .ev-card { align-items: stretch !important; }
+  .ev-fechas { display: grid !important; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  .ev-datos { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ev-card input:not([type=checkbox]) { width: 100% !important; box-sizing: border-box !important; margin: 0 !important; height: 36px; }
+  .ev-card input[type=checkbox] { width: 16px; height: 16px; margin: 0; accent-color: #fff; }
+  .ev-dia { min-height: 84px; } .ev-det .det-peligro { display: flex; gap: 10px; flex-wrap: wrap; }
+  @media (max-width: 1100px) { .ev-cuerpo { grid-template-columns: 1fr; } .ag-fila { grid-template-columns: 70px 2px minmax(0, 1fr) 96px; } .ag-lug, .ag-prep { display: none; } }
+  @media (max-width: 760px) {
+    #vistaEventos { padding: 18px 16px 24px; } .ev-dia { min-height: 62px; padding: 5px 3px; } .ev-dn { display: none; } .ev-grid { gap: 4px; }
+    .ev-tarjetas { grid-template-columns: 1fr; } .et-fila { flex-wrap: wrap; } .et-texto { flex-basis: calc(100% - 60px); } .et-resp { width: auto; flex: 1; } .et-fecha { width: 124px; }
+    .ag-fila { grid-template-columns: 64px 2px minmax(0, 1fr); } .ag-enc { display: none; } .ep-fecha { width: 64px; } .ep-top b { font-size: 1.35rem; }
+  }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2234,7 +2327,8 @@
     const cont = document.getElementById("listaEventos"); if (!cont) return;
     document.getElementById("evMas").hidden = !VEN_PERSONAS.includes(yo);
     const lim = new Date(); lim.setDate(lim.getDate() + 60); const L = isoDe(lim);
-    const lista = EVENTOS.map((e) => ({ ...e, prox: proximaFecha(e) })).filter((e) => e.prox >= HOY && e.prox <= L).sort((a, b) => a.prox.localeCompare(b.prox)).slice(0, 5);
+    const base = typeof EVS !== "undefined" && EVS.size ? [...EVENTOS.filter((e) => e.k === "cumple"), ...[...EVS.values()].filter((e) => e.fecha_desde).map((e) => ({ t: e.nombre, k: "empresa", f: e.fecha_desde }))] : EVENTOS;
+    const lista = base.map((e) => ({ ...e, prox: proximaFecha(e) })).filter((e) => e.prox >= HOY && e.prox <= L).sort((a, b) => a.prox.localeCompare(b.prox)).slice(0, 5);
     const MES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"];
     cont.innerHTML = lista.length ? lista.map((e) => { const [, m, dd] = e.prox.split("-"), n = diasHasta(e.prox);
       return `<div class="ev-it k-${e.ico || e.k}"><span class="ev-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO_EV[e.ico || e.k]}</svg></span><span class="pr-txt ev-txt"><b>${esc(e.k === "cumple" ? e.t.replace(/^Cumpleaños de /, "") : e.t)}</b><small>${e.k === "cumple" ? "Cumpleaños | " : ""}${n === 0 ? "Hoy" : n === 1 ? "Mañana" : `${+dd} ${MES[+m - 1]} | en ${n} días`}</small></span></div>`; }).join("")
@@ -2389,7 +2483,7 @@
     };
     return true;
   }
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarProyecto(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { cerrarProyecto(); if (typeof cerrarEvento === "function") cerrarEvento(); } });
 
   // El estado siempre debe coincidir con las tareas: todas hechas = Listo; Listo con tareas pendientes = En curso
   function corregirEstados() {
@@ -2958,9 +3052,10 @@
     document.getElementById("vistaTickets").hidden = p !== "tickets";
     document.getElementById("vistaPersonas").hidden = p !== "personas";
     document.getElementById("vistaDash").hidden = p !== "dashboard";
+    document.getElementById("vistaEventos").hidden = p !== "eventos";
     document.body.classList.toggle("en-mis", p !== "inicio");
     setTimeout(guardarFiltros, 0);
-    if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else if (p === "personas") pintarPersonas(); else if (p === "dashboard") pintarDash(); else armar();
+    if (p === "mis") pintarMis(); else if (p === "tickets") pintarTickets(); else if (p === "personas") pintarPersonas(); else if (p === "dashboard") pintarDash(); else if (p === "eventos") pintarEventosPag(); else armar();
   }
   document.querySelectorAll("nav a").forEach((a) => (a.onclick = () => {
     if (a.dataset.p === "pronto") return avisar(`<b>${a.dataset.n}</b> estará disponible pronto`);
@@ -3414,12 +3509,303 @@
     if (aplicarRol.yaUsado) { filtroTk = null; busTk = ""; personaTk = null; mesTk = "todos"; } aplicarRol.yaUsado = true;
     const sol = esSolicitante();
     document.body.classList.toggle("rol-solicitante", sol);
-    document.querySelectorAll("nav a").forEach((a) => (a.hidden = (sol && a.dataset.p !== "tickets") || a.dataset.p === "personas"));
+    document.querySelectorAll("nav a").forEach((a) => (a.hidden = (sol && a.dataset.p !== "tickets" && !(a.dataset.p === "eventos" && esLegal())) || a.dataset.p === "personas"));
     if (!sol && pagina === "personas" && !VEN_PERSONAS.includes(yo)) irA("inicio");
     document.querySelector('nav a[data-p="tickets"] .nl').textContent = sol ? "Mis tickets" : "Tickets";
-    if (sol) irA("tickets"); else if (pagina === "mis") pintarMis(); else if (pagina === "tickets") pintarTickets();
+    if (sol && !(esLegal() && pagina === "eventos")) irA("tickets"); else if (pagina === "eventos") pintarEventosPag(); else if (pagina === "mis") pintarMis(); else if (pagina === "tickets") pintarTickets();
     contarTickets();
   }
+
+  // ===================== EVENTOS (Marketing + Legal) =====================
+  // Cada evento tiene días de preparación y días del evento. Interno = naranja, externo = morado, cumpleaños = amarillo
+  const EV_TIPO = { interno: { t: "Interno", c: "#E07B1A", s: "#FFF8F0", f: "#FFE7CC", tx: "#B4580A" }, externo: { t: "Externo", c: "#7C4DDB", s: "#FAF7FF", f: "#ECE3FF", tx: "#5B34B5" }, cumple: { t: "Cumpleaños", c: "#E0B000", s: "#FFFBEA", f: "#FFF1B8", tx: "#8A6A00" } };
+  const EVS = new Map(), EVT = new Map();
+  let evVista = "mes", evFiltro = "todos", evMes = new Date(), evDia = HOY, evAbierto = null, evPop = null;
+  evMes.setDate(1);
+  const evMk = () => Object.keys(COLORES);
+  const evLg = () => Object.keys(SOLICITANTES).filter((n) => SOLICITANTES[n] === "Legal");
+  const esLegal = () => SOLICITANTES[yo] === "Legal";
+  const puedeEventos = () => !esSolicitante() || esLegal();
+  const MES_L = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "setiembre", "octubre", "noviembre", "diciembre"];
+  const MES_C = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"];
+  const DIA_C = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+  const sumaD = (iso, n) => { const d = new Date(iso + "T00:00"); d.setDate(d.getDate() + n); return isoDe(d); };
+  const fCorta = (iso) => { const [, m, d] = iso.split("-"); return `${+d} ${MES_C[+m - 1]}`; };
+  const rangoCorto = (a, b) => !a ? "" : !b || a === b ? fCorta(a) : a.slice(5, 7) === b.slice(5, 7) ? `${+a.slice(8)} al ${fCorta(b)}` : `${fCorta(a)} al ${fCorta(b)}`;
+  const enRango = (d, a, b) => !!a && d >= a && d <= (b || a);
+  const evCumples = () => (WEB_REAL ? CUMPLES.map(([md, n]) => ({ md, n })) : [{ md: sumaD(HOY, 2).slice(5), n: "Pierina" }]);
+  // Estado según la fecha: Por confirmar | En preparación | Próximo | Hoy | Realizado
+  const evEstado = (e) => { if (!e.fecha_desde) return "Fecha por definir"; const fin = e.fecha_hasta || e.fecha_desde;
+    if (HOY > fin) return "Realizado"; if (HOY >= e.fecha_desde) return "Hoy"; if (enRango(HOY, e.prep_desde, e.prep_hasta)) return "En preparación"; return "Próximo"; };
+  const evVisibles = () => [...EVS.values()].filter((e) => evFiltro === "todos" || e.tipo === evFiltro);
+  const tareasDe = (id) => [...EVT.values()].filter((t) => t.evento_id === id).sort((a, b) => (a.hecha - b.hecha) || String(a.fecha || "9").localeCompare(String(b.fecha || "9")) || a.created_at.localeCompare(b.created_at));
+  const avEv = (n) => `<i class="ev-av" style="${fondoAv(n)}" title="${esc(n)}">${letraAv(n)}</i>`;
+  const grupoAv = (ns) => !ns.length ? "" : `<span class="ev-avs">${(ns.length > 3 ? ns.slice(0, 2) : ns).map(avEv).join("")}${ns.length > 3 ? `<i class="ev-av mas">+${ns.length - 2}</i>` : ""}</span>`;
+  const IC_PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>';
+  const IC_RELOJ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+  // ----- Datos de la vista previa (los mismos eventos del Excel) -----
+  function evDemo() {
+    if (!WEB_REAL) { for (const [n] of [["Luis"], ["Antonio"], ["Gustavo"]]) SOLICITANTES[n] = "Legal"; }
+    const base = [["Acción de gracias", "interno", "2026-11-26", "Oficina principal", false, "1:00 p. m."], ["Desayuno ejecutivo | 2 sectores", "externo", "2026-11-27", "", true, "8:30 a. m."], ["Evento de Fin de Año", "interno", "2026-12-18", "", true, "7:00 p. m."],
+      ["Preventa fiesta | online", "externo", "2027-01-29", "Online", true, ""], ["Por elegir: Paseo en yate | Padlet | Club con piscina", "interno", "2027-02-26", "", true, ""], ["IP-Tonazo", "interno", "2027-04-30", "", true, ""], ["Aniversario #16 iPartner", "interno", "2027-05-28", "", true, ""]];
+    base.forEach(([nombre, tipo, f, lugar, pc, hora], i) => EVS.set(i + 1, { id: i + 1, nombre, tipo, prep_desde: sumaD(f, -14), prep_hasta: sumaD(f, -1), fecha_desde: f, fecha_hasta: f, hora, lugar, por_confirmar: pc, encargados: i === 1 ? ["Hilary", "Carlos", "Luis"] : i === 0 ? ["Pierina", "Ariana"] : [], creado_por: "Hilary", created_at: `2026-11-0${i + 1}T10:00:00Z` }));
+    [["Reservar el local", ["Hilary"], "2026-11-16", true], ["Invitaciones a clientes", ["Carlos", "Luis"], "2026-11-20", false], ["Contrato con el catering", ["Luis"], "2026-11-23", false], ["Material impreso", ["Carlos", "Pierina", "Ariana", "Antonio"], "2026-11-25", false]]
+      .forEach(([texto, enc, fecha, hecha], k) => EVT.set(100 + k, { id: 100 + k, evento_id: 2, texto, encargados: enc, fecha, hecha, created_at: `2026-11-0${k + 1}T10:00:00Z` }));
+    [["Decoración", ["Pierina"], "2026-11-20", false], ["Menú", ["Ariana"], "2026-11-24", false]].forEach(([texto, enc, fecha, hecha], k) => EVT.set(200 + k, { id: 200 + k, evento_id: 1, texto, encargados: enc, fecha, hecha, created_at: `2026-11-0${k + 1}T10:00:00Z` }));
+  }
+
+  // ----- Base de datos -----
+  const evAbd = (e) => ({ nombre: e.nombre, tipo: e.tipo, prep_desde: e.prep_desde || null, prep_hasta: e.prep_hasta || null, fecha_desde: e.fecha_desde || null, fecha_hasta: e.fecha_hasta || null,
+    hora: e.hora || "", lugar: e.lugar || "", por_confirmar: !!e.por_confirmar, encargados: e.encargados.map((n) => ID_DE[n]).filter(Boolean) });
+  const evDeBd = (r) => ({ id: r.id, nombre: r.nombre, tipo: r.tipo, prep_desde: r.prep_desde, prep_hasta: r.prep_hasta, fecha_desde: r.fecha_desde, fecha_hasta: r.fecha_hasta, hora: r.hora, lugar: r.lugar,
+    por_confirmar: r.por_confirmar, encargados: (r.encargados || []).map((u) => NOMBRE_DE[u]).filter(Boolean), creado_por: NOMBRE_DE[r.creado_por] || null, created_at: r.created_at });
+  const etAbd = (t) => ({ evento_id: t.evento_id, texto: t.texto, encargados: t.encargados.map((n) => ID_DE[n]).filter(Boolean), fecha: t.fecha || null, hecha: !!t.hecha });
+  const etDeBd = (r) => ({ id: r.id, evento_id: r.evento_id, texto: r.texto, encargados: (r.encargados || []).map((u) => NOMBRE_DE[u]).filter(Boolean), fecha: r.fecha, hecha: r.hecha, created_at: r.created_at });
+  let evPend = 0; const evTimers = new Map();
+  const enVivo = () => WEB_REAL && window.sb;
+  async function evGuardarYa(tipo, obj) {
+    if (!enVivo()) return;
+    evPend++; estadoGuardado("guardando");
+    try {
+      if (tipo === "ev") {
+        if (obj.id < 0) {
+          const { data, error } = await sb.from("eventos").insert({ ...evAbd(obj), creado_por: ID_DE[yo] || null }).select("id, created_at").single();
+          if (error) return estadoGuardado("error", error);
+          const viejo = obj.id; EVS.delete(viejo); obj.id = data.id; obj.created_at = data.created_at; EVS.set(obj.id, obj);
+          if (evAbierto === viejo) evAbierto = obj.id;
+          for (const t of EVT.values()) if (t.evento_id === viejo) { t.evento_id = obj.id; evGuardar("et", t); }
+        } else { const { error } = await sb.from("eventos").update(evAbd(obj)).eq("id", obj.id); if (error) return estadoGuardado("error", error); }
+      } else if (tipo === "et") {
+        if (obj.evento_id < 0) return; // se guarda cuando su evento tenga id real
+        if (obj.id < 0) {
+          const { data, error } = await sb.from("evento_tareas").insert(etAbd(obj)).select("id, created_at").single();
+          if (error) return estadoGuardado("error", error);
+          EVT.delete(obj.id); obj.id = data.id; obj.created_at = data.created_at; EVT.set(obj.id, obj);
+        } else { const { error } = await sb.from("evento_tareas").update(etAbd(obj)).eq("id", obj.id); if (error) return estadoGuardado("error", error); }
+      }
+      estadoGuardado("ok");
+    } finally { evPend--; if (pagina === "eventos") pintarEventosPag(); }
+  }
+  function evGuardar(tipo, obj) { // agrupa cambios rápidos (escribir, marcar varias casillas)
+    const k = tipo + obj.id; clearTimeout(evTimers.get(k)); evTimers.set(k, setTimeout(() => { evTimers.delete(k); evGuardarYa(tipo, obj); }, obj.id < 0 ? 0 : 450));
+  }
+  async function evBorrar(tabla, id) { if (!enVivo() || id < 0) return; const { error } = await sb.from(tabla).delete().eq("id", id); if (error) avisar("No se pudo eliminar: " + esc(error.message)); }
+  async function cargarEventosBd() {
+    if (evPend || evTimers.size) return setTimeout(cargarEventosBd, 800);
+    const [{ data: es, error: e1 }, { data: ts, error: e2 }] = await Promise.all([sb.from("eventos").select("*"), sb.from("evento_tareas").select("*")]);
+    if (e1 || e2) return; // la tabla aún no existe o no hay permiso
+    EVS.clear(); EVT.clear(); es.forEach((r) => EVS.set(r.id, evDeBd(r))); ts.forEach((r) => EVT.set(r.id, etDeBd(r)));
+    const escribiendo = document.activeElement && document.activeElement.closest("#detalle.ev-det input, #detalle.ev-det textarea");
+    if (pagina === "eventos") pintarEventosPag();
+    if (evAbierto !== null && !escribiendo && document.getElementById("detalle").classList.contains("ev-det")) pintarEvento();
+    pintarEventos();
+  }
+  function iniciarEventosVivos() {
+    cargarEventosBd(); let t;
+    sb.channel("eventos-vivos")
+      .on("postgres_changes", { event: "*", schema: "public", table: "eventos" }, () => { clearTimeout(t); t = setTimeout(cargarEventosBd, 700); })
+      .on("postgres_changes", { event: "*", schema: "public", table: "evento_tareas" }, () => { clearTimeout(t); t = setTimeout(cargarEventosBd, 700); })
+      .subscribe();
+  }
+
+  // ----- Qué hay cada día -----
+  function itemsDelDia(d) {
+    const out = [];
+    for (const e of evVisibles()) {
+      if (enRango(d, e.fecha_desde, e.fecha_hasta)) out.push({ e, ev: true, tipo: e.tipo, n: e.nombre });
+      else if (enRango(d, e.prep_desde, e.prep_hasta)) out.push({ e, ev: false, tipo: e.tipo, n: e.nombre });
+    }
+    if (evFiltro === "todos") for (const c of evCumples()) if (d.slice(5) === c.md) out.push({ cumple: c.n, ev: true, tipo: "cumple", n: `Cumple ${c.n}` });
+    return out.sort((a, b) => b.ev - a.ev);
+  }
+  function proximos(n) {
+    const lista = evVisibles().filter((e) => !e.fecha_desde || (e.fecha_hasta || e.fecha_desde) >= HOY).map((e) => ({ e, f: e.fecha_desde || "9999", tipo: e.tipo }));
+    if (evFiltro === "todos") for (const c of evCumples()) { let f = `${HOY.slice(0, 4)}-${c.md}`; if (f < HOY) f = `${+HOY.slice(0, 4) + 1}-${c.md}`; lista.push({ cumple: c.n, f, tipo: "cumple" }); }
+    return lista.sort((a, b) => a.f.localeCompare(b.f)).slice(0, n);
+  }
+  // Línea de tiempo: inicio de preparación -> fin de preparación -> día del evento
+  function lineaTiempo(e) {
+    if (!e.prep_desde || !e.fecha_desde) return "";
+    const tot = Math.max(1, diasHasta(e.prep_hasta || e.prep_desde) - diasHasta(e.prep_desde) + 1), va = Math.min(tot, Math.max(0, -diasHasta(e.prep_desde) + 1));
+    const pct = HOY >= e.fecha_desde ? 1 : va / tot, c = EV_TIPO[e.tipo].c, punto = (x, lleno, g) => `<i class="lt-p ${g ? "g" : ""}" style="left:${x}%;border-color:${c};background:${lleno ? c : "#fff"}"></i>`;
+    return `<div class="ev-lt"><div class="lt-base"></div><div class="lt-pun"></div><div class="lt-ok" style="width:${pct * 80}%;background:${c}"></div>${punto(0, pct > 0)}${punto(80, pct >= 1)}${punto(100, HOY >= e.fecha_desde, true)}</div>
+      <div class="ev-lt-t"><span>Prep. ${rangoCorto(e.prep_desde, e.prep_hasta)}</span><b>Evento ${+e.fecha_desde.slice(8)}</b></div>`;
+  }
+  function filaProximo(x, sel) {
+    const T = EV_TIPO[x.tipo], f = x.f === "9999" ? null : x.f, d = f ? new Date(f + "T00:00") : null;
+    const e = x.e, nombre = e ? e.nombre : `Cumpleaños de ${x.cumple}`;
+    const lineas = e ? [e.lugar || e.por_confirmar ? [IC_PIN, e.lugar || "Lugar por confirmar"] : null, [IC_RELOJ, e.hora || (f ? "Hora por definir" : "Fecha por definir")]].filter(Boolean) : [[IC_RELOJ, "Todo el día"]];
+    return `<button type="button" class="ev-prox ${sel ? "sel" : ""}" ${e ? `data-ev="${e.id}"` : ""} ${f ? `data-dia="${f}"` : ""}>
+      <span class="ep-fecha"><span class="ep-top"><em style="background:${T.f};color:${T.tx}">${d ? DIA_C[d.getDay()] : MES_C[0].replace(/./, (c) => c)}</em><b>${d ? String(d.getDate()).padStart(2, "0") : "—"}</b></span><small>${d ? `${MES_C[d.getMonth()]} ${d.getFullYear()}` : "Por definir"}</small></span>
+      <span class="ep-linea" style="background:${T.c}"></span>
+      <span class="ep-info"><b>${esc(nombre)}</b>${lineas.map(([ic, t]) => `<span class="ep-l"><i style="color:${T.c}">${ic}</i>${esc(t)}</span>`).join("")}${e ? lineaTiempo(e) : ""}</span></button>`;
+  }
+
+  // ----- Pantalla Eventos -----
+  function pintarEventosPag() {
+    const cont = document.getElementById("vistaEventos"); if (!cont) return;
+    if (evPop && !document.body.contains(evPop)) evPop = null;
+    const y = evMes.getFullYear(), m = evMes.getMonth();
+    const seg = (arr, act, attr) => `<div class="ev-seg">${arr.map(([k, t]) => `<button type="button" class="${k === act ? "on" : ""}" ${attr}="${k}">${t}</button>`).join("")}</div>`;
+    let izq;
+    if (evVista === "mes") {
+      const dias = new Date(y, m + 1, 0).getDate(), desf = (new Date(y, m, 1).getDay() + 6) % 7;
+      let g = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((x) => `<div class="ev-wd">${x}</div>`).join("") + "<div></div>".repeat(desf);
+      for (let d = 1; d <= dias; d++) {
+        const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`, its = itemsDelDia(iso), k = its[0], T = k && EV_TIPO[k.tipo];
+        const est = k ? `background:${k.ev ? T.f : T.s};border-color:${k.ev ? T.c + "66" : T.f}` : "";
+        const nombres = its.slice(0, 2).map((x) => `<span class="${x.ev ? "ev" : ""}">${esc(x.n)}</span>`).join("") + (its.length > 2 ? `<span>+${its.length - 2} más</span>` : "");
+        g += `<button type="button" class="ev-dia ${iso === HOY ? "hoy" : ""} ${iso === evDia ? "sel" : ""}" data-dia="${iso}" style="${est}"><b>${d}</b>${its.length ? `<span class="ev-dn">${nombres}</span><span class="ev-pts">${its.slice(0, 4).map((x) => `<i style="border-color:${EV_TIPO[x.tipo].c};background:${x.ev ? EV_TIPO[x.tipo].c : "#fff"}"></i>`).join("")}</span>` : ""}</button>`;
+      }
+      izq = `<div class="ev-grid">${g}</div>`;
+    } else {
+      const lista = evVisibles().filter((e) => !e.fecha_desde || (e.fecha_hasta || e.fecha_desde) >= HOY).sort((a, b) => (a.fecha_desde || "9999").localeCompare(b.fecha_desde || "9999"));
+      let mesAnt = "", h = "";
+      for (const e of lista) {
+        const T = EV_TIPO[e.tipo], d = e.fecha_desde ? new Date(e.fecha_desde + "T00:00") : null, mk = d ? `${MES_L[d.getMonth()]} ${d.getFullYear()}` : "Fecha por definir";
+        if (mk !== mesAnt) { h += `<div class="ag-mes">${mk.toUpperCase()}</div>`; mesAnt = mk; }
+        const ts = tareasDe(e.id), ok = ts.filter((t) => t.hecha).length;
+        h += `<button type="button" class="ag-fila" data-ev="${e.id}"><span class="ep-fecha"><span class="ep-top"><em style="background:${T.f};color:${T.tx}">${d ? DIA_C[d.getDay()] : "—"}</em><b>${d ? String(d.getDate()).padStart(2, "0") : "—"}</b></span></span><span class="ep-linea" style="background:${T.c}"></span>
+          <span class="ag-nom"><span class="ag-pills"><em style="background:${T.f};color:${T.tx}">${T.t}</em>${e.por_confirmar ? `<em class="pc">Por confirmar</em>` : ""}</span><b>${esc(e.nombre)}</b></span>
+          <span class="ag-lug">${e.lugar ? `<span class="ep-l"><i style="color:${T.c}">${IC_PIN}</i>${esc(e.lugar)}</span>` : ""}<span class="ep-l"><i style="color:${T.c}">${IC_RELOJ}</i>${esc(e.hora || (d ? "Hora por definir" : "Fecha por definir"))}</span></span>
+          <span class="ag-prep">${e.prep_desde ? `<small>Prep. ${rangoCorto(e.prep_desde, e.prep_hasta)}</small><span class="ag-barra"><i style="width:${ts.length ? (ok / ts.length) * 100 : 0}%;background:${T.c}"></i></span><small>Tareas ${ok}/${ts.length}</small>` : `<small>Sin preparación</small>`}</span>
+          <span class="ag-enc">${e.encargados.length ? grupoAv(e.encargados) : `<small>Sin encargados</small>`}</span></button>`;
+      }
+      izq = h || `<div class="ev-vacio">No hay eventos próximos.</div>`;
+    }
+    // Columna derecha: próximos eventos (vista Mes) o mini calendario (vista Agenda)
+    let der;
+    if (evVista === "mes") der = `<h3 class="ev-h3"><i class="ev-cuadro"></i>Próximos eventos</h3><div class="ev-proxs">${proximos(6).map((x) => filaProximo(x, x.f === evDia || (x.e && enRango(evDia, x.e.fecha_desde, x.e.fecha_hasta)))).join("") || `<div class="ev-vacio">Sin eventos próximos.</div>`}</div>`;
+    else {
+      const dias = new Date(y, m + 1, 0).getDate(), desf = (new Date(y, m, 1).getDay() + 6) % 7;
+      let mc = ["L", "M", "M", "J", "V", "S", "D"].map((x) => `<span class="mc-wd">${x}</span>`).join("") + "<span></span>".repeat(desf);
+      for (let d = 1; d <= dias; d++) { const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`, k = itemsDelDia(iso)[0];
+        mc += `<button type="button" class="mc-d ${iso === HOY ? "hoy" : ""}" data-dia="${iso}">${d}${k ? `<i style="border-color:${EV_TIPO[k.tipo].c};background:${k.ev ? EV_TIPO[k.tipo].c : "transparent"}"></i>` : "<i class='nada'></i>"}</button>`; }
+      der = `<div class="mc-cab"><h3 class="ev-h3">${mayus(MES_L[m])} ${y}</h3><span><button type="button" class="ev-nav" data-nav="-1">‹</button><button type="button" class="ev-nav" data-nav="1">›</button></span></div><div class="mc-grid">${mc}</div>
+        <div class="ev-ley">${Object.values(EV_TIPO).map((t) => `<span><i style="background:${t.c}"></i>${t.t}</span>`).join("")}<span><i class="hueco"></i>Preparación</span></div>`;
+    }
+    cont.innerHTML = `<div class="ev-cab"><div class="ev-cab-i"><h2>Eventos</h2>${seg([["interno", "Internos"], ["externo", "Externos"], ["todos", "Todos"]], evFiltro, "data-ef")}</div><button type="button" class="nuevo-btn" id="evNuevo"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Nuevo evento</button></div>
+      <div class="ev-cuerpo"><div class="ev-izq"><div class="ev-sub"><h3>${evVista === "mes" ? `${mayus(MES_L[m])} de ${y}` : "Próximos eventos"}</h3><div class="ev-sub-d">${evVista === "mes" ? `<button type="button" class="ev-nav" data-nav="-1">‹</button><button type="button" class="ev-hoy" id="evHoy">Hoy</button><button type="button" class="ev-nav" data-nav="1">›</button>` : ""}${seg([["mes", "Mes"], ["agenda", "Agenda"]], evVista, "data-ev-vista")}</div></div>${izq}</div>
+      <aside class="ev-der">${der}</aside></div>`;
+    cont.querySelectorAll("[data-ef]").forEach((b) => (b.onclick = () => { evFiltro = b.dataset.ef; pintarEventosPag(); }));
+    cont.querySelectorAll("[data-ev-vista]").forEach((b) => (b.onclick = () => { evVista = b.dataset.evVista; pintarEventosPag(); }));
+    cont.querySelectorAll("[data-nav]").forEach((b) => (b.onclick = () => { evMes.setMonth(evMes.getMonth() + +b.dataset.nav); pintarEventosPag(); }));
+    cont.querySelector("#evHoy")?.addEventListener("click", () => { evMes = new Date(); evMes.setDate(1); evDia = HOY; pintarEventosPag(); });
+    cont.querySelector("#evNuevo").onclick = () => nuevoEvento();
+    cont.querySelectorAll(".ev-dia").forEach((b) => (b.onclick = () => {
+      evDia = b.dataset.dia; const evs = itemsDelDia(evDia).filter((x) => x.e);
+      const delDia = evs.find((x) => x.ev) || evs[0]; pintarEventosPag(); if (delDia) abrirEvento(delDia.e.id);
+    }));
+    cont.querySelectorAll(".mc-d").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; const x = itemsDelDia(evDia).find((i) => i.e); if (x) abrirEvento(x.e.id); }));
+    cont.querySelectorAll("[data-ev]").forEach((b) => (b.onclick = () => abrirEvento(+b.dataset.ev)));
+    cont.querySelectorAll(".ev-prox:not([data-ev])[data-dia]").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; evMes = new Date(evDia + "T00:00"); evMes.setDate(1); evVista = "mes"; pintarEventosPag(); }));
+  }
+
+  function nuevoEvento() {
+    const f = evDia > HOY ? evDia : sumaD(HOY, 21), id = -Date.now();
+    EVS.set(id, { id, nombre: "Nuevo evento", tipo: "interno", prep_desde: sumaD(f, -14), prep_hasta: sumaD(f, -1), fecha_desde: f, fecha_hasta: f, hora: "", lugar: "", por_confirmar: false, encargados: [yo], creado_por: yo, created_at: new Date().toISOString(), nuevo: true });
+    evGuardar("ev", EVS.get(id)); pintarEventosPag(); abrirEvento(id);
+    setTimeout(() => { const n = document.querySelector("#detalle .det-nombre"); if (n) { n.focus(); n.select(); } }, 80);
+  }
+
+  // ----- Ventana del evento -----
+  const evIdReal = new Map();
+  function abrirEvento(id) {
+    if (!EVS.has(id)) return avisar("Ese evento se está guardando, inténtalo de nuevo en un momento");
+    evAbierto = id; abiertoId = null; tkAbierto = null; pintarEvento(); document.body.classList.add("con-detalle");
+  }
+  function cerrarEvento() { evAbierto = null; evPop = null; document.body.classList.remove("con-detalle"); }
+  function pintarEvento() {
+    const e = EVS.get(evAbierto), d = document.getElementById("detalle");
+    if (!e) { cerrarEvento(); d.innerHTML = ""; return; }
+    const T = EV_TIPO[e.tipo], ts = tareasDe(e.id), ok = ts.filter((t) => t.hecha).length, pct = ts.length ? Math.round((ok / ts.length) * 100) : 0;
+    const puedeBorrar = e.creado_por === yo || yo === JEFA || e.nuevo;
+    const faltan = e.prep_desde ? diasHasta(e.prep_hasta || e.prep_desde) : null;
+    const gcal = e.fecha_desde ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.nombre)}&dates=${e.fecha_desde.replace(/-/g, "")}/${sumaD(e.fecha_hasta || e.fecha_desde, 1).replace(/-/g, "")}&location=${encodeURIComponent(e.lugar || "")}&details=${encodeURIComponent("Evento de iPartner organizado desde Rabbit AI" + (e.hora ? " | " + e.hora : ""))}` : "";
+    const chips = (lista) => lista.map((n) => `<button type="button" class="det-persona ${e.encargados.includes(n) ? "activa" : ""}" data-enc="${esc(n)}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${esc(n)}</button>`).join("") || `<span class="ev-gris">Aún no hay personas registradas</span>`;
+    const resp = (t) => { const p = t.encargados; return `<button type="button" class="et-resp" data-resp="${t.id}"><span>${p.length === 0 ? "Sin asignar" : p.length === 1 ? esc(p[0]) : `${p.length} personas`}</span>${grupoAv(p)}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>`; };
+    d.className = "detalle tk-det ev-det";
+    d.innerHTML = `
+      <div class="det-cab"><div class="det-titulo"><div class="ev-pills"><button type="button" class="ev-pill-tipo" style="background:${T.f};color:${T.tx}" title="Cambiar a ${e.tipo === "interno" ? "externo" : "interno"}">${T.t}</button><span class="ev-pill-est">${e.por_confirmar ? "Por confirmar" : evEstado(e)}</span></div>
+        <textarea class="det-nombre" rows="1" maxlength="200" title="Haz clic para editar el nombre">${esc(e.nombre)}</textarea></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
+      <div class="ev-tarjetas">
+        <div class="ev-card prep" style="background:${T.s};border-color:${T.f}"><small style="color:${T.tx}">PREPARACIÓN</small>
+          <div class="ev-fechas"><input type="date" data-k="prep_desde" value="${e.prep_desde || ""}" /><span>→</span><input type="date" data-k="prep_hasta" value="${e.prep_hasta || ""}" /></div>
+          <span class="ev-gris">${e.prep_desde ? `${diasHasta(e.prep_hasta || e.prep_desde) - diasHasta(e.prep_desde) + 1} días${faltan >= 0 ? ` | ${diasHasta(e.prep_desde) > 0 ? `empieza en ${diasHasta(e.prep_desde)}` : `faltan ${faltan + 1}`}` : " | terminó"}` : "Sin preparación"}</span></div>
+        <div class="ev-card fecha"><small>FECHA DEL EVENTO</small>
+          <div class="ev-fechas"><input type="date" data-k="fecha_desde" value="${e.fecha_desde || ""}" /><span>→</span><input type="date" data-k="fecha_hasta" value="${e.fecha_hasta || ""}" /></div>
+          <div class="ev-datos"><input data-k="hora" placeholder="Hora (ej. 7:00 p. m.)" value="${esc(e.hora || "")}" /><input data-k="lugar" placeholder="Lugar" value="${esc(e.lugar || "")}" /></div>
+          <div class="ev-acc"><label class="ev-pc"><input type="checkbox" data-k="por_confirmar" ${e.por_confirmar ? "checked" : ""} />Por confirmar</label>${gcal ? `<a href="${gcal}" target="_blank" rel="noopener">Añadir a Google Calendar</a>` : ""}</div></div>
+      </div>
+      <div class="ev-tarjetas">
+        <div class="det-i ev-enc"><small>ENCARGADOS | MARKETING</small><div class="det-personas">${chips(evMk())}</div></div>
+        <div class="det-i ev-enc"><small>ENCARGADOS | LEGAL</small><div class="det-personas">${chips(evLg())}</div></div>
+      </div>
+      <div class="det-prog"><span>${ts.length ? `${ok} de ${ts.length} tareas hechas` : "Aún sin tareas"}</span><b>${ts.length ? pct + "%" : ""}</b></div>
+      <div class="fx-barra"><i style="width:${pct}%;background:${T.c} !important"></i></div>
+      <h3 class="det-sub">Tareas <span class="det-npend">${ts.length - ok} pendiente${ts.length - ok === 1 ? "" : "s"}</span> <small>doble clic en una tarea para renombrarla</small></h3>
+      <div class="et-lista">${ts.map((t) => `<div class="et-fila ${t.hecha ? "hecha" : ""}" data-t="${t.id}"><button type="button" class="et-check ${t.hecha ? "ok" : ""}" title="${t.hecha ? "Desmarcar" : "Marcar como hecha"}">${t.hecha ? "✓" : ""}</button><span class="et-texto">${esc(t.texto)}</span>${resp(t)}<input type="date" class="et-fecha" value="${t.fecha || ""}" title="Fecha límite" /><button type="button" class="et-x" title="Eliminar tarea">✕</button></div>`).join("") || `<p class="ev-gris">Este evento todavía no tiene tareas.</p>`}</div>
+      <form class="det-nueva"><input placeholder="Añadir una tarea y pulsar Enter" /><button>Añadir</button></form>
+      <div class="det-peligro">${puedeBorrar ? `<button type="button" class="det-borrar"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Eliminar evento</button>` : ""}<button type="button" class="det-standby ev-pedir">Pedir diseño a Marketing</button></div>
+      ${WEB_REAL ? "" : `<p class="det-nota">Vista previa: los cambios no se guardan.</p>`}`;
+    const cambio = (fn) => { fn(); delete e.nuevo; evGuardar("ev", e); pintarEvento(); if (pagina === "eventos") pintarEventosPag(); pintarEventos(); };
+    d.querySelector(".det-cerrar").onclick = cerrarEvento;
+    const nom = d.querySelector(".det-nombre"); const ajusta = () => { nom.style.height = "auto"; nom.style.height = nom.scrollHeight + "px"; }; ajusta(); nom.oninput = ajusta;
+    nom.onkeydown = (ev) => { if (ev.key === "Enter") { ev.preventDefault(); nom.blur(); } };
+    nom.onblur = () => { const v = nom.value.trim(); if (v && v !== e.nombre) cambio(() => (e.nombre = v)); else nom.value = e.nombre; };
+    d.querySelector(".ev-pill-tipo").onclick = () => cambio(() => (e.tipo = e.tipo === "interno" ? "externo" : "interno"));
+    d.querySelectorAll("[data-k]").forEach((inp) => (inp.onchange = () => cambio(() => {
+      const k = inp.dataset.k, v = inp.type === "checkbox" ? inp.checked : inp.value.trim();
+      e[k] = v || (inp.type === "checkbox" ? false : k === "hora" || k === "lugar" ? "" : null);
+      if (k === "fecha_desde" && v && (!e.fecha_hasta || e.fecha_hasta < v)) e.fecha_hasta = v;
+      if (k === "prep_desde" && v && (!e.prep_hasta || e.prep_hasta < v)) e.prep_hasta = v;
+      if (k === "fecha_desde" && v) { evMes = new Date(v + "T00:00"); evMes.setDate(1); }
+    })));
+    d.querySelectorAll("[data-enc]").forEach((b) => (b.onclick = () => cambio(() => { const n = b.dataset.enc; e.encargados = e.encargados.includes(n) ? e.encargados.filter((x) => x !== n) : [...e.encargados, n]; })));
+    const tarea = (id) => EVT.get(+id);
+    const ct = (t, fn) => { fn(); evGuardar("et", t); pintarEvento(); if (pagina === "eventos") pintarEventosPag(); };
+    d.querySelectorAll(".et-fila").forEach((f) => {
+      const t = tarea(f.dataset.t);
+      f.querySelector(".et-check").onclick = () => ct(t, () => (t.hecha = !t.hecha));
+      f.querySelector(".et-fecha").onchange = (ev) => ct(t, () => (t.fecha = ev.target.value || null));
+      f.querySelector(".et-x").onclick = () => { EVT.delete(t.id); evBorrar("evento_tareas", t.id); pintarEvento(); avisar(`Tarea <b>${esc(t.texto)}</b> eliminada`, () => { EVT.set(t.id, t); if (t.id < 0) evGuardar("et", t); pintarEvento(); }); };
+      const tx = f.querySelector(".et-texto");
+      tx.ondblclick = () => { tx.contentEditable = "true"; tx.focus(); document.getSelection().selectAllChildren(tx); };
+      tx.onkeydown = (ev) => { if (ev.key === "Enter") { ev.preventDefault(); tx.blur(); } };
+      tx.onblur = () => { if (tx.contentEditable !== "true") return; tx.contentEditable = "false"; const v = tx.textContent.trim(); if (v && v !== t.texto) ct(t, () => (t.texto = v)); else tx.textContent = t.texto; };
+      f.querySelector(".et-resp").onclick = (ev) => { ev.stopPropagation(); abrirResp(t, f.querySelector(".et-resp")); };
+    });
+    d.querySelector(".det-nueva").onsubmit = (ev) => {
+      ev.preventDefault(); const inp = d.querySelector(".det-nueva input"), v = inp.value.trim(); if (!v) return;
+      const id = -Date.now(); EVT.set(id, { id, evento_id: e.id, texto: v, encargados: e.encargados.length === 1 ? [...e.encargados] : [], fecha: null, hecha: false, created_at: new Date().toISOString() });
+      evGuardar("et", EVT.get(id)); pintarEvento(); if (pagina === "eventos") pintarEventosPag(); d.querySelector(".det-nueva input").focus();
+    };
+    d.querySelector(".det-borrar")?.addEventListener("click", async () => {
+      if (!(await confirmar(`¿Eliminar el evento <b>${esc(e.nombre)}</b> y sus ${ts.length} tareas?`))) return;
+      EVS.delete(e.id); ts.forEach((t) => EVT.delete(t.id)); evBorrar("eventos", e.id); cerrarEvento(); pintarEventosPag(); pintarEventos(); avisar(`Evento <b>${esc(e.nombre)}</b> eliminado`);
+    });
+    d.querySelector(".ev-pedir").onclick = () => {
+      const nombre = e.nombre; cerrarEvento(); setTimeout(() => { abrirFormTicket(); document.body.classList.add("con-detalle");
+        const f = document.querySelector("#detalle [name=titulo]"); if (f) { f.value = `Diseño para ${nombre}`; f.dispatchEvent(new Event("input")); }
+        const det = document.querySelector("#detalle [name=detalle]"); if (det && !det.value) det.value = `Pieza para el evento "${nombre}"${e.fecha_desde ? ` del ${fCorta(e.fecha_desde)}` : ""}.`; }, 50);
+    };
+  }
+  // Lista para elegir responsables de una tarea (separada por área)
+  function abrirResp(t, ancla) {
+    document.querySelector(".et-pop")?.remove();
+    const pop = document.createElement("div"); pop.className = "et-pop"; evPop = pop;
+    const grupo = (tit, ns) => ns.length ? `<small>${tit}</small>${ns.map((n) => `<button type="button" data-n="${esc(n)}" class="${t.encargados.includes(n) ? "on" : ""}"><i class="et-caja">${t.encargados.includes(n) ? "✓" : ""}</i>${avEv(n)}${esc(n)}</button>`).join("")}` : "";
+    const pinta = () => { pop.innerHTML = grupo("MARKETING", evMk()) + grupo("LEGAL", evLg()); pop.querySelectorAll("[data-n]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); const n = b.dataset.n; t.encargados = t.encargados.includes(n) ? t.encargados.filter((x) => x !== n) : [...t.encargados, n]; evGuardar("et", t); pinta(); const r = document.querySelector(`#detalle [data-resp="${t.id}"]`); if (r) { const p = t.encargados; r.querySelector("span").textContent = p.length === 0 ? "Sin asignar" : p.length === 1 ? p[0] : `${p.length} personas`; r.querySelector(".ev-avs")?.remove(); r.querySelector("span").insertAdjacentHTML("afterend", grupoAv(p)); } })); };
+    pinta(); document.getElementById("detalle").append(pop);
+    const r = ancla.getBoundingClientRect(), rd = document.getElementById("detalle").getBoundingClientRect(), dd = document.getElementById("detalle");
+    pop.style.right = Math.max(12, rd.right - r.right) + "px";
+    const abajo = r.bottom + pop.offsetHeight + 8 < innerHeight;
+    pop.style.top = (abajo ? r.bottom - rd.top + dd.scrollTop + 6 : r.top - rd.top + dd.scrollTop - pop.offsetHeight - 6) + "px";
+    const fuera = (ev) => { if (!pop.contains(ev.target)) { pop.remove(); evPop = null; document.removeEventListener("click", fuera, true); pintarEvento(); } };
+    setTimeout(() => document.addEventListener("click", fuera, true), 0);
+  }
+  if (!WEB_REAL) evDemo();
 
   // ===================== TICKETS =====================
   const TK_ESTADOS = {
@@ -3925,6 +4311,7 @@
       // Se espera a tener los tickets (máximo 6 s) para no mostrar la bandeja vacía por un momento
       await Promise.race([iniciarTicketsVivos(), new Promise((ok) => setTimeout(ok, 6000))]).catch(() => {});
       if (p.rol !== "solicitante") iniciarProyectosVivos();
+      if (p.rol !== "solicitante" || p.area === "Legal") iniciarEventosVivos();
       menuPerfil.hidden = true; pintarPerfil(); aplicarRol(); pintarNotif();
       // Recién ahora, con todo pintado para esta persona, se muestra el panel
       requestAnimationFrame(() => { document.body.classList.remove("sin-sesion"); rabbitHola(); quizasTutorial(); });
