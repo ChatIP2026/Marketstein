@@ -2251,6 +2251,15 @@
   #vistaDash .pa-caja[data-on] .pa-fila[data-pa] { background: transparent !important; }
   #vistaDash .pa-caja[data-on="0"] .pa-fila[data-pa="0"], #vistaDash .pa-caja[data-on="1"] .pa-fila[data-pa="1"], #vistaDash .pa-caja[data-on="2"] .pa-fila[data-pa="2"], #vistaDash .pa-caja[data-on="3"] .pa-fila[data-pa="3"], #vistaDash .pa-caja[data-on="4"] .pa-fila[data-pa="4"] { background: rgba(255,255,255,.08) !important; }
   .pa-nom { line-height: 1.25; } .pa-cuerpo { grid-template-columns: 210px minmax(0, 1fr) !important; } .pa-svg { width: 210px !important; height: 210px !important; }
+
+  .pa-caja { display: flex; flex-direction: column; } .pa-caja .pa-cuerpo { flex: 1; align-content: center; }
+  .pa-cuerpo { grid-template-columns: 240px minmax(0, 1fr) !important; gap: 34px !important; padding: 10px 14px !important; }
+  .pa-svg { width: 240px !important; height: 240px !important; } .pa-centro b { font-size: 2.8rem !important; }
+  .pa-ley { display: flex; flex-direction: column; gap: 6px; }
+  .pa-fila { display: grid !important; grid-template-columns: 12px minmax(0, 1fr) auto !important; gap: 12px !important; align-items: center; padding: 12px 12px !important; border-radius: 12px; }
+  .pa-fila i { width: 12px; height: 12px; border-radius: 50%; } .pa-fila .pa-nom { font-size: .92rem; font-weight: 600; } .pa-fila strong { font-size: 1.4rem !important; text-align: right !important; }
+  .pa-sin, .pa-vacio { margin: 8px 12px 0; font-size: .76rem; color: #8a8a8a; } .pa-vacio { text-align: center; margin-top: 6px; }
+  .pa-sub { display: none; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -4687,15 +4696,16 @@
     const ps = [...mapaP.values()], ts = [...mapaT.values()];
     const filas = [1, 2, 3, 4, 0].map((k) => { const mios = ps.filter((p) => (p.pilar || 0) === k), ids = new Set(mios.map((p) => p.id));
       return { k, n: mios.length, listos: mios.filter((p) => p.estado === "listo").length, tareas: ts.filter((t) => ids.has(t.proyecto_id) && t.hecha).length, tks: mios.filter((p) => p.ticket && p.estado === "listo").length }; }).filter((f) => f.k || f.n);
-    const tot = ps.length || 1, R = 74, C = 2 * Math.PI * R; let acc = 0;
-    const seg = filas.filter((f) => f.n).map((f) => { const l = (f.n / tot) * C, col = f.k ? PIL[f.k].c : "#d4d4d4";
-      const o = `<circle data-pa="${f.k}" class="pa-seg" cx="100" cy="100" r="${R}" fill="none" stroke="${col}" stroke-width="26" stroke-dasharray="${Math.max(0, l - 3)} ${C}" stroke-dashoffset="${-acc}" transform="rotate(-90 100 100)"/>`; acc += l; return o; }).join("");
-    const listos = ps.filter((p) => p.estado === "listo").length;
-    return `<div class="pa-cuerpo"><div class="pa-svg"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="26"/>${seg}</svg>
-      <div class="pa-centro"><b>${ps.length}</b><span>proyectos</span><small>${listos} completados</small></div></div>
-      <div class="pa-ley"><div class="pa-th"><span></span><span>Proyectos</span><span>Listos</span><span>Tareas hechas</span><span>Tickets resueltos</span></div>
-      ${filas.map((f) => `<div class="pa-fila" data-pa="${f.k}"><span class="pa-nom">${f.k ? `<b style="background:${PIL_OSC[f.k]}">${f.k}</b>${PIL[f.k].t}` : `<b style="background:#5a5a5a">–</b>Sin pilar`}</span>
-        <span><strong>${f.n}</strong><em>${Math.round((f.n / tot) * 100)}%</em></span><span>${f.listos}</span><span>${f.tareas}</span><span>${f.tks}</span></div>`).join("")}</div></div>`;
+    const CORTO = { 1: "Comercial & Growth", 2: "Onboarding & Fidelización", 3: "Marca & Endomarketing", 4: "Inteligencia Estratégica" };
+    const conPilar = filas.filter((f) => f.k && f.n), totP = conPilar.reduce((x, f) => x + f.n, 0), sinP = (filas.find((f) => !f.k) || { n: 0 }).n;
+    const R = 80, C = 2 * Math.PI * R; let acc = 0;
+    const seg = conPilar.map((f) => { const l = (f.n / totP) * C; const o = `<circle data-pa="${f.k}" class="pa-seg" cx="100" cy="100" r="${R}" fill="none" stroke="${PIL_OSC[f.k]}" stroke-width="24" stroke-dasharray="${Math.max(0, l - 4)} ${C}" stroke-dashoffset="${-acc}" transform="rotate(-90 100 100)"><title>${CORTO[f.k]}: ${f.n} proyectos | ${f.listos} listos | ${f.tareas} tareas hechas</title></circle>`; acc += l; return o; }).join("");
+    return `<div class="pa-cuerpo"><div class="pa-svg"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="24"/>${seg}</svg>
+      <div class="pa-centro"><b>${totP}</b><span>proyectos</span></div></div>
+      <div class="pa-ley">${[1, 2, 3, 4].map((k) => { const f = filas.find((x) => x.k === k) || { n: 0, listos: 0, tareas: 0 };
+        return `<div class="pa-fila" data-pa="${k}" title="${f.listos} listos | ${f.tareas} tareas hechas"><i style="background:${PIL_OSC[k]}"></i><span class="pa-nom">${CORTO[k]}</span><strong>${f.n}</strong></div>`; }).join("")}
+      ${sinP ? `<p class="pa-sin">${sinP} proyecto${sinP === 1 ? "" : "s"} sin pilar</p>` : ""}</div></div>
+      ${!totP ? `<p class="pa-vacio">Aún no hay proyectos con pilar. Asígnalo desde cada proyecto.</p>` : ""}`;
   }
   // ===== Dashboard: rendimiento mensual del equipo (escala 0 a 20 por pilar) =====
   const PILARES = [
@@ -4858,7 +4868,7 @@
       </table></div>
 ` : `
       <div class="dg-fila"><section class="dg-caja pa-caja">
-        <div class="dg-cab"><h4>Proyectos por pilar</h4><span class="pa-sub">Todos los proyectos del equipo</span></div>
+        <div class="dg-cab"><h4>Proyectos por pilar</h4></div>
         ${anilloPilares()}
       </section>
       <section class="dg-caja db-caja">
