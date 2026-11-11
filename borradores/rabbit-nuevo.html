@@ -2209,6 +2209,10 @@
   .lf-venc .lf-tag { background: #dc2626; animation: lfLatido 1.6s ease-in-out infinite; } .lf-urg .lf-tag { background: #e08a00; }
   @keyframes lfLatido { 0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,.45); } 50% { box-shadow: 0 0 0 5px rgba(220,38,38,0); } }
   .lf-t.lf-venc .lf-q { font-weight: 800; }
+
+  .ev-tipo-sel { display: inline-flex; background: #f2f2f2; border: 1px solid #e6e6e6; border-radius: 999px; padding: 3px; gap: 2px; }
+  .ev-tipo-sel button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; font: inherit; font-size: .76rem; font-weight: 700; color: #666; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: background .15s; }
+  .ev-tipo-sel button:not(.on):hover { background: #e6e6e6; color: #222; } .ev-tipo-sel i { width: 7px; height: 7px; border-radius: 50%; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3845,7 +3849,7 @@
     const resp = (t) => botonResp(t.encargados, t.id);
     d.className = "detalle tk-det ev-det";
     d.innerHTML = `
-      <div class="det-cab"><div class="det-titulo"><div class="ev-pills"><button type="button" class="ev-pill-tipo" style="background:${T.f};color:${T.tx}" title="Cambiar a ${e.tipo === "interno" ? "externo" : "interno"}">${T.t}</button><span class="ev-pill-est">${e.por_confirmar ? "Por confirmar" : evEstado(e)}</span></div>
+      <div class="det-cab"><div class="det-titulo"><div class="ev-pills"><div class="ev-tipo-sel" role="group" aria-label="Tipo de evento">${["interno", "externo"].map((k) => `<button type="button" data-tipo="${k}" class="${e.tipo === k ? "on" : ""}" style="${e.tipo === k ? `background:${EV_TIPO[k].c};color:#fff` : ""}"><i style="background:${e.tipo === k ? "#fff" : EV_TIPO[k].c}"></i>${EV_TIPO[k].t}</button>`).join("")}</div><span class="ev-pill-est">${e.por_confirmar ? "Por confirmar" : evEstado(e)}</span></div>
         <textarea class="det-nombre" rows="1" maxlength="200" title="Haz clic para editar el nombre">${esc(e.nombre)}</textarea></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
       <div class="ev-tarjetas">
         <div class="ev-card prep" style="background:${T.s};border-color:${T.f}"><small style="color:${T.tx}">PREPARACIÓN</small>
@@ -3877,7 +3881,7 @@
     const nom = d.querySelector(".det-nombre"); const ajusta = () => { nom.style.height = "auto"; nom.style.height = nom.scrollHeight + "px"; }; ajusta(); nom.oninput = ajusta;
     nom.onkeydown = (ev) => { if (ev.key === "Enter") { ev.preventDefault(); nom.blur(); } };
     nom.onblur = () => { const v = nom.value.trim(); if (v && v !== e.nombre) cambio(() => (e.nombre = v)); else nom.value = e.nombre; };
-    d.querySelector(".ev-pill-tipo").onclick = () => cambio(() => (e.tipo = e.tipo === "interno" ? "externo" : "interno"));
+    d.querySelectorAll("[data-tipo]").forEach((x) => (x.onclick = () => { if (e.tipo !== x.dataset.tipo) cambio(() => (e.tipo = x.dataset.tipo)); }));
     d.querySelectorAll("[data-k]").forEach((inp) => (inp.onchange = () => cambio(() => {
       const k = inp.dataset.k, v = inp.type === "checkbox" ? inp.checked : inp.value.trim();
       e[k] = v || (inp.type === "checkbox" ? false : k === "hora" || k === "lugar" ? "" : null);
