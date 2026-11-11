@@ -2183,6 +2183,21 @@
   .tl-tareas.vacio { color: #999; border-color: #eee; font-weight: 600; }
   .tl-mini { width: 46px; height: 6px; border-radius: 9px; background: #eee; overflow: hidden; } .tl-mini i { display: block; height: 100%; border-radius: 9px; }
   .tl-t b { font-size: .86rem !important; } .tl-t small { font-size: .74rem !important; opacity: .9 !important; }
+
+  .sem { display: inline-flex; align-items: center; gap: 5px; font-size: .68rem; font-weight: 700; border-radius: 999px; padding: 2px 9px; margin-left: 8px; vertical-align: middle; }
+  .sem i { width: 7px; height: 7px; border-radius: 50%; } .sem-ok { background: #e8f8ef; color: #167a45; } .sem-ok i { background: #22a35a; }
+  .sem-aj { background: #fff4d6; color: #8a6200; } .sem-aj i { background: #e0a100; } .sem-at { background: #fde8e8; color: #b42318; } .sem-at i { background: #dc2626; }
+  .tl-t b { overflow: visible !important; }
+  .lf-cab { display: flex; flex-direction: column; gap: 8px; } .lf-cab .ev-h3 { margin-bottom: 0; } .lf-n { font-style: normal; background: #0a0a0a; color: #fff; border-radius: 999px; font-size: .7rem; padding: 2px 9px; }
+  .lf-sel { font: inherit; font-size: .86rem; border: 1px solid #e3e3e3; border-radius: 10px; padding: 8px 10px; background: #fafafa; }
+  .lf-avisos { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; } .lf-avisos span { background: #fff8e6; border: 1px solid #f3dfa5; color: #7a5a00; border-radius: 10px; font-size: .74rem; font-weight: 600; padding: 6px 10px; }
+  .lf-lista { margin-top: 10px; max-height: 470px; overflow-y: auto; padding-right: 4px; }
+  .ev-der.lf-col { display: flex; flex-direction: column; min-height: 0; } .ev-der.lf-col .lf-lista { flex: 1; max-height: none; min-height: 0; }
+  .lf-t { display: flex; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid #f2f2f2; }
+  .lf-i { flex: 1; min-width: 0; cursor: pointer; } .lf-i b { display: block; font-size: .86rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lf-ev { display: flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; } .lf-ev i { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .lf-d { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex: none; }
+  .lf-q { font-size: .7rem; color: #777; font-weight: 600; white-space: nowrap; } .lf-q.v { color: #dc2626; } .lf-q.a { color: #b45309; } .lf-sin { font-size: .7rem; color: #b45309; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3573,6 +3588,7 @@
   const EVS = new Map(), EVT = new Map();
   const diasEntre = (a, b) => Math.round((new Date(b + "T00:00") - new Date(a + "T00:00")) / 864e5);
   let evIni = sumaD0(HOY, -1);
+  let evFalta = "todos";
   let evVista = "mes", evFiltro = "todos", evMes = new Date(), evDia = HOY, evAbierto = null, evPop = null;
   evMes.setDate(1);
   const evMk = () => Object.keys(COLORES);
@@ -3724,7 +3740,7 @@
       const fondo = dias.map((d) => `<i class="${bloq(d) ? "fs" : ""}"></i>`).join("");
       const hoyC = diasEntre(ini, HOY);
       const filas = lista.map((e) => { const T = EV_TIPO[e.tipo], ts = tareasDe(e.id), ok = ts.filter((t) => t.hecha).length;
-        return `<div class="tl-fila" data-ev="${e.id}">${e.prep_desde ? barra(e.prep_desde, e.prep_hasta || e.prep_desde, "prep", `background:${T.s};border-color:${T.f};color:${T.tx}`, `<span class="tl-t"><b>${esc(e.nombre)}</b><small>Preparación: ${rangoLargo(e.prep_desde, e.prep_hasta)}</small></span><span class="tl-der">${ts.length ? `<span class="tl-tareas" style="border-color:${T.f}"><span class="tl-mini"><i style="width:${(ok / ts.length) * 100}%;background:${T.c}"></i></span>${ok} de ${ts.length} tareas hechas</span>` : `<span class="tl-tareas vacio">Sin tareas</span>`}${grupoAv(e.encargados)}</span>`) : ""}
+        return `<div class="tl-fila" data-ev="${e.id}">${e.prep_desde ? barra(e.prep_desde, e.prep_hasta || e.prep_desde, "prep", `background:${T.s};border-color:${T.f};color:${T.tx}`, `<span class="tl-t"><b>${esc(e.nombre)}${semaforo(e)}</b><small>Preparación: ${rangoLargo(e.prep_desde, e.prep_hasta)}${e.fecha_desde && diasHasta(e.fecha_desde) > 0 ? ` | faltan ${diasHasta(e.fecha_desde)} día${diasHasta(e.fecha_desde) === 1 ? "" : "s"} para el evento` : ""}</small></span><span class="tl-der">${ts.length ? `<span class="tl-tareas" style="border-color:${T.f}"><span class="tl-mini"><i style="width:${(ok / ts.length) * 100}%;background:${T.c}"></i></span>${ok} de ${ts.length} tareas hechas</span>` : `<span class="tl-tareas vacio">Sin tareas</span>`}${grupoAv(e.encargados)}</span>`) : ""}
           ${barra(e.fecha_desde, e.fecha_hasta || e.fecha_desde, "ev", `background:${T.c}`, (e.fecha_hasta && e.fecha_hasta !== e.fecha_desde) || !e.prep_desde ? `<span class="tl-t"><b>${e.prep_desde ? "Evento" : esc(e.nombre)}</b><small>${rangoCorto(e.fecha_desde, e.fecha_hasta)}</small></span>` : `<svg class="tl-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>`)}</div>`; }).join("");
       izq = `<div class="tl-nav"><button type="button" class="ev-nav" data-tl="-14">‹</button><button type="button" class="ev-hoy" data-tl="0">Hoy</button><button type="button" class="ev-nav" data-tl="14">›</button><span>${fCorta(ini)} al ${fCorta(fin)}</span>${dias.some(bloq) ? `<em class="tl-ley"><i></i>Sin recepción de tickets</em>` : ""}</div>
         <div class="tl"><div class="tl-cab">${cab}</div><div class="tl-cuerpo"><div class="tl-fondo">${fondo}</div>${hoyC >= 0 && hoyC < N ? `<div class="tl-hoy" style="left:calc(${(hoyC + .5) / N * 100}%)"></div>` : ""}${filas || `<div class="ev-vacio">No hay eventos en estas fechas.</div>`}</div></div>`;
@@ -3733,12 +3749,19 @@
     let der;
     if (evVista === "mes") der = `<h3 class="ev-h3"><i class="ev-cuadro"></i>Próximos eventos</h3><div class="ev-proxs">${proximos(6).map((x) => filaProximo(x, x.f === evDia || (x.e && enRango(evDia, x.e.fecha_desde, x.e.fecha_hasta)))).join("") || `<div class="ev-vacio">Sin eventos próximos.</div>`}</div>`;
     else {
-      const dias = new Date(y, m + 1, 0).getDate(), desf = (new Date(y, m, 1).getDay() + 6) % 7;
-      let mc = ["L", "M", "M", "J", "V", "S", "D"].map((x) => `<span class="mc-wd">${x}</span>`).join("") + "<span></span>".repeat(desf);
-      for (let d = 1; d <= dias; d++) { const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`, k = itemsDelDia(iso)[0];
-        mc += `<button type="button" class="mc-d ${iso === HOY ? "hoy" : ""}" data-dia="${iso}">${d}${k ? `<i style="border-color:${EV_TIPO[k.tipo].c};background:${k.ev ? EV_TIPO[k.tipo].c : "transparent"}"></i>` : "<i class='nada'></i>"}</button>`; }
-      der = `<div class="mc-cab"><h3 class="ev-h3">${mayus(MES_L[m])} ${y}</h3><span><button type="button" class="ev-nav" data-nav="-1">‹</button><button type="button" class="ev-nav" data-nav="1">›</button></span></div><div class="mc-grid">${mc}</div>
-        <div class="ev-ley">${Object.values(EV_TIPO).map((t) => `<span><i style="background:${t.c}"></i>${t.t}</span>`).join("")}<span><i class="hueco"></i>Preparación</span></div>`;
+      // Lo que falta: tareas pendientes de eventos que aún no pasan, con filtro por evento
+      const vivos = evVisibles().filter((e) => !e.fecha_desde || (e.fecha_hasta || e.fecha_desde) >= HOY).sort((x, y2) => (x.fecha_desde || "9999").localeCompare(y2.fecha_desde || "9999"));
+      if (evFalta !== "todos" && !vivos.some((e) => String(e.id) === evFalta)) evFalta = "todos";
+      const sel = evFalta === "todos" ? vivos : vivos.filter((e) => String(e.id) === evFalta);
+      const pend = sel.flatMap((e) => tareasDe(e.id).filter((t) => !t.hecha).map((t) => ({ t, e }))).sort((x, y2) => String(x.t.fecha || "9999").localeCompare(String(y2.t.fecha || "9999")));
+      const avisos = sel.filter((e) => evFalta !== "todos" || (e.fecha_desde && diasHasta(e.fecha_desde) <= 45)).flatMap((e) => { const f = []; if (!e.lugar) f.push("falta el lugar"); if (!e.encargados.length) f.push("sin encargados"); if (!tareasDe(e.id).length) f.push("sin tareas"); else if (tareasDe(e.id).some((t) => !t.hecha && !t.encargados.length)) f.push("tareas sin responsable"); return f.length ? [`${e.nombre}: ${f.join(", ")}`] : []; });
+      const cuando = (f) => { if (!f) return ["Sin fecha", ""]; const n = diasHasta(f); return n < 0 ? [`Venció hace ${-n} día${n === -1 ? "" : "s"}`, "v"] : n === 0 ? ["Vence hoy", "v"] : n === 1 ? ["Vence mañana", "a"] : [`En ${n} días`, n <= 3 ? "a" : ""]; };
+      der = `<div class="lf-cab"><h3 class="ev-h3">Lo que falta <em class="lf-n">${pend.length}</em></h3>
+        <select class="lf-sel" id="lfSel"><option value="todos">Todos los eventos</option>${vivos.map((e) => `<option value="${e.id}" ${String(e.id) === evFalta ? "selected" : ""}>${esc(e.nombre)}</option>`).join("")}</select></div>
+        ${avisos.length ? `<div class="lf-avisos">${avisos.map((x) => `<span>${esc(x)}</span>`).join("")}</div>` : ""}
+        <div class="lf-lista">${pend.map(({ t, e }) => { const T = EV_TIPO[e.tipo], [tx, cl] = cuando(t.fecha); return `<div class="lf-t"><button type="button" class="et-check" data-lf="${t.id}" title="Marcar como hecha"></button>
+          <div class="lf-i" data-ev="${e.id}"><b>${esc(t.texto)}</b><span class="lf-ev" style="color:${T.tx}"><i style="background:${T.c}"></i>${esc(e.nombre)}</span></div>
+          <div class="lf-d">${grupoAv(t.encargados) || `<small class="lf-sin">Sin responsable</small>`}<small class="lf-q ${cl}">${t.fecha ? fCorta(t.fecha) + " | " : ""}${tx}</small></div></div>`; }).join("") || `<div class="ev-vacio">No hay tareas pendientes.</div>`}</div>`;
     }
     cont.innerHTML = `<div class="ev-cab"><div class="ev-cab-i"><h2>Eventos</h2>${seg([["todos", "Todos"], ["interno", "Internos"], ["externo", "Externos"]], evFiltro, "data-ef")}</div><button type="button" class="nuevo-btn" id="evNuevo"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Nuevo evento</button></div>
       <div class="ev-cuerpo"><div class="ev-izq"><div class="ev-sub"><h3>${evVista === "mes" ? `${mayus(MES_L[m])} de ${y}` : "Línea de tiempo"}</h3><div class="ev-sub-d">${evVista === "mes" ? `<button type="button" class="ev-nav" data-nav="-1">‹</button><button type="button" class="ev-hoy" id="evHoy">Hoy</button><button type="button" class="ev-nav" data-nav="1">›</button>` : ""}${seg([["mes", "Mes"], ["agenda", "Agenda"]], evVista, "data-ev-vista")}</div></div>${izq}</div>
@@ -3753,6 +3776,9 @@
       const delDia = evs.find((x) => x.ev) || evs[0]; pintarEventosPag(); if (delDia) abrirEvento(delDia.e.id);
     }));
     cont.querySelectorAll(".mc-d").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; const x = itemsDelDia(evDia).find((i) => i.e); if (x) abrirEvento(x.e.id); }));
+    if (evVista === "agenda") requestAnimationFrame(() => { const iz = cont.querySelector(".ev-izq"), de = cont.querySelector(".ev-der"); if (iz && de && innerWidth > 1100) { de.style.height = iz.offsetHeight + "px"; de.classList.add("lf-col"); } });
+    cont.querySelector("#lfSel")?.addEventListener("change", (ev) => { evFalta = ev.target.value; pintarEventosPag(); });
+    cont.querySelectorAll("[data-lf]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); const t = EVT.get(+b.dataset.lf); if (!t) return; t.hecha = true; evGuardar("et", t); pintarEventosPag(); avisar(`<b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; evGuardar("et", t); pintarEventosPag(); }); }));
     cont.querySelectorAll("[data-tl]").forEach((b) => (b.onclick = () => { evIni = +b.dataset.tl ? sumaD(evIni, +b.dataset.tl) : sumaD(HOY, -1); pintarEventosPag(); }));
     cont.querySelectorAll("[data-ev]").forEach((b) => (b.onclick = () => abrirEvento(+b.dataset.ev)));
     cont.querySelectorAll(".ev-prox:not([data-ev])[data-dia]").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; evMes = new Date(evDia + "T00:00"); evMes.setDate(1); evVista = "mes"; pintarEventosPag(); }));
@@ -3770,6 +3796,15 @@
   const hora12 = (x) => { const [H, M] = x.split(":").map(Number); return `${H % 12 || 12}:${String(M).padStart(2, "0")} ${H < 12 ? "a. m." : "p. m."}`; };
   const horaTxt = (h) => { const [a, b] = horaPartes(h); return a ? (b ? `${hora12(a)} a ${hora12(b)}` : hora12(a)) : h || ""; };
   const rangoLargo = (a, b) => { const f = (x) => { const [, m, d] = x.split("-"); return [+d, MES_L[+m - 1]]; }; const [d1, m1] = f(a), [d2, m2] = f(b || a); return a === (b || a) ? `${d1} de ${m1}` : m1 === m2 ? `${d1} al ${d2} de ${m1}` : `${d1} de ${m1} al ${d2} de ${m2}`; };
+  // Semáforo: atrasado si hay tareas vencidas; ajustado si el tiempo avanza más rápido que las tareas
+  function semaforo(e) {
+    const ts = tareasDe(e.id), pend = ts.filter((t) => !t.hecha);
+    if (!e.fecha_desde || diasHasta(e.fecha_desde) < 0) return "";
+    let k = "ok";
+    if (pend.some((t) => t.fecha && t.fecha < HOY) || (diasHasta(e.fecha_desde) <= 1 && pend.length)) k = "at";
+    else if (ts.length && e.prep_desde) { const tot = diasEntre(e.prep_desde, e.prep_hasta || e.prep_desde) + 1, va = Math.max(0, Math.min(tot, diasEntre(e.prep_desde, HOY) + 1)); if (va / tot > (ts.length - pend.length) / ts.length + 0.25) k = "aj"; }
+    return `<span class="sem sem-${k}"><i></i>${{ ok: "Vamos bien", aj: "Ajustado", at: "Atrasado" }[k]}</span>`;
+  }
   const evIdReal = new Map();
   function abrirEvento(id) {
     if (!EVS.has(id)) return avisar("Ese evento se está guardando, inténtalo de nuevo en un momento");
