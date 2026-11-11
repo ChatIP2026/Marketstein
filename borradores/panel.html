@@ -2177,6 +2177,12 @@
   .ev-card.fecha .ev-fechas > span { text-align: center; }
   .ev-card.fecha input:not([type=checkbox]) { min-height: 0 !important; box-sizing: border-box !important; margin: 0 !important; line-height: normal !important; height: 38px !important; padding: 6px 10px !important; font-size: .86rem !important; font-weight: 700 !important; border: 1px solid #333 !important; border-radius: 9px !important; background: #1f1f1f !important; color: #fff !important; }
   .ev-card.fecha input.ev-lugar { font-weight: 600 !important; }
+
+  .tl-der { display: flex; align-items: center; gap: 10px; flex: none; }
+  .tl-tareas { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid; border-radius: 999px; padding: 4px 11px; font-size: .74rem; font-weight: 700; color: #333; white-space: nowrap; }
+  .tl-tareas.vacio { color: #999; border-color: #eee; font-weight: 600; }
+  .tl-mini { width: 46px; height: 6px; border-radius: 9px; background: #eee; overflow: hidden; } .tl-mini i { display: block; height: 100%; border-radius: 9px; }
+  .tl-t b { font-size: .86rem !important; } .tl-t small { font-size: .74rem !important; opacity: .9 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3718,7 +3724,7 @@
       const fondo = dias.map((d) => `<i class="${bloq(d) ? "fs" : ""}"></i>`).join("");
       const hoyC = diasEntre(ini, HOY);
       const filas = lista.map((e) => { const T = EV_TIPO[e.tipo], ts = tareasDe(e.id), ok = ts.filter((t) => t.hecha).length;
-        return `<div class="tl-fila" data-ev="${e.id}">${e.prep_desde ? barra(e.prep_desde, e.prep_hasta || e.prep_desde, "prep", `background:${T.s};border-color:${T.f};color:${T.tx}`, `<span class="tl-t"><b>${esc(e.nombre)}</b><small>Prep. ${rangoCorto(e.prep_desde, e.prep_hasta)}${ts.length ? ` | ${ok}/${ts.length} tareas` : ""}</small></span>${grupoAv(e.encargados)}`) : ""}
+        return `<div class="tl-fila" data-ev="${e.id}">${e.prep_desde ? barra(e.prep_desde, e.prep_hasta || e.prep_desde, "prep", `background:${T.s};border-color:${T.f};color:${T.tx}`, `<span class="tl-t"><b>${esc(e.nombre)}</b><small>Preparación: ${rangoLargo(e.prep_desde, e.prep_hasta)}</small></span><span class="tl-der">${ts.length ? `<span class="tl-tareas" style="border-color:${T.f}"><span class="tl-mini"><i style="width:${(ok / ts.length) * 100}%;background:${T.c}"></i></span>${ok} de ${ts.length} tareas hechas</span>` : `<span class="tl-tareas vacio">Sin tareas</span>`}${grupoAv(e.encargados)}</span>`) : ""}
           ${barra(e.fecha_desde, e.fecha_hasta || e.fecha_desde, "ev", `background:${T.c}`, (e.fecha_hasta && e.fecha_hasta !== e.fecha_desde) || !e.prep_desde ? `<span class="tl-t"><b>${e.prep_desde ? "Evento" : esc(e.nombre)}</b><small>${rangoCorto(e.fecha_desde, e.fecha_hasta)}</small></span>` : `<svg class="tl-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>`)}</div>`; }).join("");
       izq = `<div class="tl-nav"><button type="button" class="ev-nav" data-tl="-14">‹</button><button type="button" class="ev-hoy" data-tl="0">Hoy</button><button type="button" class="ev-nav" data-tl="14">›</button><span>${fCorta(ini)} al ${fCorta(fin)}</span>${dias.some(bloq) ? `<em class="tl-ley"><i></i>Sin recepción de tickets</em>` : ""}</div>
         <div class="tl"><div class="tl-cab">${cab}</div><div class="tl-cuerpo"><div class="tl-fondo">${fondo}</div>${hoyC >= 0 && hoyC < N ? `<div class="tl-hoy" style="left:calc(${(hoyC + .5) / N * 100}%)"></div>` : ""}${filas || `<div class="ev-vacio">No hay eventos en estas fechas.</div>`}</div></div>`;
@@ -3763,6 +3769,7 @@
   const horaPartes = (h) => { const m = String(h || "").match(/(\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?/); return m ? [m[1].padStart(5, "0"), (m[2] || "").padStart(m[2] ? 5 : 0, "0")] : ["", ""]; };
   const hora12 = (x) => { const [H, M] = x.split(":").map(Number); return `${H % 12 || 12}:${String(M).padStart(2, "0")} ${H < 12 ? "a. m." : "p. m."}`; };
   const horaTxt = (h) => { const [a, b] = horaPartes(h); return a ? (b ? `${hora12(a)} a ${hora12(b)}` : hora12(a)) : h || ""; };
+  const rangoLargo = (a, b) => { const f = (x) => { const [, m, d] = x.split("-"); return [+d, MES_L[+m - 1]]; }; const [d1, m1] = f(a), [d2, m2] = f(b || a); return a === (b || a) ? `${d1} de ${m1}` : m1 === m2 ? `${d1} al ${d2} de ${m1}` : `${d1} de ${m1} al ${d2} de ${m2}`; };
   const evIdReal = new Map();
   function abrirEvento(id) {
     if (!EVS.has(id)) return avisar("Ese evento se está guardando, inténtalo de nuevo en un momento");
