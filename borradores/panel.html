@@ -2260,6 +2260,10 @@
   .pa-fila i { width: 12px; height: 12px; border-radius: 50%; } .pa-fila .pa-nom { font-size: .92rem; font-weight: 600; } .pa-fila strong { font-size: 1.4rem !important; text-align: right !important; }
   .pa-sin, .pa-vacio { margin: 8px 12px 0; font-size: .76rem; color: #8a8a8a; } .pa-vacio { text-align: center; margin-top: 6px; }
   .pa-sub { display: none; }
+
+  #vistaDash .pa-fila .pa-nom { display: block !important; text-align: left !important; }
+  .pa-fila .pa-nom small { display: block; font-size: .72rem; font-weight: 500; color: #8a8a8a; margin-top: 2px; }
+  .pa-fila strong { display: flex; align-items: baseline; gap: 6px; } .pa-fila strong small { font-size: .74rem; font-weight: 500; color: #8a8a8a !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -4703,7 +4707,7 @@
     return `<div class="pa-cuerpo"><div class="pa-svg"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="24"/>${seg}</svg>
       <div class="pa-centro"><b>${totP}</b><span>proyectos</span></div></div>
       <div class="pa-ley">${[1, 2, 3, 4].map((k) => { const f = filas.find((x) => x.k === k) || { n: 0, listos: 0, tareas: 0 };
-        return `<div class="pa-fila" data-pa="${k}" title="${f.listos} listos | ${f.tareas} tareas hechas"><i style="background:${PIL_OSC[k]}"></i><span class="pa-nom">${CORTO[k]}</span><strong>${f.n}</strong></div>`; }).join("")}
+        return `<div class="pa-fila" data-pa="${k}" title="${f.listos} listos | ${f.tareas} tareas hechas"><i style="background:${PIL_OSC[k]}"></i><span class="pa-nom">${CORTO[k]}<small>${f.listos} listo${f.listos === 1 ? "" : "s"} de ${f.n}</small></span><strong>${f.n}<small>proyecto${f.n === 1 ? "" : "s"}</small></strong></div>`; }).join("")}
       ${sinP ? `<p class="pa-sin">${sinP} proyecto${sinP === 1 ? "" : "s"} sin pilar</p>` : ""}</div></div>
       ${!totP ? `<p class="pa-vacio">Aún no hay proyectos con pilar. Asígnalo desde cada proyecto.</p>` : ""}`;
   }
