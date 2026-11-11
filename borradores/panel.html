@@ -3793,7 +3793,7 @@
       const delDia = evs.find((x) => x.ev) || evs[0]; pintarEventosPag(); if (delDia) abrirEvento(delDia.e.id);
     }));
     cont.querySelectorAll(".mc-d").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; const x = itemsDelDia(evDia).find((i) => i.e); if (x) abrirEvento(x.e.id); }));
-    if (evVista === "agenda") requestAnimationFrame(() => { const iz = cont.querySelector(".ev-izq"), de = cont.querySelector(".ev-der"); if (iz && de && innerWidth > 1100) { de.style.height = iz.offsetHeight + "px"; de.classList.add("lf-col"); } });
+    if (evVista === "agenda") requestAnimationFrame(() => { const iz = cont.querySelector(".ev-izq"), de = cont.querySelector(".ev-der"); const tl = cont.querySelector(".tl"); if (tl && de && innerWidth > 1100) { de.classList.add("lf-col"); de.style.height = Math.round(tl.getBoundingClientRect().bottom - de.getBoundingClientRect().top) + "px"; } });
     cont.querySelector("#lfSel")?.addEventListener("change", (ev) => { evFalta = ev.target.value; pintarEventosPag(); });
     cont.querySelectorAll("[data-lf]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); const t = EVT.get(+b.dataset.lf); if (!t) return; t.hecha = true; evGuardar("et", t); pintarEventosPag(); avisar(`<b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; evGuardar("et", t); pintarEventosPag(); }); }));
     cont.querySelectorAll("[data-tl]").forEach((b) => (b.onclick = () => { evIni = +b.dataset.tl ? sumaD(evIni, +b.dataset.tl) : sumaD(HOY, -1); pintarEventosPag(); }));
