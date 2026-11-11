@@ -2139,6 +2139,15 @@
     .ev-tarjetas { grid-template-columns: 1fr; } .et-fila { flex-wrap: wrap; } .et-texto { flex-basis: calc(100% - 60px); } .et-resp { width: auto; flex: 1; } .et-fecha { width: 124px; }
     .ag-fila { grid-template-columns: 64px 2px minmax(0, 1fr); } .ag-enc { display: none; } .ep-fecha { width: 64px; } .ep-top b { font-size: 1.35rem; }
   }
+
+  .ev-prep-av { margin-top: auto; display: flex; flex-direction: column; gap: 7px; }
+  .ev-prep-t { display: flex; justify-content: space-between; align-items: baseline; font-size: .86rem; } .ev-prep-t span { color: #888; font-size: .78rem; }
+  .ev-prep-b { height: 8px; background: rgba(0,0,0,.07); border-radius: 9px; overflow: hidden; } .ev-prep-b i { display: block; height: 100%; border-radius: 9px; min-width: 6px; }
+  .ev-prep-pie { display: flex; justify-content: space-between; gap: 8px; font-size: .76rem; color: #777; font-weight: 600; flex-wrap: wrap; }
+  .ev-acc { justify-content: flex-start !important; } .ev-acc a { display: inline-flex; align-items: center; gap: 7px; background: #fff; color: #0a0a0a !important; text-decoration: none; font-weight: 700; padding: 8px 13px; border-radius: 10px; }
+  .ev-acc a svg { width: 15px; height: 15px; }
+  .det-item .et-resp { width: 176px; } .det-item .et-fecha { width: 140px; }
+  @media (max-width: 760px) { .det-item { flex-wrap: wrap; } .det-item .t-texto { flex-basis: calc(100% - 60px); } .det-item .et-resp { flex: 1; width: auto; } }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2195,6 +2204,9 @@
   const ARCHIVOS_EJEMPLO = { "Diseño": { nombre: "Piezas Halloween", n: 8, peso: "226,4 MB" }, "PODCAST": { nombre: "Audios episodio piloto", n: 3, peso: "84,1 MB" } };
   for (const p of mapaP.values()) p.creado_por = p.creado_por || p.encargados[0] || "Hilary";
   let proyectos = [];
+  // Una tarea puede tener varios responsables (t.encargados); t.encargado queda como el primero
+  const encDe = (t) => (Array.isArray(t.encargados) ? t.encargados : t.encargado ? [t.encargado] : []);
+  const esDe = (t, n) => encDe(t).includes(n);
   const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // Junta proyectos con el conteo de sus tareas
@@ -2267,7 +2279,7 @@
     const tareas = [...mapaT.values()];
     const filas = Object.keys(COLORES).map((n) => {
       const suyos = [...mapaP.values()].filter((p) => p.encargados.includes(n) && p.estado !== "listo");
-      const misT = tareas.filter((t) => t.encargado === n && mapaP.has(t.proyecto_id));
+      const misT = tareas.filter((t) => esDe(t, n) && mapaP.has(t.proyecto_id));
       let tks = []; try { tks = tickets.filter((t) => t.asignado === n && !["rechazado", "cancelado"].includes(t.estado)); } catch (e) {}
       const pendT = misT.filter((t) => !t.hecha).length, pendK = tks.filter((t) => t.estado !== "entregado").length;
       const total = misT.length + tks.length, hechas = (misT.length - pendT) + (tks.length - pendK);
@@ -2352,7 +2364,7 @@
   function abrirProyecto(id, centrado) {
     id = idReal(id);
     if (!mapaP.has(id)) { cerrarProyecto(); document.getElementById("detalle").innerHTML = ""; avisar("Ese proyecto se está guardando, inténtalo de nuevo en un momento"); return; }
-    centrarDet = !!centrado; delete burbujaVista[id]; delete animoDe[id]; abiertoId = id;
+    centrarDet = true; delete burbujaVista[id]; delete animoDe[id]; abiertoId = id;
     if (pintarDetalle()) document.body.classList.add("con-detalle");
   }
   function cerrarProyecto() { abiertoId = null; document.body.classList.remove("con-detalle"); }
@@ -2423,8 +2435,7 @@
       const it = document.createElement("div");
       it.className = "item det-item" + (t.hecha ? " hecha" : "");
       it.innerHTML = `<div class="caja" title="Marcar como hecha"></div><span class="t-texto">${esc(t.texto)}</span>
-        <select class="det-asig" title="Responsable de la tarea"><option value="">Sin asignar</option>${Object.keys(COLORES).map((n) => `<option ${t.encargado === n ? "selected" : ""}>${n}</option>`).join("")}</select>
-        ${t.encargado ? avMini(t.encargado) : `<i class="av-mini vacio" title="Sin asignar">?</i>`}
+        ${botonResp(encDe(t), t.id)}<input type="date" class="et-fecha" value="${t.fecha || ""}" title="Fecha límite de la tarea" />
         <button type="button" class="det-x" title="Eliminar tarea">✕</button>`;
       it.querySelector(".caja").onclick = () => { t.hecha = !t.hecha; ajustarEstado(t.proyecto_id); armar(); };
       const txt = it.querySelector(".t-texto");
@@ -2438,7 +2449,8 @@
         inp.onkeydown = (ev) => { if (ev.key === "Enter") fin(true); if (ev.key === "Escape") { ev.stopPropagation(); fin(false); } };
         inp.onblur = () => fin(true);
       };
-      it.querySelector(".det-asig").onchange = (e) => { t.encargado = e.target.value || null; armar(); };
+      it.querySelector(".et-resp").onclick = (e) => { e.stopPropagation(); abrirResp(t, e.currentTarget, [["EQUIPO", Object.keys(COLORES)]], () => { t.encargado = t.encargados[0] || null; }, armar); };
+      it.querySelector(".et-fecha").onchange = (e) => { t.fecha = e.target.value || null; armar(); };
       it.querySelector(".det-x").onclick = () => {
         mapaT.delete(t.id); ajustarEstado(p.id); armar();
         avisar(`Tarea <b>${esc(t.texto)}</b> eliminada`, () => { mapaT.set(t.id, t); ajustarEstado(p.id); armar(); });
@@ -2451,7 +2463,7 @@
       const v = e.target.querySelector("input").value.trim();
       if (!v) return;
       const id = Date.now();
-      mapaT.set(id, { id, proyecto_id: p.id, texto: v, hecha: false, encargado: p.encargados.length === 1 ? p.encargados[0] : null, created_at: new Date().toISOString() });
+      mapaT.set(id, { id, proyecto_id: p.id, texto: v, hecha: false, encargado: p.encargados.length === 1 ? p.encargados[0] : null, encargados: p.encargados.length === 1 ? [p.encargados[0]] : [], fecha: null, created_at: new Date().toISOString() });
       ajustarEstado(p.id);
       armar();
       document.querySelector("#detalle .det-nueva input").focus();
@@ -2737,7 +2749,7 @@
       created_at: new Date().toISOString(),
       creado_por: yo,
     });
-    tareasNuevas.forEach((texto, k) => mapaT.set(id + k + 1, { id: id + k + 1, proyecto_id: id, texto, hecha: false, encargado: mapaP.get(id).encargados.length === 1 ? mapaP.get(id).encargados[0] : null, created_at: new Date(Date.now() + k).toISOString() }));
+    tareasNuevas.forEach((texto, k) => mapaT.set(id + k + 1, { id: id + k + 1, proyecto_id: id, texto, hecha: false, encargado: mapaP.get(id).encargados.length === 1 ? mapaP.get(id).encargados[0] : null, encargados: mapaP.get(id).encargados.length === 1 ? [mapaP.get(id).encargados[0]] : [], fecha: null, created_at: new Date(Date.now() + k).toISOString() }));
     cerrarNuevo();
     armar();
     avisar(`${pill(mapaP.get(id).estado)} Proyecto <b>${esc(nombre)}</b> creado`);
@@ -2873,7 +2885,7 @@
       // Asignaciones nuevas: tickets, proyectos y tareas
       tks.filter((t) => t.asignado === yo).forEach((t) => { const h = t.historial.find((x) => /asignado a/.test(x.txt)); if (h) add("at" + t.id, "🎫", "Te asignaron un ticket", `#${(t.id > 0 ? String(t.id).padStart(3, "0") : "…")} ${t.titulo}`, h.at, ["tk", t.id]); });
       [...mapaP.values()].filter((p) => p.encargados.includes(yo) && p.creado_por && p.creado_por !== yo && !p.solicitado_por).forEach((p) => add("ap" + p.id, "📁", "Te asignaron un proyecto", `${p.nombre} | por ${p.creado_por}`, p.created_at, ["p", p.id]));
-      [...mapaT.values()].filter((t) => t.encargado === yo && !t.hecha && mapaP.has(t.proyecto_id)).slice(0, 4).forEach((t, i) => add("as" + t.id, "☑️", "Te asignaron una tarea", `${t.texto} | ${mapaP.get(t.proyecto_id).nombre}`, t.created_at || haceDias(i + 1), ["p", t.proyecto_id]));
+      [...mapaT.values()].filter((t) => esDe(t, yo) && !t.hecha && mapaP.has(t.proyecto_id)).slice(0, 4).forEach((t, i) => add("as" + t.id, "☑️", "Te asignaron una tarea", `${t.texto} | ${mapaP.get(t.proyecto_id).nombre}`, t.created_at || haceDias(i + 1), ["p", t.proyecto_id]));
     }
     // Mensajes del chat de un ticket que te escribió otra persona
     tks.filter((t) => t.solicitante === yo || t.asignado === yo || (yo === JEFA && !t.asignado)).forEach((t) => {
@@ -2955,7 +2967,7 @@
     const ops = [];
     if (!sol) {
       const act = window.sb ? [] : misProyectos().filter((p) => p.estado !== "listo"); // proyectos aún de ejemplo en la web
-      const pend = act.map((p) => [p, [...mapaT.values()].filter((t) => t.proyecto_id === p.id && !t.hecha && (!t.encargado || t.encargado === yo)).length]).filter((x) => x[1]);
+      const pend = act.map((p) => [p, [...mapaT.values()].filter((t) => t.proyecto_id === p.id && !t.hecha && (!encDe(t).length || esDe(t, yo))).length]).filter((x) => x[1]);
       if (pend.length) { const [p, t] = rbAzar(pend); ops.push(["pendiente", { ...v, p: p.nombre, t }]); }
       const ven = act.filter((p) => p.fecha_limite && diasHasta(p.fecha_limite) <= 5);
       if (ven.length) { const p = rbAzar(ven), d = diasHasta(p.fecha_limite); ops.push(["vence", { ...v, p: p.nombre, d: d < 0 ? "ya pasó su fecha" : d === 0 ? "hoy" : d === 1 ? "mañana" : `en ${d} días` }]); }
@@ -3012,7 +3024,7 @@
       const aprob = mios.filter((t) => !["revision_inicial", "falta_info", "rechazado", "cancelado"].includes(t.estado)).length;
       stats = [["Tickets enviados", mios.length], ["Aprobados", aprob], ["Entregados", mios.filter((t) => t.estado === "entregado").length]];
     } else {
-      const tareas = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
+      const tareas = [...mapaT.values()].filter((t) => esDe(t, yo) && mapaP.has(t.proyecto_id));
       const proys = misProyectos();
       const tks = tickets.filter((t) => t.asignado === yo && !["rechazado", "cancelado"].includes(t.estado));
       stats = [["Tareas", `${tareas.filter((t) => t.hecha).length}<small>/${tareas.length}</small>`], ["Proyectos", `${proys.filter((p) => p.estado === "listo").length}<small>/${proys.length}</small>`], ["Tickets", `${tks.filter((t) => t.estado === "entregado").length}<small>/${tks.length}</small>`]];
@@ -3093,7 +3105,7 @@
     // Panel lateral: día elegido + próximos vencimientos
     const delDia = lista.filter((p) => p.fecha_limite === diaEnt);
     const prox = lista.filter((p) => p.fecha_limite && p.fecha_limite >= HOY && p.estado !== "listo").sort((a, b) => a.fecha_limite.localeCompare(b.fecha_limite)).slice(0, 4);
-    const fila = (p) => { const ts = tsDe(p), pend = ts.filter((t) => !t.hecha).length, mias = ts.filter((t) => !t.hecha && t.encargado === yo).length;
+    const fila = (p) => { const ts = tsDe(p), pend = ts.filter((t) => !t.hecha).length, mias = ts.filter((t) => !t.hecha && esDe(t, yo)).length;
       return `<button class="ec-item e-${p.estado}" data-pid="${p.id}"><span class="carpeta-azul c-${p.estado} chica"></span><span class="ec-item-txt"><b>${esc(p.nombre)}</b>
         <small>${pend}/${ts.length} pendientes${mias ? ` | ${mias} tuya${mias === 1 ? "" : "s"}` : ""}${p.solicitado_por ? ` | pedido por ${esc(p.solicitado_por.nombre)}` : ""}</small></span>${anilloMini(ts.length ? Math.round((ts.length - pend) / ts.length * 100) : 0)}</button>`; };
     const sinFecha = lista.filter((p) => !p.fecha_limite).length;
@@ -3116,7 +3128,7 @@
   const hace = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 6e4); return m < 1 ? "ahora" : m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.round(m / 60)} h` : `hace ${Math.round(m / 1440)} d`; };
   const av = (n, cls = "") => `<i class="av ${cls}" style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`;
   function misProyectos() {
-    return [...mapaP.values()].filter((p) => p.encargados.includes(yo) || p.creado_por === yo || [...mapaT.values()].some((t) => t.proyecto_id === p.id && t.encargado === yo))
+    return [...mapaP.values()].filter((p) => p.encargados.includes(yo) || p.creado_por === yo || [...mapaT.values()].some((t) => t.proyecto_id === p.id && esDe(t, yo)))
       .sort((a, b) => (a.estado === "listo") - (b.estado === "listo") || (a.fecha_limite || "9").localeCompare(b.fecha_limite || "9"));
   }
   // En Mi entorno, "Nuevo proyecto" abre el mismo formulario con la persona ya marcada como encargada
@@ -3124,7 +3136,7 @@
   function pintarMis() {
     const cont = document.getElementById("vistaMis");
     const lista = misProyectos();
-    const misT = [...mapaT.values()].filter((t) => t.encargado === yo && mapaP.has(t.proyecto_id));
+    const misT = [...mapaT.values()].filter((t) => esDe(t, yo) && mapaP.has(t.proyecto_id));
     const pend = misT.filter((t) => !t.hecha);
     const hora = new Date().getHours(), saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
     let html = `<div class="mis-cab"><div><h2 class="saludo-h">${saludo}, ${yo} ${rbMini()}</h2><p>${pend.length ? `Tienes ${pend.length} tarea${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"}.` : "No tienes tareas pendientes."}</p></div></div>`;
@@ -3181,7 +3193,7 @@
   function tarjetaChat(p) {
     const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id);
     const h = ts.filter((t) => t.hecha).length;
-    const mias = ts.filter((t) => t.encargado === yo && !t.hecha).length;
+    const mias = ts.filter((t) => esDe(t, yo) && !t.hecha).length;
     const ult = ts.filter((t) => t.hecha).sort((a, b) => (b.hecha_at || "").localeCompare(a.hecha_at || ""))[0];
     const msg = p.estado === "listo" ? "¡Proyecto terminado! Todas las tareas están listas"
       : mias ? `Te toca${mias === 1 ? "" : "n"} ${mias} tarea${mias === 1 ? "" : "s"}. ${p.fecha_limite ? (diasHasta(p.fecha_limite) <= 1 ? "Vence muy pronto." : `Vence el ${fmt(p.fecha_limite)}.`) : ""}`
@@ -3199,7 +3211,7 @@
     const box = document.getElementById("entFeed"), p = mapaP.get(entornoSel);
     if (!box || !p) return;
     const ts = [...mapaT.values()].filter((t) => t.proyecto_id === p.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
-    const mias = ts.filter((t) => t.encargado === yo && !t.hecha), misHechas = ts.filter((t) => t.encargado === yo && t.hecha);
+    const mias = ts.filter((t) => esDe(t, yo) && !t.hecha), misHechas = ts.filter((t) => esDe(t, yo) && t.hecha);
     // eventos de la línea de tiempo
     const ev = [{ at: p.created_at, quien: p.creado_por, tit: "Creó el proyecto", txt: `${p.encargados.length ? "Encargados: " + p.encargados.join(", ") : "Sin encargados aún"} | Prioridad ${p.prioridad}` }];
     ts.filter((t) => t.hecha).forEach((t) => ev.push({ at: t.hecha_at || t.created_at, quien: t.encargado || p.creado_por, tit: "Completó una tarea", txt: t.texto, ok: true }));
@@ -3349,10 +3361,11 @@
   let sincP = false;
   const pAbd = (p) => ({ nombre: p.nombre, estado: p.estado, prioridad: p.prioridad || "media", encargados: (p.encargados || []).map((n) => ID_DE[n]).filter(Boolean),
     fecha_limite: p.fecha_limite || null, creado_por: ID_DE[p.creado_por] || null, ticket_id: p.ticket || null, standby: !!p.standby });
-  const tAbd = (t) => ({ proyecto_id: t.proyecto_id, texto: t.texto, encargado: t.encargado ? ID_DE[t.encargado] || null : null, hecha: !!t.hecha, hecha_at: t.hecha_at || null });
+  let TAREAS_V2 = false; // true cuando la tabla tareas ya tiene encargados[] y fecha
+  const tAbd = (t) => ({ ...(TAREAS_V2 ? { encargados: encDe(t).map((n) => ID_DE[n]).filter(Boolean), fecha: t.fecha || null } : {}), proyecto_id: t.proyecto_id, texto: t.texto, encargado: encDe(t)[0] ? ID_DE[encDe(t)[0]] || null : null, hecha: !!t.hecha, hecha_at: t.hecha_at || null });
   const pDeBd = (r) => ({ id: r.id, nombre: r.nombre, estado: r.estado, prioridad: r.prioridad, encargados: (r.encargados || []).map((u) => NOMBRE_DE[u]).filter(Boolean),
     fecha_limite: r.fecha_limite, created_at: r.created_at, creado_por: NOMBRE_DE[r.creado_por] || null, ticket: r.ticket_id, standby: !!r.standby });
-  const tDeBd = (r) => ({ id: r.id, proyecto_id: r.proyecto_id, texto: r.texto, encargado: r.encargado ? NOMBRE_DE[r.encargado] || null : null, hecha: r.hecha, hecha_at: r.hecha_at, created_at: r.created_at });
+  const tDeBd = (r) => ({ id: r.id, proyecto_id: r.proyecto_id, texto: r.texto, encargados: (r.encargados && r.encargados.length ? r.encargados : r.encargado ? [r.encargado] : []).map((u) => NOMBRE_DE[u]).filter(Boolean), fecha: r.fecha || null, encargado: r.encargado ? NOMBRE_DE[r.encargado] || null : null, hecha: r.hecha, hecha_at: r.hecha_at, created_at: r.created_at });
   // Los proyectos que vienen de un ticket muestran quién lo pidió
   function enlazarSolicitados() {
     for (const p of mapaP.values()) { const t = p.ticket && tickets.find((x) => x.id === p.ticket); if (t) { p.solicitado_por = { nombre: t.solicitante, area: t.area }; t.proyecto = p.id; } }
@@ -3361,6 +3374,7 @@
     || [...BD_P.keys()].some((id) => !mapaP.has(id)) || [...BD_T.keys()].some((id) => !mapaT.has(id));
   async function cargarProyectos() {
     if (sincP || hayPendientes()) return; // primero se guarda lo pendiente; el siguiente aviso vuelve a cargar
+    if (cargarProyectos.v2 === undefined) { const { error } = await sb.from("tareas").select("encargados, fecha").limit(1); cargarProyectos.v2 = TAREAS_V2 = !error; }
     const [{ data: ps, error: e1 }, { data: ts, error: e2 }] = await Promise.all([sb.from("proyectos").select("*"), sb.from("tareas").select("*")]);
     if (e1 || e2 || sincP || hayPendientes()) return;
     mapaP.clear(); mapaT.clear(); BD_P.clear(); BD_T.clear();
@@ -3724,7 +3738,7 @@
     const faltan = e.prep_desde ? diasHasta(e.prep_hasta || e.prep_desde) : null;
     const gcal = e.fecha_desde ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.nombre)}&dates=${e.fecha_desde.replace(/-/g, "")}/${sumaD(e.fecha_hasta || e.fecha_desde, 1).replace(/-/g, "")}&location=${encodeURIComponent(e.lugar || "")}&details=${encodeURIComponent("Evento de iPartner organizado desde Rabbit AI" + (e.hora ? " | " + e.hora : ""))}` : "";
     const chips = (lista) => lista.map((n) => `<button type="button" class="det-persona ${e.encargados.includes(n) ? "activa" : ""}" data-enc="${esc(n)}"><i style="${fondoAv(n)}">${letraAv(n)}</i>${esc(n)}</button>`).join("") || `<span class="ev-gris">Aún no hay personas registradas</span>`;
-    const resp = (t) => { const p = t.encargados; return `<button type="button" class="et-resp" data-resp="${t.id}"><span>${p.length === 0 ? "Sin asignar" : p.length === 1 ? esc(p[0]) : `${p.length} personas`}</span>${grupoAv(p)}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>`; };
+    const resp = (t) => botonResp(t.encargados, t.id);
     d.className = "detalle tk-det ev-det";
     d.innerHTML = `
       <div class="det-cab"><div class="det-titulo"><div class="ev-pills"><button type="button" class="ev-pill-tipo" style="background:${T.f};color:${T.tx}" title="Cambiar a ${e.tipo === "interno" ? "externo" : "interno"}">${T.t}</button><span class="ev-pill-est">${e.por_confirmar ? "Por confirmar" : evEstado(e)}</span></div>
@@ -3732,11 +3746,16 @@
       <div class="ev-tarjetas">
         <div class="ev-card prep" style="background:${T.s};border-color:${T.f}"><small style="color:${T.tx}">PREPARACIÓN</small>
           <div class="ev-fechas"><input type="date" data-k="prep_desde" value="${e.prep_desde || ""}" /><span>→</span><input type="date" data-k="prep_hasta" value="${e.prep_hasta || ""}" /></div>
-          <span class="ev-gris">${e.prep_desde ? `${diasHasta(e.prep_hasta || e.prep_desde) - diasHasta(e.prep_desde) + 1} días${faltan >= 0 ? ` | ${diasHasta(e.prep_desde) > 0 ? `empieza en ${diasHasta(e.prep_desde)}` : `faltan ${faltan + 1}`}` : " | terminó"}` : "Sin preparación"}</span></div>
+          ${(() => { if (!e.prep_desde) return `<span class="ev-gris">Sin preparación</span>`;
+            const tot = diasHasta(e.prep_hasta || e.prep_desde) - diasHasta(e.prep_desde) + 1, va = Math.min(tot, Math.max(0, 1 - diasHasta(e.prep_desde))), pc = Math.round((va / tot) * 100);
+            const est = diasHasta(e.prep_desde) > 0 ? `Empieza en ${diasHasta(e.prep_desde)} día${diasHasta(e.prep_desde) === 1 ? "" : "s"}` : faltan >= 0 ? `Día ${va} de ${tot}` : "Preparación terminada";
+            const ev = e.fecha_desde ? diasHasta(e.fecha_desde) : null;
+            return `<div class="ev-prep-av"><div class="ev-prep-t"><b>${est}</b><span>${tot} días</span></div><div class="ev-prep-b"><i style="width:${pc}%;background:${T.c}"></i></div>
+              <div class="ev-prep-pie"><span style="color:${T.tx}">Termina el ${fCorta(e.prep_hasta || e.prep_desde)}</span><span>${ev === null ? "Fecha por definir" : ev > 0 ? `Evento en ${ev} día${ev === 1 ? "" : "s"}` : ev === 0 ? "El evento es hoy" : "Evento realizado"}</span></div></div>`; })()}</div>
         <div class="ev-card fecha"><small>FECHA DEL EVENTO</small>
           <div class="ev-fechas"><input type="date" data-k="fecha_desde" value="${e.fecha_desde || ""}" /><span>→</span><input type="date" data-k="fecha_hasta" value="${e.fecha_hasta || ""}" /></div>
           <div class="ev-datos"><input data-k="hora" placeholder="Hora (ej. 7:00 p. m.)" value="${esc(e.hora || "")}" /><input data-k="lugar" placeholder="Lugar" value="${esc(e.lugar || "")}" /></div>
-          <div class="ev-acc"><label class="ev-pc"><input type="checkbox" data-k="por_confirmar" ${e.por_confirmar ? "checked" : ""} />Por confirmar</label>${gcal ? `<a href="${gcal}" target="_blank" rel="noopener">Añadir a Google Calendar</a>` : ""}</div></div>
+          <div class="ev-acc">${gcal ? `<a href="${gcal}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Añadir a Google Calendar</a>` : ""}</div></div>
       </div>
       <div class="ev-tarjetas">
         <div class="det-i ev-enc"><small>ENCARGADOS | MARKETING</small><div class="det-personas">${chips(evMk())}</div></div>
@@ -3760,7 +3779,7 @@
       e[k] = v || (inp.type === "checkbox" ? false : k === "hora" || k === "lugar" ? "" : null);
       if (k === "fecha_desde" && v && (!e.fecha_hasta || e.fecha_hasta < v)) e.fecha_hasta = v;
       if (k === "prep_desde" && v && (!e.prep_hasta || e.prep_hasta < v)) e.prep_hasta = v;
-      if (k === "fecha_desde" && v) { evMes = new Date(v + "T00:00"); evMes.setDate(1); }
+      if (k === "fecha_desde" && v) { evMes = new Date(v + "T00:00"); evMes.setDate(1); e.por_confirmar = false; }
     })));
     d.querySelectorAll("[data-enc]").forEach((b) => (b.onclick = () => cambio(() => { const n = b.dataset.enc; e.encargados = e.encargados.includes(n) ? e.encargados.filter((x) => x !== n) : [...e.encargados, n]; })));
     const tarea = (id) => EVT.get(+id);
@@ -3774,7 +3793,7 @@
       tx.ondblclick = () => { tx.contentEditable = "true"; tx.focus(); document.getSelection().selectAllChildren(tx); };
       tx.onkeydown = (ev) => { if (ev.key === "Enter") { ev.preventDefault(); tx.blur(); } };
       tx.onblur = () => { if (tx.contentEditable !== "true") return; tx.contentEditable = "false"; const v = tx.textContent.trim(); if (v && v !== t.texto) ct(t, () => (t.texto = v)); else tx.textContent = t.texto; };
-      f.querySelector(".et-resp").onclick = (ev) => { ev.stopPropagation(); abrirResp(t, f.querySelector(".et-resp")); };
+      f.querySelector(".et-resp").onclick = (ev) => { ev.stopPropagation(); abrirResp(t, f.querySelector(".et-resp"), [["MARKETING", evMk()], ["LEGAL", evLg()]], () => evGuardar("et", t), pintarEvento); };
     });
     d.querySelector(".det-nueva").onsubmit = (ev) => {
       ev.preventDefault(); const inp = d.querySelector(".det-nueva input"), v = inp.value.trim(); if (!v) return;
@@ -3791,18 +3810,23 @@
         const det = document.querySelector("#detalle [name=detalle]"); if (det && !det.value) det.value = `Pieza para el evento "${nombre}"${e.fecha_desde ? ` del ${fCorta(e.fecha_desde)}` : ""}.`; }, 50);
     };
   }
-  // Lista para elegir responsables de una tarea (separada por área)
-  function abrirResp(t, ancla) {
+  // Botón de responsables: texto a la izquierda, fotos a la derecha (igual en eventos y proyectos)
+  const textoResp = (p) => (p.length === 0 ? "Sin asignar" : p.length === 1 ? p[0] : `${p.length} personas`);
+  const botonResp = (p, id) => `<button type="button" class="et-resp" data-resp="${id}"><span>${esc(textoResp(p))}</span>${grupoAv(p)}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>`;
+  // Lista para elegir responsables (separada por área). grupos: [[título, nombres]]
+  function abrirResp(t, ancla, grupos, alCambiar, alCerrar) {
     document.querySelector(".et-pop")?.remove();
+    if (!Array.isArray(t.encargados)) t.encargados = encDe(t);
     const pop = document.createElement("div"); pop.className = "et-pop"; evPop = pop;
     const grupo = (tit, ns) => ns.length ? `<small>${tit}</small>${ns.map((n) => `<button type="button" data-n="${esc(n)}" class="${t.encargados.includes(n) ? "on" : ""}"><i class="et-caja">${t.encargados.includes(n) ? "✓" : ""}</i>${avEv(n)}${esc(n)}</button>`).join("")}` : "";
-    const pinta = () => { pop.innerHTML = grupo("MARKETING", evMk()) + grupo("LEGAL", evLg()); pop.querySelectorAll("[data-n]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); const n = b.dataset.n; t.encargados = t.encargados.includes(n) ? t.encargados.filter((x) => x !== n) : [...t.encargados, n]; evGuardar("et", t); pinta(); const r = document.querySelector(`#detalle [data-resp="${t.id}"]`); if (r) { const p = t.encargados; r.querySelector("span").textContent = p.length === 0 ? "Sin asignar" : p.length === 1 ? p[0] : `${p.length} personas`; r.querySelector(".ev-avs")?.remove(); r.querySelector("span").insertAdjacentHTML("afterend", grupoAv(p)); } })); };
-    pinta(); document.getElementById("detalle").append(pop);
-    const r = ancla.getBoundingClientRect(), rd = document.getElementById("detalle").getBoundingClientRect(), dd = document.getElementById("detalle");
+    const pinta = () => { pop.innerHTML = grupos.map(([tit, ns]) => grupo(tit, ns)).join(""); pop.querySelectorAll("[data-n]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); const n = b.dataset.n; t.encargados = t.encargados.includes(n) ? t.encargados.filter((x) => x !== n) : [...t.encargados, n]; alCambiar && alCambiar(); pinta();
+      const r = ancla; r.querySelector("span").textContent = textoResp(t.encargados); r.querySelector(".ev-avs")?.remove(); r.querySelector("span").insertAdjacentHTML("afterend", grupoAv(t.encargados)); })); };
+    pinta(); const dd = document.getElementById("detalle"); dd.append(pop);
+    const r = ancla.getBoundingClientRect(), rd = dd.getBoundingClientRect();
     pop.style.right = Math.max(12, rd.right - r.right) + "px";
     const abajo = r.bottom + pop.offsetHeight + 8 < innerHeight;
     pop.style.top = (abajo ? r.bottom - rd.top + dd.scrollTop + 6 : r.top - rd.top + dd.scrollTop - pop.offsetHeight - 6) + "px";
-    const fuera = (ev) => { if (!pop.contains(ev.target)) { pop.remove(); evPop = null; document.removeEventListener("click", fuera, true); pintarEvento(); } };
+    const fuera = (ev) => { if (!pop.contains(ev.target)) { pop.remove(); evPop = null; document.removeEventListener("click", fuera, true); alCerrar && alCerrar(); } };
     setTimeout(() => document.addEventListener("click", fuera, true), 0);
   }
   if (!WEB_REAL) evDemo();
@@ -3953,7 +3977,7 @@
     let html = `<div class="mis-cab"><div><h2>${titulo}</h2><p>${sub}</p></div>${sol ? `<button class="nuevo-btn tk-nuevo" id="tkNuevo"><svg class="ct-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Crear ticket</button>` : ""}${jefa ? `<div class="tk-prio-kpis">${Object.entries(TK_PRIO).map(([k, v]) => { const n = tickets.filter((t) => t.prioridad === k && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length; return `<div class="tpk tpk-${k}" style="--c:${v.c}"><b>${n}</b><div><span class="tpk-pill">${v.t}</span><small>ticket${n === 1 ? "" : "s"}</small></div></div>`; }).join("")}</div>` : ""}</div>`;
     if (jefa) {
       const carga = Object.keys(COLORES).filter((n) => n !== JEFA).map((n) => { const c = tickets.filter((t) => t.asignado === n && ["en_curso", "en_revision"].includes(t.estado)).length;
-        const tareas = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha).length;
+        const tareas = [...mapaT.values()].filter((t) => esDe(t, n) && !t.hecha).length;
         return `<button class="tk-carga ${personaTk === n ? "activa" : ""}" data-per="${n}" title="${personaTk === n ? "Ver todos" : "Ver solo los tickets de " + n}"><i class="av" style="${fondoAv(n)}">${letraAv(n)}</i><div><b>${n}</b><small><i class="cg-d cg-${cargaDe(n).nivel}" title="${cargaDe(n).txt}"></i><span class="tc-a">${c} ticket${c === 1 ? "" : "s"}</span><span class="tc-sep"> | </span><span class="tc-b">${tareas} tarea${tareas === 1 ? "" : "s"} pendiente${tareas === 1 ? "" : "s"}</span></small></div></button>`; }).join("");
       html += `<div class="tk-equipo">${carga}</div>`;
     }
@@ -4006,7 +4030,7 @@
   // Carga de cada persona al asignar: tickets abiertos (valen x2) + tareas pendientes
   function cargaDe(n) {
     const tk = tickets.filter((t) => t.asignado === n && !["entregado", "rechazado", "cancelado"].includes(t.estado)).length;
-    const ta = [...mapaT.values()].filter((t) => t.encargado === n && !t.hecha && mapaP.has(t.proyecto_id)).length;
+    const ta = [...mapaT.values()].filter((t) => esDe(t, n) && !t.hecha && mapaP.has(t.proyecto_id)).length;
     const v = tk * 2 + ta, nivel = v <= 10 ? "v" : v <= 18 ? "a" : "r";
     return { tk, ta, nivel, txt: { v: "Con espacio", a: "Carga media", r: "Muy cargado" }[nivel] };
   }
@@ -4103,7 +4127,7 @@
       // Al aceptarlo aparece en Mi entorno de la persona asignada
       const pid = Date.now();
       mapaP.set(pid, { id: pid, nombre: t.titulo, estado: "sin_empezar", prioridad: prio === "urgente" ? "alta" : prio, encargados: [asig], fecha_limite: t.fecha, created_at: new Date().toISOString(), creado_por: JEFA, solicitado_por: { nombre: t.solicitante, area: t.area }, ticket: t.id });
-      mapaT.set(pid + 1, { id: pid + 1, proyecto_id: pid, texto: `Entregar: ${t.titulo}`, hecha: false, encargado: asig, created_at: new Date().toISOString() });
+      mapaT.set(pid + 1, { id: pid + 1, proyecto_id: pid, texto: `Entregar: ${t.titulo}`, hecha: false, encargado: asig, encargados: [asig], fecha: t.fecha || null, created_at: new Date().toISOString() });
       t.proyecto = pid; despues(`${ic("ok")}Ticket aceptado y asignado a <b>${asig}</b>`);
     });
     const motivo = (m) => { modo = m; d.querySelector("#tkMotivo").hidden = false; d.querySelector("#tkMotivoOk").hidden = false; d.querySelector("#tkMotivo").placeholder = m === "info" ? "¿Qué información falta?" : "¿Por qué se rechaza?"; d.querySelector("#tkMotivo").focus(); };
@@ -4501,7 +4525,7 @@
   const r2 = (n) => Math.round(n * 100) / 100;
   function puntaje(n, mes) {
     const enMes = (f) => (f || new Date().toISOString()).slice(0, 7) === mes;
-    const tareas = [...mapaT.values()].filter((t) => t.encargado === n && mapaP.has(t.proyecto_id) && enMes(mapaP.get(t.proyecto_id).fecha_limite));
+    const tareas = [...mapaT.values()].filter((t) => esDe(t, n) && mapaP.has(t.proyecto_id) && enMes(mapaP.get(t.proyecto_id).fecha_limite));
     const hechas = tareas.filter((t) => t.hecha).length;
     // Solo cuentan los tickets ya entregados o los que ya pasaron su fecha sin entregarse
     const hoyISO = new Date().toISOString().slice(0, 10);
@@ -4553,7 +4577,7 @@
         const pc = ts.length ? Math.round((h / ts.length) * 100) : p.estado === "listo" ? 100 : 0;
         return `<button class="gp-proy e-${p.estado}${p.standby ? " sb" : ""}" type="button"><span class="gp-est" title="${ESTO[p.estado]}"></span><span class="gp-nom">${esc(p.nombre)}</span><b>${pc}%</b><span class="gp-barra"><i style="width:${pc}%"></i></span></button>
           <div class="gp-tareas" hidden><div class="gp-tcab"><span>${h} de ${ts.length} tareas completadas</span><a class="gp-abrir" data-id="${p.id}">Abrir proyecto</a></div>
-            ${ts.length ? ts.map((t) => `<div class="gp-t ${t.hecha ? "ok" : ""}"><span class="gp-ck"></span>${esc(t.texto)}${t.encargado ? `<small>${esc(t.encargado)}</small>` : ""}</div>`).join("") : `<div class="gp-t vacio">Este proyecto no tiene tareas.</div>`}</div>`;
+            ${ts.length ? ts.map((t) => `<div class="gp-t ${t.hecha ? "ok" : ""}"><span class="gp-ck"></span>${esc(t.texto)}${encDe(t).length ? `<small>${esc(encDe(t).join(", "))}</small>` : ""}</div>`).join("") : `<div class="gp-t vacio">Este proyecto no tiene tareas.</div>`}</div>`;
       }).join("");
       const hl = lista.filter((p) => p.estado === "listo").length;
       return `<div class="gp-col p-${k}"><div class="gp-ccab"><span class="gp-cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></span><h4>${t}</h4><span class="gp-cnum">${hl}/${lista.length} listos</span></div>
