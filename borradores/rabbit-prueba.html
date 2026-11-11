@@ -2148,6 +2148,20 @@
   .ev-acc a svg { width: 15px; height: 15px; }
   .det-item .et-resp { width: 176px; } .det-item .et-fecha { width: 140px; }
   @media (max-width: 760px) { .det-item { flex-wrap: wrap; } .det-item .t-texto { flex-basis: calc(100% - 60px); } .det-item .et-resp { flex: 1; width: auto; } }
+
+  .tl-nav { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; } .tl-nav span { margin-left: 8px; color: #777; font-size: .84rem; }
+  .tl { border: 1px solid #eee; border-radius: 16px; overflow-x: auto; background: #fff; }
+  .tl-cab, .tl-fondo, .tl-fila { display: grid; grid-template-columns: repeat(28, minmax(34px, 1fr)); min-width: 952px; }
+  .tl-d { text-align: center; padding: 8px 0; border-bottom: 1px solid #eee; font-size: .78rem; } .tl-d small { display: block; color: #999; font-size: .66rem; }
+  .tl-d.fs { background: #fafafa; } .tl-d.hoy b { background: #0a0a0a; color: #fff; border-radius: 999px; padding: 1px 7px; }
+  .tl-cuerpo { position: relative; min-height: 360px; padding: 10px 0 14px; min-width: 952px; }
+  .tl-fondo { position: absolute; inset: 0; } .tl-fondo i { border-left: 1px solid #f3f3f3; } .tl-fondo i.fs { background: repeating-linear-gradient(135deg, #f7f7f7 0 6px, #fff 6px 12px); }
+  .tl-hoy { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: #0a0a0a; z-index: 2; } .tl-hoy::before { content: ""; position: absolute; top: -4px; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: #0a0a0a; }
+  .tl-fila { position: relative; z-index: 1; margin: 6px 0; cursor: pointer; align-items: stretch; }
+  .tl-bar { min-height: 52px; border-radius: 12px; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; gap: 6px; overflow: hidden; border: 1px solid transparent; margin: 0 2px; }
+  .tl-bar.prep { border-style: dashed; } .tl-bar.ev { color: #fff; } .tl-bar:hover { filter: brightness(.97); }
+  .tl-t { min-width: 0; display: flex; flex-direction: column; } .tl-t b { font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .tl-t small { font-size: .68rem; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl-bar .ev-avs { flex: none; } .tl-bar.ev { justify-content: center; padding: 7px 4px; } .tl-flag { width: 18px; height: 18px; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -3532,8 +3546,11 @@
 
   // ===================== EVENTOS (Marketing + Legal) =====================
   // Cada evento tiene días de preparación y días del evento. Interno = naranja, externo = morado, cumpleaños = amarillo
+  const sumaD0 = (iso, n) => { const d = new Date(iso + "T00:00"); d.setDate(d.getDate() + n); return isoDe(d); };
   const EV_TIPO = { interno: { t: "Interno", c: "#E07B1A", s: "#FFF8F0", f: "#FFE7CC", tx: "#B4580A" }, externo: { t: "Externo", c: "#7C4DDB", s: "#FAF7FF", f: "#ECE3FF", tx: "#5B34B5" }, cumple: { t: "Cumpleaños", c: "#E0B000", s: "#FFFBEA", f: "#FFF1B8", tx: "#8A6A00" } };
   const EVS = new Map(), EVT = new Map();
+  const diasEntre = (a, b) => Math.round((new Date(b + "T00:00") - new Date(a + "T00:00")) / 864e5);
+  let evIni = sumaD0(HOY, -3);
   let evVista = "mes", evFiltro = "todos", evMes = new Date(), evDia = HOY, evAbierto = null, evPop = null;
   evMes.setDate(1);
   const evMk = () => Object.keys(COLORES);
@@ -3674,19 +3691,20 @@
       }
       izq = `<div class="ev-grid">${g}</div>`;
     } else {
-      const lista = evVisibles().filter((e) => !e.fecha_desde || (e.fecha_hasta || e.fecha_desde) >= HOY).sort((a, b) => (a.fecha_desde || "9999").localeCompare(b.fecha_desde || "9999"));
-      let mesAnt = "", h = "";
-      for (const e of lista) {
-        const T = EV_TIPO[e.tipo], d = e.fecha_desde ? new Date(e.fecha_desde + "T00:00") : null, mk = d ? `${MES_L[d.getMonth()]} ${d.getFullYear()}` : "Fecha por definir";
-        if (mk !== mesAnt) { h += `<div class="ag-mes">${mk.toUpperCase()}</div>`; mesAnt = mk; }
-        const ts = tareasDe(e.id), ok = ts.filter((t) => t.hecha).length;
-        h += `<button type="button" class="ag-fila" data-ev="${e.id}"><span class="ep-fecha"><span class="ep-top"><em style="background:${T.f};color:${T.tx}">${d ? DIA_C[d.getDay()] : "—"}</em><b>${d ? String(d.getDate()).padStart(2, "0") : "—"}</b></span></span><span class="ep-linea" style="background:${T.c}"></span>
-          <span class="ag-nom"><span class="ag-pills"><em style="background:${T.f};color:${T.tx}">${T.t}</em>${e.por_confirmar ? `<em class="pc">Por confirmar</em>` : ""}</span><b>${esc(e.nombre)}</b></span>
-          <span class="ag-lug">${e.lugar ? `<span class="ep-l"><i style="color:${T.c}">${IC_PIN}</i>${esc(e.lugar)}</span>` : ""}<span class="ep-l"><i style="color:${T.c}">${IC_RELOJ}</i>${esc(e.hora || (d ? "Hora por definir" : "Fecha por definir"))}</span></span>
-          <span class="ag-prep">${e.prep_desde ? `<small>Prep. ${rangoCorto(e.prep_desde, e.prep_hasta)}</small><span class="ag-barra"><i style="width:${ts.length ? (ok / ts.length) * 100 : 0}%;background:${T.c}"></i></span><small>Tareas ${ok}/${ts.length}</small>` : `<small>Sin preparación</small>`}</span>
-          <span class="ag-enc">${e.encargados.length ? grupoAv(e.encargados) : `<small>Sin encargados</small>`}</span></button>`;
-      }
-      izq = h || `<div class="ev-vacio">No hay eventos próximos.</div>`;
+      // Línea de tiempo: cada evento es una fila; barra suave = preparación, barra fuerte = evento
+      const N = 28, ini = evIni, dias = Array.from({ length: N }, (_, i) => sumaD(ini, i)), fin = dias[N - 1];
+      const L = ["D", "L", "M", "M", "J", "V", "S"];
+      const lista = evVisibles().filter((e) => e.fecha_desde && (e.prep_desde || e.fecha_desde) <= fin && (e.fecha_hasta || e.fecha_desde) >= ini).sort((x, y) => (x.prep_desde || x.fecha_desde).localeCompare(y.prep_desde || y.fecha_desde));
+      const col = (d) => Math.max(0, Math.min(N, diasEntre(ini, d)));
+      const barra = (desde, hasta, cls, st, html) => { const c0 = col(desde), c1 = col(sumaD(hasta, 1)); return c1 <= c0 ? "" : `<div class="tl-bar ${cls}" style="grid-column:${c0 + 1} / ${c1 + 1};${st}">${html || ""}</div>`; };
+      const cab = dias.map((d) => { const x = new Date(d + "T00:00"), fs = x.getDay() % 6 === 0; return `<div class="tl-d ${fs ? "fs" : ""} ${d === HOY ? "hoy" : ""}"><small>${L[x.getDay()]}</small><b>${x.getDate()}</b></div>`; }).join("");
+      const fondo = dias.map((d) => `<i class="${new Date(d + "T00:00").getDay() % 6 === 0 ? "fs" : ""}"></i>`).join("");
+      const hoyC = diasEntre(ini, HOY);
+      const filas = lista.map((e) => { const T = EV_TIPO[e.tipo], ts = tareasDe(e.id), ok = ts.filter((t) => t.hecha).length;
+        return `<div class="tl-fila" data-ev="${e.id}">${e.prep_desde ? barra(e.prep_desde, e.prep_hasta || e.prep_desde, "prep", `background:${T.s};border-color:${T.f};color:${T.tx}`, `<span class="tl-t"><b>${esc(e.nombre)}</b><small>Prep. ${rangoCorto(e.prep_desde, e.prep_hasta)}${ts.length ? ` | ${ok}/${ts.length} tareas` : ""}</small></span>${grupoAv(e.encargados)}`) : ""}
+          ${barra(e.fecha_desde, e.fecha_hasta || e.fecha_desde, "ev", `background:${T.c}`, (e.fecha_hasta && e.fecha_hasta !== e.fecha_desde) || !e.prep_desde ? `<span class="tl-t"><b>${e.prep_desde ? "Evento" : esc(e.nombre)}</b><small>${rangoCorto(e.fecha_desde, e.fecha_hasta)}</small></span>` : `<svg class="tl-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>`)}</div>`; }).join("");
+      izq = `<div class="tl-nav"><button type="button" class="ev-nav" data-tl="-7">‹</button><button type="button" class="ev-hoy" data-tl="0">Hoy</button><button type="button" class="ev-nav" data-tl="7">›</button><span>${fCorta(ini)} al ${fCorta(fin)}</span></div>
+        <div class="tl"><div class="tl-cab">${cab}</div><div class="tl-cuerpo"><div class="tl-fondo">${fondo}</div>${hoyC >= 0 && hoyC < N ? `<div class="tl-hoy" style="left:calc(${(hoyC + .5) / N * 100}%)"></div>` : ""}${filas || `<div class="ev-vacio">No hay eventos en estas fechas.</div>`}</div></div>`;
     }
     // Columna derecha: próximos eventos (vista Mes) o mini calendario (vista Agenda)
     let der;
@@ -3700,7 +3718,7 @@
         <div class="ev-ley">${Object.values(EV_TIPO).map((t) => `<span><i style="background:${t.c}"></i>${t.t}</span>`).join("")}<span><i class="hueco"></i>Preparación</span></div>`;
     }
     cont.innerHTML = `<div class="ev-cab"><div class="ev-cab-i"><h2>Eventos</h2>${seg([["interno", "Internos"], ["externo", "Externos"], ["todos", "Todos"]], evFiltro, "data-ef")}</div><button type="button" class="nuevo-btn" id="evNuevo"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Nuevo evento</button></div>
-      <div class="ev-cuerpo"><div class="ev-izq"><div class="ev-sub"><h3>${evVista === "mes" ? `${mayus(MES_L[m])} de ${y}` : "Próximos eventos"}</h3><div class="ev-sub-d">${evVista === "mes" ? `<button type="button" class="ev-nav" data-nav="-1">‹</button><button type="button" class="ev-hoy" id="evHoy">Hoy</button><button type="button" class="ev-nav" data-nav="1">›</button>` : ""}${seg([["mes", "Mes"], ["agenda", "Agenda"]], evVista, "data-ev-vista")}</div></div>${izq}</div>
+      <div class="ev-cuerpo"><div class="ev-izq"><div class="ev-sub"><h3>${evVista === "mes" ? `${mayus(MES_L[m])} de ${y}` : "Línea de tiempo"}</h3><div class="ev-sub-d">${evVista === "mes" ? `<button type="button" class="ev-nav" data-nav="-1">‹</button><button type="button" class="ev-hoy" id="evHoy">Hoy</button><button type="button" class="ev-nav" data-nav="1">›</button>` : ""}${seg([["mes", "Mes"], ["agenda", "Agenda"]], evVista, "data-ev-vista")}</div></div>${izq}</div>
       <aside class="ev-der">${der}</aside></div>`;
     cont.querySelectorAll("[data-ef]").forEach((b) => (b.onclick = () => { evFiltro = b.dataset.ef; pintarEventosPag(); }));
     cont.querySelectorAll("[data-ev-vista]").forEach((b) => (b.onclick = () => { evVista = b.dataset.evVista; pintarEventosPag(); }));
@@ -3712,6 +3730,7 @@
       const delDia = evs.find((x) => x.ev) || evs[0]; pintarEventosPag(); if (delDia) abrirEvento(delDia.e.id);
     }));
     cont.querySelectorAll(".mc-d").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; const x = itemsDelDia(evDia).find((i) => i.e); if (x) abrirEvento(x.e.id); }));
+    cont.querySelectorAll("[data-tl]").forEach((b) => (b.onclick = () => { evIni = +b.dataset.tl ? sumaD(evIni, +b.dataset.tl) : sumaD(HOY, -3); pintarEventosPag(); }));
     cont.querySelectorAll("[data-ev]").forEach((b) => (b.onclick = () => abrirEvento(+b.dataset.ev)));
     cont.querySelectorAll(".ev-prox:not([data-ev])[data-dia]").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; evMes = new Date(evDia + "T00:00"); evMes.setDate(1); evVista = "mes"; pintarEventosPag(); }));
   }
