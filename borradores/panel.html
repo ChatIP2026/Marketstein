@@ -1268,6 +1268,8 @@
 
     <div class="mn-campo"><span>Prioridad</span><div class="mn-opciones" id="mnPrio"></div></div>
 
+    <div class="mn-campo"><span>Pilar <small>(opcional)</small></span><div id="mnPilar"></div></div>
+
     <div class="mn-campo"><span>Encargados <small>(puedes elegir varios)</small></span><div class="mn-opciones" id="mnPersonas"></div></div>
 
     <label class="mn-campo"><span>Fecha límite</span><input type="date" name="fecha" /></label>
@@ -2214,6 +2216,41 @@
   .ev-tipo-sel { display: inline-flex; background: #f2f2f2; border: 1px solid #e6e6e6; border-radius: 999px; padding: 3px; gap: 2px; }
   .ev-tipo-sel button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; font: inherit; font-size: .76rem; font-weight: 700; color: #666; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: background .15s; }
   .ev-tipo-sel button:not(.on):hover { background: #e6e6e6; color: #222; } .ev-tipo-sel i { width: 7px; height: 7px; border-radius: 50%; }
+
+  .pil-chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 2px 9px 2px 3px; font-size: .7rem; font-weight: 700; vertical-align: middle; }
+  .pil-chip b, .pil-btn b, .pil-menu b { width: 16px; height: 16px; border-radius: 50%; color: #fff; font-size: .62rem; display: inline-grid; place-items: center; flex: none; }
+  .pil-chip.chico { padding: 0; margin-right: 6px; background: none !important; } .pil-chip.chico b { width: 15px; height: 15px; }
+  .det-etq { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pil-sel { position: relative; display: inline-block; }
+  .pil-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px dashed #cfcfcf; background: #fff; color: #666; border-radius: 999px; padding: 3px 9px 3px 4px; font: inherit; font-size: .74rem; font-weight: 700; cursor: pointer; max-width: 300px; }
+  .pil-btn.con { border-style: solid; } .pil-btn svg { width: 12px; height: 12px; opacity: .6; flex: none; } .pil-btn:hover { filter: brightness(.97); }
+  .pil-mas { width: 16px; height: 16px; border-radius: 50%; background: #ececec; color: #555; font-style: normal; display: grid; place-items: center; font-size: .8rem; }
+  .pil-menu { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; width: 280px; background: #fff; border: 1px solid #e5e5e5; border-radius: 14px; box-shadow: 0 14px 40px rgba(0,0,0,.14); padding: 6px; }
+  .pil-menu button { display: flex; align-items: center; gap: 9px; width: 100%; border: 0; background: none; font: inherit; font-size: .82rem; font-weight: 600; color: #222; padding: 8px; border-radius: 9px; cursor: pointer; text-align: left; }
+  .pil-menu button:hover, .pil-menu button.on { background: #f4f4f4; } .pil-menu b { width: 20px; height: 20px; font-size: .7rem; }
+  .pil-menu .quitar { color: #b42318; font-size: .76rem; justify-content: center; border-top: 1px solid #f0f0f0; border-radius: 0 0 9px 9px; }
+
+  .pa-sub { font-size: .76rem; color: #888; }
+  .pa-cuerpo { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 22px; align-items: center; padding: 6px 4px 4px; }
+  .pa-svg { position: relative; width: 230px; height: 230px; } .pa-svg svg { width: 100%; height: 100%; }
+  .pa-seg { transition: opacity .2s, stroke-width .2s; cursor: pointer; }
+  .pa-caja[data-on] .pa-seg { opacity: .25; } .pa-caja[data-on="0"] .pa-seg[data-pa="0"], .pa-caja[data-on="1"] .pa-seg[data-pa="1"], .pa-caja[data-on="2"] .pa-seg[data-pa="2"], .pa-caja[data-on="3"] .pa-seg[data-pa="3"], .pa-caja[data-on="4"] .pa-seg[data-pa="4"] { opacity: 1; stroke-width: 30; }
+  .pa-caja[data-on] .pa-fila { opacity: .45; } .pa-caja[data-on="0"] .pa-fila[data-pa="0"], .pa-caja[data-on="1"] .pa-fila[data-pa="1"], .pa-caja[data-on="2"] .pa-fila[data-pa="2"], .pa-caja[data-on="3"] .pa-fila[data-pa="3"], .pa-caja[data-on="4"] .pa-fila[data-pa="4"] { opacity: 1; background: #f7f7f7; }
+  .pa-centro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+  .pa-centro b { font-size: 2.2rem; line-height: 1; color: #0a0a0a; } .pa-centro span { font-size: .8rem; color: #555; font-weight: 600; } .pa-centro small { font-size: .7rem; color: #999; margin-top: 2px; }
+  .pa-th, .pa-fila { display: grid; grid-template-columns: minmax(0, 2.2fr) 70px 50px 64px 70px; gap: 8px; align-items: center; }
+  .pa-th { font-size: .66rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: .04em; padding: 0 8px 6px; border-bottom: 1px solid #eee; } .pa-th span:not(:first-child), .pa-fila > span:not(:first-child) { text-align: center; }
+  .pa-fila { padding: 9px 8px; border-radius: 10px; font-size: .8rem; color: #333; transition: background .15s, opacity .15s; cursor: default; }
+  .pa-nom { display: flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; } .pa-nom b { width: 20px; height: 20px; border-radius: 50%; color: #fff; font-size: .68rem; display: grid; place-items: center; flex: none; }
+  .pa-fila strong { font-size: .9rem; } .pa-fila em { font-style: normal; font-size: .68rem; color: #999; margin-left: 4px; }
+  @media (max-width: 900px) { .pa-cuerpo { grid-template-columns: 1fr; justify-items: center; } .pa-ley { width: 100%; } .pa-th, .pa-fila { grid-template-columns: minmax(0, 1.6fr) 52px 40px 52px 56px; } }
+
+  #vistaDash .pa-caja .pa-centro b { color: #fff !important; } #vistaDash .pa-caja .pa-centro span { color: #d4d4d4 !important; } #vistaDash .pa-caja .pa-centro small { color: #8a8a8a !important; }
+  #vistaDash .pa-caja .pa-fila, #vistaDash .pa-caja .pa-nom { color: #e5e5e5 !important; } #vistaDash .pa-caja .pa-fila strong { color: #fff !important; } #vistaDash .pa-caja .pa-fila em, #vistaDash .pa-caja .pa-sub { color: #8a8a8a !important; }
+  #vistaDash .pa-caja .pa-th { color: #8a8a8a !important; border-bottom-color: rgba(255,255,255,.1) !important; } #vistaDash .pa-caja .pa-th span { color: #8a8a8a !important; font-size: .62rem !important; }
+  #vistaDash .pa-caja[data-on] .pa-fila[data-pa] { background: transparent !important; }
+  #vistaDash .pa-caja[data-on="0"] .pa-fila[data-pa="0"], #vistaDash .pa-caja[data-on="1"] .pa-fila[data-pa="1"], #vistaDash .pa-caja[data-on="2"] .pa-fila[data-pa="2"], #vistaDash .pa-caja[data-on="3"] .pa-fila[data-pa="3"], #vistaDash .pa-caja[data-on="4"] .pa-fila[data-pa="4"] { background: rgba(255,255,255,.08) !important; }
+  .pa-nom { line-height: 1.25; } .pa-cuerpo { grid-template-columns: 210px minmax(0, 1fr) !important; } .pa-svg { width: 210px !important; height: 210px !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2448,7 +2485,7 @@
     d.className = "detalle a-" + p.estado + (pagina === "mis" || centrarDet ? " tk-det" : "");
     const tkDe = p.ticket ? tickets.find((x) => x.id === p.ticket) : null; // proyecto que nació de un ticket
     d.innerHTML = `
-      <div class="det-cab"><div class="det-titulo">${pill(p.estado)}<textarea class="det-nombre" rows="1" maxlength="200" title="Haz clic para editar el nombre">${esc(p.nombre)}</textarea></div>
+      <div class="det-cab"><div class="det-titulo"><div class="det-etq">${pill(p.estado)}<span class="det-pil"></span></div><textarea class="det-nombre" rows="1" maxlength="200" title="Haz clic para editar el nombre">${esc(p.nombre)}</textarea></div>
         <div class="det-rabbit"><span class="det-burbuja ${burbujaVista[p.id] ? "oculta" : "pop"}">${(animoDe[p.id] ??= ANIMO[Math.floor(Math.random() * ANIMO.length)])}</span><img src="${CONEJO}" alt="" /></div><button class="det-cerrar" title="Cerrar (Esc)">✕</button></div>
 
 
@@ -2477,6 +2514,7 @@
       <div class="det-peligro">${tkDe && !puedeBorrarTk() ? "" : `<button type="button" class="det-borrar"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>${tkDe ? "Eliminar ticket" : "Eliminar proyecto"}</button>`}<button type="button" class="det-standby ${p.standby ? "on" : ""}">${p.standby ? `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v14l11-7Z"/></svg>Quitar standby` : `<svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Standby`}</button></div>
       ${WEB_REAL ? "" : `<p class="det-nota">Vista previa: los cambios no se guardan.</p>`}`;
     burbujaVista[p.id] = true;
+    d.querySelector(".det-pil")?.append(selectorPilar(p.pilar, (v) => { p.pilar = v; armar(); }));
 
     // Datos del proyecto
     const nom = d.querySelector(".det-nombre");
@@ -2565,6 +2603,7 @@
 
   // El estado siempre debe coincidir con las tareas: todas hechas = Listo; Listo con tareas pendientes = En curso
   function corregirEstados() {
+    if (!WEB_REAL) [...mapaP.values()].forEach((x, i) => { if (x.pilar === undefined) x.pilar = i % 6 === 5 ? null : [1, 2, 3, 1, 4][i % 5]; }); // demo: pilares de ejemplo
     const porP = new Map();
     for (const t of mapaT.values()) { const c = porP.get(t.proyecto_id) || [0, 0]; c[0]++; if (t.hecha) c[1]++; porP.set(t.proyecto_id, c); }
     for (const p of mapaP.values()) {
@@ -2594,6 +2633,22 @@
   };
   const ETIQUETA = { sin_empezar: "Sin empezar", en_curso: "En curso", listo: "Listo", vencido: "Vencido" };
   document.querySelectorAll("[data-ico]").forEach((d) => (d.innerHTML = ICONOS[d.dataset.ico]));
+  // Pilares de acción: cada proyecto puede llevar uno (lo pone cualquiera del equipo)
+  const PIL = { 1: { t: "Ingeniería Comercial & Growth", c: "#E8822A", f: "#FDF1E4", tx: "#B4580A" }, 2: { t: "Onboarding & Fidelización", c: "#0E7490", f: "#DDF7FB", tx: "#0B5A70" },
+    3: { t: "Experiencia de Marca & Endomarketing", c: "#8B1A7E", f: "#F6E7F3", tx: "#7A136E" }, 4: { t: "Inteligencia Estratégica", c: "#0B2353", f: "#E6E9F0", tx: "#0B2353" } };
+  const pilarChip = (k, chico) => k && PIL[k] ? `<span class="pil-chip${chico ? " chico" : ""}" style="background:${PIL[k].f};color:${PIL[k].tx}" title="Pilar ${k}: ${PIL[k].t}"><b style="background:${PIL[k].c}">${k}</b>${chico ? "" : PIL[k].t}</span>` : "";
+  // Selector pequeño de pilar (desplegable). alCambiar(k) recibe 1-4 o null
+  function selectorPilar(actual, alCambiar) {
+    const w = document.createElement("div"); w.className = "pil-sel";
+    const pinta = (k) => { w.innerHTML = `<button type="button" class="pil-btn ${k ? "con" : ""}" style="${k ? `background:${PIL[k].f};color:${PIL[k].tx};border-color:${PIL[k].f}` : ""}">${k ? `<b style="background:${PIL[k].c}">${k}</b>${PIL[k].t}` : `<i class="pil-mas">+</i>Pilar`}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg></button>`;
+      w.querySelector(".pil-btn").onclick = (ev) => { ev.preventDefault(); ev.stopPropagation(); document.querySelectorAll(".pil-menu").forEach((m) => m.remove());
+        const m = document.createElement("div"); m.className = "pil-menu";
+        m.innerHTML = Object.entries(PIL).map(([n, p]) => `<button type="button" data-p="${n}" class="${+n === k ? "on" : ""}"><b style="background:${p.c}">${n}</b>${p.t}</button>`).join("") + (k ? `<button type="button" data-p="0" class="quitar">Quitar pilar</button>` : "");
+        w.append(m);
+        m.querySelectorAll("[data-p]").forEach((b) => (b.onclick = (e2) => { e2.preventDefault(); e2.stopPropagation(); const v = +b.dataset.p || null; m.remove(); pinta(v); alCambiar(v); }));
+        const fuera = (e3) => { if (!m.contains(e3.target)) { m.remove(); document.removeEventListener("click", fuera, true); } }; setTimeout(() => document.addEventListener("click", fuera, true), 0); }; };
+    pinta(actual || null); return w;
+  }
   const pill = (e) => `<span class="estado-pill e-${e}">${ICONOS[e]}${ETIQUETA[e]}</span>`;
   const COLUMNAS = [
     { id: "sin_empezar", titulo: "Sin empezar" },
@@ -2740,7 +2795,7 @@
         const eq = p.encargados.slice(0, p.encargados.length > 4 ? 3 : 4);
         f.classList.toggle("en-standby", !!(mapaP.get(p.id) || {}).standby);
         f.innerHTML = `
-          <div class="cn-top"><div class="cn-tit">${(mapaP.get(p.id) || {}).standby ? `<span class="sb-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.9 6.5l14.2 11M19.1 6.5 4.9 17.5"/><path d="m9 4 3 2 3-2M9 20l3-2 3 2M3.5 10.5l3.4.6L6 14.4M20.5 10.5l-3.4.6.9 3.3M3.5 13.5l3.4-.6M20.5 13.5l-3.4-.6"/></svg>Standby</span>` : ""}<b>${esc(p.nombre)}</b><small>${sp ? `<svg class="cn-tk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg>Ticket` : "Proyecto del equipo"}</small></div><span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span></div>
+          <div class="cn-top"><div class="cn-tit">${(mapaP.get(p.id) || {}).standby ? `<span class="sb-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.9 6.5l14.2 11M19.1 6.5 4.9 17.5"/><path d="m9 4 3 2 3-2M9 20l3-2 3 2M3.5 10.5l3.4.6L6 14.4M20.5 10.5l-3.4.6.9 3.3M3.5 13.5l3.4-.6M20.5 13.5l-3.4-.6"/></svg>Standby</span>` : ""}<b>${esc(p.nombre)}</b><small>${pilarChip((mapaP.get(p.id) || {}).pilar, true)}${sp ? `<svg class="cn-tk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg>Ticket` : "Proyecto del equipo"}</small></div><span class="cx-prio ${p.prioridad}">${mayus(p.prioridad)}</span></div>
           <div class="cn-prog"><div class="cn-prog-t"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Progreso</span><b>${p.hechas}/${p.total}</b></div><div class="cn-barra"><i class="anillo-prog" style="width:${pct}%"></i></div></div>
           <div class="cn-pie"><span class="cn-fecha ${tonoF}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>${p.fecha ? fmt(p.fecha) : "Sin fecha"}</span>${sp ? `<span class="cn-de">Pedido por <b>${esc(sp.nombre)}</b></span>` : ""}<span class="cn-avs">${eq.length ? eq.map((n) => `<i style="${fondoAv(n)}" title="${n}">${letraAv(n)}</i>`).join("") + (p.encargados.length > 4 ? `<i class="mas">+${p.encargados.length - 3}</i>` : "") : `<em>Sin encargado</em>`}</span></div>`;
         f.ondragstart = (e) => e.dataTransfer.setData("id", p.id);
@@ -2771,11 +2826,13 @@
     tareasNuevas = [];
     fNuevo.querySelectorAll(".mn-persona").forEach((b) => b.classList.remove("activa"));
     elegir("mnPrio", "media");
+    pilarNuevo = null; const mp = document.getElementById("mnPilar"); mp.innerHTML = ""; mp.append(selectorPilar(null, (v) => (pilarNuevo = v)));
     pintarTareasNuevas();
     fNuevo.querySelector(".mn-error").hidden = true;
     document.body.classList.add("con-modal");
     setTimeout(() => fNuevo.nombre.focus(), 50);
   }
+  let pilarNuevo = null;
   function cerrarNuevo() { document.body.classList.remove("con-modal"); }
   function elegir(grupo, valor) {
     document.querySelectorAll(`#${grupo} button`).forEach((b) => b.classList.toggle("activa", b.dataset.v === valor));
@@ -2810,6 +2867,7 @@
       id, nombre,
       estado: "sin_empezar", // el estado cambia solo al ir marcando tareas
       prioridad: document.getElementById("mnPrio").dataset.valor,
+      pilar: pilarNuevo,
       encargados: [...fNuevo.querySelectorAll(".mn-persona.activa")].map((b) => b.dataset.n),
       fecha_limite: fNuevo.fecha.value || null,
       created_at: new Date().toISOString(),
@@ -3436,11 +3494,12 @@
   const BD_P = new Map(), BD_T = new Map();
   let sincP = false;
   const pAbd = (p) => ({ nombre: p.nombre, estado: p.estado, prioridad: p.prioridad || "media", encargados: (p.encargados || []).map((n) => ID_DE[n]).filter(Boolean),
-    fecha_limite: p.fecha_limite || null, creado_por: ID_DE[p.creado_por] || null, ticket_id: p.ticket || null, standby: !!p.standby });
+    fecha_limite: p.fecha_limite || null, creado_por: ID_DE[p.creado_por] || null, ticket_id: p.ticket || null, standby: !!p.standby, ...(PILAR_BD ? { pilar: p.pilar || null } : {}) });
+  let PILAR_BD = false; // true cuando proyectos ya tiene la columna pilar
   let TAREAS_V2 = false; // true cuando la tabla tareas ya tiene encargados[] y fecha
   const tAbd = (t) => ({ ...(TAREAS_V2 ? { encargados: encDe(t).map((n) => ID_DE[n]).filter(Boolean), fecha: t.fecha || null } : {}), proyecto_id: t.proyecto_id, texto: t.texto, encargado: encDe(t)[0] ? ID_DE[encDe(t)[0]] || null : null, hecha: !!t.hecha, hecha_at: t.hecha_at || null });
   const pDeBd = (r) => ({ id: r.id, nombre: r.nombre, estado: r.estado, prioridad: r.prioridad, encargados: (r.encargados || []).map((u) => NOMBRE_DE[u]).filter(Boolean),
-    fecha_limite: r.fecha_limite, created_at: r.created_at, creado_por: NOMBRE_DE[r.creado_por] || null, ticket: r.ticket_id, standby: !!r.standby });
+    fecha_limite: r.fecha_limite, created_at: r.created_at, creado_por: NOMBRE_DE[r.creado_por] || null, ticket: r.ticket_id, standby: !!r.standby, pilar: r.pilar || null });
   const tDeBd = (r) => ({ id: r.id, proyecto_id: r.proyecto_id, texto: r.texto, encargados: (r.encargados && r.encargados.length ? r.encargados : r.encargado ? [r.encargado] : []).map((u) => NOMBRE_DE[u]).filter(Boolean), fecha: r.fecha || null, encargado: r.encargado ? NOMBRE_DE[r.encargado] || null : null, hecha: r.hecha, hecha_at: r.hecha_at, created_at: r.created_at });
   // Los proyectos que vienen de un ticket muestran quién lo pidió
   function enlazarSolicitados() {
@@ -3450,6 +3509,7 @@
     || [...BD_P.keys()].some((id) => !mapaP.has(id)) || [...BD_T.keys()].some((id) => !mapaT.has(id));
   async function cargarProyectos() {
     if (sincP || hayPendientes()) return; // primero se guarda lo pendiente; el siguiente aviso vuelve a cargar
+    if (cargarProyectos.pil === undefined) { const { error } = await sb.from("proyectos").select("pilar").limit(1); cargarProyectos.pil = PILAR_BD = !error; }
     if (cargarProyectos.v2 === undefined) { const { error } = await sb.from("tareas").select("encargados, fecha").limit(1); cargarProyectos.v2 = TAREAS_V2 = !error; }
     const [{ data: ps, error: e1 }, { data: ts, error: e2 }] = await Promise.all([sb.from("proyectos").select("*"), sb.from("tareas").select("*")]);
     if (e1 || e2 || sincP || hayPendientes()) return;
@@ -4620,6 +4680,23 @@
     avisar(`${ic("correo")}Correo de bienvenida enviado a <b>${esc(x.nombre)}</b>`);
   }
 
+  // ===== Anillo: proyectos, tareas y tickets resueltos por pilar =====
+  // En el fondo negro del dashboard se usan tonos más claros para que se lean
+  const PIL_OSC = { 1: "#F39A4A", 2: "#22B3CF", 3: "#C95BBE", 4: "#7D93C9" };
+  function anilloPilares() {
+    const ps = [...mapaP.values()], ts = [...mapaT.values()];
+    const filas = [1, 2, 3, 4, 0].map((k) => { const mios = ps.filter((p) => (p.pilar || 0) === k), ids = new Set(mios.map((p) => p.id));
+      return { k, n: mios.length, listos: mios.filter((p) => p.estado === "listo").length, tareas: ts.filter((t) => ids.has(t.proyecto_id) && t.hecha).length, tks: mios.filter((p) => p.ticket && p.estado === "listo").length }; }).filter((f) => f.k || f.n);
+    const tot = ps.length || 1, R = 74, C = 2 * Math.PI * R; let acc = 0;
+    const seg = filas.filter((f) => f.n).map((f) => { const l = (f.n / tot) * C, col = f.k ? PIL[f.k].c : "#d4d4d4";
+      const o = `<circle data-pa="${f.k}" class="pa-seg" cx="100" cy="100" r="${R}" fill="none" stroke="${col}" stroke-width="26" stroke-dasharray="${Math.max(0, l - 3)} ${C}" stroke-dashoffset="${-acc}" transform="rotate(-90 100 100)"/>`; acc += l; return o; }).join("");
+    const listos = ps.filter((p) => p.estado === "listo").length;
+    return `<div class="pa-cuerpo"><div class="pa-svg"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="26"/>${seg}</svg>
+      <div class="pa-centro"><b>${ps.length}</b><span>proyectos</span><small>${listos} completados</small></div></div>
+      <div class="pa-ley"><div class="pa-th"><span></span><span>Proyectos</span><span>Listos</span><span>Tareas hechas</span><span>Tickets resueltos</span></div>
+      ${filas.map((f) => `<div class="pa-fila" data-pa="${f.k}"><span class="pa-nom">${f.k ? `<b style="background:${PIL_OSC[f.k]}">${f.k}</b>${PIL[f.k].t}` : `<b style="background:#5a5a5a">–</b>Sin pilar`}</span>
+        <span><strong>${f.n}</strong><em>${Math.round((f.n / tot) * 100)}%</em></span><span>${f.listos}</span><span>${f.tareas}</span><span>${f.tks}</span></div>`).join("")}</div></div>`;
+  }
   // ===== Dashboard: rendimiento mensual del equipo (escala 0 a 20 por pilar) =====
   const PILARES = [
     { k: "proy", t: "Proyectos del mes", peso: 0.3, auto: true, d: "Tareas de proyectos completadas ÷ tareas asignadas en el mes × 20." },
@@ -4780,13 +4857,9 @@
         <tfoot><tr><td>Promedio del equipo</td><td colspan="3"><span class="dt-prom">${prom("proy").toFixed(2)}</span></td><td colspan="3"><span class="dt-prom">${prom("tick").toFixed(2)}</span></td><td colspan="2"><span class="dt-prom">${prom("punt").toFixed(2)}</span></td><td><span class="dt-prom">${prom("vest").toFixed(2)}</span></td><td colspan="2"><span class="dt-prom dt-prom-final">${(res.reduce((a, r) => a + r.final, 0) / res.length).toFixed(2)}</span></td></tr></tfoot>
       </table></div>
 ` : `
-      <div class="dg-fila"><section class="dg-caja">
-        <div class="dg-cab"><h4>Rendimiento diario</h4>
-          <div class="dg-leyenda">${EVALUADOS.map((n) => `<span><i style="background:${COL_LINEA[n]}"></i>${n}</span>`).join("")}</div></div>
-        <div class="dg-svg-caja"><svg viewBox="0 0 ${W} ${H}" class="dg-svg" role="img" aria-label="Rendimiento diario del equipo">${defs}${grid}${ejeX}${lineas}${etiquetas}
-          <line class="dg-cruz" x1="0" x2="0" y1="${T}" y2="${H - B}" style="display:none"/><g class="dg-puntos"></g>
-          <rect x="${L}" y="${T}" width="${x(dias) - L}" height="${H - T - B}" fill="transparent" class="dg-hit"/></svg>
-          <div class="dg-tip" hidden></div></div>
+      <div class="dg-fila"><section class="dg-caja pa-caja">
+        <div class="dg-cab"><h4>Proyectos por pilar</h4><span class="pa-sub">Todos los proyectos del equipo</span></div>
+        ${anilloPilares()}
       </section>
       <section class="dg-caja db-caja">
         <div class="dg-cab"><h4>Performance semanal</h4><div class="dg-leyenda">${SERIES_B.map(([, t, c]) => `<span><i class="redondo" style="background:${c}"></i>${t}</span>`).join("")}</div></div>
@@ -4824,20 +4897,10 @@
       a.download = `Dashboard_Rabbit_${mesDash}.csv`; a.click();
       avisar("⬇ Descargando el dashboard en Excel");
     }));
-    if (!cont.querySelector(".dg-svg")) return;
+    if (!cont.querySelector(".db-svg")) return;
     cont.querySelectorAll(".dm-cols input").forEach((inp) => (inp.onchange = () => { MANUAL[mesDash][inp.dataset.n][inp.dataset.c] = Math.max(0, +inp.value || 0); if (window.sb) guardarManual(mesDash, inp.dataset.n); pintarDash(); }));
-    // Cruz + tooltip al pasar el mouse
-    const svg = cont.querySelector(".dg-svg"), cruz = svg.querySelector(".dg-cruz"), pts = svg.querySelector(".dg-puntos"), tip = cont.querySelector(".dg-tip");
-    svg.querySelector(".dg-hit").onmousemove = (e) => {
-      const r = svg.getBoundingClientRect(), px = ((e.clientX - r.left) / r.width) * W;
-      const d = Math.min(dias, Math.max(1, Math.round(((px - L) / (W - L - R)) * (ND - 1)) + 1));
-      cruz.setAttribute("x1", x(d)); cruz.setAttribute("x2", x(d)); cruz.style.display = "";
-      pts.innerHTML = EVALUADOS.map((n) => `<circle cx="${x(d)}" cy="${y(series[n][d - 1])}" r="5" fill="${COL_LINEA[n]}" class="dg-fin"/>`).join("");
-      tip.hidden = false;
-      tip.innerHTML = `<b>${d} de ${MESES[+mesDash.slice(5) - 1].toLowerCase()}</b>` + EVALUADOS.map((n) => ({ n, v: series[n][d - 1] })).sort((a, b) => b.v - a.v).map((o) => `<div><i style="background:${COL_LINEA[o.n]}"></i>${o.n}<span>${o.v.toFixed(1)}</span></div>`).join("");
-      const izq = (x(d) / W) * r.width; tip.style.left = `${izq > r.width * 0.65 ? izq - 170 : izq + 14}px`;
-    };
-    svg.querySelector(".dg-hit").onmouseleave = () => { cruz.style.display = "none"; pts.innerHTML = ""; tip.hidden = true; };
+    // Anillo de pilares: al pasar por un pilar se resalta su segmento
+    cont.querySelectorAll("[data-pa]").forEach((el) => { el.onmouseenter = () => cont.querySelector(".pa-caja").setAttribute("data-on", el.dataset.pa); el.onmouseleave = () => cont.querySelector(".pa-caja").removeAttribute("data-on"); });
     const bsvg = cont.querySelector(".db-svg"), btip = cont.querySelector(".db-tip");
     bsvg.querySelectorAll(".db-grupo").forEach((g) => {
       g.onmouseenter = () => { const k = +g.dataset.k, w = sem[k]; g.classList.add("on"); btip.hidden = false;
