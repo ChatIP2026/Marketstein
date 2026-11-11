@@ -19,6 +19,11 @@ const suma = (iso: string, n: number) => { const d = new Date(iso + "T12:00:00Z"
 const larga = (iso: string) => { const d = new Date(iso + "T12:00:00Z"); return `${DIA[d.getUTCDay()]} ${d.getUTCDate()} de ${MES[d.getUTCMonth()]}`; };
 const corta = (iso: string) => { const d = new Date(iso + "T12:00:00Z"); return `${d.getUTCDate()} ${MES[d.getUTCMonth()].slice(0, 3)}`; };
 
+// Hora guardada como "08:30 - 10:30": se muestra como "8:30 a. m. a 10:30 a. m."
+const horas = (h: string) => { const m = String(h || "").match(/(\d{1,2}):(\d{2})(?:\s*-\s*(\d{1,2}):(\d{2}))?/); return m ? [m[1].padStart(2, "0") + m[2], m[3] ? m[3].padStart(2, "0") + m[4] : ""] : null; };
+const h12 = (x: string) => { const H = +x.slice(0, 2); return `${H % 12 || 12}:${x.slice(2)} ${H < 12 ? "a. m." : "p. m."}`; };
+const horaTxt = (h: string) => { const p = horas(h); return p ? (p[1] ? `${h12(p[0])} a ${h12(p[1])}` : h12(p[0])) : h || ""; };
+
 const AVISOS = [
   { dias: 7, clave: "ev7", titulo: "Falta una semana", asunto: (n: string) => `Falta una semana para ${n}` },
   { dias: 1, clave: "ev1", titulo: "Es mañana", asunto: (n: string) => `Mañana es ${n}` },
@@ -30,7 +35,7 @@ type Ev = { id: number; nombre: string; tipo: string; fecha_desde: string; fecha
 function correo(e: Ev, aviso: typeof AVISOS[number], nombre: string, tareas: { texto: string; fecha: string | null }[]) {
   const T = TIPO[e.tipo] || TIPO.interno;
   const fin = e.fecha_hasta && e.fecha_hasta !== e.fecha_desde ? e.fecha_hasta : null;
-  const gcal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.nombre)}&dates=${e.fecha_desde.replace(/-/g, "")}/${suma(fin || e.fecha_desde, 1).replace(/-/g, "")}&location=${encodeURIComponent(e.lugar || "")}&details=${encodeURIComponent("Evento de iPartner" + (e.hora ? " | " + e.hora : ""))}`;
+  const gcal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.nombre)}&dates=${(() => { const p = horas(e.hora), f = e.fecha_desde.replace(/-/g, ""); if (!p) return `${f}/${suma(fin || e.fecha_desde, 1).replace(/-/g, "")}`; const b = p[1] || String(Math.min(23, +p[0].slice(0, 2) + 2)).padStart(2, "0") + p[0].slice(2); return `${f}T${p[0]}00/${f}T${b}00`; })()}&ctz=America/Lima&location=${encodeURIComponent(e.lugar || "")}&details=${encodeURIComponent("Evento de iPartner" + (e.hora ? " | " + e.hora : ""))}`;
   const caja = (tit: string, val: string, col = 1) => `<td ${col > 1 ? `colspan="${col}"` : `width="50%"`} valign="top" style="padding:5px"><div style="background:#f6f6f6;border-radius:12px;padding:11px 13px;min-height:46px"><div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#888;text-transform:uppercase">${tit}</div><div style="font-size:14px;font-weight:700;color:#0a0a0a;margin-top:4px">${val}</div></div></td>`;
   const lista = tareas.length
     ? `<div style="font-size:12px;font-weight:700;letter-spacing:.06em;color:#888;text-transform:uppercase;margin:4px 0 8px">Tus tareas pendientes</div>` +
@@ -50,7 +55,7 @@ function correo(e: Ev, aviso: typeof AVISOS[number], nombre: string, tareas: { t
  </td></tr>
  <tr><td style="padding:10px 19px 4px"><table width="100%" cellpadding="0" cellspacing="0">
   <tr>${caja("Fecha", fin ? `${corta(e.fecha_desde)} al ${corta(fin)}` : larga(e.fecha_desde), 2)}</tr>
-  <tr>${caja("Hora", esc(e.hora || "Por definir"))}${caja("Lugar", esc(e.lugar || "Por confirmar"))}</tr>
+  <tr>${caja("Hora", esc(horaTxt(e.hora) || "Por definir"))}${caja("Lugar", esc(e.lugar || "Por confirmar"))}</tr>
  </table></td></tr>
  <tr><td style="padding:12px 24px 6px">${lista}</td></tr>
  <tr><td style="padding:14px 24px 30px"><table cellpadding="0" cellspacing="0"><tr>
