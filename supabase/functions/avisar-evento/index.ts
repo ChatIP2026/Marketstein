@@ -51,7 +51,7 @@ function correo(e: Ev, aviso: typeof AVISOS[number], nombre: string, tareas: { t
  <tr><td style="padding:24px 24px 6px">
   <span style="display:inline-block;background:${T.f};color:${T.tx};font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px">${T.t}</span>${e.por_confirmar ? ` <span style="display:inline-block;background:#f1f1f1;color:#666;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px">Por confirmar</span>` : ""}
   <h1 style="margin:12px 0 4px;font-size:24px;line-height:1.2;color:#0a0a0a">${esc(e.nombre)}</h1>
-  <p style="margin:0;font-size:15px;line-height:1.5;color:#52525b">Hola ${esc(nombre)}, ${aviso.dias === 0 ? "hoy es el evento" : aviso.dias === 1 ? "mañana es el evento" : "falta una semana para el evento"} que tienes a tu cargo.</p>
+  <p style="margin:0;font-size:15px;line-height:1.6;color:#52525b">Hola ${esc(nombre)},<br>${aviso.dias === 0 ? "Hoy es el evento a tu cargo." : aviso.dias === 1 ? "Mañana es el evento a tu cargo." : "Falta una semana para el evento a tu cargo."}</p>
  </td></tr>
  <tr><td style="padding:10px 19px 4px"><table width="100%" cellpadding="0" cellspacing="0">
   <tr>${caja("Fecha", fin ? `${corta(e.fecha_desde)} al ${corta(fin)}` : larga(e.fecha_desde), 2)}</tr>
@@ -76,7 +76,7 @@ function correoFalta(e: Ev, dias: number, falta: string[]) {
  <tr><td style="padding:24px">
   <span style="display:inline-block;background:${T.f};color:${T.tx};font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px">${T.t}</span>
   <h1 style="margin:12px 0 6px;font-size:22px;color:#0a0a0a">${esc(e.nombre)}</h1>
-  <p style="margin:0 0 14px;font-size:15px;line-height:1.5;color:#52525b">El evento es el <b>${larga(e.fecha_desde)}</b> y todavía falta completar esto:</p>
+  <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#52525b">El evento es el <b>${larga(e.fecha_desde)}</b>.<br>Todavía falta completar esto:</p>
   ${falta.map((f) => `<div style="background:#fff8e6;border:1px solid #f3dfa5;border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:14px;color:#7a5a00;font-weight:700">${esc(f)}</div>`).join("")}
   <a href="${PANEL}/borradores/panel.html" style="display:inline-block;margin-top:14px;background:#0a0a0a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:12px 18px;border-radius:12px">Completar en Rabbit</a>
  </td></tr></table><p style="font-size:11px;color:#a1a1aa;margin:16px 0 0">Correo automático de Rabbit | iPartner</p></td></tr></table></body></html>`;
