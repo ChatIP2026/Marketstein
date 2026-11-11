@@ -2193,6 +2193,8 @@
   .lf-avisos { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; } .lf-avisos span { background: #fff8e6; border: 1px solid #f3dfa5; color: #7a5a00; border-radius: 10px; font-size: .74rem; font-weight: 600; padding: 6px 10px; }
   .lf-lista { margin-top: 10px; max-height: 470px; overflow-y: auto; padding-right: 4px; }
   .ev-der.lf-col { display: flex; flex-direction: column; min-height: 0; } .ev-der.lf-col .lf-lista { flex: 1; max-height: none; min-height: 0; }
+  .lf-lista.lf-mas { -webkit-mask-image: linear-gradient(#000 calc(100% - 70px), transparent); mask-image: linear-gradient(#000 calc(100% - 70px), transparent); }
+  .ev-der.lf-col { position: relative; } .lf-lista.lf-mas + .lf-hint { display: flex; } .lf-hint { display: none; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: #0a0a0a; color: #fff; font-size: .72rem; font-weight: 600; border-radius: 999px; padding: 5px 12px; pointer-events: none; white-space: nowrap; }
   .lf-t { display: flex; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid #f2f2f2; }
   .lf-i { flex: 1; min-width: 0; cursor: pointer; } .lf-i b { display: block; font-size: .86rem; font-weight: 600; line-height: 1.3; } .lf-i .lf-q { display: block; margin-top: 3px; }
   .lf-ev { display: flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; } .lf-ev i { width: 7px; height: 7px; border-radius: 50%; flex: none; }
@@ -2200,7 +2202,7 @@
   .lf-q { font-size: .7rem; color: #777; font-weight: 600; white-space: nowrap; } .lf-q.v { color: #dc2626; } .lf-q.a { color: #b45309; } .lf-sin { font-size: .7rem; color: #b45309; }
 
   .ev-der.lf-col .lf-lista { border: 1px solid #eee; border-radius: 16px; padding: 6px 10px; margin-top: 10px; }
-  .lf-t { position: relative; border-radius: 12px; margin: 10px 0; border-bottom: 1px solid #f2f2f2; } .lf-t.lf-venc + .lf-t, .lf-t.lf-urg + .lf-t { margin-top: 14px; }
+  .lf-t { position: relative; border-radius: 12px; margin: 7px 0; padding: 8px 2px !important; border-bottom: 1px solid #f2f2f2; } .lf-t.lf-venc, .lf-t.lf-urg { padding: 22px 10px 10px !important; } .lf-t.lf-venc + .lf-t, .lf-t.lf-urg + .lf-t { margin-top: 10px; }
   .lf-t.lf-venc, .lf-t.lf-urg { padding: 22px 10px 10px; border: 1px solid; border-left-width: 4px; }
   .lf-t.lf-venc { background: #fff1f1; border-color: #f7c4c4; border-left-color: #dc2626; } .lf-t.lf-venc .lf-i b { color: #991b1b; }
   .lf-t.lf-urg { background: #fff8eb; border-color: #f6dca8; border-left-color: #e08a00; }
@@ -3778,7 +3780,7 @@
         <select class="lf-sel" id="lfSel"><option value="todos">Todos los eventos</option>${vivos.map((e) => `<option value="${e.id}" ${String(e.id) === evFalta ? "selected" : ""}>${esc(e.nombre)}</option>`).join("")}</select></div>
         <div class="lf-lista">${pend.map(({ t, e }) => { const T = EV_TIPO[e.tipo], [tx, cl] = cuando(t.fecha); return `<div class="lf-t ${cl === "v" ? "lf-venc" : cl === "a" ? "lf-urg" : ""}">${cl === "v" ? `<span class="lf-tag">${t.fecha && diasHasta(t.fecha) === 0 ? "Vence hoy" : "Vencida"}</span>` : cl === "a" ? `<span class="lf-tag">Urgente</span>` : ""}<button type="button" class="et-check" data-lf="${t.id}" title="Marcar como hecha"></button>
           <div class="lf-i" data-ev="${e.id}"><b>${esc(t.texto)}</b><span class="lf-ev" style="color:${T.tx}"><i style="background:${T.c}"></i>${esc(e.nombre)}</span><small class="lf-q ${cl}">${t.fecha ? fCorta(t.fecha) + " | " : ""}${tx}</small></div>
-          <div class="lf-d">${grupoAv(t.encargados) || `<small class="lf-sin">Sin responsable</small>`}</div></div>`; }).join("") || `<div class="ev-vacio">No hay tareas pendientes.</div>`}</div>`;
+          <div class="lf-d">${grupoAv(t.encargados) || `<small class="lf-sin">Sin responsable</small>`}</div></div>`; }).join("") || `<div class="ev-vacio">No hay tareas pendientes.</div>`}</div><span class="lf-hint">Desliza para ver más ↓</span>`;
     }
     cont.innerHTML = `<div class="ev-cab"><div class="ev-cab-i"><h2>Eventos</h2>${seg([["todos", "Todos"], ["interno", "Internos"], ["externo", "Externos"]], evFiltro, "data-ef")}</div><button type="button" class="nuevo-btn" id="evNuevo"><svg class="ico-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Nuevo evento</button></div>
       <div class="ev-cuerpo"><div class="ev-izq"><div class="ev-sub"><h3>${evVista === "mes" ? `${mayus(MES_L[m])} de ${y}` : "Línea de tiempo"}</h3><div class="ev-sub-d">${evVista === "mes" ? `<button type="button" class="ev-nav" data-nav="-1">‹</button><button type="button" class="ev-hoy" id="evHoy">Hoy</button><button type="button" class="ev-nav" data-nav="1">›</button>` : ""}${seg([["mes", "Mes"], ["agenda", "Agenda"]], evVista, "data-ev-vista")}</div></div>${izq}</div>
@@ -3793,7 +3795,7 @@
       const delDia = evs.find((x) => x.ev) || evs[0]; pintarEventosPag(); if (delDia) abrirEvento(delDia.e.id);
     }));
     cont.querySelectorAll(".mc-d").forEach((b) => (b.onclick = () => { evDia = b.dataset.dia; const x = itemsDelDia(evDia).find((i) => i.e); if (x) abrirEvento(x.e.id); }));
-    if (evVista === "agenda") requestAnimationFrame(() => { const iz = cont.querySelector(".ev-izq"), de = cont.querySelector(".ev-der"); const tl = cont.querySelector(".tl"); if (tl && de && innerWidth > 1100) { de.classList.add("lf-col"); de.style.height = Math.round(tl.getBoundingClientRect().bottom - de.getBoundingClientRect().top) + "px"; } });
+    if (evVista === "agenda") requestAnimationFrame(() => { const iz = cont.querySelector(".ev-izq"), de = cont.querySelector(".ev-der"); const tl = cont.querySelector(".tl"); if (tl && de && innerWidth > 1100) { de.classList.add("lf-col"); de.style.height = Math.round(tl.getBoundingClientRect().bottom - de.getBoundingClientRect().top) + "px"; } const li = cont.querySelector(".lf-lista"); if (li) { const mas = () => li.classList.toggle("lf-mas", li.scrollHeight - li.clientHeight - li.scrollTop > 4); li.onscroll = mas; mas(); } });
     cont.querySelector("#lfSel")?.addEventListener("change", (ev) => { evFalta = ev.target.value; pintarEventosPag(); });
     cont.querySelectorAll("[data-lf]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); const t = EVT.get(+b.dataset.lf); if (!t) return; t.hecha = true; evGuardar("et", t); pintarEventosPag(); avisar(`<b>${esc(t.texto)}</b> completada`, () => { t.hecha = false; evGuardar("et", t); pintarEventosPag(); }); }));
     cont.querySelectorAll("[data-tl]").forEach((b) => (b.onclick = () => { evIni = +b.dataset.tl ? sumaD(evIni, +b.dataset.tl) : sumaD(HOY, -1); pintarEventosPag(); }));
