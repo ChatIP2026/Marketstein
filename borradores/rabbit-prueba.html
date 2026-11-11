@@ -2165,9 +2165,10 @@
 
   .ev-card input.ev-dia1, .ev-card input.ev-lugar { font: inherit; font-size: .86rem; font-weight: 700; border: 1px solid #333 !important; border-radius: 9px; padding: 6px 10px !important; background: #1f1f1f; color: #fff; }
   .ev-card input.ev-lugar { font-weight: 500; }
-  .ev-acc a { width: 100%; justify-content: center; box-sizing: border-box; padding: 10px 13px !important; }
-  .ev-enc .det-personas { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
-  .ev-enc .det-persona { margin: 0 !important; height: 32px; padding: 2px 9px 2px 3px !important; font-size: .76rem; gap: 5px !important; box-sizing: border-box; display: inline-flex !important; align-items: center; vertical-align: middle; }
+  .ev-acc a { width: 100%; justify-content: center; box-sizing: border-box; padding: 8px 13px !important; }
+  .ev-card.fecha { gap: 7px !important; } .ev-card.fecha input { height: 34px !important; }
+  .ev-enc .det-personas { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; } .ev-enc { padding: 12px 13px !important; }
+  .ev-enc .det-persona { margin: 0 !important; height: 32px; padding: 2px 8px 2px 3px !important; font-size: .74rem; gap: 4px !important; box-sizing: border-box; display: inline-flex !important; align-items: center; vertical-align: middle; }
   .ev-enc .det-persona i { width: 24px !important; height: 24px !important; flex: none; display: grid; place-items: center; line-height: 1; margin: 0 !important; }
 </style>
 <script>
@@ -3781,10 +3782,9 @@
             const ev = e.fecha_desde ? diasHasta(e.fecha_desde) : null;
             return `<div class="ev-prep-av"><div class="ev-prep-t"><b>${est}</b><span>${tot} días</span></div><div class="ev-prep-b"><i style="width:${pc}%;background:${T.c}"></i></div>
               <div class="ev-prep-pie"><span style="color:${T.tx}">Termina el ${fCorta(e.prep_hasta || e.prep_desde)}</span><span>${ev === null ? "Fecha por definir" : ev > 0 ? `Evento en ${ev} día${ev === 1 ? "" : "s"}` : ev === 0 ? "El evento es hoy" : "Evento realizado"}</span></div></div>`; })()}</div>
-        <div class="ev-card fecha"><small>FECHA DEL EVENTO</small>
-          <input type="date" class="ev-dia1" data-k="fecha_desde" value="${e.fecha_desde || ""}" />
+        <div class="ev-card fecha"><small>INFORMACIÓN DEL EVENTO</small>
+          <div class="ev-datos"><input type="date" class="ev-dia1" data-k="fecha_desde" value="${e.fecha_desde || ""}" title="Fecha" /><input class="ev-lugar" data-k="lugar" placeholder="Lugar o dirección" value="${esc(e.lugar || "")}" title="Lugar (se usa en Google Calendar y Maps)" /></div>
           <div class="ev-fechas"><input type="time" data-h="0" value="${horaPartes(e.hora)[0]}" title="Desde" /><span>→</span><input type="time" data-h="1" value="${horaPartes(e.hora)[1]}" title="Hasta" /></div>
-          <input class="ev-lugar" data-k="lugar" placeholder="Lugar (ej. Av. Larco 123, Miraflores)" value="${esc(e.lugar || "")}" />
           <div class="ev-acc">${gcal ? `<a href="${gcal}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Añadir a Google Calendar</a>` : ""}</div></div>
       </div>
       <div class="ev-tarjetas">
