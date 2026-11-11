@@ -62,11 +62,26 @@ function correo(e: Ev, aviso: typeof AVISOS[number], nombre: string, tareas: { t
 </td></tr></table></body></html>`;
 }
 
+// Correo simple al equipo (Marketing y Legal) cuando a un evento cercano le faltan datos
+function correoFalta(e: Ev, dias: number, falta: string[]) {
+  const T = TIPO[e.tipo] || TIPO.interno;
+  return `<!doctype html><html><body style="margin:0;background:#f4f4f5"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:28px 12px;font-family:Arial,Helvetica,sans-serif"><tr><td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e7">
+ <tr><td style="background:#0a0a0a;padding:20px 24px;color:#ffffff;font-size:16px;font-weight:700">rabbit ai<span style="float:right;background:#dc2626;color:#fff;font-size:12px;padding:4px 10px;border-radius:999px">Faltan ${dias} día${dias === 1 ? "" : "s"}</span></td></tr>
+ <tr><td style="padding:24px">
+  <span style="display:inline-block;background:${T.f};color:${T.tx};font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px">${T.t}</span>
+  <h1 style="margin:12px 0 6px;font-size:22px;color:#0a0a0a">${esc(e.nombre)}</h1>
+  <p style="margin:0 0 14px;font-size:15px;line-height:1.5;color:#52525b">El evento es el <b>${larga(e.fecha_desde)}</b> y todavía falta completar esto:</p>
+  ${falta.map((f) => `<div style="background:#fff8e6;border:1px solid #f3dfa5;border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:14px;color:#7a5a00;font-weight:700">${esc(f)}</div>`).join("")}
+  <a href="${PANEL}/borradores/panel.html" style="display:inline-block;margin-top:14px;background:#0a0a0a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:12px 18px;border-radius:12px">Completar en Rabbit</a>
+ </td></tr></table><p style="font-size:11px;color:#a1a1aa;margin:16px 0 0">Correo automático de Rabbit | iPartner</p></td></tr></table></body></html>`;
+}
+
 Deno.serve(async (req) => {
   const { clave, prueba } = await req.json().catch(() => ({}));
   if (clave !== CORREO_CLAVE) return new Response("no autorizado", { status: 401 });
   const hoy = new Date().toLocaleDateString("en-CA", { timeZone: "America/Lima" });
-  const { data: gente } = await sb.from("perfiles").select("id, nombre, correo, rol, activa");
+  const { data: gente } = await sb.from("perfiles").select("id, nombre, correo, rol, activa, area");
   const persona = new Map((gente || []).map((p) => [p.id, p]));
   const jefa = (gente || []).find((p) => p.rol === "jefa");
   const enviados: string[] = [];
@@ -88,6 +103,26 @@ Deno.serve(async (req) => {
         const txt = await r.text();
         if (!txt.includes("ok")) { console.error("No se envió a", p.correo, txt); await sb.from("comunicados_enviados").delete().match({ tipo: `${aviso.clave}-${e.id}`, perfil: pid, fecha: dia }); continue; }
         enviados.push(`${p.nombre}: ${aviso.clave} ${e.nombre}`);
+      }
+    }
+  }
+  // Datos que faltan: se avisa a todo Marketing y Legal 7, 3 y 1 día antes
+  const equipo = (gente || []).filter((p) => p.activa && p.correo && (p.rol !== "solicitante" || p.area === "Legal"));
+  for (const dias of [7, 3, 1]) {
+    const { data: evs } = await sb.from("eventos").select("*").eq("fecha_desde", suma(hoy, dias));
+    for (const e of (evs || []) as Ev[]) {
+      const { data: ts } = await sb.from("evento_tareas").select("hecha, encargados").eq("evento_id", e.id);
+      const falta: string[] = [];
+      if (!e.lugar) falta.push("Falta el lugar"); if (!e.hora) falta.push("Falta el horario"); if (!e.encargados.length) falta.push("No tiene encargados");
+      if (!ts || !ts.length) falta.push("No tiene tareas"); else { const p = ts.filter((t) => !t.hecha); if (p.length) falta.push(`${p.length} tarea${p.length === 1 ? "" : "s"} sin terminar`); if (p.some((t) => !(t.encargados || []).length)) falta.push("Hay tareas sin responsable"); }
+      if (!falta.length) continue;
+      for (const p of equipo) {
+        if (prueba && p.correo !== prueba) continue;
+        const { error: dup } = await sb.from("comunicados_enviados").insert({ tipo: `evf${dias}-${e.id}`, perfil: p.id, fecha: hoy });
+        if (dup) continue;
+        const r = await fetch(CORREO_URL, { method: "POST", body: JSON.stringify({ clave: CORREO_CLAVE, para: p.correo, asunto: `Faltan datos para ${e.nombre} (en ${dias} día${dias === 1 ? "" : "s"})`, html: correoFalta(e, dias, falta) }) });
+        if (!(await r.text()).includes("ok")) { await sb.from("comunicados_enviados").delete().match({ tipo: `evf${dias}-${e.id}`, perfil: p.id, fecha: hoy }); continue; }
+        enviados.push(`${p.nombre}: faltan datos ${e.nombre}`);
       }
     }
   }
