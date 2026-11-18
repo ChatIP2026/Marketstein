@@ -2270,6 +2270,10 @@
   .sm-sw b { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: left .2s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
   .solo-mio.on .sm-sw { background: #22c55e; } .solo-mio.on .sm-sw b { left: 14px; }
   @media (max-width: 820px) { .ent-acc .solo-mio { flex: none; } }
+
+  .tk-opc { font-style: normal; font-weight: 400; color: #999; }
+  .tkd-entrega { position: relative; } .tk-cambiar { display: inline-flex; margin-top: 8px; background: #fff; color: #0a0a0a; font-size: .74rem; font-weight: 700; border-radius: 8px; padding: 5px 10px; cursor: pointer; position: relative; }
+  .tk-cambiar input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; min-height: 0 !important; padding: 0 !important; }
 </style>
 <script>
   // ===== VISTA PREVIA: copia de tus proyectos reales (6 oct 2026). NO está conectada a Supabase:
@@ -2549,7 +2553,7 @@
     d.querySelectorAll(".det-prios button").forEach((b) => (b.onclick = () => { p.prioridad = b.dataset.v; armar(); }));
     d.querySelector(".det-fecha").addEventListener("click", (e) => { try { e.target.showPicker(); } catch (x) {} });
     // Si el proyecto viene de un ticket, la fecha del ticket se cambia también (y queda en su historial)
-    const syncTk = (f) => { const tk = p.ticket && tickets.find((x) => x.id === p.ticket); if (tk && f && tk.fecha !== f) { tk.fecha = f; if (typeof registrar === "function") registrar(tk, `Cambió la fecha de entrega al ${fmt(f)}`); if (pagina === "tickets") pintarTickets(); } };
+    const syncTk = (f) => { const tk = tickets.find((x) => (p.ticket && x.id === p.ticket) || x.proyecto === p.id); if (tk && f && tk.fecha !== f) { tk.fecha = f; if (typeof registrar === "function") registrar(tk, `Cambió la fecha de entrega al ${fmt(f)}`); if (pagina === "tickets") pintarTickets(); } };
     d.querySelector(".det-fecha").onchange = (e) => { p.fecha_limite = e.target.value || null; syncTk(p.fecha_limite); armar(); };
     d.querySelector(".det-sinfecha")?.addEventListener("click", () => { p.fecha_limite = null; armar(); });
 
@@ -2623,6 +2627,16 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { cerrarProyecto(); if (typeof cerrarEvento === "function") cerrarEvento(); } });
 
   // El estado siempre debe coincidir con las tareas: todas hechas = Listo; Listo con tareas pendientes = En curso
+  // Ticket y proyecto siempre alineados: misma fecha (la más reciente) y, si el proyecto está Listo, el ticket queda Entregado
+  function alinearTickets() {
+    try { if (!tickets || esSolicitante()) return; } catch (e) { return; } // los tickets aún no se cargan
+    for (const p of mapaP.values()) {
+      const tk = tickets.find((x) => (p.ticket && x.id === p.ticket) || x.proyecto === p.id); if (!tk || tk.ejemplo) continue;
+      const fp = p.fecha_limite ? String(p.fecha_limite).slice(0, 10) : "";
+      if (fp && tk.fecha !== fp && !["entregado", "rechazado", "cancelado"].includes(tk.estado)) { if (fp > tk.fecha) { tk.fecha = fp; registrar(tk, `Cambió la fecha de entrega al ${fmt(fp)}`); } else p.fecha_limite = tk.fecha; }
+      if (p.estado === "listo" && ["en_curso", "en_revision"].includes(tk.estado) && tk.asignado) { tk.estado = "entregado"; registrar(tk, "Proyecto completado: lo marcó como entregado"); }
+    }
+  }
   function corregirEstados() {
     if (!WEB_REAL) [...mapaP.values()].forEach((x, i) => { if (x.pilar === undefined) x.pilar = i % 6 === 5 ? null : [1, 2, 3, 1, 4][i % 5]; }); // demo: pilares de ejemplo
     const porP = new Map();
@@ -2635,7 +2649,7 @@
     }
   }
   function armar() {
-    corregirEstados();
+    corregirEstados(); alinearTickets();
     pintarPronto();
     pintarTareas();
     if (abiertoId !== null) pintarDetalle();
@@ -4249,7 +4263,7 @@
     else if ((mio || jefa) && t.asignado && ["en_revision", "en_curso", "entregado"].includes(t.estado)) acciones = `
       <div class="tk-acc"><h4>Situación del ticket</h4>
         <div class="tk-pasos">${["en_revision", "en_curso", "entregado"].map((e) => `<button type="button" data-e="${e}" class="${t.estado === e ? "activa" : ""}">${TK_ESTADOS[e].t}</button>`).join("<span>→</span>")}</div>
-        <div class="tk-ent" hidden><label>Enlace del entregable *<input id="tkEntUrl" placeholder="https://drive.google.com/… (archivo final)" value="${esc(t.entregable || "")}" /></label><button class="nuevo-btn" id="tkEntOk">Marcar como entregado</button></div>
+        <div class="tk-ent" hidden><label>Enlace del entregable <em class="tk-opc">(opcional)</em><input id="tkEntUrl" placeholder="https://… si hay un archivo o enlace final" value="${esc(t.entregable || "")}" /></label><button class="nuevo-btn" id="tkEntOk">Marcar como entregado</button></div>
         ${jefa ? `<details class="tk-editar"><summary>Editar ticket</summary>
           <label>Prioridad<div class="tk-prios">${Object.entries(TK_PRIO).map(([k, v]) => `<button type="button" data-np="${k}" class="${t.prioridad === k ? "activa" : ""}">${v.t}</button>`).join("")}</div></label>
           <label>Fecha de entrega<input type="date" id="tkNF" value="${t.fecha}" /></label>
@@ -4270,7 +4284,7 @@
       <h2 class="tkd-tit">${esc(t.titulo)}</h2>
       <div class="tkd-quien"><i class="av" style="${fondoAv(t.solicitante)}">${letraAv(t.solicitante)}</i><div><b>${esc(t.solicitante)}</b><small>${esc(t.area)} | lo pidió ${hace(t.historial[0].at)}</small></div></div>
       <div class="tkd-kpis">
-        <div class="tkd-k tkd-entrega"><small>Entrega</small>${((d) => { const D = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"], ok = t.estado === "entregado", tono = ok ? "ok" : d <= 1 ? "rojo" : d <= 5 ? "ambar" : "ok"; return `<b>${D[new Date(t.fecha + "T12:00").getDay()]} ${fmt(t.fecha)}</b><span class="tkd-rel ${tono}">${ok ? (((h) => !h || h.at.slice(0, 10) <= t.fecha)([...t.historial].reverse().find((x) => /entregado/i.test(x.txt))) ? "A tiempo" : "Con retraso") : d < 0 ? `Atrasado ${-d} d` : d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `Faltan ${d} días`}</span><svg class="det-cal" viewBox="0 0 64 64" fill="none"><rect x="6" y="10" width="52" height="48" rx="10" fill="#262626" stroke="#525252" stroke-width="2"/><path d="M6 20a10 10 0 0 1 10-10h32a10 10 0 0 1 10 10v6H6z" fill="#fff"/><rect x="18" y="4" width="5" height="13" rx="2.5" fill="#a3a3a3"/><rect x="41" y="4" width="5" height="13" rx="2.5" fill="#a3a3a3"/><text x="32" y="50" text-anchor="middle" font-size="21" font-weight="700" fill="#fff" font-family="inherit">${+t.fecha.slice(8)}</text></svg>`; })(diasHasta(t.fecha))}</div>
+        <div class="tkd-k tkd-entrega"><small>Entrega</small>${((d) => { const D = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"], ok = t.estado === "entregado", tono = ok ? "ok" : d <= 1 ? "rojo" : d <= 5 ? "ambar" : "ok"; return `<b>${D[new Date(t.fecha + "T12:00").getDay()]} ${fmt(t.fecha)}</b><span class="tkd-rel ${tono}">${ok ? (((h) => !h || h.at.slice(0, 10) <= t.fecha)([...t.historial].reverse().find((x) => /entregado/i.test(x.txt))) ? "A tiempo" : "Con retraso") : d < 0 ? `Atrasado ${-d} d` : d === 0 ? "Vence hoy" : d === 1 ? "Vence mañana" : `Faltan ${d} días`}</span><svg class="det-cal" viewBox="0 0 64 64" fill="none"><rect x="6" y="10" width="52" height="48" rx="10" fill="#262626" stroke="#525252" stroke-width="2"/><path d="M6 20a10 10 0 0 1 10-10h32a10 10 0 0 1 10 10v6H6z" fill="#fff"/><rect x="18" y="4" width="5" height="13" rx="2.5" fill="#a3a3a3"/><rect x="41" y="4" width="5" height="13" rx="2.5" fill="#a3a3a3"/><text x="32" y="50" text-anchor="middle" font-size="21" font-weight="700" fill="#fff" font-family="inherit">${+t.fecha.slice(8)}</text></svg>`; })(diasHasta(t.fecha))}${!sol && !["entregado", "rechazado", "cancelado"].includes(t.estado) ? `<label class="tk-cambiar">Cambiar<input type="date" id="tkFechaNueva" value="${t.fecha}" /></label>` : ""}</div>
         <div class="tkd-k tkd-prio"><small>Prioridad</small>${TK_PRIO[t.prioridad] ? prioCard(t.prioridad) : `<span class="tkd-vacio">La define ${esc(JEFA)}</span>`}</div>
         <div class="tkd-k tkd-asig"><small>Asignado</small>${t.asignado ? `<div class="tkd-asig-in"><i class="av" style="${fondoAv(t.asignado)}">${letraAv(t.asignado)}</i><div><b>${t.asignado}</b><span>Marketing</span></div></div><span class="tkd-asig-tag">Responsable</span>` : `<div class="tkd-asig-in"><i class="av tkd-av-vacio">?</i><div><b>Aún nadie</b><span>${esc(JEFA)} lo asignará</span></div></div>`}</div>
       </div>
@@ -4336,11 +4350,14 @@
       else { t.estado = "rechazado"; registrar(t, "Rechazó el ticket: " + v); despues("Ticket rechazado"); }
     });
     d.querySelector("#tkCancelar")?.addEventListener("click", () => motivo("cancelar"));
-    // Entregable obligatorio al marcar Entregado
+    // Cambiar la fecha de entrega desde el ticket: también cambia la del proyecto
+    d.querySelector("#tkFechaNueva")?.addEventListener("change", (e) => { const f = e.target.value; if (!f || f === t.fecha) return; t.fecha = f; registrar(t, `Cambió la fecha de entrega al ${fmt(f)}`);
+      if (t.proyecto && mapaP.has(t.proyecto)) mapaP.get(t.proyecto).fecha_limite = f; despues(`Fecha de entrega cambiada al <b>${fmt(f)}</b>`); });
+    // Al marcar Entregado se puede adjuntar un enlace (opcional)
     d.querySelector("#tkEntOk")?.addEventListener("click", () => {
       const u = d.querySelector("#tkEntUrl").value.trim();
-      if (!/^https?:\/\//.test(u)) return avisar("Pega el enlace del archivo final (debe empezar con https://)");
-      t.entregable = u; t.estado = "entregado"; registrar(t, "Lo marcó como entregado y adjuntó el entregable");
+      if (u && !/^https?:\/\//.test(u)) return avisar("El enlace debe empezar con https://");
+      t.entregable = u || null; t.estado = "entregado"; registrar(t, u ? "Lo marcó como entregado y adjuntó el entregable" : "Lo marcó como entregado");
       if (t.proyecto && mapaP.has(t.proyecto)) { const p = mapaP.get(t.proyecto); p.estado = "listo"; [...mapaT.values()].filter((x) => x.proyecto_id === p.id).forEach((x) => (x.hecha = true)); }
       despues(`${ic("ok")}Ticket <b>entregado</b>`);
     });
