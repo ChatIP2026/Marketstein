@@ -4747,8 +4747,12 @@
     const hoyISO = lima(Date.now());
     // Fecha límite real del ticket: si después se movió la fecha (en el ticket o en su proyecto), vale la más reciente
     const limiteTk = (t) => { const p = t.proyecto && mapaP.get(t.proyecto); const fp = p && p.fecha_limite ? String(p.fecha_limite).slice(0, 10) : ""; return fp > t.fecha ? fp : t.fecha; };
-    const tks = tickets.filter((t) => t.asignado === n && limiteTk(t).slice(0, 7) === mes && !["rechazado", "cancelado"].includes(t.estado) && (t.estado === "entregado" || limiteTk(t) < hoyISO));
-    const aTiempo = tks.filter((t) => { if (t.estado !== "entregado") return false; const h = [...t.historial].reverse().find((x) => /entregado/i.test(x.txt)); return !h || lima(h.at) <= limiteTk(t); }).length;
+    // Un ticket cuenta como hecho si se marcó "entregado" o si su proyecto ya está Listo (todas las tareas hechas)
+    const hechoEn = (t) => { if (t.estado === "entregado") { const h = [...t.historial].reverse().find((x) => /entregado/i.test(x.txt)); return h ? lima(h.at) : limiteTk(t); }
+      const p = t.proyecto && mapaP.get(t.proyecto); if (!p || p.estado !== "listo") return null;
+      const fs = [...mapaT.values()].filter((x) => x.proyecto_id === p.id && x.hecha_at).map((x) => lima(x.hecha_at)).sort(); return fs.length ? fs[fs.length - 1] : hoyISO; };
+    const tks = tickets.filter((t) => t.asignado === n && limiteTk(t).slice(0, 7) === mes && !["rechazado", "cancelado"].includes(t.estado) && (hechoEn(t) || limiteTk(t) < hoyISO));
+    const aTiempo = tks.filter((t) => { const f = hechoEn(t); return !!f && f <= limiteTk(t); }).length;
     const m = (MANUAL[mes] ||= JSON.parse(JSON.stringify(ejemploManual)))[n] ||= { tardanzas: 0, vestimenta: 20 };
     const v = {
       proy: tareas.length ? (hechas / tareas.length) * 20 : 20, tick: tks.length ? (aTiempo / tks.length) * 20 : 20,
