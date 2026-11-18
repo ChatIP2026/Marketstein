@@ -4741,8 +4741,10 @@
     // Fechas en hora de Lima: una entrega a las 8 p. m. sigue siendo "hoy" (en UTC ya sería mañana)
     const lima = (d) => new Date(d).toLocaleDateString("en-CA", { timeZone: "America/Lima" });
     const hoyISO = lima(Date.now());
-    const tks = tickets.filter((t) => t.asignado === n && t.fecha.slice(0, 7) === mes && !["rechazado", "cancelado"].includes(t.estado) && (t.estado === "entregado" || t.fecha < hoyISO));
-    const aTiempo = tks.filter((t) => { if (t.estado !== "entregado") return false; const h = [...t.historial].reverse().find((x) => /entregado/i.test(x.txt)); return !h || lima(h.at) <= t.fecha; }).length;
+    // Fecha límite real del ticket: si después se movió la fecha (en el ticket o en su proyecto), vale la más reciente
+    const limiteTk = (t) => { const p = t.proyecto && mapaP.get(t.proyecto); const fp = p && p.fecha_limite ? String(p.fecha_limite).slice(0, 10) : ""; return fp > t.fecha ? fp : t.fecha; };
+    const tks = tickets.filter((t) => t.asignado === n && limiteTk(t).slice(0, 7) === mes && !["rechazado", "cancelado"].includes(t.estado) && (t.estado === "entregado" || limiteTk(t) < hoyISO));
+    const aTiempo = tks.filter((t) => { if (t.estado !== "entregado") return false; const h = [...t.historial].reverse().find((x) => /entregado/i.test(x.txt)); return !h || lima(h.at) <= limiteTk(t); }).length;
     const m = (MANUAL[mes] ||= JSON.parse(JSON.stringify(ejemploManual)))[n] ||= { tardanzas: 0, vestimenta: 20 };
     const v = {
       proy: tareas.length ? (hechas / tareas.length) * 20 : 20, tick: tks.length ? (aTiempo / tks.length) * 20 : 20,
