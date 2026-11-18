@@ -2549,7 +2549,9 @@
     }));
     d.querySelectorAll(".det-prios button").forEach((b) => (b.onclick = () => { p.prioridad = b.dataset.v; armar(); }));
     d.querySelector(".det-fecha").addEventListener("click", (e) => { try { e.target.showPicker(); } catch (x) {} });
-    d.querySelector(".det-fecha").onchange = (e) => { p.fecha_limite = e.target.value || null; armar(); };
+    // Si el proyecto viene de un ticket, la fecha del ticket se cambia también (y queda en su historial)
+    const syncTk = (f) => { const tk = p.ticket && tickets.find((x) => x.id === p.ticket); if (tk && f && tk.fecha !== f) { tk.fecha = f; if (typeof registrar === "function") registrar(tk, `Cambió la fecha de entrega al ${fmt(f)}`); if (pagina === "tickets") pintarTickets(); } };
+    d.querySelector(".det-fecha").onchange = (e) => { p.fecha_limite = e.target.value || null; syncTk(p.fecha_limite); armar(); };
     d.querySelector(".det-sinfecha")?.addEventListener("click", () => { p.fecha_limite = null; armar(); });
 
     // Tareas
