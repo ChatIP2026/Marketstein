@@ -23,7 +23,7 @@ update public.perfiles p set cumple = v.cumple from (values
   ('pierina', '10-24'),
   ('flormendez', '11-05'),
   ('kassandra', '11-15'),
-  ('diego', '11-17'),
+  ('gaddiel', '11-17'),
   ('antonio', '11-21'),
   ('gustavo', '12-05'),
   ('paola', '12-13'),

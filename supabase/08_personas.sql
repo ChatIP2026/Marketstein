@@ -24,7 +24,7 @@ begin
     ('Andres', 'Castillo Santa Cruz', 'andres', 'andrescsc1916@gmail.com', 'Ventas', 'Auxiliar de Procesos'),
     ('Juan', 'Ruiz Huayta', 'juan', 'mauruizhu@outlook.com', 'Procesos', 'Analista de Sistemas'),
     ('Luis', 'Cabanillas Vargas', 'luis', 'legal@seleccionfb.com', 'Legal', 'Analista Legal'),
-    ('Diego', 'Enriquez Silva', 'diego', 'apoyo.informes38@gmail.com', 'Procesos', 'Auxiliar de Procesos'),
+    ('Gaddiel', 'Enriquez Silva', 'gaddiel', 'apoyo.informes38@gmail.com', 'Procesos', 'Auxiliar de Procesos'),
     ('Antonio', 'Villar Olguin', 'antonio', 'antooonio.villaaar@gmail.com', 'Legal', 'Practicante Legal'),
     ('Tirza', 'Ruiz Baca', 'tirza', 'tirzaisabellaruizbaca@gmail.com', 'Procesos', 'Auxiliar de Procesos')
   ) as v(nombre, apellido, usuario, correo, area, cargo)
