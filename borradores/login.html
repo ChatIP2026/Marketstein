@@ -490,7 +490,7 @@
     if (!data.session || recuperando || /type=recovery/.test(location.hash)) return;
     // Quien entró sin contraseña no vuelve a entrar solo: ve la lista con su nombre ya elegido y pulsa Entrar
     let inv = null; try { inv = localStorage.getItem("rabbitInvitado"); } catch (e) {}
-    if (inv && inv === data.session.user.id) { await sb.auth.signOut(); mostrar("invitado"); cargarInvitados(); return; }
+    if (inv && inv === data.session.user.id) { await sb.auth.signOut(); if ([10, 11].includes(new Date().getMonth())) return; mostrar("invitado"); cargarInvitados(); return; }
     despuesDeEntrar();
   });
   // Navidad: en noviembre y diciembre el logo es el Rabbit con gorro (desde el 1 de enero vuelve el de siempre)
