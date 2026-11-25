@@ -1,6 +1,16 @@
 {
   "cleanUrls": true,
   "redirects": [
-    { "source": "/", "destination": "/borradores/login", "permanent": false }
+    {
+      "source": "/",
+      "destination": "/borradores/login",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/amigo-secreto",
+      "destination": "/borradores/amigo-secreto"
+    }
   ]
 }
