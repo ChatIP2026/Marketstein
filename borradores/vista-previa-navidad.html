@@ -159,7 +159,8 @@
   .op-navi:hover .regalo .tapa{transform:rotate(-28deg) translate(-1px,-3px)}
   .op-navi:hover .regalo .brillo path{animation:chispa 1.4s ease-out infinite}
   .op-navi:hover .regalo .b2{animation-delay:.35s!important} .op-navi:hover .regalo .b3{animation-delay:.7s!important}
-  @keyframes chispa{0%{opacity:0;transform:translateY(5px) scale(.3) rotate(0)}30%{opacity:1;transform:translateY(0) scale(1) rotate(25deg)}70%{opacity:1;transform:translateY(-3px) scale(.9) rotate(45deg)}100%{opacity:0;transform:translateY(-6px) scale(.4) rotate(70deg)}}
+  .regalo .b1{--dx:-4px;--dy:5px} .regalo .b2{--dx:-9px;--dy:8px} .regalo .b3{--dx:-10px;--dy:2px}
+  @keyframes chispa{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}20%{opacity:1}45%{opacity:1;transform:translate(0,0) scale(1) rotate(35deg)}100%{opacity:0;transform:translate(2px,-4px) scale(.5) rotate(80deg)}}
 </style>
 </head>
 <body>
