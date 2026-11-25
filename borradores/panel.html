@@ -3009,7 +3009,7 @@
     document.getElementById("mpPer")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("personas"); });
     document.getElementById("mpTuto")?.addEventListener("click", () => { menuPerfil.hidden = true; irA("tickets"); setTimeout(iniciarTutorial, 200); });
     document.getElementById("mpId").onclick = () => { menuPerfil.hidden = true; abrirIdCard(); };
-    document.getElementById("mpSalir").onclick = () => { location.href = "login.html"; };
+    document.getElementById("mpSalir").onclick = () => { location.href = (location.protocol==="file:"?"login.html":"/login"); };
   }
   document.getElementById("perfilBtn").onclick = (e) => { e.stopPropagation(); document.getElementById("menuNotif").hidden = true; menuPerfil.hidden = !menuPerfil.hidden; };
   document.addEventListener("click", (e) => { if (!menuPerfil.contains(e.target)) menuPerfil.hidden = true; if (!menuNotif.contains(e.target) && !e.target.closest("#campanaBtn")) menuNotif.hidden = true; });
@@ -4536,10 +4536,10 @@
     document.body.classList.add("en-vivo");
     sb.auth.onAuthStateChange((ev) => { if (ev === "SIGNED_OUT") avisoSesion("Tu sesión se cerró. Recarga para volver a entrar."); });
     sb.auth.getSession().then(async ({ data }) => {
-      if (!data.session) return (location.href = "login.html");
+      if (!data.session) return (location.href = (location.protocol==="file:"?"login.html":"/login"));
       const { data: p } = await sb.from("perfiles").select("*").eq("id", data.session.user.id).single();
       // Quien solo deja tickets puede entrar sin contraseña: a esa persona no se le exige crear una
-      if (!p || !p.activa || (p.debe_cambiar_clave && p.rol !== "solicitante")) { await sb.auth.signOut(); return (location.href = "login.html"); }
+      if (!p || !p.activa || (p.debe_cambiar_clave && p.rol !== "solicitante")) { await sb.auth.signOut(); return (location.href = (location.protocol==="file:"?"login.html":"/login")); }
       window.miPerfil = p;
       VEN_PERSONAS.length = 0; if (p.admin_personas || p.rol === "jefa") VEN_PERSONAS.push(p.nombre);
       if (p.rol === "solicitante") SOLICITANTES[p.nombre] = p.area;
@@ -4553,7 +4553,7 @@
       // Recién ahora, con todo pintado para esta persona, se muestra el panel
       requestAnimationFrame(() => { document.body.classList.remove("sin-sesion"); rabbitHola(); quizasTutorial(); });
     });
-    document.addEventListener("click", async (e) => { if (e.target.closest("#mpSalir")) { e.preventDefault(); e.stopImmediatePropagation(); await sb.auth.signOut(); location.href = "login.html"; } }, true);
+    document.addEventListener("click", async (e) => { if (e.target.closest("#mpSalir")) { e.preventDefault(); e.stopImmediatePropagation(); await sb.auth.signOut(); location.href = (location.protocol==="file:"?"login.html":"/login"); } }, true);
   }
 
   // ===== Personas: cuentas con acceso a Rabbit (las crea el equipo de marketing) =====

@@ -3,7 +3,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/borradores/login",
+      "destination": "/login",
       "permanent": false
     }
   ],
@@ -11,6 +11,10 @@
     {
       "source": "/amigo-secreto",
       "destination": "/borradores/amigo-secreto"
+    },
+    {
+      "source": "/login",
+      "destination": "/borradores/login"
     }
   ]
 }
