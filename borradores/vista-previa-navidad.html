@@ -161,6 +161,16 @@
   .op-navi:hover .regalo .b2{animation-delay:.35s!important} .op-navi:hover .regalo .b3{animation-delay:.7s!important}
   .regalo .b1{--dx:-4px;--dy:5px} .regalo .b2{--dx:-9px;--dy:8px} .regalo .b3{--dx:-10px;--dy:2px}
   @keyframes chispa{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}20%{opacity:1}45%{opacity:1;transform:translate(0,0) scale(1) rotate(35deg)}100%{opacity:0;transform:translate(2px,-4px) scale(.5) rotate(80deg)}}
+
+  /* Llamar la atención: borde con brillo que recorre, ícono que se mueve cada pocos segundos y etiqueta "Nuevo" */
+  .op-navi{position:relative;overflow:hidden;animation:latido 3.2s ease-in-out infinite}
+  @keyframes latido{0%,70%,100%{box-shadow:0 0 0 0 rgba(200,30,30,0)}80%{box-shadow:0 0 0 6px rgba(200,30,30,.14)}}
+  .op-navi::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-18deg);animation:barrido 3.2s ease-in-out infinite;pointer-events:none}
+  @keyframes barrido{0%,55%{left:-60%}85%,100%{left:130%}}
+  .op-navi .op-ic{animation:saltito 3.2s ease-in-out infinite}
+  @keyframes saltito{0%,60%,100%{transform:none}66%{transform:translateY(-3px) rotate(-6deg)}72%{transform:translateY(0) rotate(5deg)}78%{transform:rotate(-3deg)}84%{transform:none}}
+  .op-navi:hover{animation:none;transform:translateY(-2px);box-shadow:0 10px 26px rgba(200,30,30,.16)!important} .op-navi:hover .op-ic{animation:none}
+  .op-nuevo{position:absolute;top:10px;right:12px;background:#c81e1e;color:#fff;font-size:.62rem;font-weight:800;letter-spacing:.06em;border-radius:999px;padding:2px 8px}
 </style>
 </head>
 <body>
@@ -214,7 +224,7 @@
           <g class="brillo" fill="currentColor" stroke="none"><path class="b1" d="M22 8L22.84 10.16L25 11L22.84 11.84L22 14L21.16 11.84L19 11L21.16 10.16Z"/><path class="b2" d="M27.5 5.3L28.116 6.884L29.7 7.5L28.116 8.116L27.5 9.7L26.884 8.116L25.3 7.5L26.884 6.884Z"/><path class="b3" d="M28 11.8L28.476 13.024L29.7 13.5L28.476 13.976L28 15.2L27.524 13.976L26.3 13.5L27.524 13.024Z"/></g>
           <rect x="7" y="15" width="18" height="14" rx="1.6"/><path d="M16 15v14"/>
           <g class="tapa"><rect x="5.5" y="10.5" width="21" height="4.5" rx="1.2"/><path d="M16 15v-4.5"/><path d="M16 10.5c-1.4-3.6-6.2-5.6-6.9-3.1-.6 2.2 3.6 3.1 6.9 3.1Zm0 0c1.4-3.6 6.2-5.6 6.9-3.1.6 2.2-3.6 3.1-6.9 3.1Z"/></g></svg></span>
-        <span class="op-txt"><b>Amigo secreto <em class="op-pill">Sin contraseña</em></b><small>Tus 3 regalos y detalles.</small></span>
+        <span class="op-nuevo">NUEVO</span><span class="op-txt"><b>Amigo secreto <em class="op-pill">Sin contraseña</em></b><small>Tus 3 regalos y detalles.</small></span>
         <svg class="op-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
       </button>
     </div>
