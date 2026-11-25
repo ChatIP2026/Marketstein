@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Entrar | rabbit ai</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="manifest" href="/borradores/manifest.webmanifest" />
+<link rel="apple-touch-icon" href="/borradores/icono-192.png" />
+<meta name="theme-color" content="#0a0a0a" />
+<meta name="apple-mobile-web-app-title" content="Rabbit" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --negro: #0a0a0a; --g50: #fafafa; --g100: #f5f5f5; --g200: #e5e5e5; --g300: #d4d4d4; --g400: #a3a3a3; --g500: #737373; --g600: #525252; --rojo: #dc2626; --verde: #16a34a; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body { font-family: "Inter", system-ui, sans-serif; color: var(--negro); background: #ececec; display: grid; place-items: center; min-height: 100vh; padding: 24px; }
+  .caja { width: min(1000px, 100%); min-height: 600px; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); background: #fff; border-radius: 32px; padding: 14px; box-shadow: 0 30px 80px rgba(10,10,10,.12); }
+  /* Lado Rabbit */
+  .lado-rb { position: relative; border-radius: 22px; background: radial-gradient(120% 100% at 70% 0%, #2a2a2a 0%, #111 50%, #0a0a0a 100%); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; padding: 40px 28px; overflow: hidden; }
+  .lado-rb::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.05) 50%, transparent 60%); pointer-events: none; }
+  .marca { position: absolute; top: 26px; left: 28px; font-family: "Quicksand", sans-serif; font-size: 1.5rem; font-weight: 500; letter-spacing: -.01em; }
+  .rb-zona { position: relative; display: grid; place-items: center; }
+  .rb { width: 210px; height: 240px; filter: drop-shadow(0 24px 30px rgba(0,0,0,.5)); transform-origin: 50% 90%; }
+  .rb .ojos { transform-origin: 32px 51px; animation: parpadeo 5s infinite; transition: opacity .2s; }
+  @keyframes parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+  .rb.salto { animation: salto 1s cubic-bezier(.3,.7,.4,1); } .rb.ladeo { animation: ladeo 1.5s ease-in-out; } .rb.no { animation: no .6s ease-in-out; } .rb.feliz { animation: salto .9s cubic-bezier(.3,.7,.4,1) 2; }
+  @keyframes salto { 0%,100% { transform: translateY(0) scale(1); } 20% { transform: translateY(2px) scale(1.04,.94); } 45% { transform: translateY(-16px) scale(.97,1.04); } 70% { transform: translateY(0) scale(1.03,.97); } }
+  @keyframes ladeo { 0%,100% { transform: rotate(0); } 30% { transform: rotate(-8deg); } 65% { transform: rotate(6deg); } }
+  @keyframes no { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px) rotate(-3deg); } 40% { transform: translateX(10px) rotate(3deg); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+  .rb.tapa .ojos { opacity: 0; } .patas { opacity: 0; transition: opacity .2s; } .rb.tapa .patas { opacity: 1; }
+  .sombra { width: 130px; height: 14px; border-radius: 50%; background: rgba(0,0,0,.55); filter: blur(8px); margin-top: -18px; }
+  .burbuja { position: relative; max-width: 300px; font-size: .9rem; font-weight: 600; color: var(--negro); background: #fff; border: 2px solid var(--negro); border-radius: 16px; padding: 10px 16px; line-height: 1.35; box-shadow: 3px 3px 0 #525252; text-align: center; animation: pop .45s cubic-bezier(.2,.9,.3,1.3); }
+  .burbuja::before { content: ""; position: absolute; top: -9px; left: 50%; width: 14px; height: 14px; background: #fff; border-left: 2px solid var(--negro); border-top: 2px solid var(--negro); transform: translateX(-50%) rotate(45deg); }
+  @keyframes pop { from { opacity: 0; transform: scale(.7) translateY(8px); } }
+  .lema { position: absolute; bottom: 26px; left: 28px; right: 28px; display: flex; justify-content: space-between; font-size: .75rem; color: var(--g500); }
+  /* Lado formulario */
+  .lado-form { padding: 48px 52px; display: flex; flex-direction: column; justify-content: center; }
+  .vista[hidden] { display: none; }
+  .opcion { display: flex; align-items: center; gap: 16px; width: 100%; padding: 20px; margin-bottom: 14px; border: 1px solid var(--g200); border-radius: 18px; background: #fff; font: inherit; text-align: left; cursor: pointer; transition: .18s; }
+  .opcion:hover { border-color: var(--negro); box-shadow: 0 8px 24px rgba(0,0,0,.08); transform: translateY(-1px); }
+  .op-ic { width: 52px; height: 52px; flex: none; display: grid; place-items: center; border-radius: 14px; background: var(--g100); color: var(--negro); }
+  .opcion:first-of-type .op-ic { background: var(--negro); color: #fff; }
+  .op-ic svg { width: 26px; height: 26px; }
+  .op-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .op-txt b { font-size: 1.05rem; color: var(--negro); } .op-txt small { font-size: .86rem; color: var(--g500); line-height: 1.35; }
+  .op-fl { width: 20px; height: 20px; flex: none; color: var(--g500); }
+  #vistaElegir h1, .op-txt b, .op-txt small { text-wrap: pretty; }
+  .campo select:focus { background-color: #fff; border-color: var(--negro); }
+  .opcion:focus-visible, .boton:focus-visible, .volver:focus-visible, .link:focus-visible, .ver:focus-visible { outline: 2px solid var(--negro); outline-offset: 3px; }
+  .campo input:focus-visible, .campo select:focus-visible, .codigo input:focus-visible { box-shadow: 0 0 0 3px rgba(10,10,10,.12); }
+  .campo input[aria-invalid="true"] { border-color: var(--rojo); background: #fef2f2; }
+  .op-txt small { text-wrap: wrap !important; max-width: none; }
+  .op-pill { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--g100); border: 1px solid var(--g200); font-style: normal; font-size: .7rem; font-weight: 600; color: var(--g600); vertical-align: 2px; white-space: nowrap; }
+  .volver { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 18px -4px; font-size: .86rem; font-weight: 600; color: var(--g500); cursor: pointer; text-decoration: none; }
+  .volver:hover { color: var(--negro); } .volver svg { width: 16px; height: 16px; }
+  @media (max-width: 420px) { .opcion { padding: 16px; gap: 12px; } .op-ic { width: 44px; height: 44px; } }
+  h1 { margin: 0 0 6px; font-size: 1.9rem; letter-spacing: -.02em; } .sub { margin: 0 0 26px; color: var(--g500); font-size: .95rem; }
+  .sociales { display: grid; grid-template-columns: 1fr; }
+  .social { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; height: 48px; border-radius: 14px; border: 1px solid var(--g200); font-weight: 600; font-size: .9rem; transition: .15s; }
+  .social:hover { background: var(--g50); border-color: var(--g300); } .social svg { width: 18px; height: 18px; }
+  .sep { display: flex; align-items: center; gap: 12px; margin: 22px 0; color: var(--g400); font-size: .8rem; } .sep::before, .sep::after { content: ""; flex: 1; height: 1px; background: var(--g200); }
+  label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 7px; }
+  .campo { position: relative; display: flex; align-items: center; margin-bottom: 18px; }
+  .campo > svg { position: absolute; left: 15px; width: 18px; height: 18px; color: var(--g400); pointer-events: none; }
+  .campo select { width: 100%; height: 50px; border-radius: 14px; border: 1px solid var(--g200); background: var(--g100); padding: 0 40px 0 46px; font: inherit; font-size: .95rem; color: var(--negro); outline: none; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; }
+  .campo input { width: 100%; height: 50px; border-radius: 14px; border: 1px solid var(--g200); background: var(--g100); padding: 0 46px; font: inherit; font-size: .95rem; color: var(--negro); outline: none; transition: .15s; }
+  .campo input:focus { background: #fff; border-color: var(--negro); box-shadow: 0 0 0 4px rgba(10,10,10,.06); }
+  .campo input::placeholder { color: var(--g400); }
+  .ver { all: unset; cursor: pointer; position: absolute; right: 12px; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: var(--g500); } .ver:hover { background: var(--g200); } .ver svg { width: 18px; height: 18px; }
+  .fila { display: flex; justify-content: flex-start; margin: -8px 0 20px; }
+  a.link { color: var(--negro); font-size: .85rem; font-weight: 600; text-decoration: none; cursor: pointer; } a.link:hover { text-decoration: underline; }
+  .boton { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; height: 52px; border-radius: 14px; background: var(--negro); color: #fff; font-weight: 600; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; transition: .15s; box-shadow: 0 10px 24px rgba(10,10,10,.18); }
+  .boton:hover { background: #262626; transform: translateY(-1px); } .boton:disabled { opacity: .6; cursor: wait; } .boton svg { width: 18px; height: 18px; }
+  .mensaje { min-height: 20px; margin: 12px 0 0; font-size: .85rem; text-align: center; } .mensaje.error { color: var(--rojo); } .mensaje.ok { color: var(--verde); }
+  .pie { margin-top: 22px; text-align: center; font-size: .85rem; color: var(--g500); }
+  .nota { margin-top: 16px; text-align: center; font-size: .72rem; color: var(--g400); }
+  .volver { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 18px; color: var(--g500) !important; font-weight: 500 !important; } .volver svg { width: 16px; height: 16px; }
+  .codigo { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-bottom: 18px; }
+  .codigo input { min-width: 0; width: 100%; height: 54px; text-align: center; font-size: 1.3rem; font-weight: 700; border-radius: 12px; border: 1px solid var(--g200); background: var(--g100); font-family: inherit; outline: none; } .codigo input:focus { background: #fff; border-color: var(--negro); }
+  @media (max-width: 820px) {
+    body { padding: 12px; } .caja { grid-template-columns: 1fr; min-height: 0; }
+    .lado-rb { padding: 64px 20px 28px; gap: 16px; } .rb { width: 120px; height: 140px; } .lema { display: none; }
+    .lado-form { padding: 30px 18px 22px; } h1 { font-size: 1.6rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .rb, .rb .ojos, .burbuja { animation: none !important; } }
+  .burbuja, h1, .sub { text-wrap: balance; }
+  /* Sin palabras sueltas en ninguna parte: todo el texto evita dejar una palabra sola al final */
+  body { text-wrap: pretty; }
+  h1, h2, h3, h4, b, strong, .sub, .burbuja, .det-burbuja, .rb-burbuja, .tk-sub, small, label, .mensaje, .pie, .cx-titulo { text-wrap: balance; }
+  @media (max-width: 820px) {
+    body { padding: 10px; min-height: 100dvh; align-items: start; }
+    .caja { padding: 10px; border-radius: 24px; }
+    .lado-rb { flex-direction: row; justify-content: flex-start; gap: 14px; padding: 16px 18px; min-height: 0; }
+    .marca { position: static; font-size: 1.15rem; order: 2; } .rb-zona { order: 1; } .sombra { display: none; }
+    .rb { width: 52px; height: 60px; }
+    .burbuja { position: absolute; right: 14px; top: 50%; translate: 0 -50%; font-size: .74rem; padding: 6px 10px; max-width: 46%; animation: none; }
+    .burbuja::before { top: 50%; left: -8px; transform: translateY(-50%) rotate(-45deg); }
+    .lado-form { padding: 20px 14px 14px; } h1 { font-size: 1.5rem; } .sub { margin-bottom: 16px; }
+    .campo { margin-bottom: 12px; } .campo input { height: 46px; } .boton { height: 48px; } .pie { margin-top: 12px; } .mensaje { min-height: 0; }
+  }
+  @media (max-width: 820px) {
+    body { height: 100dvh; padding: 10px; }
+    .caja { min-height: calc(100dvh - 20px); grid-template-rows: 1fr auto; }
+    .lado-rb { flex-direction: column; justify-content: center; gap: 14px; padding: 52px 18px 22px; }
+    .marca { position: absolute; top: 16px; left: 18px; }
+    .rb { width: 96px; height: 110px; }
+    .burbuja { position: relative; right: auto; top: auto; translate: none; max-width: 90%; font-size: .82rem; }
+    .burbuja::before { top: -9px; left: 50%; transform: translateX(-50%) rotate(45deg); }
+  }
+  @media (max-width: 820px) { .rb-zona { order: 1; } .burbuja { order: 3; } .lado-rb .sombra { display: none; } .marca { order: 0; } }
+  [hidden] { display: none !important; }
+  /* Animación de inicio de sesión */
+  .ok-capa { position: fixed; inset: 0; z-index: 999; background: rgba(8,8,10,.92); backdrop-filter: blur(6px); display: grid; place-items: center; animation: okFondo .35s ease both; }
+  .ok-caja { text-align: center; }
+  .ok-svg { width: 150px; height: 150px; overflow: visible; }
+  .ok-marco { fill: none; stroke: rgba(255,255,255,.85); stroke-width: 4; transform-origin: 60px 60px; animation: okMarco 1.3s ease-in-out both; }
+  .ok-anillo { fill: none; stroke-width: 3; transform-origin: 60px 60px; }
+  .ok-anillo.a1 { stroke: #2f6bff; animation: okGiro1 1.3s cubic-bezier(.5,0,.5,1) both; }
+  .ok-anillo.a2 { stroke: #34d399; animation: okGiro2 1.3s cubic-bezier(.5,0,.5,1) both; }
+  .ok-circulo { fill: none; stroke: #e5e5e5; stroke-width: 5; stroke-dasharray: 239; stroke-dashoffset: 239; opacity: 0; transform: rotate(-90deg); transform-origin: 60px 60px; }
+  .ok-check { fill: none; stroke: #e5e5e5; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 60; stroke-dashoffset: 60; }
+  .ok-txt { margin: 18px 0 0; color: #d4d4d8; font-size: .95rem; font-weight: 600; opacity: 0; }
+  .fase2 .ok-anillo { animation: okFuera .3s ease forwards; }
+  .fase2 .ok-circulo { display: none; }
+  .fase2 .ok-check { animation: okTrazo .35s ease .15s forwards; } .fase2 .ok-marco { stroke: #e5e5e5; stroke-width: 5; transition: stroke-width .3s; }
+  .fase2 .ok-txt { animation: okFondo .3s ease .4s forwards; }
+  @keyframes okFondo { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes okMarco { 0% { opacity: 0; transform: scale(.7); } 25% { opacity: 1; transform: scale(1); } 100% { transform: scale(1); } }
+  @keyframes okGiro1 { 0% { transform: rotate(0) scale(.6); opacity: 0; } 20% { opacity: 1; } 100% { transform: rotate(300deg) scale(1); } }
+  @keyframes okGiro2 { 0% { transform: rotate(90deg) scale(.6); opacity: 0; } 20% { opacity: 1; } 100% { transform: rotate(-200deg) scale(1); } }
+  @keyframes okTrazo { to { stroke-dashoffset: 0; } }
+  @keyframes okFuera { to { opacity: 0; transform: scale(1.15); } }
+  @media (prefers-reduced-motion: reduce) { .ok-marco, .ok-anillo { animation: none; } }
+  @media (max-width: 820px) {
+    .rb { width: 150px; height: 172px; }
+    .sub { text-wrap: pretty; }
+    .opcion { position: relative; }
+    .op-pill { position: absolute; top: -10px; right: 16px; margin: 0; background: var(--negro); border-color: var(--negro); color: #fff; vertical-align: 0; }
+  }
+  .campo select[aria-invalid="true"] { border-color: var(--rojo); background-color: #fef2f2; }
+  @media (max-width: 820px) { #mensajeI, #mensaje { min-height: 1.4em; } }
+  .lado-form .sub { text-wrap: pretty; }
+  @media (max-width: 820px) { .lado-form .sub br { display: none; } }
+
+  .copos{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .copos i{position:absolute;top:-10px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(80,90,110,.35);animation:caer linear infinite}
+  @keyframes caer{to{transform:translate(30px,110vh)}}
+  body>*:not(.copos):not(script){position:relative;z-index:1}
+  .op-navi{border-color:#f1d3d3!important;background:#fff}
+  .op-navi .op-ic{background:#c81e1e!important;color:#fff!important;overflow:visible}
+  .op-navi .op-pill{background:#e7f6ec!important;color:#166534!important}
+  .op-navi .op-ic svg.regalo{width:34px!important;height:34px!important;overflow:visible}
+  .regalo .tapa{transform-origin:5px 11px;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+  .regalo .brillo{opacity:0;transform:scale(.3);transform-origin:20px 6px;transition:opacity .3s .15s,transform .45s .15s cubic-bezier(.3,1.6,.5,1)}
+  .op-navi:hover .regalo .tapa{transform:rotate(-28deg) translate(-1px,-3px)}
+  .op-navi:hover .regalo .brillo{opacity:1;transform:scale(1)}
+</style>
+</head>
+<body>
+<div class="copos"><script>document.write(Array.from({length:90},(_,i)=>{const s=3+(i*7)%6;return `<i style="left:${(i*37)%100}%;width:${s}px;height:${s}px;opacity:${.5+(i%5)/10};animation-duration:${8+(i%7)*2}s;animation-delay:-${(i*13)%16}s"></i>`}).join(''))</script></div>
+
+<main class="caja">
+  <section class="lado-rb">
+    <div class="marca">rabbit ai</div>
+    <div class="rb-zona"><svg class="rb" id="rb" viewBox="14 10 46 54" aria-hidden="true">
+      <g fill="#ffffff" stroke="#000000" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
+        <!-- oreja izquierda -->
+        <path d="M21.6 15.9c.4-1.2 1.6-1.7 2.8-1.3l8.4 3.5c.7.3 1.2.8 1.5 1.4l5.1 11.3-11.2 2.5-6.5-13.5c-.4-.9-.5-2.2-.1-3.9Z"/>
+        <!-- cabeza -->
+        <path d="M22.1 42.3c0-2.4 1.4-4.6 3.6-5.7l7.6-3.7c2.6-1.3 5.6-1.3 8.2.1l9.7 5.3c2.1 1.2 3.4 3.4 3.4 5.8v7.4c0 2.5-1.4 4.7-3.6 5.8l-7.5 3.7c-2.7 1.3-5.9 1.3-8.6 0l-9.2-4.5c-2.2-1.1-3.6-3.3-3.6-5.8Z"/>
+        <!-- oreja derecha (por delante de la cabeza) -->
+        <path d="M43.3 18.5c0-1.4 1.4-2.2 2.6-1.6.5.3.9.6 1.2 1l5.9 6.6c.5.6.8 1.3.8 2.1v14.4c0 1.5-1.6 2.4-2.9 1.6l-6.4-4.2c-.8-.5-1.2-1.3-1.2-2.2Z"/>
+      </g>
+      <!-- cara -->
+      <g fill="none" stroke="#000000" stroke-width="1.3" stroke-linecap="round">
+        <g class="ojos">
+          <path d="M22.4 46.2c1.2.4 2 1.6 2.4 3"/>
+          <path d="M34.2 53.9c1.6-3 5.4-3.6 8.2-.3"/>
+        </g>
+        <path d="M-1.05 -1.05l2.1 2.1M1.05 -1.05l-2.1 2.1" transform="translate(29.7 51.5) rotate(14) skewX(-8)" stroke-width="1.15"/>
+      </g>
+    </svg></div>
+    <div class="sombra"></div>
+    <div class="burbuja" id="globo">¡Hola! ¿Listos para avanzar?</div>
+    <div class="lema"><span>Marketing | iPartner</span><span>Tu equipo, en un solo lugar</span></div>
+  </section>
+
+  <section class="lado-form">
+    <div class="vista" id="vistaElegir">
+      <h1>Bienvenido a Rabbit</h1>
+      <p class="sub">El espacio del equipo de marketing de iPartner.</p>
+      <button type="button" class="opcion" data-modo="invitado">
+        <span class="op-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"/><path d="M14 5v14" stroke-dasharray="2 2"/></svg></span>
+        <span class="op-txt"><b>Crear un ticket <em class="op-pill">Sin contraseña</em></b><small>Para que Marketing te ayude.</small></span>
+        <svg class="op-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <button type="button" class="opcion" data-modo="entrar">
+        <span class="op-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+        <span class="op-txt"><b>Iniciar sesión</b><small>Con tu usuario y contraseña.</small></span>
+        <svg class="op-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <button type="button" class="opcion op-navi" onclick="alert('Vista previa: aquí se abrirá el Amigo secreto')">
+        <span class="op-ic"><svg class="regalo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <g class="brillo" fill="currentColor" stroke="none"><path d="M22 2l.8 2.6L25.4 5.4 22.8 6.2 22 8.8 21.2 6.2 18.6 5.4 21.2 4.6Z"/><path d="M28 7l.5 1.5L30 9l-1.5.5L28 11l-.5-1.5L26 9l1.5-.5Z"/><path d="M26 1l.4 1.1 1.1.4-1.1.4L26 4l-.4-1.1-1.1-.4 1.1-.4Z"/></g>
+          <rect x="6" y="15" width="20" height="13" rx="1.5"/><path d="M16 15v13"/>
+          <g class="tapa"><rect x="5" y="11" width="22" height="4" rx="1"/><path d="M16 11c-2-4-6-5-6-2.5S14 11 16 11Zm0 0c2-4 6-5 6-2.5S18 11 16 11Z"/></g></svg></span>
+        <span class="op-txt"><b>Amigo secreto <em class="op-pill">Sin contraseña</em></b><small>Tus 3 regalos y detalles de la semana.</small></span>
+        <svg class="op-fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="vista" id="vistaEntrar" hidden>
+      <a class="volver" href="#" data-modo="elegir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Otra forma de entrar</a>
+      <h1>Bienvenido de vuelta</h1>
+      <p class="sub">Entra con tu usuario y contraseña.</p>
+
+      <form id="form" novalidate>
+        <label for="correo">Usuario</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><input id="correo" type="text" placeholder="Ej.: hsalazar" autocomplete="username" autocapitalize="none" spellcheck="false" /></div>
+        <label for="clave">Contraseña</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="clave" class="secreta" type="password" placeholder="Tu contraseña" autocomplete="current-password" /><button type="button" class="ver" aria-label="Mostrar contraseña">OJO</button></div>
+        <div class="fila"><a class="link" href="#" data-ir="olvido">¿Olvidaste tu contraseña?</a></div>
+        <button class="boton" id="entrar">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="mensaje" aria-live="polite" id="mensaje"></p>
+      </form>
+      <p class="pie">¿No tienes cuenta? Pídela al equipo de marketing.</p>
+    </div>
+    <div class="vista" id="vistaInvitado" hidden>
+      <a class="volver" href="#" data-modo="elegir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Otra forma de entrar</a>
+      <h1>Crea tu ticket</h1>
+      <p class="sub">Elige tu nombre para pedir tu pieza a Marketing. <br>No necesitas contraseña.</p>
+      <form id="formInv" novalidate>
+        <label for="invQuien">¿Quién eres?</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><select id="invQuien"><option value="">Cargando nombres…</option></select></div>
+        <button class="boton" id="invBoton">Entrar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="mensaje" aria-live="polite" id="mensajeI"></p>
+      </form>
+      <p class="pie">¿No apareces en la lista? Avisa al equipo de marketing.</p>
+    </div>
+
+    <div class="vista" id="vistaOlvido" hidden>
+      <a class="link volver" data-ir="entrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Volver</a>
+      <h1>Recupera tu acceso</h1>
+      <p class="sub" id="oSub">Escribe tu usuario y te enviaremos un código al correo que registró marketing.</p>
+      <form id="formOlvido" novalidate>
+        <div id="pasoUsuario"><label for="oCorreo">Usuario</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><input id="oCorreo" type="text" placeholder="Ej.: hsalazar" autocapitalize="none" spellcheck="false" /></div></div>
+        <div id="pasoCodigo" hidden>
+          <label>Código</label>
+          <div class="codigo"><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" /></div>
+        </div>
+        <button class="boton" id="oBoton">Enviar código</button>
+        <p class="mensaje" aria-live="polite" id="mensajeO"></p>
+        <p class="pie" id="oReenviar" hidden>¿No te llegó? <a class="link" href="#" id="oReenviarA">Reenviar código</a> | <a class="link" href="#" id="oOtro">Cambiar usuario</a></p>
+      </form>
+    </div>
+    <div class="vista" id="vistaNueva" hidden>
+      <h1>Crea tu contraseña</h1>
+      <p class="sub" id="nuevaSub">Es tu primera vez en Rabbit. Elige una contraseña que solo tú sepas.</p>
+      <form id="formNueva" novalidate>
+        <label for="nClave">Nueva contraseña</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="nClave" class="secreta" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" /><button type="button" class="ver" aria-label="Mostrar contraseña">OJO</button></div>
+        <label for="nClave2">Repite la contraseña</label>
+        <div class="campo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="nClave2" class="secreta" type="password" placeholder="Igual a la anterior" autocomplete="new-password" /></div>
+        <button class="boton" id="nBoton">Guardar y entrar</button>
+        <p class="mensaje" aria-live="polite" id="mensajeN"></p>
+      </form>
+    </div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+  const sb = supabase.createClient("https://aqjmdlrafjjzdrqnogid.supabase.co", "sb_publishable_EYSGo1Od8olfwv79ItxRzg_WDLfk1zf");
+  const OJO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const OJO_NO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.8M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  document.querySelectorAll(".ver").forEach((b) => (b.innerHTML = OJO));
+  const rb = document.getElementById("rb"), globo = document.getElementById("globo");
+  // Patitas que tapan los ojos al escribir la contraseña
+  rb.insertAdjacentHTML("beforeend", '<g class="patas" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round"><path d="M22.2 47.6c1.2-1 2.6-1 3.6.3"/><path d="M34.6 52.2c1.6-1.3 4.6-1.4 6.6.2"/></g>');
+  const H = new Date().getHours(), SALUDO = H < 12 ? "Buenos días" : H < 19 ? "Buenas tardes" : "Buenas noches";
+  const IDLE = [`¡${SALUDO}! ¿Listos para avanzar?`, "El equipo te está esperando", "Hoy es un buen día para cerrar pendientes", "Entra y revisamos juntos qué toca hoy", "Un paso a la vez, y llegamos"];
+  let iIdle = 0, tIdle;
+  function ajustar(b) { b.style.width = ""; const h = b.offsetHeight; let lo = 60, hi = b.offsetWidth; while (hi - lo > 2) { const m = (lo + hi) >> 1; b.style.width = m + "px"; if (b.offsetHeight > h) lo = m; else hi = m; } b.style.width = hi + "px"; }
+  function decir(t) { globo.textContent = t; ajustar(globo); globo.style.animation = "none"; void globo.offsetWidth; globo.style.animation = ""; }
+  function mover(c) { rb.classList.remove("salto", "ladeo", "no", "feliz"); void rb.getBoundingClientRect(); if (c) rb.classList.add(c); }
+  function idle() { clearInterval(tIdle); tIdle = setInterval(() => { if (document.activeElement.tagName === "INPUT") return; iIdle = (iIdle + 1) % IDLE.length; decir(IDLE[iIdle]); mover(iIdle % 2 ? "ladeo" : "salto"); }, 7000); }
+  decir(IDLE[0]); setTimeout(() => mover("salto"), 400); idle();
+
+  const correo = document.getElementById("correo"), clave = document.getElementById("clave"), mensaje = document.getElementById("mensaje");
+  [correo, clave].forEach((x) => x.addEventListener("input", () => x.removeAttribute("aria-invalid")));
+  correo.addEventListener("focus", () => decir("Escribe tu usuario"));
+  document.querySelectorAll(".secreta").forEach((c) => {
+    c.addEventListener("focus", () => { if (c.type === "password") { rb.classList.add("tapa"); decir("¡No estoy mirando!"); } });
+    c.addEventListener("blur", () => rb.classList.remove("tapa"));
+  });
+  document.querySelectorAll(".ver").forEach((b) => (b.onclick = () => {
+    const inp = b.parentElement.querySelector("input"), ver = inp.type === "password";
+    inp.type = ver ? "text" : "password"; b.innerHTML = ver ? OJO_NO : OJO; inp.focus();
+    rb.classList.toggle("tapa", !ver); decir(ver ? "Ups… ahora se ve todo" : "¡No estoy mirando!");
+  }));
+
+  // Cambiar de vista
+  const vistas = { entrar: document.getElementById("vistaEntrar"), olvido: document.getElementById("vistaOlvido"), nueva: document.getElementById("vistaNueva"), invitado: document.getElementById("vistaInvitado"), elegir: document.getElementById("vistaElegir") };
+  const mostrar = (k) => { for (const x in vistas) vistas[x].hidden = x !== k; };
+  document.querySelectorAll("[data-modo]").forEach((b) => (b.onclick = (e) => {
+    e.preventDefault(); const k = b.dataset.modo; mostrar(k);
+    try { if (k !== "elegir") localStorage.setItem("rabbitModo", k); } catch (e) {}
+    if (k === "invitado") { cargarInvitados(); decir("¡Rapidito! Solo dime quién eres"); mover("salto"); }
+    else if (k === "entrar") { decir("Escribe tu usuario"); mover("salto"); setTimeout(() => correo.focus(), 50); }
+    else { decir(IDLE[0]); mover("ladeo"); }
+  }));
+  const pasoCodigo = document.getElementById("pasoCodigo"), pasoUsuario = document.getElementById("pasoUsuario"), oSub = document.getElementById("oSub"), SUB_OLVIDO = oSub.textContent, oBoton = document.getElementById("oBoton"), digitos = [...document.querySelectorAll(".codigo input")];
+  document.querySelectorAll("[data-ir]").forEach((a) => (a.onclick = (e) => {
+    e.preventDefault();
+    for (const k in vistas) vistas[k].hidden = k !== a.dataset.ir;
+    if (a.dataset.ir === "olvido") { pasoCodigo.hidden = true; pasoUsuario.hidden = false; oSub.textContent = SUB_OLVIDO; oBoton.hidden = false; oBoton.textContent = "Enviar código"; document.getElementById("oReenviar").hidden = true; digitos.forEach((d) => (d.value = "")); document.getElementById("mensajeO").textContent = ""; const o = document.getElementById("oCorreo"); o.value = correo.value.trim(); setTimeout(() => o.focus(), 50); decir("Tranquilo, le pasa a cualquiera"); mover("ladeo"); }
+    else if (a.dataset.ir === "invitado") { cargarInvitados(); decir("¡Rapidito! Solo dime quién eres"); mover("salto"); }
+    else { decir(IDLE[0]); mover("salto"); }
+  }));
+
+  // ===== Entrar de verdad (Supabase) =====
+  // Animación al entrar: anillos de luz que giran (como Face ID) y se cierran en un check; luego pasa al panel
+  function irPanel() {
+    if (document.querySelector(".ok-capa")) return;
+    const c = document.createElement("div");
+    c.className = "ok-capa";
+    c.innerHTML = `<div class="ok-caja">
+      <svg class="ok-svg" viewBox="0 0 120 120" aria-hidden="true">
+        <defs><filter id="okBrillo" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <circle class="ok-marco" cx="60" cy="60" r="38"/>
+        <g filter="url(#okBrillo)"><ellipse class="ok-anillo a1" cx="60" cy="60" rx="34" ry="12"/><ellipse class="ok-anillo a2" cx="60" cy="60" rx="34" ry="12"/></g>
+        <circle class="ok-circulo" cx="60" cy="60" r="38"/>
+        <path class="ok-check" d="M42 61 l12 12 l24 -26"/>
+      </svg>
+      <p class="ok-txt">¡Listo! Entrando…</p></div>`;
+    document.body.append(c);
+    setTimeout(() => c.classList.add("fase2"), 1300);
+    setTimeout(() => (location.href = "panel.html"), 2500);
+  }
+  async function despuesDeEntrar() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const { data: p } = await sb.from("perfiles").select("nombre, debe_cambiar_clave, activa").eq("id", user.id).single();
+    if (!p || !p.activa) { await sb.auth.signOut(); mostrar("entrar"); mensaje.className = "mensaje error"; mensaje.textContent = "Tu cuenta está desactivada. Habla con el equipo de marketing."; decir("Mmm, algo no está bien"); mover("no"); return; }
+    let inv = false; try { inv = localStorage.getItem("rabbitInvitado") === user.id; } catch (e) {}
+    if (p.debe_cambiar_clave && !inv) { mostrar("nueva"); document.getElementById("nuevaSub").textContent = `Hola, ${p.nombre}. Es tu primera vez en Rabbit: elige una contraseña que solo tú sepas.`; decir(`¡Hola, ${p.nombre}! Crea tu contraseña`); mover("salto"); setTimeout(() => document.getElementById("nClave").focus(), 60); return; }
+    decir(`¡Bienvenido de vuelta, ${p.nombre}!`); mover("feliz"); setTimeout(irPanel, 900);
+  }
+  document.getElementById("form").onsubmit = async (e) => {
+    e.preventDefault();
+    const err = (t, g) => { mensaje.className = "mensaje error"; mensaje.textContent = t; decir(g); mover("no"); b.disabled = false; b.firstChild.textContent = "Entrar"; };
+    const b = document.getElementById("entrar");
+    [correo, clave].forEach((x) => x.setAttribute("aria-invalid", !x.value.trim()));
+    if (!correo.value.trim() || !clave.value) return err("Escribe tu usuario y tu contraseña.", "Te falta algo…");
+    b.disabled = true; b.firstChild.textContent = "Entrando…"; mensaje.textContent = "";
+    const { data: email } = await sb.rpc("correo_de_usuario", { u: correo.value.trim() });
+    if (!email) return err("Usuario o contraseña incorrectos.", "Mmm, esa no es");
+    const { error } = await sb.auth.signInWithPassword({ email, password: clave.value });
+    if (error) return err("Usuario o contraseña incorrectos.", "Mmm, esa no es");
+    mensaje.className = "mensaje ok"; mensaje.textContent = "¡Listo! Entrando…";
+    b.disabled = false; b.firstChild.textContent = "Entrar";
+    despuesDeEntrar();
+  };
+
+  // ===== Entrar sin contraseña (solo quienes dejan tickets) =====
+  const FN_INV = "https://aqjmdlrafjjzdrqnogid.supabase.co/functions/v1/entrar-invitado";
+  const llamarInv = (cuerpo) => fetch(FN_INV, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo) }).then((r) => r.json());
+  const invQuien = document.getElementById("invQuien"), mensajeI = document.getElementById("mensajeI");
+  let invCargado = false;
+  // La lista se pide apenas abre la página y se guarda en el navegador: la próxima vez sale al instante
+  const pintarInv = (personas) => {
+    const sel = invQuien.value || (() => { try { return localStorage.getItem("rabbitInvitado") || ""; } catch (e) { return ""; } })();
+    invQuien.innerHTML = '<option value="">Elige tu nombre</option>' + personas.map((x) => `<option value="${x.id}">${(x.nombre + " " + (x.apellido || "")).trim().replace(/[<>&]/g, "")}${x.area ? " | " + x.area.replace(/[<>&]/g, "") : ""}</option>`).join("");
+    if (sel && personas.some((x) => x.id === sel)) invQuien.value = sel;
+  };
+  try { const g = JSON.parse(localStorage.getItem("rabbitInvLista") || "null"); if (g && g.length) { pintarInv(g); invCargado = true; } } catch (e) {}
+  let invPidiendo = null;
+  function cargarInvitados() {
+    if (invPidiendo) return invPidiendo;
+    invPidiendo = llamarInv({ accion: "lista" }).then(({ personas }) => {
+      if (!personas) throw 0;
+      pintarInv(personas); invCargado = true;
+      try { localStorage.setItem("rabbitInvLista", JSON.stringify(personas)); } catch (e) {}
+    }).catch(() => { invPidiendo = null; if (!invCargado) invQuien.innerHTML = '<option value="">No se pudo cargar la lista</option>'; });
+    return invPidiendo;
+  }
+  cargarInvitados();
+  invQuien.addEventListener("change", () => { invQuien.removeAttribute("aria-invalid"); mensajeI.textContent = ""; });
+  invQuien.addEventListener("focus", () => decir("Busca tu nombre"));
+  document.getElementById("formInv").onsubmit = async (e) => {
+    e.preventDefault();
+    const b = document.getElementById("invBoton");
+    const err = (t) => { mensajeI.className = "mensaje error"; mensajeI.textContent = t; decir("Mmm, algo no está bien"); mover("no"); b.disabled = false; b.firstChild.textContent = "Entrar"; };
+    if (!invQuien.value) { invQuien.setAttribute("aria-invalid", "true"); return err("Elige tu nombre en la lista."); }
+    b.disabled = true; b.firstChild.textContent = "Entrando…"; mensajeI.textContent = "";
+    try {
+      const { token } = await llamarInv({ accion: "entrar", id: invQuien.value });
+      if (!token) return err("No se pudo entrar. Pide ayuda al equipo de marketing.");
+      const { error } = await sb.auth.verifyOtp({ token_hash: token, type: "magiclink" });
+      if (error) return err("No se pudo entrar. Intenta de nuevo.");
+      try { localStorage.setItem("rabbitInvitado", invQuien.value); } catch (e) {}
+      despuesDeEntrar();
+    } catch (e) { err("No se pudo entrar. Revisa tu conexión."); }
+  };
+
+  // Crear contraseña (primer ingreso o recuperación)
+  document.getElementById("formNueva").onsubmit = async (e) => {
+    e.preventDefault();
+    const m = document.getElementById("mensajeN"), c1 = document.getElementById("nClave").value, c2 = document.getElementById("nClave2").value;
+    const error = (t, g) => { m.className = "mensaje error"; m.textContent = t; decir(g); mover("no"); };
+    if (c1.length < 8) return error("La contraseña debe tener al menos 8 caracteres.", "Un poquito más larga");
+    if (c1 !== c2) return error("Las contraseñas no coinciden.", "No son iguales");
+    const { error: e1 } = await sb.auth.updateUser({ password: c1 });
+    if (e1) return error(/same|different/i.test(e1.message) ? "Elige una contraseña distinta a la temporal." : "No se pudo guardar. Intenta de nuevo.", "Algo salió mal");
+    await sb.rpc("clave_cambiada");
+    m.className = "mensaje ok"; m.textContent = "¡Contraseña guardada! Entrando a tu panel…"; decir("¡De vuelta al trabajo!"); mover("feliz");
+    setTimeout(irPanel, 1100);
+  };
+
+  // Recuperar contraseña: código de 6 números al correo
+  let correoRec = "";
+  digitos.forEach((d, i) => {
+    d.addEventListener("input", () => { d.value = d.value.replace(/\D/g, "").slice(-1); if (d.value && digitos[i + 1]) digitos[i + 1].focus(); });
+    d.addEventListener("keydown", (e) => { if (e.key === "Backspace" && !d.value && digitos[i - 1]) digitos[i - 1].focus(); });
+    d.addEventListener("paste", (e) => { const t = (e.clipboardData.getData("text").match(/\d/g) || []).slice(0, 6); if (t.length) { e.preventDefault(); t.forEach((n, k) => digitos[k] && (digitos[k].value = n)); digitos[Math.min(t.length, 5)].focus(); validarCodigo(); } });
+    d.addEventListener("focus", () => decir("Copia el código del correo"));
+  });
+  const ocultar = (c) => c.replace(/^(.{2})[^@]*(@.*)$/, (_, x, y) => x + "•••" + y);
+  async function enviarCodigo(u) {
+    const m = document.getElementById("mensajeO");
+    const { data: email } = await sb.rpc("correo_de_usuario", { u });
+    // Por seguridad, el mensaje es el mismo exista o no el usuario
+    if (email) { correoRec = email; await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); }
+    m.className = "mensaje"; m.textContent = "";
+    oSub.textContent = email ? `Escribe el código de 6 números que enviamos a ${ocultar(email)}. Revisa también spam.` : "Si el usuario existe, le enviamos un código de 6 números. Revisa también spam.";
+    pasoUsuario.hidden = true; pasoCodigo.hidden = false; oBoton.hidden = true; document.getElementById("oReenviar").hidden = false;
+    digitos.forEach((d) => (d.value = "")); decir("¡Revisa tu correo!"); mover("salto"); setTimeout(() => digitos[0].focus(), 60);
+  }
+  document.getElementById("oReenviarA").onclick = (e) => { e.preventDefault(); enviarCodigo(document.getElementById("oCorreo").value.trim()); };
+  document.getElementById("oOtro").onclick = (e) => { e.preventDefault(); pasoCodigo.hidden = true; pasoUsuario.hidden = false; oBoton.hidden = false; document.getElementById("oReenviar").hidden = true; oSub.textContent = SUB_OLVIDO; document.getElementById("mensajeO").textContent = ""; document.getElementById("oCorreo").focus(); };
+  // Al completar los 6 números se valida solo
+  let validando = false, recuperando = false;
+  async function validarCodigo() {
+    const cod = digitos.map((d) => d.value).join(""), m = document.getElementById("mensajeO");
+    if (cod.length < 6 || validando) return;
+    validando = true; m.className = "mensaje"; m.textContent = "Revisando el código…"; recuperando = true;
+    const { error } = correoRec ? await sb.auth.verifyOtp({ email: correoRec, token: cod, type: "recovery" }) : { error: true };
+    validando = false;
+    if (error) { recuperando = false; m.className = "mensaje error"; m.textContent = "El código no es válido o ya venció. Revísalo o pide uno nuevo."; decir("Ese código no sirve"); mover("no"); digitos.forEach((d) => (d.value = "")); digitos[0].focus(); return; }
+    m.textContent = ""; mostrarNuevaRec();
+  }
+  function mostrarNuevaRec() {
+    mostrar("nueva"); vistas.nueva.querySelector("h1").textContent = "Nueva contraseña";
+    document.getElementById("nuevaSub").textContent = "Código correcto. Ahora elige tu nueva contraseña.";
+    decir("¡Código correcto!"); mover("feliz"); setTimeout(() => document.getElementById("nClave").focus(), 60);
+  }
+  digitos.forEach((d) => d.addEventListener("input", validarCodigo));
+  document.getElementById("formOlvido").onsubmit = async (e) => {
+    e.preventDefault();
+    const m = document.getElementById("mensajeO"), v = document.getElementById("oCorreo").value.trim();
+    if (!pasoCodigo.hidden) return validarCodigo();
+    if (!v) { m.className = "mensaje error"; m.textContent = "Escribe tu usuario."; decir("Te falta tu usuario"); mover("no"); return; }
+    enviarCodigo(v);
+  };
+
+  // Si llega desde el enlace del correo de recuperación, pide la nueva contraseña
+  sb.auth.onAuthStateChange((ev) => { if (ev === "PASSWORD_RECOVERY" && !recuperando) { recuperando = true; mostrarNuevaRec(); } });
+  // Si ya tiene sesión abierta, entra directo
+  try { const m = localStorage.getItem("rabbitModo"); if ((m === "invitado" || m === "entrar") && !/type=recovery/.test(location.hash)) { mostrar(m); if (m === "invitado") cargarInvitados(); } } catch (e) {}
+  sb.auth.getSession().then(async ({ data }) => {
+    if (!data.session || recuperando || /type=recovery/.test(location.hash)) return;
+    // Quien entró sin contraseña no vuelve a entrar solo: ve la lista con su nombre ya elegido y pulsa Entrar
+    let inv = null; try { inv = localStorage.getItem("rabbitInvitado"); } catch (e) {}
+    if (inv && inv === data.session.user.id) { await sb.auth.signOut(); mostrar("invitado"); cargarInvitados(); return; }
+    despuesDeEntrar();
+  });
+</script>
+</body>
+</html>
